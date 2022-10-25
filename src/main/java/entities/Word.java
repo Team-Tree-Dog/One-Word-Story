@@ -1,14 +1,15 @@
 package entities;
 
 public class Word {
-    String word;
-    Player author;
+    private String word;
+    private final Player author;
 
-    Word(String word, Player a) {
+    public Word(String word, Player author) {
         this.word = word.trim();
+        this.author = author;
     }
 
-    String getWord() { return this.word;}
+    public String getWord() { return this.word;}
 
-    Player getAuthor() { return this.author;}
+    public Player getAuthor() { return this.author;}
 }

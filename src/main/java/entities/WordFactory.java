@@ -3,8 +3,8 @@ package entities;
 import exceptions.InvalidWordException;
 
 public class WordFactory {
-    ValidityChecker validityChecker;
-    WordFactory(ValidityChecker v) {
+    private final ValidityChecker validityChecker;
+    public WordFactory(ValidityChecker v) {
         this.validityChecker = v;
     }
 
@@ -16,7 +16,7 @@ public class WordFactory {
      * @param author
      * @return
      */
-    Word create(String word, Player author) throws InvalidWordException {
+    public Word create(String word, Player author) throws InvalidWordException {
         if(validityChecker.isValid(word))
             return new Word(word, author);
         else

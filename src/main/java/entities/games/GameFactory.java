@@ -16,6 +16,6 @@ public interface GameFactory {
      * @param geb A boundary for the game ended scenario
      * @return the created game instance
      */
-    public Game createGame(Map<String, Integer> settings, List<Player> initialPlayers, OnTimerUpdateBoundary otub,
-                    GameEndedBoundary geb);
+    Game createGame(Map<String, Integer> settings, List<Player> initialPlayers, OnTimerUpdateBoundary otub,
+                           GameEndedBoundary geb);
 }

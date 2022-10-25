@@ -1,7 +1,5 @@
 package entities;
 
-public class ValidityChecker {
-    boolean isValid(String word) {
-
-    }
+public interface ValidityChecker {
+    boolean isValid(String word);
 }

@@ -1,5 +1,7 @@
 package entities.boundaries;
 
+import entities.games.Game;
+
 /**
  * Inject an implementing  class (which resides in use case layer)
  * to get called repeatedly when the game timer executes.
