@@ -1,4 +1,4 @@
-package entities.exceptions;
+package entities;
 
 /**
  * Passes a new display name for a new Player.
