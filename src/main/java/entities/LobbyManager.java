@@ -2,7 +2,11 @@ package entities;
 
 import entities.boundaries.GameEndedBoundary;
 import entities.boundaries.OnTimerUpdateBoundary;
+import exceptions.InvalidWordException;
 import exceptions.PlayerNotFoundException;
+import exceptions.GameDoesntExistException;
+import exceptions.OutOfTurnException;
+import exceptions.GameRunningException;
 import entities.games.Game;
 import entities.games.GameFactory;
 
@@ -28,6 +32,14 @@ public class LobbyManager {
         public PlayerObserverLink (Player p, PlayerPoolListener o) {
             this.player = p;
             this.playerPoolListener = o;
+        }
+
+        public Player getPlayer() {
+            return this.player;
+        }
+
+        public PlayerPoolListener getPlayerPoolListener () {
+            return this.playerPoolListener;
         }
     }
 
@@ -169,4 +181,55 @@ public class LobbyManager {
         }
     }
 
+    /**
+     * Set the game attribute
+     * @param game Game to be set for this lobby
+     * @throws GameRunningException if game already exists
+     */
+    public void setGame (Game game) throws GameRunningException {
+        if (!this.isGameNull()) {
+            throw new GameRunningException(
+                    "Trying to set an existing game");
+        }
+        this.game = game;
+    }
+
+    /**
+     * Add word from the current-turn player to the story of our game
+     * @param word String to add to the story
+     * @param playerId String of the player who attempts to submit a word
+     * @throws GameDoesntExistException if game does not exist
+     * @throws PlayerNotFoundException if player cannot be found
+     * @throws OutOfTurnException if this is not our player's turn
+     * @throws InvalidWordException if the word is not valid
+     */
+    public void addWord (String word, String playerId) throws GameDoesntExistException, PlayerNotFoundException,
+            OutOfTurnException, InvalidWordException {
+        if (!this.IsGameRunning()) {
+            throw new GameDoesntExistException(
+                    "The game you are trying to add word to does not exist");
+        }
+        if (this.game.getPlayerById(playerId) == null) {
+            throw new PlayerNotFoundException(
+                    "The player you are trying to add word is not found int the game");
+        }
+        if (!this.game.getCurrentTurnPlayer().getPlayerId().equals(playerId)) {
+            throw new OutOfTurnException(
+                    "Trying to submit a word out of turn");
+        }
+        Player author = this.game.getPlayerById(playerId);
+        this.game.getStory().addWord(word, author);
+    }
+
+    /**
+     * Create a game based on the provided settings and players from the pool
+     * @param settings Map<String, Integer> String to add to the story
+     */
+    public Game newGameFromPool (Map<String, Integer> settings) {
+        List<Player> initialPlayers = new ArrayList<>();
+        for (PlayerObserverLink pol : this.playerPool) {
+            initialPlayers.add(pol.getPlayer());
+        }
+        return this.gameFac.createGame(settings, initialPlayers, onTimerUpdateBoundary, gameEndedBoundary);
+    }
 }
