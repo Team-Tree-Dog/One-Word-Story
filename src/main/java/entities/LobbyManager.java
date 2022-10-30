@@ -2,14 +2,11 @@ package entities;
 
 import entities.boundaries.GameEndedBoundary;
 import entities.boundaries.OnTimerUpdateBoundary;
-import entities.exceptions.PlayerNotFoundException;
+import exceptions.PlayerNotFoundException;
 import entities.games.Game;
 import entities.games.GameFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  * Core entity which keeps track of all the games which are running
@@ -171,4 +168,5 @@ public class LobbyManager {
             playerPool.remove(link);
         }
     }
+
 }
