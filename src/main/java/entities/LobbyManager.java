@@ -229,6 +229,6 @@ public class LobbyManager {
         for (PlayerObserverLink pol : this.playerPool) {
             initialPlayers.add(pol.getPlayer());
         }
-        return this.gameFac.createGame(settings, initialPlayers, onTimerUpdateBoundary, gameEndedBoundary);
+        return this.gameFac.createGame(settings, initialPlayers);
     }
 }

@@ -15,5 +15,9 @@ public interface GameFactory {
      * @param initialPlayers A list of initial players
      * @return the created game instance
      */
+<<<<<<< Updated upstream
     Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers);
+=======
+    Game createGame(Map<String, Integer> settings, List<Player> initialPlayers);
+>>>>>>> Stashed changes
 }

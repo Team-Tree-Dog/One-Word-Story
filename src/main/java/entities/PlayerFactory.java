@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class PlayerFactory {
 
-    private static ArrayList<String> idsInUse;
+    private ArrayList<String> idsInUse;
 
     /**
      * Accepting any settings, create the appropriate game instance of the GameRegular
