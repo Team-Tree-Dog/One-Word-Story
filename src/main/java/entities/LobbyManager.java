@@ -26,8 +26,8 @@ public class LobbyManager {
      * or cancel their waiting
      */
     private static class PlayerObserverLink {
-        public Player player;
-        public PlayerPoolListener playerPoolListener;
+        private final Player player;
+        private final PlayerPoolListener playerPoolListener;
 
         public PlayerObserverLink (Player p, PlayerPoolListener o) {
             this.player = p;
@@ -46,8 +46,6 @@ public class LobbyManager {
     private final ArrayList<PlayerObserverLink> playerPool;
     private Game game;
     private final GameFactory gameFac;
-    private final OnTimerUpdateBoundary onTimerUpdateBoundary;
-    private final GameEndedBoundary gameEndedBoundary;
     private final Timer sortPlayersTimer;
     private boolean startedSortTimer;
 

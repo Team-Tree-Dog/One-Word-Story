@@ -13,13 +13,8 @@ public class GameFactoryRegular implements GameFactory {
      * @param initialPlayers A list of initial players
      * @return the created game instance
      */
-<<<<<<< Updated upstream
     public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
         Queue<Player> queueOfInitialPlayers = new LinkedList<>(initialPlayers);
         return new GameRegular(queueOfInitialPlayers);
-=======
-    public Game createGame(Map<String, Integer> settings, List<Player> initialPlayers) {
-        return new GameRegular(initialPlayers);
->>>>>>> Stashed changes
     }
 }
