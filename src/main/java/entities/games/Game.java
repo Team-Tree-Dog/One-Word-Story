@@ -67,7 +67,7 @@ public abstract class Game {
 
     public void setTimerStopped(boolean timerStopped) {this.timerStopped = timerStopped;}
 
-    public boolean getTimerStopped() {return timerStopped;}
+    public boolean isTimerStopped() {return timerStopped;}
 
     public abstract Collection<Player> getPlayers();
 

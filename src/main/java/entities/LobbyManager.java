@@ -1,10 +1,6 @@
 package entities;
 
-import exceptions.InvalidWordException;
-import exceptions.GameDoesntExistException;
-import exceptions.GameRunningException;
-import exceptions.PlayerNotFoundException;
-import exceptions.OutOfTurnException;
+import exceptions.*;
 import entities.games.Game;
 import entities.games.GameFactory;
 
@@ -233,7 +229,7 @@ public class LobbyManager {
      * @param id the unique id of the player
      * @return the created player instance
      */
-    public Player createNewPlayer(String displayName, String id) {
+    public Player createNewPlayer(String displayName, String id) throws IdInUseException {
         return playerFac.createPlayer(displayName, id);
     }
 
