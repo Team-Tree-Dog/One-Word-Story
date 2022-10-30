@@ -64,7 +64,7 @@ public class LobbyManager {
     /**
      * @return If a game has been started but has not yet ended
      */
-    public boolean isGameRunning () { return !(game == null || game.isGameEnded()); }
+    public boolean isGameRunning () { return !(game == null || game.isGameOver()); }
 
     /**
      * @return If the inner sort players timer thread has been started
@@ -91,7 +91,7 @@ public class LobbyManager {
                     if (game != null) {
 
                         // Game has just ended and terminated its internal timer
-                        if (game.isGameEnded()) {
+                        if (game.isGameOver()) {
                             game = null;
                         }
 
@@ -121,8 +121,7 @@ public class LobbyManager {
                             }
 
                             // Creates game with initial players from pool
-                            game = gameFac.createGame(new HashMap<>(), initialPlayers,
-                                    onTimerUpdateBoundary, gameEndedBoundary);
+                            game = gameFac.createGame(new HashMap<>(), initialPlayers);
 
                             // Calls listeners
                             for (PlayerObserverLink link: playerPool) {
@@ -205,7 +204,7 @@ public class LobbyManager {
      */
     public void addWord (String word, String playerId) throws GameDoesntExistException, PlayerNotFoundException,
             OutOfTurnException, InvalidWordException {
-        if (!this.IsGameRunning()) {
+        if (!this.isGameRunning()) {
             throw new GameDoesntExistException(
                     "The game you are trying to add word to does not exist");
         }

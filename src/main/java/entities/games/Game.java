@@ -4,79 +4,43 @@ import entities.Player;
 import entities.Story;
 import entities.ValidityChecker;
 import entities.WordFactory;
-import entities.boundaries.GameEndedBoundary;
-import entities.boundaries.OnTimerUpdateBoundary;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * An abstract game
  * Every type of game extends this class
  */
 public abstract class Game {
-    private Timer gameTimer;
-    private OnTimerUpdateBoundary onTimerBound;
-    private GameEndedBoundary gameEndBound;
-    private Story story;
-    private int secondsPerTurn;
-    private int secondsLeftInCurrentTurn;
-    private boolean gameEnded;
+
+    private final Story story;
+
+    private final Timer gameTimer;
+
+    private boolean timerStopped;
+
+    private final int secondsPerTurn;
+    protected int secondsLeftInCurrentTurn;
 
     /**
      * Constructor for a Game
      * @param initialPlayers The initial players in this Game
-     * @param otub The timer update boundary
-     * @param geb The game ended boundary
      * @param secondsPerTurn The amount of seconds for each turn
      * @param v The validity checker (to check if a word is valid)
      */
-    public Game(List<Player> initialPlayers, OnTimerUpdateBoundary otub,
-                GameEndedBoundary geb, int secondsPerTurn, ValidityChecker v) {
-        this.onTimerBound = otub;
-        this.gameEndBound = geb;
+    public Game(Collection<Player> initialPlayers, int secondsPerTurn, ValidityChecker v) {
         this.story = new Story(new WordFactory(v));
         this.secondsPerTurn = secondsPerTurn;
+        this.addInitialPlayers(initialPlayers);
         this.gameTimer = new Timer();
-        for (Player p : initialPlayers) {
-            this.addPlayer(p);
-        }
-    }
-
-    /**
-     * Starts the game's timer
-     * Tracks how many seconds are left in the current turn, and switches turns when time has run out
-     * If the game is over, the timer stops
-     */
-    protected void startTimer() {
-        this.secondsLeftInCurrentTurn = secondsPerTurn;
-        gameTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (isGameOver()) {
-                    gameTimer.cancel();
-                    gameEnded = true;
-                    //TODO: bounds (unfinished)
-                } else {
-                    modifyTurnTime();
-                    if (secondsLeftInCurrentTurn == 0) {
-                        switchTurn();
-                        secondsLeftInCurrentTurn = secondsPerTurn;
-                    }
-                }
-            }
-        }, 0, 500);
+        this.timerStopped = false;
     }
 
     /**
      * @return The story as it has been typed in this game instance
      */
     public Story getStory() {return story;}
-
-    public OnTimerUpdateBoundary getOnTimerBound() {return onTimerBound;}
-
-    public GameEndedBoundary getGameEndBound() {return gameEndBound;}
 
     public int getSecondsPerTurn() {return secondsPerTurn;}
 
@@ -87,15 +51,27 @@ public abstract class Game {
      * @param newSeconds The amount of seconds to set the current turn for
      */
     public void setSecondsLeftInCurrentTurn(int newSeconds) {
-        secondsLeftInCurrentTurn = newSeconds;
+        this.secondsLeftInCurrentTurn = newSeconds;
     }
 
-    /**
-     * @return if the game has ended
-     */
-    public boolean isGameEnded() {return gameEnded;}
 
-    public abstract List<Player> getPlayers();
+    /** This method adds the initial players to the game by looping and calling addPlayer
+     */
+    protected void addInitialPlayers(Collection<Player> players) {
+        for(Player player : players) {
+            this.addPlayer(player);
+        }
+    }
+
+    public Timer getGameTimer() {return this.gameTimer;}
+
+    public void setTimerStopped(boolean timerStopped) {this.timerStopped = timerStopped;}
+
+    public boolean getTimerStopped() {return timerStopped;}
+
+    public abstract Collection<Player> getPlayers();
+
+    public abstract boolean isGameOver();
 
     protected abstract void onTimerUpdate();
 
@@ -111,5 +87,4 @@ public abstract class Game {
 
     public abstract Player getCurrentTurnPlayer();
 
-    protected abstract boolean isGameOver();
 }

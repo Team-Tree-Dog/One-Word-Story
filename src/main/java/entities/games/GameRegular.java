@@ -5,58 +5,48 @@ import entities.ValidityChecker;
 import entities.boundaries.GameEndedBoundary;
 import entities.boundaries.OnTimerUpdateBoundary;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * A game, with the "regular" rules and constraints
  */
 public class GameRegular extends Game {
 
-    private LinkedList<Player> players = new LinkedList<Player>();
+
+    public static int REGULAR_GAME_SECONDS_PER_TURN = 15;
+    private final LinkedList<Player> players = new LinkedList<>();
 
     /**
      * Constructor for GameRegular
      * @param initialPlayers The initial players in this GameRegular
-     * @param otub The timer update boundary
-     * @param geb The game ended boundary
      */
-    public GameRegular(List<Player> initialPlayers, OnTimerUpdateBoundary otub,
-                       GameEndedBoundary geb) {
-        super(initialPlayers, otub, geb, 15, new ValidityChecker() {
-            @Override
-            public boolean isValid(String word) {
-                //TODO: delete this lol
-                return true;
-            }
+    public GameRegular(Queue<Player> initialPlayers) {
+        super(initialPlayers, REGULAR_GAME_SECONDS_PER_TURN, word -> {
+            // Currently accepting all the words
+            return true;
         });
     }
 
     @Override
-    public List<Player> getPlayers() {
+    public Collection<Player> getPlayers() {
         return players;
     }
 
     /**
-     * Does PUT_THINGS_HERE when the timer updates
+     * Currently implemented as no-operation
      */
     @Override
-    protected void onTimerUpdate() {}
+    protected void onTimerUpdate() {
+
+    }
 
     /**
-     * @param PlayerId The unique id of the player to search for in this GameRegular instance.
+     * @param playerId The unique id of the player to search for in this GameRegular instance.
      * @return The Player with the corresponding PlayerId, or null if this player does not exist
      */
     @Override
-    public Player getPlayerById(String PlayerId) {
-        for (Player player : this.getPlayers()) {
-            if (Objects.equals(player.getPlayerId(), PlayerId)) {
-                return player;
-            }
-        }
-        return null;
+    public Player getPlayerById(String playerId) {
+        return players.stream().filter(p -> p.getPlayerId().equals(playerId)).findAny().orElse(null);
     }
 
     /**
@@ -110,7 +100,7 @@ public class GameRegular extends Game {
      * @return if the game is over
      */
     @Override
-    protected boolean isGameOver() {
+    public boolean isGameOver() {
         return players.size() < 2;
     }
 }
