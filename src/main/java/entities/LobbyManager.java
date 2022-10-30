@@ -182,4 +182,72 @@ public class LobbyManager {
         }
         return this.gameFac.createGame(settings, initialPlayers);
     }
+
+    /**
+     * Removes a PlayerObserverLink from the pool via its player
+     * @param p the player in the POL to be removed
+     * @throws PlayerNotFoundException if the player was not found in any POLs in playerPool
+     */
+    public void removeFromPoolCancel(Player p) throws PlayerNotFoundException {
+        PlayerObserverLink pol = getLinkFromPlayer(p);
+        if (pol == null) {
+            throw new PlayerNotFoundException("Player not found");
+        }
+        playerPool.remove(pol);
+        pol.playerPoolListener.onCancelPlayer();
+
+    }
+
+    /**
+     * Removes a specified player from the game instance
+     * @param p the player to be removed
+     * @throws GameDoesntExistException when the game doesn't exist
+     * @throws PlayerNotFoundException when p is not in the game
+     */
+    public void removePlayerFromGame(Player p) throws GameDoesntExistException, PlayerNotFoundException {
+        if (game == null) {
+            throw new GameDoesntExistException("Game does not exist");
+        }
+        if (game.getPlayerById(p.getPlayerId()) == null) {
+            throw new PlayerNotFoundException("Player to remove is not in game");
+        }
+        game.removePlayer(p);
+    }
+
+    /**
+     * Adds a player to the game instance
+     * @param p the player to be added
+     * @return if the player was successfully added
+     * @throws GameDoesntExistException when the game doesn't exist
+     */
+    public boolean addPlayerToGame(Player p) throws GameDoesntExistException {
+        if (game == null) {
+            throw new GameDoesntExistException("Game does not exist");
+        }
+        return game.addPlayer(p);
+    }
+
+    /**
+     * Creates a new player
+     * @param displayName the display name for the player
+     * @param id the unique id of the player
+     * @return the created player instance
+     */
+    public Player createNewPlayer(String displayName, String id) {
+        return playerFac.createPlayer(displayName, id);
+    }
+
+    /**
+     * Helper method to find a PlayerObserverLink in the playerPool via its player
+     * @param p the player in the PlayerObserverLink
+     * @return the PlayerObserverLink containing player p, null if there isn't one
+     */
+    private PlayerObserverLink getLinkFromPlayer(Player p){
+        for (PlayerObserverLink pol : playerPool) {
+            if (pol.getPlayer().equals(p)) {
+                return pol;
+            }
+        }
+        return null;
+    }
 }
