@@ -3,7 +3,7 @@ package exceptions;
 /**
  * Exception for a case when the user's name is invalid
  */
-public class InvalidDisplayNameException extends Exception {
+public class InvalidDisplayNameException extends EntityException {
 
     /**
      * Constructor for InvalidDisplayNameException

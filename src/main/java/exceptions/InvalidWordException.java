@@ -3,7 +3,7 @@ package exceptions;
 /**
  * Exception for a case when the word is invalid
  */
-public class InvalidWordException extends Exception {
+public class InvalidWordException extends EntityException {
 
     /**
      * Constructor for InvalidWordException

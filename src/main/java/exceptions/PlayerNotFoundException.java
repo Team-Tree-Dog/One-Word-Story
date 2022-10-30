@@ -3,7 +3,7 @@ package exceptions;
 /**
  * Exception for a case when player can't be found
  */
-public class PlayerNotFoundException extends Exception {
+public class PlayerNotFoundException extends EntityException {
 
     /**
      * Constructor for PlayerNotFoundException
