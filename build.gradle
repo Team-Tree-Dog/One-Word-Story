@@ -11,6 +11,10 @@ dependencies {
     testImplementation('org.junit.jupiter:junit-jupiter:5.6.0')
 }
 
+task print() {
+    print("Team TreeDog")
+}
+
 test {
     useJUnitPlatform()
     testLogging {

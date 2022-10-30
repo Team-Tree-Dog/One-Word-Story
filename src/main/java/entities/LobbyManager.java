@@ -1,12 +1,10 @@
 package entities;
 
-import entities.boundaries.GameEndedBoundary;
-import entities.boundaries.OnTimerUpdateBoundary;
 import exceptions.InvalidWordException;
-import exceptions.PlayerNotFoundException;
 import exceptions.GameDoesntExistException;
-import exceptions.OutOfTurnException;
 import exceptions.GameRunningException;
+import exceptions.PlayerNotFoundException;
+import exceptions.OutOfTurnException;
 import entities.games.Game;
 import entities.games.GameFactory;
 
@@ -17,8 +15,6 @@ import java.util.*;
  * Every use case has access to an instance of this shared gamestate
  */
 public class LobbyManager {
-
-    public static int SORT_PLAYERS_TIMER_PERIOD_MS = 500;
 
     /**
      * Pairs Player objects with the corresponding Listener (join public lobby thread)
@@ -46,13 +42,17 @@ public class LobbyManager {
     private final ArrayList<PlayerObserverLink> playerPool;
     private Game game;
     private final GameFactory gameFac;
+    private final PlayerFactory playerFac;
     private final Timer sortPlayersTimer;
     private boolean startedSortTimer;
 
-    public LobbyManager (OnTimerUpdateBoundary otub, GameEndedBoundary geb, GameFactory gameFac) {
-        this.onTimerUpdateBoundary = otub;
-        this.gameEndedBoundary = geb;
+    /**
+     * @param playerFac Inject a factory to determine how players are made
+     * @param gameFac Inject a factory to determine how games are made
+     */
+    public LobbyManager (PlayerFactory playerFac, GameFactory gameFac) {
         this.gameFac = gameFac;
+        this.playerFac = playerFac;
 
         this.playerPool = new ArrayList<>();
         this.sortPlayersTimer = new Timer();
@@ -60,122 +60,75 @@ public class LobbyManager {
     }
 
     /**
-     * @return If a game has been started but has not yet ended
+     * @return If a game has been started and has not yet ended
      */
-    public boolean isGameRunning () { return !(game == null || game.isGameOver()); }
+    public boolean isGameRunning () { return !(isGameNull() || isGameEnded()); }
 
     /**
-     * @return If the inner sort players timer thread has been started
+     * @return If a game instance is null, meaning, no game exists
      */
-    public boolean isStartedSortTimer() { return startedSortTimer; }
+    public boolean isGameNull () { return game == null; }
 
     /**
-     * Initiates and runs the internal timer which is in charge of sorting players
-     * into lobbies (or the single game instance) and creating the game object/s
+     * @return If a game exists but has ended, meaning, the final timer
+     * iteration has finished executing
      */
-    public void startSortPlayers () {
-        // Ensures timer cant be started twice
-        if (!startedSortTimer) {
-            startedSortTimer = true;
+    public boolean isGameEnded () { return game.isTimerStopped(); }
 
-            sortPlayersTimer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    // Keeps track of which players need to be removed from pool after
-                    // this iteration, either due to cancellation or joining a game
-                    ArrayList<PlayerObserverLink> linksToRemove = new ArrayList<>();
-
-                    // Game object exists
-                    if (game != null) {
-
-                        // Game has just ended and terminated its internal timer
-                        if (game.isGameOver()) {
-                            game = null;
-                        }
-
-                        // Game is running
-                        else {
-                            for (PlayerObserverLink pol: playerPool) {
-                                // Tries to add player to existing game
-                                boolean isPlayerAdded = game.addPlayer(pol.player);
-
-                                // If success call the listener and set this link for removal
-                                if (isPlayerAdded) {
-                                    pol.playerPoolListener.onJoinGamePlayer(game);
-                                    linksToRemove.add(pol);
-                                }
-                            }
-                        }
-                    }
-                    // Game object is null
-                    else {
-                        // Minimum 2 players to start a game
-                        if (playerPool.size() >= 2) {
-                            // Extracts players from links and sets links for removal
-                            ArrayList<Player> initialPlayers = new ArrayList<>();
-                            for (PlayerObserverLink link: playerPool) {
-                                initialPlayers.add(link.player);
-                                linksToRemove.add(link);
-                            }
-
-                            // Creates game with initial players from pool
-                            game = gameFac.createGame(new HashMap<>(), initialPlayers);
-
-                            // Calls listeners
-                            for (PlayerObserverLink link: playerPool) {
-                                link.playerPoolListener.onJoinGamePlayer(game);
-                            }
-                        }
-                    }
-
-                    // Removes the links that were set for removal
-                    for (PlayerObserverLink pol: linksToRemove) {
-                        playerPool.remove(pol);
-                    }
-                }
-            }, 0, SORT_PLAYERS_TIMER_PERIOD_MS);
+    /**
+     * Set the game to null.
+     * @throws GameRunningException if the game is running and you tried to set it to null
+     */
+    public void setGameNull () throws GameRunningException {
+        if (isGameRunning()) {
+            throw new GameRunningException("Cannot set game to null while game is still running");
         }
+        this.game = null;
     }
 
     /**
-     * Link the player to the observer/listener and add them to the pool
-     * @param p Player to add to the pool
-     * @param observer Callbacks to call if player joins a game or cancels
+     * Called from sort player timer task use case to cancel it once game ends
+     * @return the timer which repeatedly sorts the players
      */
-    public void addPlayer (Player p, PlayerPoolListener observer) {
-        // TODO: This method should lock player pool
-        playerPool.add(new PlayerObserverLink(p, observer));
+    public Timer getSortPlayersTimer () { return this.sortPlayersTimer; }
+
+    /**
+     * @return a shallow copy of the player pool
+     */
+    public List<PlayerObserverLink> getPool () {
+        return new ArrayList<PlayerObserverLink>(playerPool);
     }
 
     /**
-     * Remove the given player from the pool and notify the corresponding listener
-     * @param p Player to remove from pool
-     * @throws PlayerNotFoundException if p was not in the pool
+     * Remove a player from the pool and call the linked PlayerPoolListener's
+     * onJoinGamePlayer method, indicating that the player has joined the game
+     * @param p Player you would like to remove
+     * @throws PlayerNotFoundException if the player was not found in the pool
+     * @throws GameDoesntExistException if the game isn't running, in which case, player can't join it
      */
-    public void cancelPlayer (Player p) throws PlayerNotFoundException {
-        // TODO: This method should probably lock the playerPool throughout the entire algorithm
-        PlayerObserverLink link = null;
+    public void removeFromPoolJoin (Player p) throws PlayerNotFoundException, GameDoesntExistException {
+        PlayerObserverLink l = getLinkFromPlayer(p);
 
-        // Looks for the player-observer link with player p
-        for (PlayerObserverLink pol : playerPool) {
-            if (pol.player.equals(p)) {
-                // Calls the cancel callback
-                pol.playerPoolListener.onCancelPlayer();
-                // Sets the found link
-                link = pol;
-                break;
-            }
-        }
-
-        // If link was never set, means we are cancelling a player who wasn't in the pool
-        // Throw exception in this xase
-        if (link == null) {
+        // This error should not happen unless use case logic is broken
+        if (l == null) {
             throw new PlayerNotFoundException(
-                    "The player you are trying to cancel is not in the pool");
-        } else {
-            // Remove this play from the pool
-            playerPool.remove(link);
+                    String.format("Player with id %s was not in the pool", p.getPlayerId())
+            );
         }
+
+        if (!isGameRunning()) {
+            throw new GameDoesntExistException("Game is either null or has ended. Players cannot join it");
+        }
+        // Below this, we assume that l is in pool and game is running. We assume a proper
+        // lock architecture that ensures that this assumption cannot change from another thread
+
+        // Removes the link from pool
+        playerPool.remove(l);
+
+        // Passes game to the corresponding listener
+        l.playerPoolListener.onJoinGamePlayer(game);
+
+
     }
 
     /**
