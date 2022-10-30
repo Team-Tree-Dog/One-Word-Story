@@ -1,9 +1,7 @@
 package entities.games;
 
 import entities.Player;
-import entities.ValidityChecker;
-import entities.boundaries.GameEndedBoundary;
-import entities.boundaries.OnTimerUpdateBoundary;
+
 
 import java.util.*;
 
@@ -14,17 +12,18 @@ public class GameRegular extends Game {
 
 
     public static int REGULAR_GAME_SECONDS_PER_TURN = 15;
-    private final LinkedList<Player> players = new LinkedList<>();
+    private final Queue<Player> players;
 
     /**
      * Constructor for GameRegular
      * @param initialPlayers The initial players in this GameRegular
      */
     public GameRegular(Queue<Player> initialPlayers) {
-        super(initialPlayers, REGULAR_GAME_SECONDS_PER_TURN, word -> {
+        super(REGULAR_GAME_SECONDS_PER_TURN, word -> {
             // Currently accepting all the words
             return true;
         });
+        players = new LinkedList<>(initialPlayers);
     }
 
     @Override
@@ -40,20 +39,11 @@ public class GameRegular extends Game {
 
     }
 
-    /**
-     * @param playerId The unique id of the player to search for in this GameRegular instance.
-     * @return The Player with the corresponding PlayerId, or null if this player does not exist
-     */
     @Override
     public Player getPlayerById(String playerId) {
         return players.stream().filter(p -> p.getPlayerId().equals(playerId)).findAny().orElse(null);
     }
 
-    /**
-     * Removes the player specified from this GameRegular instance
-     * @param playerToRemove The Player to be removed
-     * @return if the player was successfully removed
-     */
     @Override
     public boolean removePlayer(Player playerToRemove) {
         return players.remove(playerToRemove);

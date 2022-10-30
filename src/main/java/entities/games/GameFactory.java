@@ -1,12 +1,9 @@
 package entities.games;
 
 import entities.Player;
-import entities.boundaries.OnTimerUpdateBoundary;
-import entities.boundaries.GameEndedBoundary;
-
 import java.util.Collection;
 import java.util.Map;
-import java.util.List;
+
 
 public interface GameFactory {
     /**
