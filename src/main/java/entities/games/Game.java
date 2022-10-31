@@ -121,11 +121,6 @@ public abstract class Game {
     public abstract boolean switchTurn();
 
     /**
-     * Modifies the turn time for the move
-     */
-    public abstract void modifyTurnTime();
-
-    /**
      * Returns the player whose turn it is
      */
     public abstract Player getCurrentTurnPlayer();
