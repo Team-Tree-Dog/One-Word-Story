@@ -1,6 +1,8 @@
 package entities;
 
+
 import exceptions.*;
+import exceptions.PlayerNotFoundException;
 import entities.games.Game;
 import entities.games.GameFactory;
 
@@ -281,6 +283,18 @@ public class LobbyManager {
     public void addPlayerToPool (Player p, PlayerPoolListener o) {
         PlayerObserverLink pol = new PlayerObserverLink(p, o);
         this.playerPool.add(pol);
+    }
+
+
+    /**
+     * Gets all the players from the players pool
+     * @return an arraylist of players
+     */
+    public ArrayList<Player> getPlayersFromPool() {
+        ArrayList<Player> players = new ArrayList<>();
+        for(PlayerObserverLink playerObserverLink : playerPool)
+            players.add(playerObserverLink.player);
+        return players;
     }
 
 }
