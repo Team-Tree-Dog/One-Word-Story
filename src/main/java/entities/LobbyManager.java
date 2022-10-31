@@ -273,4 +273,15 @@ public class LobbyManager {
         }
         return null;
     }
+
+    /**
+     * Creates PlayerObserverLink from p and o, which is then used to add the player to the pool.
+     * @param p the player in the PlayerObserverLink
+     * @param o the PlayerPoolListener in the PlayerObserverLink
+     */
+    public void addPlayerToPool (Player p, PlayerPoolListener o) {
+        PlayerObserverLink pol = new PlayerObserverLink(p, o);
+        this.playerPool.add(pol);
+    }
+
 }
