@@ -97,7 +97,7 @@ public abstract class Game {
     /**
      * Additional actions that can be done by the game every time the timer is updated
      */
-    protected abstract void onTimerUpdate();
+    public abstract void onTimerUpdate();
 
     /**
      * Returns the player by its id
