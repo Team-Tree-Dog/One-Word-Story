@@ -62,7 +62,7 @@ public abstract class Game {
 
     /** This method adds the initial players to the game by looping and calling addPlayer
      */
-    public void addAllPlayers(Collection<Player> players) {
+    protected void addAllPlayers(Collection<Player> players) {
         for(Player player : players) {
             this.addPlayer(player);
         }
