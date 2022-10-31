@@ -7,6 +7,15 @@ import java.util.ArrayList;
 public class PlayerFactory {
 
     private ArrayList<String> idsInUse;
+    private DisplayNameChecker displayChecker;
+
+    /**
+     * Constructor for PlayerFactory
+     * @param nameChecker the display name checker the player factory will use
+     */
+    public PlayerFactory(DisplayNameChecker nameChecker) {
+        displayChecker = nameChecker;
+    }
 
     /**
      * Create new player and throw exception if display name is invalid or id is already in use

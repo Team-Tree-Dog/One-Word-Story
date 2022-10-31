@@ -9,8 +9,8 @@ import java.util.List;
  */
 public class Story {
 
-    List<Word> words;
-    WordFactory wordFactory;
+    private List<Word> words;
+    private WordFactory wordFactory;
 
     /**
      * Constructor for the Story
