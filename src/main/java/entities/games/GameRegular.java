@@ -35,7 +35,7 @@ public class GameRegular extends Game {
      * Currently implemented as no-operation
      */
     @Override
-    protected void onTimerUpdate() {
+    public void onTimerUpdate() {
 
     }
 
@@ -67,14 +67,6 @@ public class GameRegular extends Game {
     @Override
     public boolean switchTurn() {
         return players.add(players.remove());
-    }
-
-    /**
-     * Modifies the current amount of seconds left in current turn to the amount of seconds per turn
-     */
-    @Override
-    public void modifyTurnTime() {
-        this.setSecondsLeftInCurrentTurn(getSecondsPerTurn());
     }
 
     /**
