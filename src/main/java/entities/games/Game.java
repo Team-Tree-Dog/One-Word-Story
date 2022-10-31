@@ -74,9 +74,10 @@ public abstract class Game {
     public Timer getGameTimer() {return this.gameTimer;}
 
     /**
-     * @param timerStopped Sets timerStopped boolean instance variable to the given value
+     * Called from the run game use case timer task to notify, after timer cancellation, when the last
+     * execution of the run method has finished, meaning, no more game timer code will run
      */
-    public void setTimerStopped(boolean timerStopped) {this.timerStopped = timerStopped;}
+    public void setTimerStopped() {this.timerStopped = true;}
 
     /**
      * @return Returns whether timer has been stopped
