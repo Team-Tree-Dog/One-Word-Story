@@ -4,7 +4,10 @@ import entities.Player;
 import java.util.Collection;
 import java.util.Map;
 
-
+/**
+ * An interface for game factories
+ * Every type of game factory implements this class
+ */
 public interface GameFactory {
     /**
      * Given some arguments, create the appropriate game instance

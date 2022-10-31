@@ -5,6 +5,9 @@ import entities.Player;
 
 import java.util.*;
 
+/**
+ * Factory designed specifically for GameRegular
+ */
 public class GameFactoryRegular implements GameFactory {
     /**
      * Accepting any settings, create the appropriate game instance of the GameRegular

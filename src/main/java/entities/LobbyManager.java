@@ -124,7 +124,6 @@ public class LobbyManager {
         // Passes game to the corresponding listener
         l.playerPoolListener.onJoinGamePlayer(game);
 
-
     }
 
     /**
