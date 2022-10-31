@@ -128,6 +128,33 @@ public class LobbyManager {
     }
 
     /**
+     * This method removes all the players from the pool
+     */
+    private void clearPool() {
+        playerPool.clear();
+    }
+
+    /**
+     * This method removes notifies all the players that the game has started and removes them from the pool
+     */
+    public void removeAllFromPoolJoin() {
+        for(PlayerObserverLink playerObserverLink: playerPool) {
+            playerObserverLink.playerPoolListener.onJoinGamePlayer(this.game);
+        }
+        this.clearPool();
+    }
+
+    /**
+     * This method calls onCancelPlayer on every player and removes all the players from the pool
+     */
+    public void removeAllFromPoolCancel() {
+        for(PlayerObserverLink playerObserverLink: playerPool) {
+            playerObserverLink.playerPoolListener.onCancelPlayer();
+        }
+        this.clearPool();
+    }
+
+    /**
      * Set the game attribute
      * @param game Game to be set for this lobby
      * @throws GameRunningException if game already exists
