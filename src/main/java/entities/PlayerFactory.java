@@ -9,7 +9,7 @@ public class PlayerFactory {
     private ArrayList<String> idsInUse;
 
     /**
-     * Accepting any settings, create the appropriate game instance of the GameRegular
+     * Create new player and throw exception if display name is invalid or id is already in use
      * @param newPlayerId the ID of the new player.
      * @param newName the name of the new player.
      * @return the created Player instance
