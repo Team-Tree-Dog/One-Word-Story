@@ -1,13 +1,13 @@
-package join_public_lobby;
+package usecases.join_public_lobby;
 
 import enumerations.ResCode;
 
-public class JplOutputDataJoinedPool {
+public class JplOutputDataJoinedGame {
 
     private final ResCode resultCode;
     private final int playerId;
 
-    public JplOutputDataJoinedPool(ResCode resultCode, int playerId) {
+    public JplOutputDataJoinedGame(ResCode resultCode, int playerId) {
         this.resultCode = resultCode;
         this.playerId = playerId;
     }
