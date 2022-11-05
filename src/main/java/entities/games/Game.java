@@ -116,7 +116,7 @@ public abstract class Game {
     public abstract boolean addPlayer(Player playerToAdd);
 
     /**
-     * Switches this game's turn
+     * Switches this game's turn and resets the timer
      */
     public abstract boolean switchTurn();
 

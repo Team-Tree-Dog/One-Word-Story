@@ -17,7 +17,7 @@ public class LobbyManager {
      * which is waiting for the player to either be sorted into a game
      * or cancel their waiting
      */
-    private static class PlayerObserverLink {
+    public static class PlayerObserverLink {
         private final Player player;
         private final PlayerPoolListener playerPoolListener;
 
@@ -70,6 +70,13 @@ public class LobbyManager {
      * iteration has finished executing
      */
     public boolean isGameEnded () { return game.isTimerStopped(); }
+
+    /**
+     * Wrapper for switchTurn
+     */
+    public void switchTurn() {
+        game.switchTurn();
+    }
 
     /**
      * Set the game to null.
@@ -164,6 +171,17 @@ public class LobbyManager {
                     "Trying to set an existing game");
         }
         this.game = game;
+    }
+
+    /**
+     * Gets all the players from the players pool
+     * @return an arraylist of players
+     */
+    public ArrayList<Player> getPlayersFromPool() {
+        ArrayList<Player> players = new ArrayList<>();
+        for(PlayerObserverLink playerObserverLink : playerPool)
+            players.add(playerObserverLink.player);
+        return players;
     }
 
     /**
