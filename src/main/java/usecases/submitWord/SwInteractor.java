@@ -24,14 +24,11 @@ public class SwInteractor implements SwInputBoundary{
     /**
      * The LobbyManager from which we obtain the game.
      */
-    private LobbyManager lobbyManager;
+    private final LobbyManager lobbyManager;
 
     /**
      * The game in which we are changing the Story, and accessing Players and their information.
-     */
-
-    /**
-     * Cosnstructor.
+     * Constructor.
      * @param presenter The output boundary which will be used to pass outputs to the ViewModel.
      * @param lobbyManager The LobbyManager, as described before.
      */
@@ -47,12 +44,7 @@ public class SwInteractor implements SwInputBoundary{
      * @param inputData the SwInputData object that includes the word to be added as well as the ID of the player.
      */
     @Override
-    public void submitWord (SwInputData inputData) {
-        if (!game.getPlayers().contains(inputData.getPlayerId())) {
-            throw new PlayerNotFoundException('PlayerNotFoundException');
-        }
-        (new Thread(new SwThread(inputData))).start();
-    }
+    public void submitWord (SwInputData inputData) {(new Thread(new SwThread(inputData))).start();}
 
     /**
      * A thread that does all the processes in the SwInteractor.
@@ -85,6 +77,7 @@ public class SwInteractor implements SwInputBoundary{
         public void run() {
 
             boolean success = true;
+
             try{
                 lobbyManager.addWord(inputData.getWord(), this.playerId);
             } catch (GameDoesntExistException e) {
@@ -106,6 +99,12 @@ public class SwInteractor implements SwInputBoundary{
                 String mess = "Player with ID " + inputData.getPlayerId() + " does not exist or is not in the Game.";
                 Response resp = new Response(PLAYER_NOT_FOUND, mess);
                 presenter.invalid(new SwOutputDataFailure(this.playerId, resp));
+            }
+
+            if (success) {
+                lobbyManager.switchTurn(); // Switch the turn.
+                Response resp = new Response(SUCCESS, "Word has been added!");
+                presenter.valid(new SwOutputDataValidWord(inputData.getWord(), this.playerId, resp));
             }
 
 //            // Checks if it is the player's turn. If not, then output invalid response.

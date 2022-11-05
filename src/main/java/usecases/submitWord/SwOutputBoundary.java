@@ -9,10 +9,10 @@ public interface SwOutputBoundary {
      * Method called if the player is in the game and the word is determined to be valid.
      * @param outputDataValidWord the wrapped output data.
      */
-    void valid(SwOutputDataValidWord outputDataValidWord) throws Exception;
+    void valid(SwOutputDataValidWord outputDataValidWord);
 
     /**
-     * Method called if the either the player is not in the game or the word is not determined to be valid.
+     * Method called if either the player is not in the game or the word is not determined to be valid.
      * @param outputDataFailure the wrapped output data.
      */
     void invalid(SwOutputDataFailure outputDataFailure);
