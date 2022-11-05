@@ -1,6 +1,7 @@
 package usecases;
 
 import entities.Player;
+import entities.games.Game;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,4 +58,16 @@ public class GameDTO {
      * @return List of players who were in the game in this game state data
      */
     public ArrayList<PlayerDTO> getPlayers() { return players; }
+
+    /**
+     * Convenience method for building a GameDTO from a Game Object
+     * @param game Game entity object to build DTO from
+     * @return GameDTO built from provided game
+     */
+    public static GameDTO fromGame (Game game) {
+        return new GameDTO(
+                game.getStory().toString(),
+                game.getPlayers(), game.getCurrentTurnPlayer().getPlayerId(),
+                game.getSecondsLeftInCurrentTurn());
+    }
 }
