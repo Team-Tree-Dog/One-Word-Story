@@ -24,14 +24,10 @@ public class JplOutputDataResponse {
     /**
      * @return Response object
      */
-    public Response getRes() {
-        return res;
-    }
+    public Response getRes() { return res; }
 
     /**
      * @return Player ID
      */
-    public String getPlayerId() {
-        return playerId;
-    }
+    public String getPlayerId() { return playerId; }
 }
