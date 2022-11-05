@@ -65,6 +65,7 @@ public class GameRegular extends Game {
      */
     @Override
     public boolean switchTurn() {
+        setSecondsLeftInCurrentTurn(getSecondsPerTurn());
         return players.add(players.remove());
     }
 
