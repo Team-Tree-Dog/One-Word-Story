@@ -10,7 +10,6 @@ import java.util.*;
  */
 public class GameRegular extends Game {
 
-
     public static int REGULAR_GAME_SECONDS_PER_TURN = 15;
     private final Queue<Player> players;
 

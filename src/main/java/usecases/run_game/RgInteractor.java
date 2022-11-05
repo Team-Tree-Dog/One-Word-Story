@@ -1,6 +1,10 @@
 package usecases.run_game;
 
 import entities.games.Game;
+import usecases.pull_data.PdInputBoundary;
+import usecases.pull_data.PdInputData;
+import usecases.pull_game_ended.PgeInputBoundary;
+import usecases.pull_game_ended.PgeInputData;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -11,20 +15,19 @@ import java.util.TimerTask;
 public class RgInteractor {
 
     private final Game g;
-    private final PgeOutputBoundary pge;
+    private final PgeInputBoundary pge;
     private final PdInputBoundary pd;
 
     /**
      * @param g Game that we interact with
-     * @param pge "Pull Game Ended" use-case output boundary
+     * @param pge "Pull Game Ended" use-case input boundary
      * @param pd "Pull Data" use-case input boundary
      */
-    public RgInteractor (Game g, PgeOutputBoundary pge, PdInputBoundary pd) {
+    public RgInteractor (Game g, PgeInputBoundary pge, PdInputBoundary pd) {
         this.g = g;
         this.pge = pge;
         this.pd = pd;
     }
-
 
     /**
      * Internal Timer Task to be used within the main Timer below
@@ -39,31 +42,36 @@ public class RgInteractor {
             if (RgInteractor.this.g.isGameOver()) {
                 // Game ending procedure:
 
-                // Cancel the timer
-                g.getGameTimer().cancel();
+                // Cancel the game timer
+                RgInteractor.this.g.getGameTimer().cancel();
 
-                // Perform "Game Ended" use-case
-                pge.onGameEnded(new PgeInputData(g.getPlayers()));
+                // Perform "Game Ended" use-case via PgeInteractor
+                RgInteractor.this.pge.onGameEnded(new PgeInputData(RgInteractor.this.g.getPlayers()));
 
                 // Notify the game, after timer cancellation, when the
                 // last execution of the run method has finished, meaning,
                 // no more game timer code will run
-                g.setTimerStopped();
+                RgInteractor.this.g.setTimerStopped();
 
             } else {
-                // Regular procedure:
+                // Regular game procedure:
 
-                //
-                g.setSecondsLeftInCurrentTurn(g.getSecondsPerTurn() - 1);
-                if (g.getSecondsLeftInCurrentTurn() == -1) { // We want to display 0 before, it is over
-                    g.switchTurn();
+                // Decrement seconds counter and switch turn if needed
+                RgInteractor.this.g.setSecondsLeftInCurrentTurn(RgInteractor.this.g.getSecondsLeftInCurrentTurn() - 1);
+                if (RgInteractor.this.g.getSecondsLeftInCurrentTurn() == 0) { // Displaying 0 before, it is over
+                    RgInteractor.this.g.switchTurn();
                 }
-                g.onTimerUpdate();
-                pd.onTimerUpdate(g);
+
+                // Push corresponding updates to our game and PdInteractor
+                RgInteractor.this.g.onTimerUpdate();
+                RgInteractor.this.pd.onTimerUpdate(new PdInputData(RgInteractor.this.g));
             }
         }
     }
 
+    /**
+     * Launch timer with the above-provided RgTask
+     */
     public void startTimer () {
         this.g.getGameTimer().schedule(new RgTask(), 1000, 1000);
     }
