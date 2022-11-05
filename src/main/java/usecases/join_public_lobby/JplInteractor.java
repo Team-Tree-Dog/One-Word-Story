@@ -31,7 +31,6 @@ public class JplInteractor implements JplInputBoundary {
         private final JplInputData data;
 
         /**
-         *
          * @param data Data passed into this use case
          */
         public JplThread (JplInputData data) {
