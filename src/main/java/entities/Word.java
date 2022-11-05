@@ -22,11 +22,11 @@ public class Word {
      * Gets the string representation of the word
      * @return word
      */
-    public String getWord() { return this.word;}
+    public String getWord() { return this.word; }
 
     /**
      * Gets the author of the word
      * @return author
      */
-    public Player getAuthor() { return this.author;}
+    public Player getAuthor() { return this.author; }
 }
