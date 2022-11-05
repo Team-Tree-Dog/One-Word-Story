@@ -14,33 +14,6 @@ import java.util.Collection;
  */
 public class GameDTO {
 
-    /**
-     * Stores data necessary to identify and display a Player entity
-     */
-    public static class PlayerDTO  {
-
-        private final String displayName;
-        private final String playerId;
-
-        /**
-         * Create a data transfer object from a Player entity's display name and id
-         */
-        public PlayerDTO (String displayName, String playerId) {
-            this.displayName = displayName;
-            this.playerId = playerId;
-        }
-
-        /**
-         * @return The display name of the player represented by this data transfer object
-         */
-        public String getDisplayName() { return displayName; }
-
-        /**
-         * @return The id of the player represented by this data transfer object
-         */
-        public String getPlayerId() { return playerId; }
-    }
-
     private final String story;
     private final ArrayList<PlayerDTO> players;
     private final String currentTurnPlayerId;

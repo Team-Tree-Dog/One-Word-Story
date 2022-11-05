@@ -2,6 +2,9 @@ package usecases;
 
 import exceptions.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Response object created by use cases to send to the presenter. Has inner
  * enum with all entity error codes
@@ -69,9 +72,8 @@ public class Response {
             return new Response(Response.ResCode.INVALID_DISPLAY_NAME, m);
         } else if (e instanceof InvalidWordException) {
             return new Response(Response.ResCode.INVALID_WORD, m);
-        } else {
-            return new Response(Response.ResCode.FAIL, m);
         }
+        return new Response(Response.ResCode.FAIL, m);
     }
 
     /**
