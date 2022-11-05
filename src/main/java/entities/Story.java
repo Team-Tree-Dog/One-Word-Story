@@ -36,4 +36,17 @@ public class Story {
         this.words.add(newWord);
     }
 
+    /**
+     * @return The entire story in a single string
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        for (Word word: words) {
+            builder.append(word.getWord());
+            builder.append(" ");
+        }
+        return builder.toString();
+    }
 }
