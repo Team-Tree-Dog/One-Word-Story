@@ -22,14 +22,10 @@ public class JplInputData {
     /**
      * @return display name
      */
-    public String getDisplayName() {
-        return displayName;
-    }
+    public String getDisplayName() { return displayName; }
 
     /**
      * @return unique identification
      */
-    public String getId() {
-        return id;
-    }
+    public String getId() { return id; }
 }
