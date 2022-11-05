@@ -1,35 +1,42 @@
-package entities.disconnecting;
+package usecases.disconnecting;
 
 import entities.LobbyManager;
 import entities.Player;
-import entities.disconnecting.boundaries.DcInputData;
-import entities.disconnecting.boundaries.DcOutputBoundary;
 import exceptions.PlayerNotFoundException;
+import usecases.Response;
+import usecases.disconnecting.boundaries.DcInputBoundary;
+import usecases.disconnecting.boundaries.DcOutputBoundary;
+import usecases.disconnecting.data.DcInputData;
+import usecases.disconnecting.data.DcOutputData;
 
-
-public class DcInteractor {
-    static LobbyManager lm;
+/**
+ * Interactor for Disconnecting Use Case
+ */
+public class DcInteractor implements DcInputBoundary {
+    private final LobbyManager lm;
+    DcOutputBoundary dcOutputBoundary;
 
     /**
      * Constructor for DcInteractor
-     * @param lm lobby manager
+     * @param lm Lobby Manager
+     * @param dcOutputBoundary DcOutputBoundary
      */
     public DcInteractor(LobbyManager lm, DcOutputBoundary dcOutputBoundary) {
-        DcInteractor.lm = lm;
+        this.lm = lm;
+        this.dcOutputBoundary = dcOutputBoundary;
     }
 
     /**
      * Disconnects the user
-     * @param data input data
+     * @param data input data which contains playerId
      */
-    public void disconnect(DcInputData data)  {
-        new Thread(new DcThread(data.playerId)).start();
-    }
+    @Override
+    public void disconnect(DcInputData data) {new Thread(new DcThread(data.playerId)).start();}
 
     /**
      * Thread for disconnecting the player
      */
-    public static class DcThread implements Runnable {
+    public class DcThread implements Runnable {
         private final String playerId;
         private Player playerToDisconnect;
 
@@ -37,21 +44,21 @@ public class DcInteractor {
          * Constructor for Disconnecting Thread
          * @param playerId ID of the player we need to disconnect
          */
-        public DcThread(String playerId) {
-            this.playerId = playerId;
-        }
+        public DcThread(String playerId) {this.playerId = playerId;}
 
         @Override
         public void run() {
+            Response response = new Response(Response.ResCode.SUCCESS, "Disconnecting was successful.");
             try {
                 if(playerIsInThePool(playerId))
                     lm.removeFromPoolCancel(playerToDisconnect);
             } catch (PlayerNotFoundException e) {
+                response = new Response(Response.ResCode.PLAYER_NOT_FOUND, "Disconnecting was not successful. User was not found.");
                 e.printStackTrace();
             }
+            DcOutputData outputData = new DcOutputData(response);
+            dcOutputBoundary.hasDisconnected(outputData);
         }
-
-        //TODO: create the output data (waiting for Response)
 
         /**
          * Checks whether the player is in the pool
@@ -69,4 +76,3 @@ public class DcInteractor {
         }
     }
 }
-
