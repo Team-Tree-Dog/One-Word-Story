@@ -21,12 +21,7 @@ public class PdInteractor implements PdInputBoundary {
      * @param d PdInputData storing the updated game state
      */
     public void onTimerUpdate (PdInputData d) {
-        GameDTO gameInfo = new GameDTO(
-                d.getGame().getStory(),
-                d.getGame().getPlayers(),
-                d.getGame().getCurrentTurnPlayer(),
-                d.getGame().getSecondsLeftInCurrentTurn()
-        );
+        GameDTO gameInfo = GameDTO.fromGame(d.getGame());
         PdOutputData od = new PdOutputData(gameInfo);
         p.updateGameInfo(od);
     }
