@@ -1,0 +1,34 @@
+package usecases.pull_data;
+
+import entities.games.Game;
+import usecases.GameDTO;
+
+/**
+ * Interactor for Pull Data use-case
+ */
+public class PdInteractor implements PdInputBoundary {
+
+    private final PdOutputBoundary p;
+
+    /**
+     * Constructor for PdInteractor
+     * @param p PdOutputBoundary used by this interactor
+     */
+    public PdInteractor (PdOutputBoundary p) { this.p = p; }
+
+    /**
+     * Forward update from input data to the output boundary
+     * @param d PdInputData storing the updated game state
+     */
+    public void onTimerUpdate (PdInputData d) {
+        GameDTO gameInfo = new GameDTO(
+                d.getGame().getStory(),
+                d.getGame().getPlayers(),
+                d.getGame().getCurrentTurnPlayer(),
+                d.getGame().getSecondsLeftInCurrentTurn()
+        );
+        PdOutputData od = new PdOutputData(gameInfo);
+        p.updateGameInfo(od);
+    }
+
+}
