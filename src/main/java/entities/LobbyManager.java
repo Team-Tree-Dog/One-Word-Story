@@ -72,6 +72,13 @@ public class LobbyManager {
     public boolean isGameEnded () { return game.isTimerStopped(); }
 
     /**
+     * Wrapper for switchTurn
+     */
+    public void switchTurn() {
+        game.switchTurn();
+    }
+
+    /**
      * Set the game to null.
      * @throws GameRunningException if the game is running and you tried to set it to null
      */
