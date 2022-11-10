@@ -1,4 +1,4 @@
-package usecases.submitWord;
+package usecases.submit_word;
 
 import usecases.Response;
 
@@ -26,4 +26,8 @@ public class SwOutputDataFailure {
         this.playerId = playerId;
         this.response = response;
     }
+
+    public Response getResponse() {return this.response;}
+
+    public String getPlayerId() {return this.playerId;}
 }

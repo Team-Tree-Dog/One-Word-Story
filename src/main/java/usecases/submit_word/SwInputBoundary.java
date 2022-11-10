@@ -1,4 +1,4 @@
-package usecases.submitWord;
+package usecases.submit_word;
 
 /**
  * The boundary that passes the input data into the SwInteractor.

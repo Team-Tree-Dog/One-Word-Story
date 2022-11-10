@@ -1,4 +1,4 @@
-package usecases.submitWord;
+package usecases.submit_word;
 
 /**
  * The data that the SwInteractor needs in order to determine if a word can be added,

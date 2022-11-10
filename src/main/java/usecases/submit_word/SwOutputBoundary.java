@@ -1,4 +1,4 @@
-package usecases.submitWord;
+package usecases.submit_word;
 
 /**
  * Methods which will be called by the presenter that become the changes in the GUI.

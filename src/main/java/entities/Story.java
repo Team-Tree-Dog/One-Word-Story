@@ -20,7 +20,7 @@ public class Story {
     public Story(WordFactory wordFactory, Word[] words) {}
 
     /**
-     Constructor for the Story
+     * Constructor for the Story
      * @param wordFactory factory which creates words
      */
     public Story(WordFactory wordFactory) {}

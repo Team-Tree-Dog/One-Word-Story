@@ -1,4 +1,4 @@
-package usecases.submitWord;
+package usecases.submit_word;
 
 import entities.LobbyManager;
 import exceptions.GameDoesntExistException;
@@ -44,7 +44,10 @@ public class SwInteractor implements SwInputBoundary{
      * @param inputData the SwInputData object that includes the word to be added as well as the ID of the player.
      */
     @Override
-    public void submitWord (SwInputData inputData) {(new Thread(new SwThread(inputData))).start();}
+    public void submitWord (SwInputData inputData) {
+        SwInteractor.SwThread swintThread = this.new SwThread(inputData);
+        swintThread.run();
+    }
 
     /**
      * A thread that does all the processes in the SwInteractor.
@@ -82,53 +85,32 @@ public class SwInteractor implements SwInputBoundary{
                 lobbyManager.addWord(inputData.getWord(), this.playerId);
             } catch (GameDoesntExistException e) {
                 success = false;
-                Response resp = new Response(GAME_DOESNT_EXIST, "The Game Doesn't Exist");
+                String mess = "The Game you are trying to submit a word to doesn't exist";
+                Response resp = Response.fromException(e, mess);
                 presenter.invalid(new SwOutputDataFailure(this.playerId, resp));
             } catch (InvalidWordException e) {
                 success = false;
-                String mess = String.format("The word %1$s is not valid, please try another word.", inputData.getWord());
-                Response resp = new Response(INVALID_WORD, mess);
+                String mess = String.format("The word '%1$s' is not valid, please try another word.", inputData.getWord());
+                Response resp = Response.fromException(e, mess);
                 presenter.invalid(new SwOutputDataFailure(this.playerId, resp));
             } catch (OutOfTurnException e) {
                 success = false;
                 String mess = "It is not player " + inputData.getPlayerId() + "'s turn.";
-                Response resp = new Response(OUT_OF_TURN, mess);
+                Response resp = Response.fromException(e, mess);
                 presenter.invalid(new SwOutputDataFailure(this.playerId, resp));
             } catch (PlayerNotFoundException e) {
                 success = false;
                 String mess = "Player with ID " + inputData.getPlayerId() + " does not exist or is not in the Game.";
-                Response resp = new Response(PLAYER_NOT_FOUND, mess);
+                Response resp = Response.fromException(e, mess);
                 presenter.invalid(new SwOutputDataFailure(this.playerId, resp));
             }
 
             if (success) {
                 lobbyManager.switchTurn(); // Switch the turn.
-                Response resp = new Response(SUCCESS, "Word has been added!");
+                String mess = String.format("Word '%1$s' has been added!", inputData.getWord());
+                Response resp = Response.getSuccessful(mess);
                 presenter.valid(new SwOutputDataValidWord(inputData.getWord(), this.playerId, resp));
             }
-
-//            // Checks if it is the player's turn. If not, then output invalid response.
-//            if (this.playerId != game.getCurrentTurnPlayer()) {
-//                presenter.invalid(SwOutputDataFailure(this.playerId, rescode));
-//            }
-//
-//            boolean success = true; // If true, then change turn and output valid response.
-//
-//            // Try to add the word.
-//            try {
-//                game.getStory().addWord(inputData.getWord(), this.playerId);
-//            }
-//            catch(Exception InvalidWordException) {
-//                // If the word is invalid, throw the InvalidWordException.
-//                success = false; // Don't run the valid word response block.
-//                presenter.invalid(SwOutputDataFailure(this.playerId, rescode));
-//            }
-//
-//            if (success) {
-//                game.switchTurn(); // Switch the turn.
-//                presenter.valid(SwOutputDataValidWord(game.getStory(), inputData.getWord(),
-//                        this.playerId, rescode)); // Tell ViewModel the word was valid.
-//            }
         }
     }
 }

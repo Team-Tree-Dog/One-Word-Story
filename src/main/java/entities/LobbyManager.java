@@ -49,6 +49,7 @@ public class LobbyManager {
     public LobbyManager (PlayerFactory playerFac, GameFactory gameFac) {
         this.gameFac = gameFac;
         this.playerFac = playerFac;
+        this.playerFac.clearIdsInUse();
 
         this.playerPool = new ArrayList<>();
         this.sortPlayersTimer = new Timer();

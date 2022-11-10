@@ -1,4 +1,4 @@
-package usecases.submitWord;
+package usecases.submit_word;
 import usecases.Response;
 
 /**
@@ -31,4 +31,10 @@ public class SwOutputDataValidWord {
         this.playerId = playerId;
         this.response = response;
     }
+
+    public String getPlayerId() {return this.playerId;}
+
+    public String getWord() {return this.word;}
+
+    public Response getResponse() {return response;}
 }

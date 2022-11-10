@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class PlayerFactory {
 
-    private ArrayList<String> idsInUse;
+    private static ArrayList<String> idsInUse = new ArrayList<String>();
     private DisplayNameChecker displayChecker;
 
     /**
@@ -30,5 +30,10 @@ public class PlayerFactory {
         if (idsInUse.contains(newPlayerId)) {throw new IdInUseException("ID " + newPlayerId + " already in use.");}
         idsInUse.add(newPlayerId);
         return new Player(newName, newPlayerId);
+    }
+
+    public void clearIdsInUse() {
+        ArrayList<String> empty = new ArrayList<String>();
+        if (!idsInUse.equals(empty)) {idsInUse = new ArrayList<String>();}
     }
 }
