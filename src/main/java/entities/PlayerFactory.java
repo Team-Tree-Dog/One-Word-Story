@@ -9,8 +9,8 @@ import java.util.ArrayList;
  */
 public class PlayerFactory {
 
-    private ArrayList<String> idsInUse;
-    private DisplayNameChecker displayChecker;
+    private final ArrayList<String> idsInUse;
+    private final DisplayNameChecker displayChecker;
 
     /**
      * Constructor for PlayerFactory
@@ -18,6 +18,7 @@ public class PlayerFactory {
      */
     public PlayerFactory(DisplayNameChecker nameChecker) {
         displayChecker = nameChecker;
+        idsInUse = new ArrayList<>();
     }
 
     /**
