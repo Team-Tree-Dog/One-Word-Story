@@ -43,37 +43,58 @@ public class SpInteractor {
     public class SpTask extends TimerTask {
         @Override
         public void run() {
+            // If game has ended, set it to null.
             if (!lobbyManager.isGameNull()) {
                 if (lobbyManager.isGameEnded()) {
+
+                    // if isGameEnded() is true, GameRunningException cannot be thrown
+                    // No other thread currently changes isGameEnded() state so this error is IMPOSSIBLE
                     try {
                         lobbyManager.setGameNull();
                     } catch (GameRunningException e) {
                         throw new RuntimeException(e);
                     }
+
                 } else {
+
                     for (LobbyManager.PlayerObserverLink playerObserverLink : lobbyManager.getPool()) {
                         Player player = playerObserverLink.getPlayer();
+                        boolean wasPlayerAdded = false;
+
+                        // IMPOSSIBLE Error. In this if block, game is not null and only SortPlayers
+                        // Sets game to null
                         try {
-                            lobbyManager.addPlayerToGame(player);
+                            wasPlayerAdded = lobbyManager.addPlayerToGame(player);
                         } catch (GameDoesntExistException e) {
                             throw new RuntimeException(e);
                         }
-                        try {
-                            lobbyManager.removeFromPoolJoin(player);
-                        } catch (PlayerNotFoundException | GameDoesntExistException e) {
-                            throw new RuntimeException(e);
+
+                        // GameDoesntExistException IMPOSSIBLE. PlayerNotFoundException occurs if
+                        // player is removed from the pool from another thread. Proper lock architecture
+                        // Will prevent this
+                        if (wasPlayerAdded) {
+                            try {
+                                lobbyManager.removeFromPoolJoin(player);
+                            } catch (PlayerNotFoundException | GameDoesntExistException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                     }
                 }
             }
+
             if (lobbyManager.isGameNull() && lobbyManager.getPool().size() > 2) {
                 Map<String, Integer> settings = null; // currently player settings isn't a feature, thus null
                 Game game = lobbyManager.newGameFromPool(settings);
+
+                // IMPOSSIBLE error. isGameNull is true in this block, and setGame is only
+                // called from this thread, so another thread couldn't have changed it
                 try {
                     lobbyManager.setGame(game);
                 } catch (GameRunningException e) {
                     throw new RuntimeException(e);
                 }
+
                 lobbyManager.removeAllFromPoolJoin();
                 new RgInteractor(game, pge, pd).startTimer();
             }
