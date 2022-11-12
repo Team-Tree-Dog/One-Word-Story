@@ -59,7 +59,7 @@ public class SpInteractor {
 
                     for (LobbyManager.PlayerObserverLink playerObserverLink : lobbyManager.getPool()) {
                         Player player = playerObserverLink.getPlayer();
-                        boolean wasPlayerAdded = false;
+                        boolean wasPlayerAdded;
 
                         // IMPOSSIBLE Error. In this if block, game is not null and only SortPlayers
                         // Sets game to null
