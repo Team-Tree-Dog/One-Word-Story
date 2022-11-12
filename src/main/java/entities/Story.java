@@ -2,6 +2,7 @@ package entities;
 
 import exceptions.InvalidWordException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,8 +10,8 @@ import java.util.List;
  */
 public class Story {
 
-    private List<Word> words;
-    private WordFactory wordFactory;
+    private final List<Word> words =  new ArrayList<>();
+    private final WordFactory wordFactory = new WordFactory(new NaiveValidityChecker());
 
     /**
      * Constructor for the Story
