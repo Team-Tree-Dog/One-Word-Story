@@ -7,8 +7,6 @@ import exceptions.OutOfTurnException;
 import exceptions.PlayerNotFoundException;
 import usecases.Response;
 
-import static usecases.Response.ResCode.*;
-
 /**
  * SwInteractor is the interactor that calls the necessary backend functions to access and change the story.
  * SwInteractor also tells the ViewModel, via the SwOutputBoundary presenter, if the word is valid or not.
@@ -38,9 +36,11 @@ public class SwInteractor implements SwInputBoundary{
     }
 
     /**
-     * The method called by the ViewModel. It first checks that the player that attempted to submit the word
-     * is indeed in the game, to prevent exploits. It then initiates the actual thread which checks that it
-     * is the player's turn, then checks if the word is valid, then adds the word if it is valid.
+     * The method called by the SwInteractor. It initiates the actual thread, which calls the addWord method from the
+     * LobbyManager. addWord raises an exception in case of anything that goes awry. If not, then the word is valid.
+     * In any case, the submitWord method here transmits the response (i.e. exception response or "valid" response) to
+     * the presenter.
+     *
      * @param inputData the SwInputData object that includes the word to be added as well as the ID of the player.
      */
     @Override
