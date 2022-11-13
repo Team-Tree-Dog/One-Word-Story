@@ -1,8 +1,6 @@
 package entities;
 
-
 import exceptions.*;
-import exceptions.PlayerNotFoundException;
 import entities.games.Game;
 import entities.games.GameFactory;
 
@@ -19,7 +17,7 @@ public class LobbyManager {
      * which is waiting for the player to either be sorted into a game
      * or cancel their waiting
      */
-    private static class PlayerObserverLink {
+    public static class PlayerObserverLink {
         private final Player player;
         private final PlayerPoolListener playerPoolListener;
 
@@ -72,6 +70,13 @@ public class LobbyManager {
      * iteration has finished executing
      */
     public boolean isGameEnded () { return game.isTimerStopped(); }
+
+    /**
+     * Wrapper for switchTurn
+     */
+    public void switchTurn() {
+        game.switchTurn();
+    }
 
     /**
      * Set the game to null.
@@ -285,7 +290,6 @@ public class LobbyManager {
         this.playerPool.add(pol);
     }
 
-
     /**
      * Gets all the players from the players pool
      * @return an arraylist of players
@@ -295,6 +299,14 @@ public class LobbyManager {
         for(PlayerObserverLink playerObserverLink : playerPool)
             players.add(playerObserverLink.player);
         return players;
+    }
+
+    /**
+     * Gets all the players from the game
+     * @return an arraylist of players
+     */
+    public ArrayList<Player> getPlayersFromGame() {
+        return new ArrayList<>(game.getPlayers());
     }
 
 }

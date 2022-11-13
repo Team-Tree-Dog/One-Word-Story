@@ -2,6 +2,7 @@ package usecases.disconnecting;
 
 import entities.LobbyManager;
 import entities.Player;
+import exceptions.GameDoesntExistException;
 import exceptions.PlayerNotFoundException;
 import usecases.Response;
 import usecases.disconnecting.boundaries.DcInputBoundary;
@@ -50,10 +51,14 @@ public class DcInteractor implements DcInputBoundary {
         public void run() {
             Response response = new Response(Response.ResCode.SUCCESS, "Disconnecting was successful.");
             try {
+                if(playerIsInTheGame(playerId))
+                    lm.removePlayerFromGame(playerToDisconnect);
                 if(playerIsInThePool(playerId))
                     lm.removeFromPoolCancel(playerToDisconnect);
             } catch (PlayerNotFoundException e) {
                 response = new Response(Response.ResCode.PLAYER_NOT_FOUND, "Disconnecting was not successful. User was not found.");
+                e.printStackTrace();
+            } catch (GameDoesntExistException e) {
                 e.printStackTrace();
             }
             DcOutputData outputData = new DcOutputData(response);
@@ -68,6 +73,21 @@ public class DcInteractor implements DcInputBoundary {
          */
         private boolean playerIsInThePool(String playerId) throws PlayerNotFoundException {
             for(Player player : lm.getPlayersFromPool())
+                if(player.getPlayerId().equals(playerId)) {
+                    playerToDisconnect = player;
+                    return true;
+                }
+            return false;
+        }
+
+        /**
+         * Checks whether the player is in the game
+         * @param playerId ID of the player we need to check
+         * @return true if the player is in the game
+         * @throws PlayerNotFoundException if the player is not in the game
+         */
+        private boolean playerIsInTheGame(String playerId) throws PlayerNotFoundException {
+            for(Player player : lm.getPlayersFromGame())
                 if(player.getPlayerId().equals(playerId)) {
                     playerToDisconnect = player;
                     return true;
