@@ -39,6 +39,7 @@ public class RgInteractor {
          */
         @Override
         public void run () {
+
             if (RgInteractor.this.g.isGameOver()) {
                 // Game ending procedure:
 
@@ -63,8 +64,9 @@ public class RgInteractor {
                 }
 
                 // Push corresponding updates to our game and PdInteractor
-                RgInteractor.this.g.onTimerUpdate();
+                RgInteractor.this.g.onTimerUpdate(); // TODO: nothing happens in GameRegular implementation???
                 RgInteractor.this.pd.onTimerUpdate(new PdInputData(RgInteractor.this.g));
+
             }
         }
     }
@@ -73,6 +75,7 @@ public class RgInteractor {
      * Launch timer with the above-provided RgTask
      */
     public void startTimer () {
+        this.g.setSecondsLeftInCurrentTurn(g.getSecondsPerTurn());
         this.g.getGameTimer().schedule(new RgTask(), 1000, 1000);
     }
 
