@@ -98,6 +98,7 @@ public class RgTaskTests {
         g = new GameRegular(new LinkedList<>());
         g.addPlayer(new Player("p1", "1"));
         g.addPlayer(new Player("p2", "2"));
+        g.addPlayer(new Player("p3", "3"));
 
         // Instantiate PdInputBoundary (i.e. PdInteractor) pd with necessary checks
         PdOutputBoundary pob = new PdOutputBoundary() {

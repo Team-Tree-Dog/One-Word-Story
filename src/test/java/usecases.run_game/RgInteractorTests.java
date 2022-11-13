@@ -68,7 +68,7 @@ public class RgInteractorTests {
         RgInteractor rg = new RgInteractor(g, pge, pd);
         rg.startTimer();
 
-        assertEquals(g.getSecondsLeftInCurrentTurn(), g.getSecondsPerTurn());
+        assertEquals("Timer did not start", g.getSecondsLeftInCurrentTurn(), g.getSecondsPerTurn());
 
     }
 
