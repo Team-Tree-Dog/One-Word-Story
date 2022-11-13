@@ -29,7 +29,7 @@ public class PdInteractorTests {
 
     /**
      * We will run our tests using the following instance of GameRegular,
-     * which we instantiate in the setUp.
+     * which we instantiate in the setUp
      */
     private final Game g = new GameRegular(new LinkedList<>());
 
@@ -37,8 +37,10 @@ public class PdInteractorTests {
     public void setUp() {
         Player p1 = new Player("p1", "1");
         Player p2 = new Player("p2", "2");
+        Player p3 = new Player("p3", "3");
         g.addPlayer(p1);
         g.addPlayer(p2);
+        g.addPlayer(p3);
         try {
             g.getStory().addWord("lol", p1);
             g.getStory().addWord("kek", p2);
@@ -64,19 +66,21 @@ public class PdInteractorTests {
             public void updateGameInfo (PdOutputData d) {
                 GameDTO obj1 = d.getGameInfo();
 
-                assertEquals(obj1.getStory(), g.getStory().toString());
+                assertEquals("Incorrect copy of Story", obj1.getStory(), g.getStory().toString());
 
                 List<String> IdList = new ArrayList<>();
                 for (PlayerDTO p : obj1.getPlayers()) {
                     IdList.add(p.getPlayerId());
                 }
                 for (Player p : g.getPlayers()) {
-                    assertTrue(IdList.contains(p.getPlayerId()));
+                    assertTrue("Missing Player", IdList.contains(p.getPlayerId()));
                 }
 
-                assertEquals(obj1.getCurrentTurnPlayerId(), g.getCurrentTurnPlayer().getPlayerId());
+                assertEquals("Incorrect current turn player id", obj1.getCurrentTurnPlayerId(),
+                        g.getCurrentTurnPlayer().getPlayerId());
 
-                assertEquals(obj1.getSecondsLeftCurrentTurn(), g.getSecondsLeftInCurrentTurn());
+                assertEquals("Incorrect seconds left in current turn", obj1.getSecondsLeftCurrentTurn(),
+                        g.getSecondsLeftInCurrentTurn());
             }
         };
 
