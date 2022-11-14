@@ -4,15 +4,29 @@ import entities.Player;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
 public class PgeInteractorTests {
 
-    // PgeInputBoundary, PgeInputData used to test PgeInteractor
+    // PgeInputBoundary, PgeInputData, TestOutputBoundary used to test PgeInteractor
     private PgeInputBoundary pgeib;
     private PgeInputData pgeid;
+    private final TestOutputBoundary testOutputBoundary = new TestOutputBoundary();
+
+    // Implementation of output boundary for testing built data
+    private static class TestOutputBoundary implements PgeOutputBoundary {
+
+        ArrayList<String> builtData = new ArrayList<>();
+
+        @Override
+        public void notifyGameEnded(PgeOutputData data) {
+            builtData.add(data.playerIds[0]);
+            builtData.add(data.playerIds[1]);
+        }
+    }
 
     @Before
     public void setUp() {
@@ -21,13 +35,10 @@ public class PgeInteractorTests {
         Player p2 = new Player("p2", "2");
 
         // Instantiate pgeInputBoundary
-        pgeib = new PgeInteractor(new PgeOutputBoundary() {
-            @Override
-            public void notifyGameEnded(PgeOutputData data) {}
-        });
+        pgeib = new PgeInteractor(testOutputBoundary);
 
         // Instantiate pgeInputData with list of players
-        pgeid = new PgeInputData(new ArrayList<Player>(2));
+        pgeid = new PgeInputData(new ArrayList<>(2));
         pgeid.players.add(0, p1);
         pgeid.players.add(1, p2);
     }
@@ -39,11 +50,11 @@ public class PgeInteractorTests {
      * Test that the data is built correctly (the proper player ids were extracted)
      */
     @Test(timeout = 1000)
-    public void testBuildData() {
-        String[] expectedPlayerIds = new String[2];
-        expectedPlayerIds[0] = "1";
-        expectedPlayerIds[1] = "2";
-        String[] actualPlayerIds = ((PgeInteractor) pgeib).getPlayerIds(pgeid.players);
-        assertEquals(expectedPlayerIds, actualPlayerIds);
+    public void testBuiltData() {
+        ArrayList<String> expectedPlayerIds = new ArrayList<>();
+        expectedPlayerIds.add("1");
+        expectedPlayerIds.add("2");
+        pgeib.onGameEnded(pgeid);
+        assertEquals(expectedPlayerIds, testOutputBoundary.builtData);
     }
 }
