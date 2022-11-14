@@ -1,6 +1,7 @@
 package usecases.pull_data;
 
 import entities.Player;
+import entities.ValidityChecker;
 import entities.games.Game;
 import entities.games.GameRegular;
 import exceptions.InvalidWordException;
@@ -16,9 +17,7 @@ import usecases.pull_data.PdOutputData;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -28,10 +27,73 @@ import java.util.List;
 public class PdInteractorTests {
 
     /**
-     * We will run our tests using the following instance of GameRegular,
-     * which we instantiate in the setUp
+     * We will run our tests using a local implementation of Game
      */
-    private final Game g = new GameRegular(new LinkedList<>());
+
+    private static class CustomizableTestGame extends Game {
+
+        private final Queue<Player> players = new LinkedList<>();
+
+        private final boolean allowAddingPlayers;
+
+        /**
+         * @param allowAddingPlayers Does addPlayer successfully add the player and return true
+         */
+        public CustomizableTestGame(boolean allowAddingPlayers) {
+            super(99, new ValidityChecker() {
+                @Override
+                public boolean isValid(String word) {
+                    return true;
+                }
+            });
+            this.allowAddingPlayers = allowAddingPlayers;
+        }
+
+        @Override
+        public Collection<Player> getPlayers() {
+            return players;
+        }
+
+        @Override
+        public boolean isGameOver() {
+            return true;
+        }
+
+        @Override
+        public void onTimerUpdate() {
+
+        }
+
+        @Override
+        public Player getPlayerById(String PlayerId) {
+            return null;
+        }
+
+        @Override
+        public boolean removePlayer(Player playerToRemove) {
+            return false;
+        }
+
+        @Override
+        public boolean addPlayer(Player playerToAdd) {
+            if (allowAddingPlayers) {
+                players.add(playerToAdd);
+                return true;
+            } return false;
+        }
+
+        @Override
+        public boolean switchTurn() {
+            return false;
+        }
+
+        @Override
+        public Player getCurrentTurnPlayer() {
+            return this.players.peek();
+        }
+    }
+
+    private final Game g = new CustomizableTestGame(true);
 
     @Before
     public void setUp() {
@@ -45,7 +107,9 @@ public class PdInteractorTests {
             g.getStory().addWord("lol", p1);
             g.getStory().addWord("kek", p2);
             g.getStory().addWord("haha", p2);
-        } catch (InvalidWordException ignored) {}
+        } catch (InvalidWordException ignored) {
+            // This error is completely impossible
+        }
     }
 
     @After
