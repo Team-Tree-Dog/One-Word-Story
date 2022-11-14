@@ -2,6 +2,9 @@ package usecases;
 
 import exceptions.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Response object created by use cases to send to the presenter. Has inner
  * enum with all entity error codes
@@ -57,21 +60,20 @@ public class Response {
     public static Response fromException (Exception e, String m) {
         if (e instanceof PlayerNotFoundException) {
             return new Response(Response.ResCode.PLAYER_NOT_FOUND, m);
-        } else if (e instanceof GameDoesntExistException) {
+        } if (e instanceof GameDoesntExistException) {
             return new Response(Response.ResCode.GAME_DOESNT_EXIST, m);
-        } else if (e instanceof GameRunningException) {
+        } if (e instanceof GameRunningException) {
             return new Response(Response.ResCode.GAME_RUNNING, m);
-        } else if (e instanceof OutOfTurnException) {
+        } if (e instanceof OutOfTurnException) {
             return new Response(Response.ResCode.OUT_OF_TURN, m);
-        } else if (e instanceof IdInUseException) {
+        } if (e instanceof IdInUseException) {
             return new Response(Response.ResCode.ID_IN_USE, m);
-        } else if (e instanceof InvalidDisplayNameException) {
+        } if (e instanceof InvalidDisplayNameException) {
             return new Response(Response.ResCode.INVALID_DISPLAY_NAME, m);
-        } else if (e instanceof InvalidWordException) {
+        } if (e instanceof InvalidWordException) {
             return new Response(Response.ResCode.INVALID_WORD, m);
-        } else {
-            return new Response(Response.ResCode.FAIL, m);
         }
+        return new Response(Response.ResCode.FAIL, m);
     }
 
     /**

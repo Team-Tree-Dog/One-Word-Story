@@ -2,6 +2,8 @@ package entities;
 
 import exceptions.InvalidWordException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -9,21 +11,27 @@ import java.util.List;
  */
 public class Story {
 
-    private List<Word> words;
-    private WordFactory wordFactory;
+    private final List<Word> words;
+    private final WordFactory wordFactory;
+
+    /**
+     Constructor for the Story
+     * @param wordFactory factory which creates words
+     */
+    public Story(WordFactory wordFactory) {
+        this.wordFactory = wordFactory;
+        this.words = new ArrayList<>();
+    }
 
     /**
      * Constructor for the Story
      * @param wordFactory factory which creates words
      * @param words an array of words
      */
-    public Story(WordFactory wordFactory, Word[] words) {}
-
-    /**
-     Constructor for the Story
-     * @param wordFactory factory which creates words
-     */
-    public Story(WordFactory wordFactory) {}
+    public Story(WordFactory wordFactory, Word[] words) {
+        this(wordFactory);
+        this.words.addAll(Arrays.asList(words));
+    }
 
     /**
      * Adds the word to the story if it is valid
@@ -36,4 +44,17 @@ public class Story {
         this.words.add(newWord);
     }
 
+    /**
+     * @return The entire story in a single string
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        for (Word word: words) {
+            builder.append(word.getWord());
+            builder.append(" ");
+        }
+        return builder.toString();
+    }
 }

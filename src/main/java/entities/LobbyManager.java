@@ -173,6 +173,17 @@ public class LobbyManager {
     }
 
     /**
+     * Gets all the players from the players pool
+     * @return an arraylist of players
+     */
+    public ArrayList<Player> getPlayersFromPool() {
+        ArrayList<Player> players = new ArrayList<>();
+        for(PlayerObserverLink playerObserverLink : playerPool)
+            players.add(playerObserverLink.player);
+        return players;
+    }
+
+    /**
      * Add word from the current-turn player to the story of our game
      * @param word String to add to the story
      * @param playerId String of the player who attempts to submit a word
