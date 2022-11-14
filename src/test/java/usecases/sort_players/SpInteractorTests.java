@@ -27,8 +27,13 @@ public class SpInteractorTests {
 
         private final ArrayList<Player> players = new ArrayList<>();
         private final boolean gameOver;
+        private final boolean allowAddingPlayers;
 
-        public CustomizableTestGame(boolean gameOver) {
+        /**
+         * @param gameOver The boolean value isGameOver returns, for testing purposes
+         * @param allowAddingPlayers Does addPlayer successfully add the player and return true
+         */
+        public CustomizableTestGame(boolean gameOver, boolean allowAddingPlayers) {
             super(99, new ValidityChecker() {
                 @Override
                 public boolean isValid(String word) {
@@ -36,6 +41,7 @@ public class SpInteractorTests {
                 }
             });
             this.gameOver = gameOver;
+            this.allowAddingPlayers = allowAddingPlayers;
         }
 
         @Override
@@ -65,8 +71,10 @@ public class SpInteractorTests {
 
         @Override
         public boolean addPlayer(Player playerToAdd) {
-            players.add(playerToAdd);
-            return true;
+            if (allowAddingPlayers) {
+                players.add(playerToAdd);
+                return true;
+            } return false;
         }
 
         @Override
@@ -98,9 +106,12 @@ public class SpInteractorTests {
         }
     }
 
-    private static class NaivePlayerPoolListener implements PlayerPoolListener {
+    private static class TestPlayerPoolListener implements PlayerPoolListener {
+
+        public boolean joinedGameFlag = false;
+
         @Override
-        public void onJoinGamePlayer(Game game) {}
+        public void onJoinGamePlayer(Game game) { joinedGameFlag = true; }
 
         @Override
         public void onCancelPlayer() {}
@@ -137,7 +148,7 @@ public class SpInteractorTests {
     @Test(timeout=1000)
     public void testTwoPlayersInPoolStartGame () {
 
-        CustomizableTestGame customizableTestGame = new CustomizableTestGame(false);
+        CustomizableTestGame customizableTestGame = new CustomizableTestGame(false, true);
 
         // Game is null by default
         LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()), new GameFactory() {
@@ -149,21 +160,35 @@ public class SpInteractorTests {
             }
         });
 
+        TestPlayerPoolListener bobsListener = new TestPlayerPoolListener();
+        TestPlayerPoolListener billysListener = new TestPlayerPoolListener();
+
         // Adds two players
-        m.addPlayerToPool(new Player("Bob", "1"), new NaivePlayerPoolListener());
-        m.addPlayerToPool(new Player("Billy", "2"), new NaivePlayerPoolListener());
+        m.addPlayerToPool(new Player("Bob", "1"), bobsListener);
+        m.addPlayerToPool(new Player("Billy", "2"), billysListener);
 
+        // Confirm that players have no received a callback yet
+        assertFalse(bobsListener.joinedGameFlag);
+        assertFalse(billysListener.joinedGameFlag);
+
+        // Execute one round of the TimerTask. This should get a new game with players from
+        // the pool, set it as m.game, clear the pool, and call the PlayerPoolListeners
         SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(), new BlankOutputPdInteractor());
-
         SpInteractor.SpTask spTimerTask = sp.new SpTask();
         spTimerTask.run();
 
+        // Confirm that PlayerPoolListeners were called
+        assertTrue(bobsListener.joinedGameFlag);
+        assertTrue(billysListener.joinedGameFlag);
+
+        // Confirm game is no longer null (has been set)
         assertFalse(m.isGameNull());
+        // Confirm pool is empty
         assertEquals(0, m.getPool().size());
-        assertFalse(m.isGameEnded());
+        // Confirm that the game has two players (Bob and Billy)
         assertEquals(customizableTestGame.getPlayers().size(), 2);
 
-        // Terminates timer
+        // Terminate timer
         customizableTestGame.getGameTimer().cancel();
     }
 
@@ -173,7 +198,7 @@ public class SpInteractorTests {
      */
     @Test(timeout=1000)
     public void testGameNotNullIsOverSetNull () {
-        CustomizableTestGame g = new CustomizableTestGame(true);
+        CustomizableTestGame g = new CustomizableTestGame(true, true);
 
         LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()), new GameFactory() {
             @Override
@@ -188,11 +213,12 @@ public class SpInteractorTests {
         } catch (GameRunningException ignored) {}
         g.setTimerStopped();
 
+        // Execute one round of the TimerTask. This should set the game to null
         SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(), new BlankOutputPdInteractor());
-
         SpInteractor.SpTask spTimerTask = sp.new SpTask();
         spTimerTask.run();
 
+        // Confirm game has been set to null
         assertTrue(m.isGameNull());
     }
 
@@ -203,8 +229,8 @@ public class SpInteractorTests {
      * to the game implementation used for this test
      */
     @Test(timeout=1000)
-    public void testGameRunningPlayersInPool () {
-        CustomizableTestGame g = new CustomizableTestGame(false);
+    public void testGameRunningPlayersInPoolAdded () {
+        CustomizableTestGame g = new CustomizableTestGame(false, true);
 
         LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()), new GameFactory() {
             @Override
@@ -213,21 +239,85 @@ public class SpInteractorTests {
             }
         });
 
+        // Add two players to game
         g.addPlayer(new Player("Lilly", "3"));
         g.addPlayer(new Player("Anna", "4"));
 
+        // Set up scenario where a game is running (not null not ended)
         try {
             m.setGame(g);
         } catch (GameRunningException ignored) {}
 
-        m.addPlayerToPool(new Player("Bob", "1"), new NaivePlayerPoolListener());
-        m.addPlayerToPool(new Player("Billy", "2"), new NaivePlayerPoolListener());
+        TestPlayerPoolListener bobsListener = new TestPlayerPoolListener();
+        TestPlayerPoolListener billysListener = new TestPlayerPoolListener();
 
+        // Add two players to pool
+        m.addPlayerToPool(new Player("Bob", "1"), bobsListener);
+        m.addPlayerToPool(new Player("Billy", "2"), billysListener);
+
+        // Execute one round of the TimerTask. Based on the Game instance used, Bob and Billy
+        // should both be successfully added to the currently running game
         SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(), new BlankOutputPdInteractor());
         SpInteractor.SpTask spTimerTask = sp.new SpTask();
         spTimerTask.run();
 
+        // Confirm that pool has been emptied and the game has 4 players (Bob, Billy, Lilly, Anna)
         assertEquals(m.getPool().size(), 0);
         assertEquals(g.getPlayers().size(), 4);
+        // Confirm that both pool listeners have been notified
+        assertTrue(bobsListener.joinedGameFlag);
+        assertTrue(billysListener.joinedGameFlag);
+    }
+
+    /**
+     * Test the scenario where the game is not null and not over and players
+     * are in the pool. Sort players should try to add the players to the game
+     * and remove them from the pool. However, the game will refuse to add them.
+     * In this case, the pool listeners should not be called and the players
+     * should remain in the pool
+     */
+    @Test(timeout=1000)
+    public void testGameRunningPlayersInPoolRefused () {
+        CustomizableTestGame g = new CustomizableTestGame(false, false);
+
+        LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()), new GameFactory() {
+            @Override
+            public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
+                return null;
+            }
+        });
+
+        // Add two players to game
+        g.addPlayer(new Player("Lilly", "3"));
+        g.addPlayer(new Player("Anna", "4"));
+
+        // Set up scenario where a game is running (not null not ended)
+        try {
+            m.setGame(g);
+        } catch (GameRunningException ignored) {}
+
+        TestPlayerPoolListener bobsListener = new TestPlayerPoolListener();
+        TestPlayerPoolListener billysListener = new TestPlayerPoolListener();
+
+        // Add two players to pool
+        m.addPlayerToPool(new Player("Bob", "1"), bobsListener);
+        m.addPlayerToPool(new Player("Billy", "2"), billysListener);
+
+        // Confirm that the listeners have not been called before execution
+        assertFalse(bobsListener.joinedGameFlag);
+        assertFalse(billysListener.joinedGameFlag);
+
+        // Execute one round of the TimerTask. Based on the Game instance used, Bob and Billy
+        // should both be successfully added to the currently running game
+        SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(), new BlankOutputPdInteractor());
+        SpInteractor.SpTask spTimerTask = sp.new SpTask();
+        spTimerTask.run();
+
+        // Confirm that the listeners have not been called after execution
+        assertFalse(bobsListener.joinedGameFlag);
+        assertFalse(billysListener.joinedGameFlag);
+        // Confirm that both the game and the pool still have their two players each (no changes)
+        assertEquals(2, g.getPlayers().size());
+        assertEquals(2, m.getPool().size());
     }
 }
