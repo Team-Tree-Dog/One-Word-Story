@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class PgeInteractor implements PgeInputBoundary {
 
-    public PgeOutputBoundary presenter;
+    private final PgeOutputBoundary presenter;
 
     /**
      * Constructor for PgeInteractor
