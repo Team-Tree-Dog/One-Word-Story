@@ -9,7 +9,6 @@ import exceptions.IdInUseException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class DcInteractorTests {
      * @throws IdInUseException
      * @throws GameRunningException
      */
-    @Test
+    @org.junit.Test
     @Timeout(value=100000)
     public void testDisconnectPlayerFromGame() throws IdInUseException, GameRunningException, InterruptedException {
         Player player1 = playerFactory.createPlayer("John", "1");
@@ -70,7 +69,7 @@ public class DcInteractorTests {
      * @throws IdInUseException
      * @throws GameRunningException
      */
-    @Test
+    @org.junit.Test
     @Timeout(value=100000)
     public void testDisconnectPlayerFromPool() throws IdInUseException, GameRunningException, InterruptedException {
         Player player3 = playerFactory.createPlayer("Nick", "3");

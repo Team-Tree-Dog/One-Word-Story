@@ -301,17 +301,6 @@ public class LobbyManager {
     }
 
     /**
-     * Gets all the players from the players pool
-     * @return an arraylist of players
-     */
-    public ArrayList<Player> getPlayersFromPool() {
-        ArrayList<Player> players = new ArrayList<>();
-        for(PlayerObserverLink playerObserverLink : playerPool)
-            players.add(playerObserverLink.player);
-        return players;
-    }
-
-    /**
      * Gets all the players from the game
      * @return an arraylist of players
      */
