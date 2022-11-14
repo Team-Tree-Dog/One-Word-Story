@@ -5,7 +5,7 @@ package usecases.pull_game_ended;
  */
 public class PgeOutputData {
 
-    public String[] playerIds;
+    private final String[] playerIds;
 
     /**
      * Constructor for PgeOutputData
@@ -13,5 +13,9 @@ public class PgeOutputData {
      */
     public PgeOutputData(String[] playerIds) {
         this.playerIds = playerIds;
+    }
+
+    public String[] getPlayerIds() {
+        return playerIds;
     }
 }

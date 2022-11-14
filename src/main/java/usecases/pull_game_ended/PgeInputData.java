@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class PgeInputData {
 
-    public List<Player> players;
+    private final List<Player> players;
 
     /**
      * Constructor for PgeInputData
@@ -17,5 +17,9 @@ public class PgeInputData {
      */
     public PgeInputData(List<Player> players) {
         this.players = players;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
     }
 }

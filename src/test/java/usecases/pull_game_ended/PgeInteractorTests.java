@@ -23,8 +23,8 @@ public class PgeInteractorTests {
 
         @Override
         public void notifyGameEnded(PgeOutputData data) {
-            builtData.add(data.playerIds[0]);
-            builtData.add(data.playerIds[1]);
+            builtData.add(data.getPlayerIds()[0]);
+            builtData.add(data.getPlayerIds()[1]);
         }
     }
 
@@ -39,8 +39,8 @@ public class PgeInteractorTests {
 
         // Instantiate pgeInputData with list of players
         pgeid = new PgeInputData(new ArrayList<>(2));
-        pgeid.players.add(0, p1);
-        pgeid.players.add(1, p2);
+        pgeid.getPlayers().add(0, p1);
+        pgeid.getPlayers().add(1, p2);
     }
 
     @After

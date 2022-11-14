@@ -26,7 +26,7 @@ public class PgeInteractor implements PgeInputBoundary {
      */
     @Override
     public void onGameEnded(PgeInputData data) {
-        List<Player> players = data.players;
+        List<Player> players = data.getPlayers();
         int numberOfPlayers = players.size();
         String[] playerIds = new String[numberOfPlayers];
         for (int i = 0; i < numberOfPlayers; i++) {
