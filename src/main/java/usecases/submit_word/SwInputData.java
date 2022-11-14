@@ -11,7 +11,7 @@ public class SwInputData {
 
     /**
      * The constructor of SwInputData.
-     * @param word the word that has been submitted.
+     * @param word     the word that has been submitted.
      * @param playerId the Id of the player that attempted to submit the word.
      */
     public SwInputData (String word, String playerId) {
