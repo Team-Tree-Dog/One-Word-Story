@@ -16,10 +16,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-// TODO: For players being added to the game, check that the Pool Listener methods are called
-
 /**
- *
+ * Test the sort players timer task for proper functionality
  */
 public class SpInteractorTests {
 
@@ -125,20 +123,16 @@ public class SpInteractorTests {
     }
 
     /**
-     *
+     * Pre-test setup, none in this case
      */
     @Before
-    public void setup () {
-
-    }
+    public void setup () {}
 
     /**
-     *
+     * Post-test breakdown, none in this case
      */
     @After
-    public void teardown () {
-
-    }
+    public void teardown () {}
 
     /**
      * Test the scenario where two players are in the pool and game is null. Sort players
