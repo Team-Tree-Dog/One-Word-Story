@@ -3,7 +3,6 @@ package usecases.submit_word;
 import entities.*;
 import entities.games.Game;
 import entities.games.GameFactory;
-import entities.games.GameFactoryRegular;
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
 import org.junit.*;
@@ -12,11 +11,89 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static usecases.Response.ResCode.*;
 
-import java.util.HashMap;
+import java.util.*;
 
 public class SwInteractorTests {
+
+    private static class GameTest extends Game {
+        public static final int REGULAR_GAME_SECONDS_PER_TURN = 15;
+        private final Queue<Player> players;
+
+        /**
+         * Constructor for a Game
+         * @param initialPlayers The players that will be included into the new GameTest
+         * @param v              The validity checker (to check if a word is valid)
+         */
+        public GameTest(Queue<Player> initialPlayers, ValidityChecker v) {
+            super(REGULAR_GAME_SECONDS_PER_TURN, v);
+            players = new LinkedList<>(initialPlayers);
+        }
+
+        /**
+         * @return Returns all the present players in the game
+         */
+        @Override
+        public Collection<Player> getPlayers() {return this.players;}
+
+        /**
+         * @return Returns whether the game is over
+         */
+        @Override
+        public boolean isGameOver() {return players.size() < 2;}
+
+        /**
+         * Additional actions that can be done by the game every time the timer is updated
+         */
+        @Override
+        public void onTimerUpdate() {
+
+        }
+
+        /**
+         * Returns the player by its id
+         *
+         * @param playerId The player's ID
+         */
+        @Override
+        public Player getPlayerById(String playerId) {
+            return players.stream().filter(p -> p.getPlayerId().equals(playerId)).findAny().orElse(null);
+        }
+
+        /**
+         * Removes the player specified from this GameRegular instance
+         *
+         * @param playerToRemove The Player to be removed
+         * @return if the player was successfully removed
+         */
+        @Override
+        public boolean removePlayer(Player playerToRemove)  {return players.remove(playerToRemove);}
+
+        /**
+         * Adds new player to the game
+         *
+         * @param playerToAdd The new player.
+         */
+        @Override
+        public boolean addPlayer(Player playerToAdd) {return players.add(playerToAdd);}
+
+        /**
+         * Switches this game's turn and resets the timer
+         */
+        @Override
+        public boolean switchTurn() {
+            setSecondsLeftInCurrentTurn(getSecondsPerTurn());
+            return players.add(players.remove());
+        }
+
+        /**
+         * Returns the player whose turn it is
+         */
+        @Override
+        public Player getCurrentTurnPlayer() {return players.peek();}
+    }
     @Before
     public void setUp() {
+
     }
 
     @After
@@ -36,8 +113,32 @@ public class SwInteractorTests {
             }
         }
 
+        class LocalValidityChecker implements ValidityChecker{
+
+            /**
+             * Checks whether the word is valid
+             *
+             * @param word the word we need to check
+             * @return true, since the valid presenter code block will be triggered if the test doesn't go as planned.
+             */
+            @Override
+            public boolean isValid(String word) {
+                return true;
+            }
+        }
+
+        class GameFactoryTest implements GameFactory {
+            /**
+            * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
+            */
+            public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
+                Queue<Player> queueOfInitialPlayers = new LinkedList<>(initialPlayers);
+                return new GameTest(queueOfInitialPlayers, new LocalValidityChecker());
+            }
+        }
+
         PlayerFactory playerFac = new PlayerFactory(new LocalDisplayName());
-        GameFactory gameFac = new GameFactoryRegular();
+        GameFactory gameFac = new GameFactoryTest();
         LobbyManager lobman = new LobbyManager(playerFac, gameFac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
             @Override
@@ -54,7 +155,7 @@ public class SwInteractorTests {
         lobman.addPlayerToPool(player1, ppl);
         lobman.addPlayerToPool(player2, ppl);
 
-        Game currGame = lobman.newGameFromPool(new HashMap<String, Integer>());
+        Game currGame = lobman.newGameFromPool(new HashMap<>());
         lobman.setGame(currGame);
 
         assertTrue("Player 1 is not in the Game", currGame.getPlayers().contains(player1));
@@ -105,21 +206,38 @@ public class SwInteractorTests {
             }
         }
 
-        PlayerFactory playerFac = new PlayerFactory(new LocalDisplayName());
-        GameFactory gameFac = new GameFactoryRegular();
-        LobbyManager lobman = new LobbyManager(playerFac, gameFac);
-        PlayerPoolListener ppl = new PlayerPoolListener() {
-            @Override
-            public void onJoinGamePlayer(Game game) {}
+        class LocalValidityChecker implements ValidityChecker{
 
+            /**
+             * Checks whether the word is valid
+             *
+             * @param word the word we need to check
+             * @return true, since the valid presenter code block will be triggered if the test doesn't go as planned.
+             */
             @Override
-            public void onCancelPlayer() {}
-        };
+            public boolean isValid(String word) {
+                return true;
+            }
+        }
+
+        class GameFactoryTest implements GameFactory {
+            /**
+             * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
+             */
+            public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
+                Queue<Player> queueOfInitialPlayers = new LinkedList<>(initialPlayers);
+                return new GameTest(queueOfInitialPlayers, new LocalValidityChecker());
+            }
+        }
+
+        PlayerFactory playerFac = new PlayerFactory(new LocalDisplayName());
+        GameFactory gameFac = new GameFactoryTest();
+        LobbyManager lobman = new LobbyManager(playerFac, gameFac);
 
         Player player1 = lobman.createNewPlayer("player1", "1");
         String word = "word";
 
-        Game currGame = lobman.newGameFromPool(new HashMap<String, Integer>());
+        Game currGame = lobman.newGameFromPool(new HashMap<>());
         lobman.setGame(currGame);
 
         assertFalse("Player 1 shouldn't be in the Game", currGame.getPlayers().contains(player1));
@@ -167,8 +285,32 @@ public class SwInteractorTests {
             }
         }
 
+        class LocalValidityChecker implements ValidityChecker{
+
+            /**
+             * Checks whether the word is valid
+             *
+             * @param word the word we need to check
+             * @return true, since the valid presenter code block will be triggered if the test doesn't go as planned.
+             */
+            @Override
+            public boolean isValid(String word) {
+                return true;
+            }
+        }
+
+        class GameFactoryTest implements GameFactory {
+            /**
+             * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
+             */
+            public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
+                Queue<Player> queueOfInitialPlayers = new LinkedList<>(initialPlayers);
+                return new GameTest(queueOfInitialPlayers, new LocalValidityChecker());
+            }
+        }
+
         PlayerFactory playerFac = new PlayerFactory(new LocalDisplayName());
-        GameFactory gameFac = new GameFactoryRegular();
+        GameFactory gameFac = new GameFactoryTest();
         LobbyManager lobman = new LobbyManager(playerFac, gameFac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
             @Override
@@ -225,8 +367,32 @@ public class SwInteractorTests {
             }
         }
 
+        class LocalValidityChecker implements ValidityChecker{
+
+            /**
+             * Checks whether the word is valid
+             *
+             * @param word the word we need to check
+             * @return false, since we are locally defining that.
+             */
+            @Override
+            public boolean isValid(String word) {
+                return false;
+            }
+        }
+
+        class GameFactoryTest implements GameFactory {
+            /**
+             * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
+             */
+            public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
+                Queue<Player> queueOfInitialPlayers = new LinkedList<>(initialPlayers);
+                return new GameTest(queueOfInitialPlayers, new LocalValidityChecker());
+            }
+        }
+
         PlayerFactory playerFac = new PlayerFactory(new LocalDisplayName());
-        GameFactory gameFac = new GameFactoryRegular();
+        GameFactory gameFac = new GameFactoryTest();
         LobbyManager lobman = new LobbyManager(playerFac, gameFac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
             @Override
@@ -241,7 +407,7 @@ public class SwInteractorTests {
 
         lobman.addPlayerToPool(player1, ppl);
 
-        Game currGame = lobman.newGameFromPool(new HashMap<String, Integer>());
+        Game currGame = lobman.newGameFromPool(new HashMap<>());
         lobman.setGame(currGame);
 
         assertTrue("Player 1 is not in the Game", currGame.getPlayers().contains(player1));
@@ -291,8 +457,32 @@ public class SwInteractorTests {
             }
         }
 
+        class LocalValidityChecker implements ValidityChecker{
+
+            /**
+             * Checks whether the word is valid
+             *
+             * @param word the word we need to check
+             * @return true, since we are locally defining that.
+             */
+            @Override
+            public boolean isValid(String word) {
+                return true;
+            }
+        }
+
+        class GameFactoryTest implements GameFactory {
+            /**
+             * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
+             */
+            public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
+                Queue<Player> queueOfInitialPlayers = new LinkedList<>(initialPlayers);
+                return new GameTest(queueOfInitialPlayers, new LocalValidityChecker());
+            }
+        }
+
         PlayerFactory playerFac = new PlayerFactory(new LocalDisplayName());
-        GameFactory gameFac = new GameFactoryRegular();
+        GameFactory gameFac = new GameFactoryTest();
         LobbyManager lobman = new LobbyManager(playerFac, gameFac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
             @Override
@@ -307,7 +497,7 @@ public class SwInteractorTests {
 
         lobman.addPlayerToPool(player1, ppl);
 
-        Game currGame = lobman.newGameFromPool(new HashMap<String, Integer>());
+        Game currGame = lobman.newGameFromPool(new HashMap<>());
         lobman.setGame(currGame);
 
         assertTrue("Player 1 is not in the Game", currGame.getPlayers().contains(player1));
