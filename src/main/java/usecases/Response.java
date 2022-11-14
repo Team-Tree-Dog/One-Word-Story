@@ -11,6 +11,20 @@ import java.util.Map;
  */
 public class Response {
 
+
+    private static final Map<Class<? extends EntityException>, Response.ResCode>
+            mapExceptionToResultCode = new HashMap<>();
+
+    static {
+        mapExceptionToResultCode.put(PlayerNotFoundException.class, Response.ResCode.PLAYER_NOT_FOUND);
+        mapExceptionToResultCode.put(GameDoesntExistException.class, Response.ResCode.GAME_DOESNT_EXIST);
+        mapExceptionToResultCode.put(GameRunningException.class, ResCode.GAME_RUNNING);
+        mapExceptionToResultCode.put(OutOfTurnException.class, ResCode.OUT_OF_TURN);
+        mapExceptionToResultCode.put(IdInUseException.class, ResCode.ID_IN_USE);
+        mapExceptionToResultCode.put(InvalidDisplayNameException.class, ResCode.INVALID_DISPLAY_NAME);
+        mapExceptionToResultCode.put(InvalidWordException.class, ResCode.INVALID_WORD);
+    }
+
     /**
      * Success if no error was thrown in entities. Fail if an error
      * was thrown that doesn't have its own code. Otherwise, corresponding
@@ -58,22 +72,11 @@ public class Response {
      * and a message m. Return FAIL code if the error didn't exist
      */
     public static Response fromException (Exception e, String m) {
-        if (e instanceof PlayerNotFoundException) {
-            return new Response(Response.ResCode.PLAYER_NOT_FOUND, m);
-        } if (e instanceof GameDoesntExistException) {
-            return new Response(Response.ResCode.GAME_DOESNT_EXIST, m);
-        } if (e instanceof GameRunningException) {
-            return new Response(Response.ResCode.GAME_RUNNING, m);
-        } if (e instanceof OutOfTurnException) {
-            return new Response(Response.ResCode.OUT_OF_TURN, m);
-        } if (e instanceof IdInUseException) {
-            return new Response(Response.ResCode.ID_IN_USE, m);
-        } if (e instanceof InvalidDisplayNameException) {
-            return new Response(Response.ResCode.INVALID_DISPLAY_NAME, m);
-        } if (e instanceof InvalidWordException) {
-            return new Response(Response.ResCode.INVALID_WORD, m);
+        ResCode resultCode = mapExceptionToResultCode.get(e.getClass());
+        if(resultCode == null) {
+            resultCode = ResCode.FAIL;
         }
-        return new Response(Response.ResCode.FAIL, m);
+        return new Response(resultCode, m);
     }
 
     /**
