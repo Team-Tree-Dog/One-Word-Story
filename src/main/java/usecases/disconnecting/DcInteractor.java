@@ -5,17 +5,13 @@ import entities.Player;
 import exceptions.GameDoesntExistException;
 import exceptions.PlayerNotFoundException;
 import usecases.Response;
-import usecases.disconnecting.boundaries.DcInputBoundary;
-import usecases.disconnecting.boundaries.DcOutputBoundary;
-import usecases.disconnecting.data.DcInputData;
-import usecases.disconnecting.data.DcOutputData;
 
 /**
  * Interactor for Disconnecting Use Case
  */
 public class DcInteractor implements DcInputBoundary {
     private final LobbyManager lm;
-    DcOutputBoundary dcOutputBoundary;
+    private final DcOutputBoundary dcOutputBoundary;
 
     /**
      * Constructor for DcInteractor
@@ -49,14 +45,17 @@ public class DcInteractor implements DcInputBoundary {
 
         @Override
         public void run() {
-            Response response = new Response(Response.ResCode.SUCCESS, "Disconnecting was successful.");
+            Response response = Response.getSuccessful("Disconnecting was successful.");
             try {
                 if(playerIsInTheGame(playerId))
                     lm.removePlayerFromGame(playerToDisconnect);
-                if(playerIsInThePool(playerId))
+                else if(playerIsInThePool(playerId))
                     lm.removeFromPoolCancel(playerToDisconnect);
+                else
+                    throw new PlayerNotFoundException("Player was not found.");
             } catch (PlayerNotFoundException e) {
-                response = new Response(Response.ResCode.PLAYER_NOT_FOUND, "Disconnecting was not successful. User was not found.");
+                response = Response.fromException(new PlayerNotFoundException("Disconnecting was not successful. Player was not found."),
+                        "Player not found");
                 e.printStackTrace();
             } catch (GameDoesntExistException e) {
                 e.printStackTrace();
@@ -73,7 +72,7 @@ public class DcInteractor implements DcInputBoundary {
          */
         private boolean playerIsInThePool(String playerId) throws PlayerNotFoundException {
             for(Player player : lm.getPlayersFromPool())
-                if(player.getPlayerId().equals(playerId)) {
+                if (player.getPlayerId().equals(playerId)) {
                     playerToDisconnect = player;
                     return true;
                 }

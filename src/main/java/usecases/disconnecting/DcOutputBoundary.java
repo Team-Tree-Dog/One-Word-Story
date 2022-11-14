@@ -1,6 +1,4 @@
-package usecases.disconnecting.boundaries;
-
-import usecases.disconnecting.data.DcOutputData;
+package usecases.disconnecting;
 
 /**
  * Output Boundary interface for Disconnecting Use Case

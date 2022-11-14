@@ -1,4 +1,4 @@
-package usecases.disconnecting.data;
+package usecases.disconnecting;
 
 import usecases.Response;
 

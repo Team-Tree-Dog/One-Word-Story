@@ -1,4 +1,4 @@
-package usecases.disconnecting.data;
+package usecases.disconnecting;
 
 /**
  * Input Data for Disconnecting Use Case
