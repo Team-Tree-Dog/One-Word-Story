@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class PlayerFactory {
 
-    private ArrayList<String> idsInUse = new ArrayList<>();
+    private ArrayList<String> idsInUse;
     private DisplayNameChecker displayChecker;
 
     /**
