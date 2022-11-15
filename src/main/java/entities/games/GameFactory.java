@@ -1,7 +1,6 @@
 package entities.games;
 
 import entities.Player;
-import exceptions.GameRunningException;
 import java.util.Collection;
 import java.util.Map;
 
