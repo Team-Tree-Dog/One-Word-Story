@@ -1,11 +1,14 @@
 package usecases.run_game;
 
+import entities.Player;
 import entities.games.Game;
 import usecases.pull_data.PdInputBoundary;
 import usecases.pull_data.PdInputData;
 import usecases.pull_game_ended.PgeInputBoundary;
 import usecases.pull_game_ended.PgeInputData;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -47,7 +50,7 @@ public class RgInteractor {
                 RgInteractor.this.g.getGameTimer().cancel();
 
                 // Perform "Game Ended" use-case via PgeInteractor
-                RgInteractor.this.pge.onGameEnded(new PgeInputData(RgInteractor.this.g.getPlayers()));
+                RgInteractor.this.pge.onGameEnded(new PgeInputData(new ArrayList<>(RgInteractor.this.g.getPlayers())));
 
                 // Notify the game, after timer cancellation, when the
                 // last execution of the run method has finished, meaning,
@@ -64,7 +67,7 @@ public class RgInteractor {
                 }
 
                 // Push corresponding updates to our game and PdInteractor
-                RgInteractor.this.g.onTimerUpdate(); // TODO: nothing happens in GameRegular implementation???
+                RgInteractor.this.g.onTimerUpdate(); // note: was empty at the time of implementation
                 RgInteractor.this.pd.onTimerUpdate(new PdInputData(RgInteractor.this.g));
 
             }

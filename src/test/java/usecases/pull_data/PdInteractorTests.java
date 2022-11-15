@@ -3,17 +3,12 @@ package usecases.pull_data;
 import entities.Player;
 import entities.ValidityChecker;
 import entities.games.Game;
-import entities.games.GameRegular;
 import exceptions.InvalidWordException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.*;
 import usecases.GameDTO;
 import usecases.PlayerDTO;
-import usecases.pull_data.PdInputData;
-import usecases.pull_data.PdInteractor;
-import usecases.pull_data.PdOutputBoundary;
-import usecases.pull_data.PdOutputData;
 
 import static org.junit.Assert.*;
 
