@@ -272,7 +272,8 @@ public class LobbyManager {
      * @param id the unique id of the player
      * @return the created player instance
      */
-    public Player createNewPlayer(String displayName, String id) throws IdInUseException {
+    public Player createNewPlayer(String displayName, String id) throws
+            IdInUseException, InvalidDisplayNameException {
         return playerFac.createPlayer(displayName, id);
     }
 
