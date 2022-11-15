@@ -11,6 +11,9 @@ import org.junit.Test;
 import usecases.pull_data.PdInteractor;
 import usecases.pull_data.PdOutputBoundary;
 import usecases.pull_data.PdOutputData;
+import usecases.pull_game_ended.PgeInteractor;
+import usecases.pull_game_ended.PgeOutputBoundary;
+import usecases.pull_game_ended.PgeOutputData;
 
 import java.util.ArrayList;
 import java.util.Collection;

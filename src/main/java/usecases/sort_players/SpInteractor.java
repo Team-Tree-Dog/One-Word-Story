@@ -7,6 +7,7 @@ import exceptions.GameDoesntExistException;
 import exceptions.GameRunningException;
 import exceptions.PlayerNotFoundException;
 import usecases.pull_data.PdInputBoundary;
+import usecases.pull_game_ended.PgeInputBoundary;
 
 import java.util.Map;
 import java.util.TimerTask;
