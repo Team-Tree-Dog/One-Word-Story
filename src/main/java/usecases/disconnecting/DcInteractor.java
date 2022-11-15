@@ -28,7 +28,7 @@ public class DcInteractor implements DcInputBoundary {
      * @param data input data which contains playerId
      */
     @Override
-    public void disconnect(DcInputData data) {new Thread(new DcThread(data.playerId)).start();}
+    public void disconnect(DcInputData data) {new Thread(new DcThread(data.getPlayerId())).start();}
 
     /**
      * Thread for disconnecting the player

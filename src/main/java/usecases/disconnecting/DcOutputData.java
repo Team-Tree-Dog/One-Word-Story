@@ -6,7 +6,7 @@ import usecases.Response;
  * Output Data for Disconnecting Use Case
  */
 public class DcOutputData {
-     Response response;
+     private final Response response;
 
     /**
      * Constructor for DcOutputData
@@ -15,4 +15,11 @@ public class DcOutputData {
     public DcOutputData(Response response) {
          this.response = response;
      }
+
+    /**
+     * @return the response object in this data
+     */
+    public Response getResponse() {
+        return response;
+    }
 }
