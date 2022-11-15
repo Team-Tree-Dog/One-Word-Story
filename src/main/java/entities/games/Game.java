@@ -47,7 +47,7 @@ public abstract class Game {
     public int getSecondsPerTurn() {return secondsPerTurn;}
 
     /**
-     * @return Returns how many seconds are left for the current turn
+     * @return Returns how many seconds are left for the current turn, or null if game timer not yet started
      */
     public int getSecondsLeftInCurrentTurn() {return secondsLeftInCurrentTurn;}
 
