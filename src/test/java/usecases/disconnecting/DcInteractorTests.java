@@ -6,6 +6,7 @@ import entities.games.Game;
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
 
+import exceptions.InvalidDisplayNameException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
@@ -41,7 +42,9 @@ public class DcInteractorTests {
      */
     @org.junit.Test
     @Timeout(value=100000)
-    public void testDisconnectPlayerFromGame() throws IdInUseException, GameRunningException, InterruptedException {
+    public void testDisconnectPlayerFromGame() throws
+            IdInUseException, GameRunningException,
+            InterruptedException, InvalidDisplayNameException {
         Player player1 = playerFactory.createPlayer("John", "1");
         Player player2 = playerFactory.createPlayer("Kate", "2");
         players.add(player1);
@@ -58,7 +61,11 @@ public class DcInteractorTests {
 
         DcInputData data = new DcInputData(players.get(1).getPlayerId());
         dcInteractor.disconnect(data);
-        while(lm.getPlayersFromGame().contains(player2)) {}
+
+        while(lm.getPlayersFromGame().contains(player2)) {
+            Thread.onSpinWait();
+        }
+
         Assertions.assertFalse(lm.getPlayersFromGame().contains(player2));
         assertTrue(lm.getPlayersFromGame().contains(player1));
     }
@@ -71,7 +78,9 @@ public class DcInteractorTests {
      */
     @org.junit.Test
     @Timeout(value=100000)
-    public void testDisconnectPlayerFromPool() throws IdInUseException, GameRunningException, InterruptedException {
+    public void testDisconnectPlayerFromPool() throws
+            IdInUseException, GameRunningException,
+            InterruptedException, InvalidDisplayNameException {
         Player player3 = playerFactory.createPlayer("Nick", "3");
         Player player4 = playerFactory.createPlayer("Ann", "4");
 
