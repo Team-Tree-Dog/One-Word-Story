@@ -23,8 +23,8 @@ public class WordFactoryTests {
         Player player1 = new Player("player1", "1");
         String newword = "bloop";
 
-        ValidityChecker validityFailure = word -> true;
-        WordFactory wordfac = new WordFactory(validityFailure);
+        ValidityChecker validitySuccess = word -> true;
+        WordFactory wordfac = new WordFactory(validitySuccess);
         Word bloop = wordfac.create(newword, player1);
         assertEquals("The word should be created, with string bloop", "bloop", bloop.getWord());
     }
