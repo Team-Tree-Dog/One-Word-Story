@@ -1,6 +1,7 @@
 package entities;
 
 import exceptions.IdInUseException;
+import exceptions.InvalidDisplayNameException;
 
 import java.util.ArrayList;
 
@@ -9,7 +10,7 @@ import java.util.ArrayList;
  */
 public class PlayerFactory {
 
-    private static ArrayList<String> idsInUse = new ArrayList<String>();
+    private ArrayList<String> idsInUse;
     private DisplayNameChecker displayChecker;
 
     /**
@@ -18,6 +19,7 @@ public class PlayerFactory {
      */
     public PlayerFactory(DisplayNameChecker nameChecker) {
         displayChecker = nameChecker;
+        idsInUse = new ArrayList<>();
     }
 
     /**
@@ -26,14 +28,15 @@ public class PlayerFactory {
      * @param newName the name of the new player
      * @return the created Player instance
      */
-    public Player createPlayer(String newName, String newPlayerId) throws IdInUseException {
-        if (idsInUse.contains(newPlayerId)) {throw new IdInUseException("ID " + newPlayerId + " already in use.");}
+    public Player createPlayer(String newName, String newPlayerId) throws
+            IdInUseException, InvalidDisplayNameException {
+        if (idsInUse.contains(newPlayerId)) {
+            throw new IdInUseException("ID " + newPlayerId + " already in use.");
+        } else if (!displayChecker.checkValid(newName)) {
+            throw new InvalidDisplayNameException("Display name " + newName + " is not valid.");
+        }
+
         idsInUse.add(newPlayerId);
         return new Player(newName, newPlayerId);
-    }
-
-    public void clearIdsInUse() {
-        ArrayList<String> empty = new ArrayList<String>();
-        if (!idsInUse.equals(empty)) {idsInUse = new ArrayList<String>();}
     }
 }

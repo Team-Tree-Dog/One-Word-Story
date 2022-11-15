@@ -5,6 +5,7 @@ import entities.games.Game;
 import entities.games.GameFactory;
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
+import exceptions.InvalidDisplayNameException;
 import org.junit.*;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -104,7 +105,7 @@ public class SwInteractorTests {
      * Tests creating Game, no timer, but the player submits word out of turn.
      */
     @Test(timeout = 10000)
-    public void testOutOfTurn() throws IdInUseException, GameRunningException {
+    public void testOutOfTurn() throws IdInUseException, GameRunningException, InvalidDisplayNameException {
 
         class LocalDisplayName implements DisplayNameChecker {
             @Override
@@ -197,7 +198,7 @@ public class SwInteractorTests {
      * Tests creating Game, no timer, but the player submits word when they don't exist.
      */
     @Test(timeout = 10000)
-    public void testPlayerNotFound() throws IdInUseException, GameRunningException {
+    public void testPlayerNotFound() throws IdInUseException, GameRunningException, InvalidDisplayNameException {
 
         class LocalDisplayName implements DisplayNameChecker {
             @Override
@@ -276,7 +277,7 @@ public class SwInteractorTests {
      * Tests submitting a word to a non-existent Game.
      */
     @Test(timeout = 10000)
-    public void testGameDoesntExist() throws IdInUseException {
+    public void testGameDoesntExist() throws IdInUseException, InvalidDisplayNameException {
 
         class LocalDisplayName implements DisplayNameChecker {
             @Override
@@ -359,7 +360,7 @@ public class SwInteractorTests {
      * Tests submitting a word that is invalid, with a DisplayNameChecker that always returns false.
      */
     @Test(timeout = 10000)
-    public void testInvalidWord() throws IdInUseException, GameRunningException {
+    public void testInvalidWord() throws IdInUseException, GameRunningException, InvalidDisplayNameException {
         class LocalDisplayName implements DisplayNameChecker {
             @Override
             public boolean checkValid(String displayName) {
@@ -449,7 +450,7 @@ public class SwInteractorTests {
      * Tests submitting a word that is valid.
      */
     @Test(timeout = 10000)
-    public void testValidWord() throws IdInUseException, GameRunningException {
+    public void testValidWord() throws IdInUseException, GameRunningException, InvalidDisplayNameException {
         class LocalDisplayName implements DisplayNameChecker {
             @Override
             public boolean checkValid(String displayName) {

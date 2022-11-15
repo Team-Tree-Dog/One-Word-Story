@@ -49,7 +49,6 @@ public class LobbyManager {
     public LobbyManager (PlayerFactory playerFac, GameFactory gameFac) {
         this.gameFac = gameFac;
         this.playerFac = playerFac;
-        this.playerFac.clearIdsInUse();
 
         this.playerPool = new ArrayList<>();
         this.sortPlayersTimer = new Timer();
@@ -274,7 +273,7 @@ public class LobbyManager {
      * @param id the unique id of the player
      * @return the created player instance
      */
-    public Player createNewPlayer(String displayName, String id) throws IdInUseException {
+    public Player createNewPlayer(String displayName, String id) throws IdInUseException, InvalidDisplayNameException {
         return playerFac.createPlayer(displayName, id);
     }
 
