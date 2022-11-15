@@ -9,8 +9,8 @@ import exceptions.IdInUseException;
 import exceptions.InvalidDisplayNameException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Timeout;
+import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,8 +40,7 @@ public class DcInteractorTests {
      * @throws IdInUseException
      * @throws GameRunningException
      */
-    @org.junit.Test
-    @Timeout(value=100000)
+    @Test(timeout = 1000)
     public void testDisconnectPlayerFromGame() throws
             IdInUseException, GameRunningException,
             InterruptedException, InvalidDisplayNameException {
@@ -66,7 +65,7 @@ public class DcInteractorTests {
             Thread.onSpinWait();
         }
 
-        Assertions.assertFalse(lm.getPlayersFromGame().contains(player2));
+        assertFalse(lm.getPlayersFromGame().contains(player2));
         assertTrue(lm.getPlayersFromGame().contains(player1));
     }
 
@@ -76,8 +75,7 @@ public class DcInteractorTests {
      * @throws IdInUseException
      * @throws GameRunningException
      */
-    @org.junit.Test
-    @Timeout(value=100000)
+    @Test(timeout = 1000)
     public void testDisconnectPlayerFromPool() throws
             IdInUseException, GameRunningException,
             InterruptedException, InvalidDisplayNameException {
@@ -112,12 +110,32 @@ public class DcInteractorTests {
         dcInteractor.disconnect(data);
 
         try {
-            while (lm.getPlayersFromPool().contains(player4)) {}
+            while (lm.getPlayersFromPool().contains(player4)) {
+                Thread.onSpinWait();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Assertions.assertFalse(lm.getPlayersFromPool().contains(player4));
+        assertFalse(lm.getPlayersFromPool().contains(player4));
         assertTrue(lm.getPlayersFromPool().contains(player3));
+    }
+
+    /**
+     * Test a malicious or bugged call to disconnect where a player
+     * is NOT in the pool, and game is null. A fail code should be returned
+     */
+    @Test(timeout = 1000)
+    public void testGameNullPlayerNotInPool () {
+
+    }
+
+    /**
+     * Test a call to disconnect a player who is neither in the game nor in the
+     * pool. Fail code should be returned
+     */
+    @Test(timeout = 1000)
+    public void testPlayerNowhere () {
+
     }
 
     /**
@@ -159,9 +177,9 @@ public class DcInteractorTests {
         public void onTimerUpdate() {}
 
         @Override
-        public Player getPlayerById(String PlayerId) {
+        public Player getPlayerById(String playerId) {
             for (Player player : players)
-                if (player.getPlayerId().equals(PlayerId))
+                if (player.getPlayerId().equals(playerId))
                     return player;
             return null;
         }
