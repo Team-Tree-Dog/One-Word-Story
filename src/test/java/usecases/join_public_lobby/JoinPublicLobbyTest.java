@@ -1,4 +1,4 @@
-package usecases;
+package usecases.join_public_lobby;
 
 import entities.DisplayNameChecker;
 import entities.LobbyManager;
@@ -8,10 +8,14 @@ import entities.games.Game;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
 import entities.games.GameRegular;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.jupiter.api.Timeout;
+import usecases.Response;
 import usecases.join_public_lobby.*;
 
 import java.util.*;
@@ -55,14 +59,16 @@ public class JoinPublicLobbyTest {
         }
     }
 
-    @BeforeEach
+    @Before
     public void setupJplInteractor(){
         LobbyManager lobbyManager = new LobbyManager(this.playerFactory, this.gameFactory);
         this.interactor = new JplInteractor(lobbyManager, this.testOutputBoundary);
     }
 
-    @Test
-    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS)
+    /**
+     * Test that the response to players being added the pool is properly being registered
+     */
+    @Test(timeout=10000)
     public void checkAllJoinPoolQueriesRegistered() {
         Player firstPlayer = new Player("First", "1");
         Player secondPlayer = new Player("Second", "2");
@@ -73,24 +79,32 @@ public class JoinPublicLobbyTest {
         JplInputData firstInputData = new JplInputData(firstPlayer.getDisplayName(), firstPlayer.getPlayerId());
         JplInputData secondInputData = new JplInputData(secondPlayer.getDisplayName(), secondPlayer.getPlayerId());
 
+        // Start threads which will add the players to the pool and call the output
         this.interactor.joinPublicLobby(firstInputData);
         this.interactor.joinPublicLobby(secondInputData);
+
+        // Waits for the above threads to provide output for both players
+        // Will timeout if this never occurs, so test will properly fail
         while (this.testOutputBoundary.joinedPoolResponses.size() < 2) {
             Thread.onSpinWait();
         }
-        Assertions.assertEquals(2, this.testOutputBoundary.joinedPoolResponses.size());
-        Assertions.assertEquals(0, this.testOutputBoundary.joinedGameResponses.size());
-        Assertions.assertEquals(0, this.testOutputBoundary.cancelledResponses.size());
+
+        assertEquals(2, this.testOutputBoundary.joinedPoolResponses.size());
+        assertEquals(0, this.testOutputBoundary.joinedGameResponses.size());
+        assertEquals(0, this.testOutputBoundary.cancelledResponses.size());
 
         Set<String> actualIds = new HashSet<>();
         for(JplOutputDataResponse response : this.testOutputBoundary.joinedPoolResponses) {
-            Assertions.assertEquals(response.getRes().getCode(), Response.ResCode.SUCCESS);
+            assertEquals(response.getRes().getCode(), Response.ResCode.SUCCESS);
             actualIds.add(response.getPlayerId());
         }
-        Assertions.assertIterableEquals(expectedIds, actualIds);
+        assertIterableEquals(expectedIds, actualIds);
     }
 
-    @Test
+    /**
+     * Test that JPL responds properly to players joining the game
+     */
+    @Test(timeout=10000)
     public void checkAllJoinedGame() {
         Player firstPlayer = new Player("Name", "1");
         Player secondPlayer = new Player("Name", "2");
@@ -108,13 +122,15 @@ public class JoinPublicLobbyTest {
         threadSecond.onJoinGamePlayer(game);
         threadFirst.run();
         threadSecond.run();
-        Assertions.assertEquals(2, this.testOutputBoundary.joinedPoolResponses.size());
-        Assertions.assertEquals(2, this.testOutputBoundary.joinedGameResponses.size());
-        Assertions.assertEquals(0, this.testOutputBoundary.cancelledResponses.size());
+        assertEquals(2, this.testOutputBoundary.joinedPoolResponses.size());
+        assertEquals(2, this.testOutputBoundary.joinedGameResponses.size());
+        assertEquals(0, this.testOutputBoundary.cancelledResponses.size());
     }
 
-
-    @Test
+    /**
+     * Test that JPL responds properly to a player cancelling their waiting
+     */
+    @Test(timeout = 10000)
     public void testCancelWaiting() {
         Player firstPlayer = new Player("Name", "1");
         Player secondPlayer = new Player("Name", "2");
@@ -138,13 +154,15 @@ public class JoinPublicLobbyTest {
         threadSecond.onJoinGamePlayer(game);
         threadFirst.run();
         threadSecond.run();
-        Assertions.assertEquals(3, this.testOutputBoundary.joinedPoolResponses.size());
-        Assertions.assertEquals(2, this.testOutputBoundary.joinedGameResponses.size());
-        Assertions.assertEquals(1, this.testOutputBoundary.cancelledResponses.size());
+        assertEquals(3, this.testOutputBoundary.joinedPoolResponses.size());
+        assertEquals(2, this.testOutputBoundary.joinedGameResponses.size());
+        assertEquals(1, this.testOutputBoundary.cancelledResponses.size());
     }
 
-
-    @Test
+    /**
+     * Test that if a player joins with a duplicate ID, they fail properly
+     */
+    @Test(timeout=10000)
     public void testDuplicateIds(){
         Player firstPlayer = new Player("Player", "1");
         Player secondPlayer = new Player("player", "1");
@@ -161,9 +179,9 @@ public class JoinPublicLobbyTest {
         threadSecond.onJoinGamePlayer(game);
         threadFirst.run();
         threadSecond.run();
-        Assertions.assertEquals(2, this.testOutputBoundary.joinedPoolResponses.size());
-        Assertions.assertEquals(1, this.testOutputBoundary.joinedGameResponses.size());
-        Assertions.assertEquals(0, this.testOutputBoundary.cancelledResponses.size());
+        assertEquals(2, this.testOutputBoundary.joinedPoolResponses.size());
+        assertEquals(1, this.testOutputBoundary.joinedGameResponses.size());
+        assertEquals(0, this.testOutputBoundary.cancelledResponses.size());
         int expectedFailNumber = 1;
         int actualFailNumber = 0;
         for(JplOutputDataResponse response : this.testOutputBoundary.joinedPoolResponses) {
@@ -171,7 +189,7 @@ public class JoinPublicLobbyTest {
                 actualFailNumber++;
             }
         }
-        Assertions.assertEquals(expectedFailNumber, actualFailNumber);
+        assertEquals(expectedFailNumber, actualFailNumber);
     }
 
 }
