@@ -52,7 +52,6 @@ public class SwInteractorTests {
 
         /**
          * Returns the player by its id
-         *
          * @param playerId The player's ID
          */
         @Override
@@ -62,7 +61,6 @@ public class SwInteractorTests {
 
         /**
          * Removes the player specified from this GameRegular instance
-         *
          * @param playerToRemove The Player to be removed
          * @return if the player was successfully removed
          */
@@ -71,7 +69,6 @@ public class SwInteractorTests {
 
         /**
          * Adds new player to the game
-         *
          * @param playerToAdd The new player.
          */
         @Override
@@ -99,6 +96,7 @@ public class SwInteractorTests {
 
     @After
     public void tearDown() {
+    
     }
 
     /**
@@ -118,7 +116,6 @@ public class SwInteractorTests {
 
             /**
              * Checks whether the word is valid
-             *
              * @param word the word we need to check
              * @return true, since the valid presenter code block will be triggered if the test doesn't go as planned.
              */
@@ -211,7 +208,6 @@ public class SwInteractorTests {
 
             /**
              * Checks whether the word is valid
-             *
              * @param word the word we need to check
              * @return true, since the valid presenter code block will be triggered if the test doesn't go as planned.
              */
@@ -290,7 +286,6 @@ public class SwInteractorTests {
 
             /**
              * Checks whether the word is valid
-             *
              * @param word the word we need to check
              * @return true, since the valid presenter code block will be triggered if the test doesn't go as planned.
              */
@@ -372,7 +367,6 @@ public class SwInteractorTests {
 
             /**
              * Checks whether the word is valid
-             *
              * @param word the word we need to check
              * @return false, since we are locally defining that.
              */
@@ -462,7 +456,6 @@ public class SwInteractorTests {
 
             /**
              * Checks whether the word is valid
-             *
              * @param word the word we need to check
              * @return true, since we are locally defining that.
              */
