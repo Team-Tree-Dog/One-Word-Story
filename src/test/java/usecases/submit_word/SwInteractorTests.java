@@ -108,7 +108,7 @@ public class SwInteractorTests {
         class LocalDisplayName implements DisplayNameChecker {
             @Override
             public boolean checkValid(String displayName) {
-                return false;
+                return true;
             }
         }
 
@@ -200,7 +200,7 @@ public class SwInteractorTests {
         class LocalDisplayName implements DisplayNameChecker {
             @Override
             public boolean checkValid(String displayName) {
-                return false;
+                return true;
             }
         }
 
@@ -278,7 +278,7 @@ public class SwInteractorTests {
         class LocalDisplayName implements DisplayNameChecker {
             @Override
             public boolean checkValid(String displayName) {
-                return false;
+                return true;
             }
         }
 
@@ -359,7 +359,7 @@ public class SwInteractorTests {
         class LocalDisplayName implements DisplayNameChecker {
             @Override
             public boolean checkValid(String displayName) {
-                return false;
+                return true;
             }
         }
 
@@ -448,7 +448,7 @@ public class SwInteractorTests {
         class LocalDisplayName implements DisplayNameChecker {
             @Override
             public boolean checkValid(String displayName) {
-                return false;
+                return true;
             }
         }
 
