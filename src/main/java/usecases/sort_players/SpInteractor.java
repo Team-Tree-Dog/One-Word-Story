@@ -8,6 +8,7 @@ import exceptions.GameRunningException;
 import exceptions.PlayerNotFoundException;
 import usecases.pull_data.PdInputBoundary;
 import usecases.pull_game_ended.PgeInputBoundary;
+import usecases.run_game.RgInteractor;
 
 import java.util.Map;
 import java.util.TimerTask;
@@ -84,7 +85,7 @@ public class SpInteractor {
                 }
             }
 
-            if (lobbyManager.isGameNull() && lobbyManager.getPool().size() > 2) {
+            if (lobbyManager.isGameNull() && lobbyManager.getPool().size() >= 2) {
                 Map<String, Integer> settings = null; // currently player settings isn't a feature, thus null
                 Game game = lobbyManager.newGameFromPool(settings);
 

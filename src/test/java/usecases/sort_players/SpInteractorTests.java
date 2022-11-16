@@ -148,13 +148,14 @@ public class SpInteractorTests {
         CustomizableTestGame customizableTestGame = new CustomizableTestGame(false, true);
 
         // Game is null by default
-        LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()), new GameFactory() {
-            @Override
-            public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
-                // Returns instance of game which always adds players successfully.
-                // We return this particular instance so we can have access to this game's methods.
-                return customizableTestGame;
-            }
+        LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()),
+                (settings, initialPlayers) -> {
+            // Returns instance of game which always adds players successfully.
+                    // We return this particular instance so we can have access to this game's methods.
+                    for (Player p : initialPlayers) {
+                        customizableTestGame.addPlayer(p);
+                    }
+                    return customizableTestGame;
         });
 
         TestPlayerPoolListener bobsListener = new TestPlayerPoolListener();
@@ -197,12 +198,8 @@ public class SpInteractorTests {
     public void testGameNotNullIsOverSetNull () {
         CustomizableTestGame g = new CustomizableTestGame(true, true);
 
-        LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()), new GameFactory() {
-            @Override
-            public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
-                return null;
-            }
-        });
+        LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()),
+                (settings, initialPlayers) -> null);
 
         // Set a game and set isGameEnded to true via setTimerStopped
         try {
@@ -229,12 +226,8 @@ public class SpInteractorTests {
     public void testGameRunningPlayersInPoolAdded () {
         CustomizableTestGame g = new CustomizableTestGame(false, true);
 
-        LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()), new GameFactory() {
-            @Override
-            public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
-                return null;
-            }
-        });
+        LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()),
+                (settings, initialPlayers) -> null);
 
         // Add two players to game
         g.addPlayer(new Player("Lilly", "3"));
@@ -277,16 +270,8 @@ public class SpInteractorTests {
     public void testGameRunningPlayersInPoolRefused () {
         CustomizableTestGame g = new CustomizableTestGame(false, false);
 
-        LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()), new GameFactory() {
-            @Override
-            public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
-                return null;
-            }
-        });
-
-        // Add two players to game
-        g.addPlayer(new Player("Lilly", "3"));
-        g.addPlayer(new Player("Anna", "4"));
+        LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()),
+                (settings, initialPlayers) -> null);
 
         // Set up scenario where a game is running (not null not ended)
         try {
@@ -303,6 +288,8 @@ public class SpInteractorTests {
         // Confirm that the listeners have not been called before execution
         assertFalse(bobsListener.joinedGameFlag);
         assertFalse(billysListener.joinedGameFlag);
+        assertEquals(0, g.getPlayers().size());
+        assertEquals(2, m.getPool().size());
 
         // Execute one round of the TimerTask. Based on the Game instance used, Bob and Billy
         // should both be successfully added to the currently running game
@@ -314,7 +301,7 @@ public class SpInteractorTests {
         assertFalse(bobsListener.joinedGameFlag);
         assertFalse(billysListener.joinedGameFlag);
         // Confirm that both the game and the pool still have their two players each (no changes)
-        assertEquals(2, g.getPlayers().size());
+        assertEquals(0, g.getPlayers().size());
         assertEquals(2, m.getPool().size());
     }
 }
