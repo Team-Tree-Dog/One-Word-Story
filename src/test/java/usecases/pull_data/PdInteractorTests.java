@@ -60,7 +60,7 @@ public class PdInteractorTests {
         }
 
         @Override
-        public Player getPlayerById(String PlayerId) {
+        public Player getPlayerById(String playerId) {
             return null;
         }
 
