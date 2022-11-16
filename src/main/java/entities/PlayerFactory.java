@@ -1,6 +1,7 @@
 package entities;
 
 import exceptions.IdInUseException;
+import exceptions.InvalidDisplayNameException;
 
 import java.util.ArrayList;
 
@@ -27,8 +28,14 @@ public class PlayerFactory {
      * @param newName the name of the new player
      * @return the created Player instance
      */
-    public Player createPlayer(String newName, String newPlayerId) throws IdInUseException {
-        if (idsInUse.contains(newPlayerId)) {throw new IdInUseException("ID " + newPlayerId + " already in use.");}
+    public Player createPlayer(String newName, String newPlayerId) throws
+            IdInUseException, InvalidDisplayNameException {
+        if (idsInUse.contains(newPlayerId)) {
+            throw new IdInUseException("ID " + newPlayerId + " already in use.");
+        } else if (!displayChecker.checkValid(newName)) {
+            throw new InvalidDisplayNameException("Display name " + newName + " is not valid.");
+        }
+
         idsInUse.add(newPlayerId);
         return new Player(newName, newPlayerId);
     }
