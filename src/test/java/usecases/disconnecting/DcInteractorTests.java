@@ -10,11 +10,15 @@ import exceptions.InvalidDisplayNameException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import usecases.Response;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -85,20 +89,8 @@ public class DcInteractorTests {
         TestGame testGame = new TestGame(players);
         TestLobbyManager lm = new TestLobbyManager(testGame);
 
-        lm.addPlayerToPool(player3, new PlayerPoolListener() {
-            @Override
-            public void onJoinGamePlayer(Game game) {}
-
-            @Override
-            public void onCancelPlayer() {}
-        });
-        lm.addPlayerToPool(player4, new PlayerPoolListener() {
-            @Override
-            public void onJoinGamePlayer(Game game) {}
-
-            @Override
-            public void onCancelPlayer() {}
-        });
+        lm.addPlayerToPool(player3, new BlankPoolListener());
+        lm.addPlayerToPool(player4, new BlankPoolListener());
 
         assertTrue(lm.getPlayersFromPool().contains(player3));
         assertTrue(lm.getPlayersFromPool().contains(player4));
@@ -109,13 +101,10 @@ public class DcInteractorTests {
         DcInputData data = new DcInputData(player4.getPlayerId());
         dcInteractor.disconnect(data);
 
-        try {
-            while (lm.getPlayersFromPool().contains(player4)) {
-                Thread.onSpinWait();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        while (lm.getPlayersFromPool().contains(player4)) {
+            Thread.onSpinWait();
         }
+
         assertFalse(lm.getPlayersFromPool().contains(player4));
         assertTrue(lm.getPlayersFromPool().contains(player3));
     }
@@ -125,8 +114,28 @@ public class DcInteractorTests {
      * is NOT in the pool, and game is null. A fail code should be returned
      */
     @Test(timeout = 1000)
-    public void testGameNullPlayerNotInPool () {
+    public void testGameNullPlayerNotInPool () throws
+            IdInUseException, InvalidDisplayNameException, GameRunningException {
+        Player player5 = playerFactory.createPlayer("Alby", "5");
 
+        TestLobbyManager lm = new TestLobbyManager(null);
+
+        AtomicBoolean hasResponded = new AtomicBoolean(false);
+        AtomicReference<Response.ResCode> code = new AtomicReference<>();
+        DcOutputBoundary dcOutputBoundary = data -> {
+            code.set(data.getResponse().getCode());
+            hasResponded.set(true);
+        };
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary);
+
+        DcInputData data = new DcInputData(player5.getPlayerId());
+        dcInteractor.disconnect(data);
+
+        while (!hasResponded.get()) {
+            Thread.onSpinWait();
+        }
+
+        assertSame(Response.ResCode.GAME_DOESNT_EXIST, code.get());
     }
 
     /**
@@ -134,8 +143,29 @@ public class DcInteractorTests {
      * pool. Fail code should be returned
      */
     @Test(timeout = 1000)
-    public void testPlayerNowhere () {
+    public void testPlayerNowhere () throws
+            GameRunningException, IdInUseException, InvalidDisplayNameException {
+        Player player6 = playerFactory.createPlayer("Sam", "6");
 
+        TestGame g = new TestGame(players);
+        TestLobbyManager lm = new TestLobbyManager(g);
+
+        AtomicBoolean hasResponded = new AtomicBoolean(false);
+        AtomicReference<Response.ResCode> code = new AtomicReference<>();
+        DcOutputBoundary dcOutputBoundary = data -> {
+            code.set(data.getResponse().getCode());
+            hasResponded.set(true);
+        };
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary);
+
+        DcInputData data = new DcInputData(player6.getPlayerId());
+        dcInteractor.disconnect(data);
+
+        while (!hasResponded.get()) {
+            Thread.onSpinWait();
+        }
+
+        assertSame(Response.ResCode.PLAYER_NOT_FOUND, code.get());
     }
 
     /**
@@ -195,6 +225,14 @@ public class DcInteractorTests {
 
         @Override
         public Player getCurrentTurnPlayer() { return null; }
+    }
+
+    private static class BlankPoolListener implements PlayerPoolListener {
+        @Override
+        public void onJoinGamePlayer(Game game) {}
+
+        @Override
+        public void onCancelPlayer() {}
     }
 
 }
