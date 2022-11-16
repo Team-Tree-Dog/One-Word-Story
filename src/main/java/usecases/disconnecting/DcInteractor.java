@@ -35,7 +35,6 @@ public class DcInteractor implements DcInputBoundary {
      */
     public class DcThread implements Runnable {
         private final String playerId;
-        private Player playerToDisconnect;
 
         /**
          * Constructor for Disconnecting Thread
@@ -71,7 +70,7 @@ public class DcInteractor implements DcInputBoundary {
                 }
             }
 
-            DcOutputData outputData = new DcOutputData(response);
+            DcOutputData outputData = new DcOutputData(response, playerId);
             dcOutputBoundary.hasDisconnected(outputData);
         }
     }
