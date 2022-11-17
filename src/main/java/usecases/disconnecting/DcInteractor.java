@@ -66,7 +66,6 @@ public class DcInteractor implements DcInputBoundary {
                     // In both PlayerNotFound & GameDoesntExist, player was
                     // not found to be in the game, so respond with fail
                     response = Response.fromException(e, "Player not found");
-                    e.printStackTrace();
                 }
             }
 
