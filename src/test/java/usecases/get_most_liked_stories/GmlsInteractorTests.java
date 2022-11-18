@@ -6,7 +6,7 @@ import org.junit.Before;
 /**
  *
  */
-public class GmlsTests {
+public class GmlsInteractorTests {
 
     @Before
     public void setup () {
