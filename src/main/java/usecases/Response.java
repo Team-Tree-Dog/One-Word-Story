@@ -66,12 +66,12 @@ public class Response {
     public ResCode getCode() { return code; }
 
     /**
-     * @param e Java exception
+     * @param e An entity exception
      * @param m Custom message of the response object
      * @return A response object with an error code corresponding to e
      * and a message m. Return FAIL code if the error didn't exist
      */
-    public static Response fromException (Exception e, String m) {
+    public static Response fromException (EntityException e, String m) {
         ResCode resultCode = mapExceptionToResultCode.get(e.getClass());
         if(resultCode == null) {
             resultCode = ResCode.FAIL;
