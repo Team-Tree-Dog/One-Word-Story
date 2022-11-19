@@ -49,7 +49,6 @@ public class LobbyManager {
     public LobbyManager (PlayerFactory playerFac, GameFactory gameFac) {
         this.gameFac = gameFac;
         this.playerFac = playerFac;
-
         this.playerPool = new ArrayList<>();
         this.sortPlayersTimer = new Timer();
         this.startedSortTimer = false;
@@ -300,6 +299,14 @@ public class LobbyManager {
     public void addPlayerToPool (Player p, PlayerPoolListener o) {
         PlayerObserverLink pol = new PlayerObserverLink(p, o);
         this.playerPool.add(pol);
+    }
+
+    /**
+     * Gets all the players from the game
+     * @return an arraylist of players
+     */
+    public ArrayList<Player> getPlayersFromGame() {
+        return new ArrayList<>(game.getPlayers());
     }
 
 }
