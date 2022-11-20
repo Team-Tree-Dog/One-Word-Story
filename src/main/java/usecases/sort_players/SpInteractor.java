@@ -22,6 +22,7 @@ public class SpInteractor {
     private final PgeInputBoundary pge;
     private final PdInputBoundary pd;
     private final Lock playerPoolLock;
+    private final Lock gameLock;
 
     /**
      * Constructor for SpInteractor
@@ -29,13 +30,15 @@ public class SpInteractor {
      * @param pge pull game ended use case input boundary
      * @param pd pull data use case input boundary4
      * @param playerPoolLock The lock used for synchronization with other object that access the player pool
+     * @param gameLock The lock used for synchronization with other object that access the game
      */
     public SpInteractor(LobbyManager lobbyManager, PgeInputBoundary pge,
-                         PdInputBoundary pd, Lock playerPoolLock) {
+                         PdInputBoundary pd, Lock playerPoolLock, Lock gameLock) {
         this.lobbyManager = lobbyManager;
         this.pge = pge;
         this.pd = pd;
         this.playerPoolLock = playerPoolLock;
+        this.gameLock = gameLock;
     }
 
     /**
@@ -49,6 +52,7 @@ public class SpInteractor {
     public class SpTask extends TimerTask {
         @Override
         public void run() {
+            gameLock.lock();
             // If game has ended, set it to null.
             if (!lobbyManager.isGameNull()) {
                 if (lobbyManager.isGameEnded()) {
@@ -97,6 +101,7 @@ public class SpInteractor {
                     playerPoolLock.unlock();
                 }
             }
+            gameLock.unlock();
             // Once again, we need to lock the pool to avoid race conditions
             playerPoolLock.lock();
             if (lobbyManager.isGameNull() && lobbyManager.getPool().size() >= 2) {

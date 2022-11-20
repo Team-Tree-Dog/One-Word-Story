@@ -16,6 +16,7 @@ public class DcInteractor implements DcInputBoundary {
     private final LobbyManager lm;
     private final DcOutputBoundary dcOutputBoundary;
     private final Lock playerPoolLock;
+    private final Lock gameLock;
 
     /**
      * Constructor for DcInteractor
@@ -23,10 +24,11 @@ public class DcInteractor implements DcInputBoundary {
      * @param dcOutputBoundary DcOutputBoundary
      * @param playerPoolLock The lock used for synchronization with other object that access the player pool
      */
-    public DcInteractor(LobbyManager lm, DcOutputBoundary dcOutputBoundary, Lock playerPoolLock) {
+    public DcInteractor(LobbyManager lm, DcOutputBoundary dcOutputBoundary, Lock playerPoolLock, Lock gameLock) {
         this.lm = lm;
         this.dcOutputBoundary = dcOutputBoundary;
         this.playerPoolLock = playerPoolLock;
+        this.gameLock = gameLock;
     }
 
     /**
@@ -72,6 +74,7 @@ public class DcInteractor implements DcInputBoundary {
                 // if player isn't in pool so no need to check contains explicitly
                 lm.removeFromPoolCancel(playerToDisconnect);
             } catch (PlayerNotFoundException ignored) {
+                gameLock.lock();
                 try {
                     // In this catch block, we know player was not in the pool.
                     // Now try to remove player from game.
@@ -81,6 +84,8 @@ public class DcInteractor implements DcInputBoundary {
                     // not found to be in the game, so respond with fail
                     response = Response.fromException(e, "Player not found");
                     e.printStackTrace();
+                } finally {
+                    gameLock.unlock();
                 }
             }
             finally {

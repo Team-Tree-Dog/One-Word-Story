@@ -27,14 +27,16 @@ public class DcInteractorTests {
     private DcInteractor dcInteractor;
 
     private static Lock playerPoolLock;
+    private static Lock gameLock;
 
     private static final List<Player> players = new ArrayList<>();
     private static final DisplayNameChecker displayNameChecker = displayName -> true;
     private static final PlayerFactory playerFactory = new PlayerFactory(displayNameChecker);
 
     @Before
-    public void refreshLock() {
+    public void refreshLocks() {
         playerPoolLock = new ReentrantLock();
+        gameLock = new ReentrantLock();
     }
 
 
@@ -59,7 +61,7 @@ public class DcInteractorTests {
         AtomicReference<Boolean> hasFinished = new AtomicReference<>(false);
 
         DcOutputBoundary dcOutputBoundary = data -> hasFinished.set(true);
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary,playerPoolLock);
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary, playerPoolLock, gameLock);
 
         DcInputData data = new DcInputData(player2.getPlayerId());
         dcInteractor.disconnect(data);
@@ -94,7 +96,7 @@ public class DcInteractorTests {
         AtomicReference<Boolean> hasFinished = new AtomicReference<>(false);
 
         DcOutputBoundary dcOutputBoundary = data -> hasFinished.set(true);
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary, playerPoolLock);
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary, playerPoolLock, gameLock);
 
         DcInputData data = new DcInputData(player4.getPlayerId());
         dcInteractor.disconnect(data);
@@ -124,7 +126,7 @@ public class DcInteractorTests {
             code.set(data.getResponse().getCode());
             hasResponded.set(true);
         };
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary, playerPoolLock);
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary, playerPoolLock, gameLock);
 
         DcInputData data = new DcInputData(player5.getPlayerId());
         dcInteractor.disconnect(data);
@@ -154,7 +156,7 @@ public class DcInteractorTests {
             code.set(data.getResponse().getCode());
             hasResponded.set(true);
         };
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary, playerPoolLock);
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary, playerPoolLock, gameLock);
 
         DcInputData data = new DcInputData(player6.getPlayerId());
         dcInteractor.disconnect(data);
