@@ -115,8 +115,14 @@ public class JoinPublicLobbyTest {
         initialPlayers.add(secondPlayer);
         Game game = new GameRegular(initialPlayers);
 
+        // onJoinGamePlayer signals a condition variable. the signal requires the lock to be engaged, which it is not
+        // The call will set the JplThread's game instance to the passed in game and the subsequent signal call will
+        // throw IllegalMonitor. We expect this to happen so to allow the test to continue, we assert the throw
         Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadFirst.onJoinGamePlayer(game));
         Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadSecond.onJoinGamePlayer(game));
+        
+        // threadFirst.game and threadSecond.game are not null so the while loop will be ignored so .await() won't execute
+        // Everything else works as normal
         threadFirst.run();
         threadSecond.run();
         assertEquals(2, this.testOutputBoundary.joinedPoolResponses.size());
