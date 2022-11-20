@@ -38,11 +38,21 @@ public class GameRegular extends Game {
 
     }
 
+    /**
+     * Gets Player from this game by its id
+     * @param playerId ID of searched player
+     * @return searched Player
+     */
     @Override
     public Player getPlayerById(String playerId) {
         return players.stream().filter(p -> p.getPlayerId().equals(playerId)).findAny().orElse(null);
     }
 
+    /**
+     * Removes requested player from this game
+     * @param playerToRemove The Player to be removed
+     * @return success of failure as boolean
+     */
     @Override
     public boolean removePlayer(Player playerToRemove) {
         return players.remove(playerToRemove);
