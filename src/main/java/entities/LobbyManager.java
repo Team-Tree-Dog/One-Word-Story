@@ -113,7 +113,7 @@ public class LobbyManager {
     /**
      * Remove a player from the pool and call the linked PlayerPoolListener's
      * onJoinGamePlayer method, indicating that the player has joined the game
-     * Notice that this method is not thread-safe!
+     * Notice that this method is not thread-safe AT ALL! It engages no locks
      * @param p Player you would like to remove
      * @throws PlayerNotFoundException if the player was not found in the pool
      * @throws GameDoesntExistException if the game isn't running, in which case, player can't join it
@@ -169,6 +169,7 @@ public class LobbyManager {
 
     /**
      * This method calls onCancelPlayer on every player and removes all the players from the pool
+     * Note that this method is NOT THREAD SAFE AT ALL! It engages no locks
      */
     public void removeAllFromPoolCancel() {
         for(PlayerObserverLink playerObserverLink: playerPool) {
@@ -242,7 +243,7 @@ public class LobbyManager {
 
     /**
      * Removes a PlayerObserverLink from the pool via its player
-     * Notice that this method is not thread-safe!
+     * Notice that this method is not thread-safe AT ALL! It engages no locks
      * @param p the player in the POL to be removed
      * @throws PlayerNotFoundException if the player was not found in any POLs in playerPool
      */
