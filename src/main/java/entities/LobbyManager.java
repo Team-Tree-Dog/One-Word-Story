@@ -51,7 +51,6 @@ public class LobbyManager {
     public LobbyManager (PlayerFactory playerFac, GameFactory gameFac) {
         this.gameFac = gameFac;
         this.playerFac = playerFac;
-
         this.playerPool = new ArrayList<>();
         this.sortPlayersTimer = new Timer();
         this.startedSortTimer = false;
@@ -305,6 +304,7 @@ public class LobbyManager {
     }
 
     /**
+
      * Combines functionality of removing the player from pool, adding player to game, and notifying
      * the corresponding PlayerPoolListener that the player joined the game. If the player
      * was not in the pool, this method will STILL ADD THEM to the game and will subsequently
@@ -322,6 +322,13 @@ public class LobbyManager {
         if (success) {
             removeFromPoolJoin(p);
         }
+
+     * Gets all the players from the game
+     * @return an arraylist of players
+     */
+    public ArrayList<Player> getPlayersFromGame() {
+        return new ArrayList<>(game.getPlayers());
+
     }
 
 }
