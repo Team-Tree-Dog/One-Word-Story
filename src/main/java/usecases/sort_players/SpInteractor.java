@@ -70,7 +70,11 @@ public class SpInteractor {
                 } else {
                     for (LobbyManager.PlayerObserverLink playerObserverLink : lobbyManager.getPool()) {
                         Player player = playerObserverLink.getPlayer();
+
+                        Lock lock = playerObserverLink.getPlayerPoolListener().getLock();
+                        lock.lock();
                         try {
+
                             lobbyManager.addPlayerToGameRemoveFromPool(player);
                         } catch (PlayerNotFoundException | GameDoesntExistException e) {
                             // GameDoesntExist is an IMPOSSIBLE Error. In this if block, game is not null and
@@ -80,6 +84,8 @@ public class SpInteractor {
                             gameLock.unlock();
                             playerPoolLock.unlock();
                             throw new RuntimeException(e);
+                        } finally {
+                            lock.unlock();
                         }
                     }
                 }

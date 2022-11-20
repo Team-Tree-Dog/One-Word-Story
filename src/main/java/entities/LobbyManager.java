@@ -150,7 +150,11 @@ public class LobbyManager {
     }
 
     /**
-     * This method removes notifies all the players that the game has started and removes them from the pool
+     * This method removes all the players from the pool and notifies their
+     * corresponding PlayerPoolListeners that the players were added to the game
+     * However, this method DOES NOT add players to any game.
+     * Note that this method is NOT thread safe with regards to pool and game, however,
+     * it IS thread safe with regards to PlayerPoolListener callbacks
      */
     public void removeAllFromPoolJoin() {
         for(PlayerObserverLink playerObserverLink: playerPool) {
@@ -325,6 +329,8 @@ public class LobbyManager {
      * the corresponding PlayerPoolListener that the player joined the game. If the player
      * was not in the pool, this method will STILL ADD THEM to the game and will subsequently
      * throw a PlayerNotFoundException
+     * Note that this method is not thread safe AT ALL (no locks engaged)
+     *
      * @param p Player you wish to transfer from pool to the game
      * @throws GameDoesntExistException If game is null
      * @throws PlayerNotFoundException If player was not found in the pool
@@ -344,12 +350,18 @@ public class LobbyManager {
      * Gets all the players from the game
      * @return an arraylist of players
      */
-    public ArrayList<Player> getPlayersFromGame () {
+    public List<Player> getPlayersFromGame () {
         return new ArrayList<>(game.getPlayers());
     }
 
+    /**
+     * @return the lock associated with the game reference
+     */
     public Lock getGameLock() { return gameLock; }
 
+    /**
+     * @return the lock associated with the player pool list
+     */
     public Lock getPlayerPoolLock() { return playerPoolLock; }
 
 }
