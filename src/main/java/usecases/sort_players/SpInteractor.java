@@ -21,18 +21,21 @@ public class SpInteractor {
     private final LobbyManager lobbyManager;
     private final PgeInputBoundary pge;
     private final PdInputBoundary pd;
+    private final Lock playerPoolLock;
 
     /**
      * Constructor for SpInteractor
      * @param lobbyManager the lobby manager players are being sorted from
      * @param pge pull game ended use case input boundary
-     * @param pd pull data use case input boundary
+     * @param pd pull data use case input boundary4
+     * @param playerPoolLock The lock used for synchronization with other object that access the player pool
      */
     public SpInteractor(LobbyManager lobbyManager, PgeInputBoundary pge,
-                         PdInputBoundary pd) {
+                         PdInputBoundary pd, Lock playerPoolLock) {
         this.lobbyManager = lobbyManager;
         this.pge = pge;
         this.pd = pd;
+        this.playerPoolLock = playerPoolLock;
     }
 
     /**
@@ -59,7 +62,8 @@ public class SpInteractor {
                     }
 
                 } else {
-
+                    // We need to lock all the accesses to the pool to avoid race conditions
+                    playerPoolLock.lock();
                     for (LobbyManager.PlayerObserverLink playerObserverLink : lobbyManager.getPool()) {
                         Player player = playerObserverLink.getPlayer();
                         boolean wasPlayerAdded;
@@ -69,6 +73,7 @@ public class SpInteractor {
                         try {
                             wasPlayerAdded = lobbyManager.addPlayerToGame(player);
                         } catch (GameDoesntExistException e) {
+                            playerPoolLock.unlock();
                             throw new RuntimeException(e);
                         }
 
@@ -89,9 +94,11 @@ public class SpInteractor {
                             }
                         }
                     }
+                    playerPoolLock.unlock();
                 }
             }
-
+            // Once again, we need to lock the pool to avoid race conditions
+            playerPoolLock.lock();
             if (lobbyManager.isGameNull() && lobbyManager.getPool().size() >= 2) {
                 Map<String, Integer> settings = null; // currently player settings isn't a feature, thus null
                 Game game = lobbyManager.newGameFromPool(settings);
@@ -101,12 +108,14 @@ public class SpInteractor {
                 try {
                     lobbyManager.setGame(game);
                 } catch (GameRunningException e) {
+                    playerPoolLock.unlock();
                     throw new RuntimeException(e);
                 }
 
                 lobbyManager.removeAllFromPoolJoin();
                 new RgInteractor(game, pge, pd).startTimer();
             }
+            playerPoolLock.unlock();
         }
     }
 

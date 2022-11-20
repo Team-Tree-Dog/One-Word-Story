@@ -5,6 +5,7 @@ import entities.games.Game;
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
 import exceptions.InvalidDisplayNameException;
+import org.junit.Before;
 import org.junit.Test;
 import usecases.Response;
 
@@ -24,9 +25,18 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DcInteractorTests {
 
     private DcInteractor dcInteractor;
+
+    private static Lock playerPoolLock;
+
     private static final List<Player> players = new ArrayList<>();
     private static final DisplayNameChecker displayNameChecker = displayName -> true;
     private static final PlayerFactory playerFactory = new PlayerFactory(displayNameChecker);
+
+    @Before
+    public void refreshLock() {
+        playerPoolLock = new ReentrantLock();
+    }
+
 
     /**
      * Testing disconnecting player who are in the game
@@ -49,7 +59,7 @@ public class DcInteractorTests {
         AtomicReference<Boolean> hasFinished = new AtomicReference<>(false);
 
         DcOutputBoundary dcOutputBoundary = data -> hasFinished.set(true);
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary);
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary,playerPoolLock);
 
         DcInputData data = new DcInputData(player2.getPlayerId());
         dcInteractor.disconnect(data);
@@ -84,7 +94,7 @@ public class DcInteractorTests {
         AtomicReference<Boolean> hasFinished = new AtomicReference<>(false);
 
         DcOutputBoundary dcOutputBoundary = data -> hasFinished.set(true);
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary);
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary, playerPoolLock);
 
         DcInputData data = new DcInputData(player4.getPlayerId());
         dcInteractor.disconnect(data);
@@ -114,7 +124,7 @@ public class DcInteractorTests {
             code.set(data.getResponse().getCode());
             hasResponded.set(true);
         };
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary);
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary, playerPoolLock);
 
         DcInputData data = new DcInputData(player5.getPlayerId());
         dcInteractor.disconnect(data);
@@ -144,7 +154,7 @@ public class DcInteractorTests {
             code.set(data.getResponse().getCode());
             hasResponded.set(true);
         };
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary);
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary, playerPoolLock);
 
         DcInputData data = new DcInputData(player6.getPlayerId());
         dcInteractor.disconnect(data);
@@ -164,7 +174,7 @@ public class DcInteractorTests {
         Game game;
 
         public TestLobbyManager(Game game) throws GameRunningException {
-            super(playerFactory, (settings, initialPlayers) -> game);
+            super(playerFactory, (settings, initialPlayers) -> game, playerPoolLock);
             this.game = game;
             this.setGame(game);
         }

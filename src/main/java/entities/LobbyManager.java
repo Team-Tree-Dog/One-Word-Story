@@ -5,6 +5,7 @@ import entities.games.Game;
 import entities.games.GameFactory;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -36,23 +37,26 @@ public class LobbyManager {
         }
     }
 
-    private final ArrayList<PlayerObserverLink> playerPool;
+    private final List<PlayerObserverLink> playerPool;
     private Game game;
     private final GameFactory gameFac;
     private final PlayerFactory playerFac;
     private final Timer sortPlayersTimer;
     private boolean startedSortTimer;
+    private final Lock playerPoolLock;
 
     /**
      * @param playerFac Inject a factory to determine how players are made
      * @param gameFac Inject a factory to determine how games are made
+     * @param playerPoolLock The lock used for synchronization with other object that access the player pool
      */
-    public LobbyManager (PlayerFactory playerFac, GameFactory gameFac) {
+    public LobbyManager (PlayerFactory playerFac, GameFactory gameFac, Lock playerPoolLock) {
         this.gameFac = gameFac;
         this.playerFac = playerFac;
-        this.playerPool = new ArrayList<>();
+        this.playerPool = new CopyOnWriteArrayList<>();
         this.sortPlayersTimer = new Timer();
         this.startedSortTimer = false;
+        this.playerPoolLock = playerPoolLock;
     }
 
     /**
@@ -300,12 +304,15 @@ public class LobbyManager {
 
     /**
      * Creates PlayerObserverLink from p and o, which is then used to add the player to the pool.
+     * This method engages the playerPoolLock lock
      * @param p the player in the PlayerObserverLink
      * @param o the PlayerPoolListener in the PlayerObserverLink
      */
     public void addPlayerToPool (Player p, PlayerPoolListener o) {
+        playerPoolLock.lock();
         PlayerObserverLink pol = new PlayerObserverLink(p, o);
         this.playerPool.add(pol);
+        playerPoolLock.unlock();
     }
 
     /**

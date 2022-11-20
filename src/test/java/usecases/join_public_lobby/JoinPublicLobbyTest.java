@@ -18,6 +18,7 @@ import usecases.Response;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class JoinPublicLobbyTest {
 
@@ -58,7 +59,7 @@ public class JoinPublicLobbyTest {
 
     @Before
     public void setupJplInteractor(){
-        LobbyManager lobbyManager = new LobbyManager(this.playerFactory, this.gameFactory);
+        LobbyManager lobbyManager = new LobbyManager(this.playerFactory, this.gameFactory, new ReentrantLock());
         this.interactor = new JplInteractor(lobbyManager, this.testOutputBoundary);
     }
 

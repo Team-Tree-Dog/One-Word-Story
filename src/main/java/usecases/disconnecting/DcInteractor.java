@@ -7,21 +7,26 @@ import exceptions.GameDoesntExistException;
 import exceptions.PlayerNotFoundException;
 import usecases.Response;
 
+import java.util.concurrent.locks.Lock;
+
 /**
  * Interactor for Disconnecting Use Case
  */
 public class DcInteractor implements DcInputBoundary {
     private final LobbyManager lm;
     private final DcOutputBoundary dcOutputBoundary;
+    private final Lock playerPoolLock;
 
     /**
      * Constructor for DcInteractor
      * @param lm Lobby Manager
      * @param dcOutputBoundary DcOutputBoundary
+     * @param playerPoolLock The lock used for synchronization with other object that access the player pool
      */
-    public DcInteractor(LobbyManager lm, DcOutputBoundary dcOutputBoundary) {
+    public DcInteractor(LobbyManager lm, DcOutputBoundary dcOutputBoundary, Lock playerPoolLock) {
         this.lm = lm;
         this.dcOutputBoundary = dcOutputBoundary;
+        this.playerPoolLock = playerPoolLock;
     }
 
     /**
@@ -54,12 +59,12 @@ public class DcInteractor implements DcInputBoundary {
             Response response = Response.getSuccessful("Disconnecting was successful.");
             LobbyManager.PlayerObserverLink playerLink = lm.getLinkFromPlayer(playerToDisconnect);
             PlayerPoolListener playerListener = null;
+            playerPoolLock.lock();
             try {
                 if(playerLink == null) {
                     throw new PlayerNotFoundException("Player is not present in the pool");
                 }
                 playerListener = playerLink.getPlayerPoolListener();
-
                 // Before we continue, we should lock the pool listener's lock
                 playerListener.getLock().lock();
 
@@ -77,13 +82,12 @@ public class DcInteractor implements DcInputBoundary {
                     response = Response.fromException(e, "Player not found");
                     e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
             finally {
                 if(playerListener != null) {
                     playerListener.getLock().unlock();
                 }
+                playerPoolLock.unlock();
             }
 
             DcOutputData outputData = new DcOutputData(response, playerId);
