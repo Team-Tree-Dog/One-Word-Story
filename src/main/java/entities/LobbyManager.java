@@ -14,6 +14,8 @@ import java.util.concurrent.locks.Lock;
  */
 public class LobbyManager {
 
+    public static final int PLAYERS_TO_START_GAME = 2;
+
     /**
      * Pairs Player objects with the corresponding Listener (join public lobby thread)
      * which is waiting for the player to either be sorted into a game
@@ -316,10 +318,31 @@ public class LobbyManager {
     }
 
     /**
+
+     * Combines functionality of removing the player from pool, adding player to game, and notifying
+     * the corresponding PlayerPoolListener that the player joined the game. If the player
+     * was not in the pool, this method will STILL ADD THEM to the game and will subsequently
+     * throw a PlayerNotFoundException
+     * @param p Player you wish to transfer from pool to the game
+     * @throws GameDoesntExistException If game is null
+     * @throws PlayerNotFoundException If player was not found in the pool
+     */
+    public void addPlayerToGameRemoveFromPool (Player p) throws
+            GameDoesntExistException, PlayerNotFoundException {
+        // Throws GameDoesntExist if game is null
+        boolean success = addPlayerToGame(p);
+
+        // Throws GameDoesntExist or PlayerNotFound
+        if (success) {
+            removeFromPoolJoin(p);
+        }
+    }
+
+    /**
      * Gets all the players from the game
      * @return an arraylist of players
      */
-    public ArrayList<Player> getPlayersFromGame() {
+    public ArrayList<Player> getPlayersFromGame () {
         return new ArrayList<>(game.getPlayers());
     }
 

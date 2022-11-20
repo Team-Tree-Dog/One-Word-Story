@@ -52,7 +52,9 @@ public class SpInteractor {
     public class SpTask extends TimerTask {
         @Override
         public void run() {
+            // We need to lock all the accesses to the pool and the game to avoid race conditions
             gameLock.lock();
+            playerPoolLock.lock();
             // If game has ended, set it to null.
             if (!lobbyManager.isGameNull()) {
                 if (lobbyManager.isGameEnded()) {
@@ -62,49 +64,29 @@ public class SpInteractor {
                     try {
                         lobbyManager.setGameNull();
                     } catch (GameRunningException e) {
+                        gameLock.unlock();
+                        playerPoolLock.unlock();
                         throw new RuntimeException(e);
                     }
 
                 } else {
-                    // We need to lock all the accesses to the pool to avoid race conditions
-                    playerPoolLock.lock();
                     for (LobbyManager.PlayerObserverLink playerObserverLink : lobbyManager.getPool()) {
                         Player player = playerObserverLink.getPlayer();
-                        boolean wasPlayerAdded;
-
-                        // IMPOSSIBLE Error. In this if block, game is not null and only SortPlayers
-                        // Sets game to null
                         try {
-                            wasPlayerAdded = lobbyManager.addPlayerToGame(player);
-                        } catch (GameDoesntExistException e) {
+                            lobbyManager.addPlayerToGameRemoveFromPool(player);
+                        } catch (PlayerNotFoundException | GameDoesntExistException e) {
+                            // GameDoesntExist is an IMPOSSIBLE Error. In this if block, game is not null and
+                            // only SortPlayers sets game to null.
+                            // PlayerNotFoundException occurs if player is removed from the pool from another
+                            // thread. Proper lock architecture will prevent this
+                            gameLock.unlock();
                             playerPoolLock.unlock();
                             throw new RuntimeException(e);
                         }
-
-                        // GameDoesntExistException IMPOSSIBLE. PlayerNotFoundException occurs if
-                        // player is removed from the pool from another thread. Proper lock architecture
-                        // Will prevent this
-                        if (wasPlayerAdded) {
-                            // We need to lock this section to avoid race conditions
-                            Lock lock = playerObserverLink.getPlayerPoolListener().getLock();
-                            lock.lock();
-                            try {
-                                lobbyManager.removeFromPoolJoin(player);
-                            } catch (PlayerNotFoundException | GameDoesntExistException e) {
-                                throw new RuntimeException(e);
-                            }
-                            finally {
-                                lock.unlock();
-                            }
-                        }
                     }
-                    playerPoolLock.unlock();
                 }
             }
-            gameLock.unlock();
-            // Once again, we need to lock the pool to avoid race conditions
-            playerPoolLock.lock();
-            if (lobbyManager.isGameNull() && lobbyManager.getPool().size() >= 2) {
+            else if (lobbyManager.getPool().size() >= LobbyManager.PLAYERS_TO_START_GAME) {
                 Map<String, Integer> settings = null; // currently player settings isn't a feature, thus null
                 Game game = lobbyManager.newGameFromPool(settings);
 
@@ -113,6 +95,7 @@ public class SpInteractor {
                 try {
                     lobbyManager.setGame(game);
                 } catch (GameRunningException e) {
+                    gameLock.unlock();
                     playerPoolLock.unlock();
                     throw new RuntimeException(e);
                 }
@@ -120,6 +103,7 @@ public class SpInteractor {
                 lobbyManager.removeAllFromPoolJoin();
                 new RgInteractor(game, pge, pd, gameLock).startTimer();
             }
+            gameLock.unlock();
             playerPoolLock.unlock();
         }
     }

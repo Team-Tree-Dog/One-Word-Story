@@ -122,14 +122,22 @@ public class JplInteractor implements JplInputBoundary {
                             player.getPlayerId()));
                 }
 
-            } catch (EntityException | InterruptedException e) {
+            } catch (EntityException e) {
                 // Notifies that adding player with given ID to pool has failed
                 presenter.inPool(
                         new JplOutputDataResponse(
                                 // Response object with IdInUseException response code
                                 Response.fromException(e, e.getMessage()),
                                 data.getId()));
-            } finally {
+            } catch (InterruptedException e) {
+                EntityException emptyException = new EntityException("");
+                presenter.inPool(
+                        new JplOutputDataResponse(
+                                // Response object with IdInUseException response code
+                                Response.fromException(emptyException, e.getMessage()),
+                                data.getId()));
+            }
+            finally {
                 lock.unlock();
             }
         }
