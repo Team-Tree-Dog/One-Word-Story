@@ -1,4 +1,11 @@
 package adapters.presenters;
 
-public class GlsPresenter {
+import usecases.get_latest_stories.GlsOutputBoundary;
+import usecases.get_latest_stories.GlsOutputData;
+
+public class GlsPresenter implements GlsOutputBoundary {
+    @Override
+    public void putStories(GlsOutputData data) {
+
+    }
 }
