@@ -58,10 +58,16 @@ public class DcInteractor implements DcInputBoundary {
 
             // Innocent until proven guilty
             Response response = Response.getSuccessful("Disconnecting was successful.");
-            LobbyManager.PlayerObserverLink playerLink = lm.getLinkFromPlayer(playerToDisconnect);
-            PlayerPoolListener playerListener = null;
+
             playerPoolLock.lock();
+
+            // Null if player not found, looks through pool hence above lock is needed
+            LobbyManager.PlayerObserverLink playerLink = lm.getLinkFromPlayer(playerToDisconnect);
+
+            PlayerPoolListener playerListener = null;
+
             try {
+                // If player was not in pool, throw exception, run catch, and release pool in finally block
                 if(playerLink == null) {
                     throw new PlayerNotFoundException("Player is not present in the pool");
                 }
