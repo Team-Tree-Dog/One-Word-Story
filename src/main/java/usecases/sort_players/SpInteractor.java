@@ -61,31 +61,21 @@ public class SpInteractor {
 
                     for (LobbyManager.PlayerObserverLink playerObserverLink : lobbyManager.getPool()) {
                         Player player = playerObserverLink.getPlayer();
-                        boolean wasPlayerAdded;
 
-                        // IMPOSSIBLE Error. In this if block, game is not null and only SortPlayers
-                        // Sets game to null
                         try {
-                            wasPlayerAdded = lobbyManager.addPlayerToGame(player);
-                        } catch (GameDoesntExistException e) {
+                            lobbyManager.addPlayerToGameRemoveFromPool(player);
+                        } catch (PlayerNotFoundException | GameDoesntExistException e) {
+                            // GameDoesntExist is an IMPOSSIBLE Error. In this if block, game is not null and
+                            // only SortPlayers sets game to null.
+                            // PlayerNotFoundException occurs if player is removed from the pool from another
+                            // thread. Proper lock architecture will prevent this
                             throw new RuntimeException(e);
-                        }
-
-                        // GameDoesntExistException IMPOSSIBLE. PlayerNotFoundException occurs if
-                        // player is removed from the pool from another thread. Proper lock architecture
-                        // Will prevent this
-                        if (wasPlayerAdded) {
-                            try {
-                                lobbyManager.removeFromPoolJoin(player);
-                            } catch (PlayerNotFoundException | GameDoesntExistException e) {
-                                throw new RuntimeException(e);
-                            }
                         }
                     }
                 }
             }
 
-            if (lobbyManager.isGameNull() && lobbyManager.getPool().size() >= 2) {
+            else if (lobbyManager.getPool().size() >= LobbyManager.PLAYERS_TO_START_GAME) {
                 Map<String, Integer> settings = null; // currently player settings isn't a feature, thus null
                 Game game = lobbyManager.newGameFromPool(settings);
 
