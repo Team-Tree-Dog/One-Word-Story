@@ -13,6 +13,8 @@ import static org.junit.Assert.assertEquals;
 import static usecases.Response.ResCode.*;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class SwInteractorTests {
 
@@ -90,9 +92,7 @@ public class SwInteractorTests {
         public Player getCurrentTurnPlayer() {return players.peek();}
     }
     @Before
-    public void setUp() {
-
-    }
+    public void setUp() {}
 
     @After
     public void tearDown() {
@@ -139,11 +139,19 @@ public class SwInteractorTests {
         GameFactory gameFac = new GameFactoryTest();
         LobbyManager lobman = new LobbyManager(playerFac, gameFac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {}
 
             @Override
             public void onCancelPlayer() {}
+
+            @Override
+            public Lock getLock() {
+                return lock;
+            }
         };
 
         Player player1 = lobman.createNewPlayer("player1", "1");
@@ -309,11 +317,19 @@ public class SwInteractorTests {
         GameFactory gameFac = new GameFactoryTest();
         LobbyManager lobman = new LobbyManager(playerFac, gameFac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {}
 
             @Override
             public void onCancelPlayer() {}
+
+            @Override
+            public Lock getLock() {
+                return lock;
+            }
         };
 
         Player player1 = lobman.createNewPlayer("player1", "1");
@@ -390,11 +406,18 @@ public class SwInteractorTests {
         GameFactory gameFac = new GameFactoryTest();
         LobbyManager lobman = new LobbyManager(playerFac, gameFac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {}
 
             @Override
             public void onCancelPlayer() {}
+
+            @Override
+            public Lock getLock() {
+                return lock;
+            }
         };
 
         Player player1 = lobman.createNewPlayer("player1", "1");
@@ -479,11 +502,18 @@ public class SwInteractorTests {
         GameFactory gameFac = new GameFactoryTest();
         LobbyManager lobman = new LobbyManager(playerFac, gameFac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
             @Override
             public void onJoinGamePlayer(Game game) {}
 
             @Override
             public void onCancelPlayer() {}
+
+            @Override
+            public Lock getLock() {
+                return lock;
+            }
         };
 
         Player player1 = lobman.createNewPlayer("player1", "1");

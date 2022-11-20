@@ -7,6 +7,8 @@ import exceptions.OutOfTurnException;
 import exceptions.PlayerNotFoundException;
 import usecases.Response;
 
+import java.util.concurrent.locks.Lock;
+
 /**
  * SwInteractor is the interactor that calls the necessary backend functions to access and change the story.
  * SwInteractor also tells the ViewModel, via the SwOutputBoundary presenter, if the word is valid or not.
@@ -24,6 +26,8 @@ public class SwInteractor implements SwInputBoundary{
      */
     private final LobbyManager lobbyManager;
 
+    private final Lock gameLock;
+
     /**
      * The game in which we are changing the Story, and accessing Players and their information.
      * Constructor.
@@ -33,6 +37,7 @@ public class SwInteractor implements SwInputBoundary{
     public SwInteractor (SwOutputBoundary presenter, LobbyManager lobbyManager) {
         this.presenter = presenter;
         this.lobbyManager = lobbyManager;
+        this.gameLock = lobbyManager.getGameLock();
     }
 
     /**
@@ -78,7 +83,7 @@ public class SwInteractor implements SwInputBoundary{
          */
         @Override
         public void run() {
-
+            gameLock.lock();
             boolean success = true;
 
             try{
@@ -111,6 +116,7 @@ public class SwInteractor implements SwInputBoundary{
                 Response resp = Response.getSuccessful(mess);
                 presenter.valid(new SwOutputDataValidWord(inputData.getWord(), this.playerId, resp));
             }
+            gameLock.unlock();
         }
     }
 }

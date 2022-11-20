@@ -10,12 +10,12 @@ public class SwOutputDataFailure {
     /**
      * ID of the player that attempted to submit.
      */
-    private String playerId;
+    private final String playerId;
 
     /**
      * Result Code.
      */
-    private Response response;
+    private final Response response;
 
     /**
      * Constructor.
