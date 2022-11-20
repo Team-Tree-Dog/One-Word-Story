@@ -20,6 +20,8 @@ public class SwInteractorTests {
 
     private static Lock playerPoolLock;
 
+    private static Lock gameLock;
+
     private static class GameTest extends Game {
         public static final int REGULAR_GAME_SECONDS_PER_TURN = 15;
         private final Queue<Player> players;
@@ -96,6 +98,7 @@ public class SwInteractorTests {
     @Before
     public void setUp() {
         playerPoolLock = new ReentrantLock();
+        gameLock = new ReentrantLock();
     }
 
     @After
@@ -196,7 +199,7 @@ public class SwInteractorTests {
         };
 
         SwInputData swinput = new SwInputData(word, player2.getPlayerId());
-        SwInteractor swint = new SwInteractor(pres, lobman);
+        SwInteractor swint = new SwInteractor(pres, lobman, gameLock);
         swint.submitWord(swinput);
 
         System.out.println("bloop");
@@ -275,7 +278,7 @@ public class SwInteractorTests {
 
         SwInputData swinput = new SwInputData(word, player1.getPlayerId());
 
-        SwInteractor swint = new SwInteractor(pres, lobman);
+        SwInteractor swint = new SwInteractor(pres, lobman, gameLock);
         swint.submitWord(swinput);
 
         System.out.println("Test ran to end successfully! :)");
@@ -365,7 +368,7 @@ public class SwInteractorTests {
 
         SwInputData swinput = new SwInputData(word, player1.getPlayerId());
 
-        SwInteractor swint = new SwInteractor(pres, lobman);
+        SwInteractor swint = new SwInteractor(pres, lobman, gameLock);
         swint.submitWord(swinput);
 
         System.out.println("Test ran to end successfully! :)");
@@ -459,7 +462,7 @@ public class SwInteractorTests {
         };
 
         SwInputData swinput = new SwInputData(word, player1.getPlayerId());
-        SwInteractor swint = new SwInteractor(pres, lobman);
+        SwInteractor swint = new SwInteractor(pres, lobman, gameLock);
         swint.submitWord(swinput);
 
         System.out.println("Test ran to end successfully! :)");
@@ -556,7 +559,7 @@ public class SwInteractorTests {
         };
 
         SwInputData swinput = new SwInputData(word, player1.getPlayerId());
-        SwInteractor swint = new SwInteractor(pres, lobman);
+        SwInteractor swint = new SwInteractor(pres, lobman, gameLock);
         swint.submitWord(swinput);
 
         System.out.println("Test ran to end successfully! :)");
