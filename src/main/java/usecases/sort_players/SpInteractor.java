@@ -104,6 +104,8 @@ public class SpInteractor {
                     throw new RuntimeException(e);
                 }
 
+                // This method has built in thread safety which ensures that each
+                // PlayerPoolListener lock is engaged during callback execution
                 lobbyManager.removeAllFromPoolJoin();
                 new RgInteractor(game, pge, pd, gameLock).startTimer();
             }
