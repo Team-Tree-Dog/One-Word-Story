@@ -7,6 +7,7 @@ import entities.games.GameFactory;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Core entity which keeps track of all the games which are running
@@ -46,19 +47,20 @@ public class LobbyManager {
     private final Timer sortPlayersTimer;
     private boolean startedSortTimer;
     private final Lock playerPoolLock;
+    private final Lock gameLock;
 
     /**
      * @param playerFac Inject a factory to determine how players are made
      * @param gameFac Inject a factory to determine how games are made
-     * @param playerPoolLock The lock used for synchronization with other object that access the player pool
      */
-    public LobbyManager (PlayerFactory playerFac, GameFactory gameFac, Lock playerPoolLock) {
+    public LobbyManager (PlayerFactory playerFac, GameFactory gameFac) {
         this.gameFac = gameFac;
         this.playerFac = playerFac;
         this.playerPool = new CopyOnWriteArrayList<>();
         this.sortPlayersTimer = new Timer();
         this.startedSortTimer = false;
-        this.playerPoolLock = playerPoolLock;
+        this.playerPoolLock = new ReentrantLock();
+        this.gameLock = new ReentrantLock();
     }
 
     /**
@@ -345,5 +347,9 @@ public class LobbyManager {
     public ArrayList<Player> getPlayersFromGame () {
         return new ArrayList<>(game.getPlayers());
     }
+
+    public Lock getGameLock() { return gameLock; }
+
+    public Lock getPlayerPoolLock() { return playerPoolLock; }
 
 }

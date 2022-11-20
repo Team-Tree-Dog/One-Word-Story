@@ -17,7 +17,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class RgTaskTests {
 
-
     private Lock gameLock;
 
     /**
@@ -28,7 +27,6 @@ public class RgTaskTests {
 
         public static int REGULAR_GAME_SECONDS_PER_TURN = 15;
         private final Queue<Player> players;
-
         private final boolean gameOverValue;
 
         /**
@@ -106,6 +104,7 @@ public class RgTaskTests {
          */
         @Override
         public boolean isGameOver() { return this.gameOverValue; }
+
     }
 
     private static class CustomizablePgeInputBoundary implements PgeInputBoundary {

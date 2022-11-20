@@ -147,10 +147,10 @@ public class JplInteractor implements JplInputBoundary {
      * @param lobbyManager Shared object representing game state
      * @param presenter Object to call for output
      */
-    public JplInteractor (LobbyManager lobbyManager, JplOutputBoundary presenter, Lock gameLock) {
+    public JplInteractor (LobbyManager lobbyManager, JplOutputBoundary presenter) {
         this.lobbyManager = lobbyManager;
         this.presenter = presenter;
-        this.gameLock = gameLock;
+        this.gameLock = lobbyManager.getGameLock();
     }
 
     /**

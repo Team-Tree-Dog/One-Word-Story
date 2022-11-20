@@ -33,12 +33,11 @@ public class SwInteractor implements SwInputBoundary{
      * Constructor.
      * @param presenter The output boundary which will be used to pass outputs to the ViewModel.
      * @param lobbyManager The LobbyManager, as described before.
-     * @param gameLock The lock that should be used while accessing the game
      */
-    public SwInteractor (SwOutputBoundary presenter, LobbyManager lobbyManager, Lock gameLock) {
+    public SwInteractor (SwOutputBoundary presenter, LobbyManager lobbyManager) {
         this.presenter = presenter;
         this.lobbyManager = lobbyManager;
-        this.gameLock = gameLock;
+        this.gameLock = lobbyManager.getGameLock();
     }
 
     /**

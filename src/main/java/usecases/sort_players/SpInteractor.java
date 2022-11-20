@@ -29,16 +29,14 @@ public class SpInteractor {
      * @param lobbyManager the lobby manager players are being sorted from
      * @param pge pull game ended use case input boundary
      * @param pd pull data use case input boundary4
-     * @param playerPoolLock The lock used for synchronization with other object that access the player pool
-     * @param gameLock The lock used for synchronization with other object that access the game
      */
     public SpInteractor(LobbyManager lobbyManager, PgeInputBoundary pge,
-                         PdInputBoundary pd, Lock playerPoolLock, Lock gameLock) {
+                         PdInputBoundary pd) {
         this.lobbyManager = lobbyManager;
         this.pge = pge;
         this.pd = pd;
-        this.playerPoolLock = playerPoolLock;
-        this.gameLock = gameLock;
+        this.playerPoolLock = lobbyManager.getPlayerPoolLock();
+        this.gameLock = lobbyManager.getGameLock();
     }
 
     /**

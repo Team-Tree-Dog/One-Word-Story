@@ -21,10 +21,6 @@ import static org.junit.Assert.*;
  */
 public class SpInteractorTests {
 
-    private static Lock playerPoolLock;
-
-    private static Lock gameLock;
-
     private static class CustomizableTestGame extends Game {
 
         private final ArrayList<Player> players = new ArrayList<>();
@@ -83,6 +79,7 @@ public class SpInteractorTests {
         public Player getCurrentTurnPlayer() {
             return null;
         }
+
     }
 
     private static class BlankOutputPdInteractor extends PdInteractor {
@@ -126,10 +123,7 @@ public class SpInteractorTests {
      * Pre-test setup, none in this case
      */
     @Before
-    public void setup () {
-        playerPoolLock = new ReentrantLock();
-        gameLock = new ReentrantLock();
-    }
+    public void setup () {}
 
     /**
      * Post-test breakdown, none in this case
@@ -156,7 +150,7 @@ public class SpInteractorTests {
                         customizableTestGame.addPlayer(p);
                     }
                     return customizableTestGame;
-        }, playerPoolLock);
+        });
 
         TestPlayerPoolListener bobsListener = new TestPlayerPoolListener();
         TestPlayerPoolListener billysListener = new TestPlayerPoolListener();
@@ -172,7 +166,7 @@ public class SpInteractorTests {
         // Execute one round of the TimerTask. This should get a new game with players from
         // the pool, set it as m.game, clear the pool, and call the PlayerPoolListeners
         SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(),
-                new BlankOutputPdInteractor(), playerPoolLock, gameLock);
+                new BlankOutputPdInteractor());
         SpInteractor.SpTask spTimerTask = sp.new SpTask();
         spTimerTask.run();
 
@@ -200,7 +194,7 @@ public class SpInteractorTests {
         CustomizableTestGame g = new CustomizableTestGame(true, true);
 
         LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()),
-                (settings, initialPlayers) -> null, playerPoolLock);
+                (settings, initialPlayers) -> null);
 
         // Set a game and set isGameEnded to true via setTimerStopped
         try {
@@ -210,7 +204,7 @@ public class SpInteractorTests {
 
         // Execute one round of the TimerTask. This should set the game to null
         SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(),
-                new BlankOutputPdInteractor(), playerPoolLock, gameLock);
+                new BlankOutputPdInteractor());
         SpInteractor.SpTask spTimerTask = sp.new SpTask();
         spTimerTask.run();
 
@@ -229,7 +223,7 @@ public class SpInteractorTests {
         CustomizableTestGame g = new CustomizableTestGame(false, true);
 
         LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()),
-                (settings, initialPlayers) -> null, playerPoolLock);
+                (settings, initialPlayers) -> null);
 
         // Add two players to game
         g.addPlayer(new Player("Lilly", "3"));
@@ -250,7 +244,7 @@ public class SpInteractorTests {
         // Execute one round of the TimerTask. Based on the Game instance used, Bob and Billy
         // should both be successfully added to the currently running game
         SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(),
-                new BlankOutputPdInteractor(), playerPoolLock, gameLock);
+                new BlankOutputPdInteractor());
         SpInteractor.SpTask spTimerTask = sp.new SpTask();
         spTimerTask.run();
 
@@ -274,7 +268,7 @@ public class SpInteractorTests {
         CustomizableTestGame g = new CustomizableTestGame(false, false);
 
         LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()),
-                (settings, initialPlayers) -> null, playerPoolLock);
+                (settings, initialPlayers) -> null);
 
         // Set up scenario where a game is running (not null not ended)
         try {
@@ -297,7 +291,7 @@ public class SpInteractorTests {
         // Execute one round of the TimerTask. Based on the Game instance used, Bob and Billy
         // should both be successfully added to the currently running game
         SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(),
-                new BlankOutputPdInteractor(), playerPoolLock, gameLock);
+                new BlankOutputPdInteractor());
         SpInteractor.SpTask spTimerTask = sp.new SpTask();
         spTimerTask.run();
 

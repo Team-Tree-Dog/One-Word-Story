@@ -22,13 +22,12 @@ public class DcInteractor implements DcInputBoundary {
      * Constructor for DcInteractor
      * @param lm Lobby Manager
      * @param dcOutputBoundary DcOutputBoundary
-     * @param playerPoolLock The lock used for synchronization with other object that access the player pool
      */
-    public DcInteractor(LobbyManager lm, DcOutputBoundary dcOutputBoundary, Lock playerPoolLock, Lock gameLock) {
+    public DcInteractor(LobbyManager lm, DcOutputBoundary dcOutputBoundary) {
         this.lm = lm;
         this.dcOutputBoundary = dcOutputBoundary;
-        this.playerPoolLock = playerPoolLock;
-        this.gameLock = gameLock;
+        this.playerPoolLock = lm.getPlayerPoolLock();
+        this.gameLock = lm.getGameLock();
     }
 
     /**

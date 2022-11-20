@@ -18,7 +18,6 @@ public class RgInteractor {
     private final Game g;
     private final PgeInputBoundary pge;
     private final PdInputBoundary pd;
-
     private final Lock gameLock;
 
     /**

@@ -8,9 +8,6 @@ import entities.games.Game;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
 import entities.games.GameRegular;
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -18,8 +15,9 @@ import usecases.Response;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 public class JoinPublicLobbyTest {
 
@@ -60,9 +58,8 @@ public class JoinPublicLobbyTest {
 
     @Before
     public void setupJplInteractor(){
-        LobbyManager lobbyManager = new LobbyManager(this.playerFactory, this.gameFactory, new ReentrantLock());
-        Lock gameLock = new ReentrantLock();
-        this.interactor = new JplInteractor(lobbyManager, this.testOutputBoundary, gameLock);
+        LobbyManager lobbyManager = new LobbyManager(this.playerFactory, this.gameFactory);
+        this.interactor = new JplInteractor(lobbyManager, this.testOutputBoundary);
     }
 
     /**
