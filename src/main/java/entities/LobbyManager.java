@@ -322,13 +322,14 @@ public class LobbyManager {
         if (success) {
             removeFromPoolJoin(p);
         }
+    }
 
+    /**
      * Gets all the players from the game
      * @return an arraylist of players
      */
-    public ArrayList<Player> getPlayersFromGame() {
+    public ArrayList<Player> getPlayersFromGame () {
         return new ArrayList<>(game.getPlayers());
-
     }
 
 }
