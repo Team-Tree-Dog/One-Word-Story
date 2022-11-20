@@ -81,13 +81,14 @@ public class GmlsInteractorTests {
         GmlsInteractor gmls = new GmlsInteractor(pres, repo);
 
         GmlsInputData d = new GmlsInputData(0, 2);
-        gmls.getLatestStories();
+        gmls.getLatestStories(d);
 
         StoryData[] stories = ((CustomizableGmlsOutputBoundary) pres).getReceivedData().getStories();
         assertNotNull("Presenter was not accessed", stories);
         assertEquals("Returned wrong number of stories", 2, stories.length);
-        assertEquals("Returned incorrect story", 3, stories[0].getLikes());
-        assertEquals("Returned incorrect story", 2, stories[1].getLikes());
+        assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
+        assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
+        assertEquals("Returned incorrect story", "text 1", stories[2].getStory());
     }
 
     /**
@@ -100,13 +101,13 @@ public class GmlsInteractorTests {
         GmlsInteractor gmls = new GmlsInteractor(pres, repo);
 
         GmlsInputData d = new GmlsInputData(null, 2);
-        gmls.getLatestStories();
+        gmls.getLatestStories(d);
 
         StoryData[] stories = ((CustomizableGmlsOutputBoundary) pres).getReceivedData().getStories();
         assertNotNull("Presenter was not accessed", stories);
         assertEquals("Returned wrong number of stories", 2, stories.length);
-        assertEquals("Returned incorrect story", 3, stories[0].getLikes());
-        assertEquals("Returned incorrect story", 2, stories[1].getLikes());
+        assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
+        assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
     }
 
     /**
@@ -119,13 +120,13 @@ public class GmlsInteractorTests {
         GmlsInteractor gmls = new GmlsInteractor(pres, repo);
 
         GmlsInputData d = new GmlsInputData(1, null);
-        gmls.getLatestStories();
+        gmls.getLatestStories(d);
 
         StoryData[] stories = ((CustomizableGmlsOutputBoundary) pres).getReceivedData().getStories();
         assertNotNull("Presenter was not accessed", stories);
         assertEquals("Returned wrong number of stories", 2, stories.length);
-        assertEquals("Returned incorrect story", 2, stories[0].getLikes());
-        assertEquals("Returned incorrect story", 1, stories[1].getLikes());
+        assertEquals("Returned incorrect story", "text 2", stories[0].getStory());
+        assertEquals("Returned incorrect story", "text 1", stories[1].getStory());
     }
 
     /**
@@ -138,14 +139,14 @@ public class GmlsInteractorTests {
         GmlsInteractor gmls = new GmlsInteractor(pres, repo);
 
         GmlsInputData d = new GmlsInputData(null, null);
-        gmls.getLatestStories();
+        gmls.getLatestStories(d);
 
         StoryData[] stories = ((CustomizableGmlsOutputBoundary) pres).getReceivedData().getStories();
         assertNotNull("Presenter was not accessed", stories);
         assertEquals("Returned wrong number of stories", 3, stories.length);
-        assertEquals("Returned incorrect story", 3, stories[0].getLikes());
-        assertEquals("Returned incorrect story", 2, stories[1].getLikes());
-        assertEquals("Returned incorrect story", 1, stories[2].getLikes());
+        assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
+        assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
+        assertEquals("Returned incorrect story", "text 1", stories[2].getStory());
     }
 
     /**
@@ -158,7 +159,7 @@ public class GmlsInteractorTests {
         GmlsInteractor gmls = new GmlsInteractor(pres, repo);
 
         GmlsInputData d = new GmlsInputData(2, 0);
-        gmls.getLatestStories();
+        gmls.getLatestStories(d);
 
         StoryData[] stories = ((CustomizableGmlsOutputBoundary) pres).getReceivedData().getStories();
         assertNotNull("Presenter was not accessed", stories);
@@ -175,13 +176,13 @@ public class GmlsInteractorTests {
         GmlsInteractor gmls = new GmlsInteractor(pres, repo);
 
         GmlsInputData d = new GmlsInputData(-10, 10);
-        gmls.getLatestStories();
+        gmls.getLatestStories(d);
 
         StoryData[] stories = ((CustomizableGmlsOutputBoundary) pres).getReceivedData().getStories();
         assertNotNull("Presenter was not accessed", stories);
         assertEquals("Returned wrong number of stories", 3, stories.length);
-        assertEquals("Returned incorrect story", 3, stories[0].getLikes());
-        assertEquals("Returned incorrect story", 2, stories[1].getLikes());
-        assertEquals("Returned incorrect story", 1, stories[2].getLikes());
+        assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
+        assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
+        assertEquals("Returned incorrect story", "text 1", stories[2].getStory());
     }
 }
