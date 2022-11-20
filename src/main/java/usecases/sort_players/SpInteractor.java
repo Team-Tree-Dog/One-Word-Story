@@ -118,7 +118,7 @@ public class SpInteractor {
                 }
 
                 lobbyManager.removeAllFromPoolJoin();
-                new RgInteractor(game, pge, pd).startTimer();
+                new RgInteractor(game, pge, pd, gameLock).startTimer();
             }
             playerPoolLock.unlock();
         }

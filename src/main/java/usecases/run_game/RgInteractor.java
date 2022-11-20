@@ -8,6 +8,7 @@ import usecases.pull_game_ended.PgeInputData;
 
 import java.util.ArrayList;
 import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Interactor for the Run Game use-case
@@ -18,15 +19,18 @@ public class RgInteractor {
     private final PgeInputBoundary pge;
     private final PdInputBoundary pd;
 
+    private final Lock gameLock;
+
     /**
      * @param g Game that we interact with
      * @param pge "Pull Game Ended" use-case input boundary
      * @param pd "Pull Data" use-case input boundary
      */
-    public RgInteractor (Game g, PgeInputBoundary pge, PdInputBoundary pd) {
+    public RgInteractor (Game g, PgeInputBoundary pge, PdInputBoundary pd, Lock gameLock) {
         this.g = g;
         this.pge = pge;
         this.pd = pd;
+        this.gameLock = gameLock;
     }
 
     /**
@@ -39,7 +43,7 @@ public class RgInteractor {
          */
         @Override
         public void run () {
-
+            gameLock.lock();
             if (RgInteractor.this.g.isGameOver()) {
                 // Game ending procedure:
 
@@ -68,6 +72,7 @@ public class RgInteractor {
                 RgInteractor.this.pd.onTimerUpdate(new PdInputData(RgInteractor.this.g));
 
             }
+            gameLock.unlock();
         }
     }
 
