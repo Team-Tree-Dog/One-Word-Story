@@ -2,6 +2,7 @@ package usecases.disconnecting;
 
 import entities.LobbyManager;
 import entities.Player;
+import entities.PlayerPoolListener;
 import exceptions.GameDoesntExistException;
 import exceptions.PlayerNotFoundException;
 import usecases.Response;
@@ -51,13 +52,21 @@ public class DcInteractor implements DcInputBoundary {
 
             // Innocent until proven guilty
             Response response = Response.getSuccessful("Disconnecting was successful.");
-
+            LobbyManager.PlayerObserverLink playerLink = lm.getLinkFromPlayer(playerToDisconnect);
+            PlayerPoolListener playerListener = null;
             try {
+                if(playerLink == null) {
+                    throw new PlayerNotFoundException("Player is not present in the pool");
+                }
+                playerListener = playerLink.getPlayerPoolListener();
+
+                // Before we continue, we should lock the pool listener's lock
+                playerListener.getLock().lock();
+
                 // Try to cancel player from pool. Will throw PlayerNotFound
                 // if player isn't in pool so no need to check contains explicitly
                 lm.removeFromPoolCancel(playerToDisconnect);
             } catch (PlayerNotFoundException ignored) {
-
                 try {
                     // In this catch block, we know player was not in the pool.
                     // Now try to remove player from game.
@@ -67,6 +76,13 @@ public class DcInteractor implements DcInputBoundary {
                     // not found to be in the game, so respond with fail
                     response = Response.fromException(e, "Player not found");
                     e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally {
+                if(playerListener != null) {
+                    playerListener.getLock().unlock();
                 }
             }
 

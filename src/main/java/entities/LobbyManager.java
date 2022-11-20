@@ -5,6 +5,7 @@ import entities.games.Game;
 import entities.games.GameFactory;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Core entity which keeps track of all the games which are running
@@ -104,6 +105,7 @@ public class LobbyManager {
     /**
      * Remove a player from the pool and call the linked PlayerPoolListener's
      * onJoinGamePlayer method, indicating that the player has joined the game
+     * Notice that this method is not thread-safe!
      * @param p Player you would like to remove
      * @throws PlayerNotFoundException if the player was not found in the pool
      * @throws GameDoesntExistException if the game isn't running, in which case, player can't join it
@@ -144,7 +146,11 @@ public class LobbyManager {
      */
     public void removeAllFromPoolJoin() {
         for(PlayerObserverLink playerObserverLink: playerPool) {
+            // We need to lock the critical section for every player
+            Lock lock = playerObserverLink.getPlayerPoolListener().getLock();
+            lock.lock();
             playerObserverLink.playerPoolListener.onJoinGamePlayer(this.game);
+            lock.unlock();
         }
         this.clearPool();
     }
@@ -224,6 +230,7 @@ public class LobbyManager {
 
     /**
      * Removes a PlayerObserverLink from the pool via its player
+     * Notice that this method is not thread-safe!
      * @param p the player in the POL to be removed
      * @throws PlayerNotFoundException if the player was not found in any POLs in playerPool
      */
@@ -282,7 +289,7 @@ public class LobbyManager {
      * @param p the player in the PlayerObserverLink
      * @return the PlayerObserverLink containing player p, null if there isn't one
      */
-    private PlayerObserverLink getLinkFromPlayer(Player p){
+    public PlayerObserverLink getLinkFromPlayer(Player p){
         for (PlayerObserverLink pol : playerPool) {
             if (pol.getPlayer().equals(p)) {
                 return pol;

@@ -13,6 +13,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -214,11 +216,19 @@ public class DcInteractorTests {
     }
 
     private static class BlankPoolListener implements PlayerPoolListener {
+
+        private final Lock lock = new ReentrantLock();
         @Override
         public void onJoinGamePlayer(Game game) {}
 
         @Override
         public void onCancelPlayer() {}
+
+        @Override
+        public Lock getLock() {
+            return lock;
+        }
+
     }
 
 }

@@ -8,6 +8,10 @@ import exceptions.EntityException;
 import usecases.GameDTO;
 import usecases.Response;
 
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Core class of the Join Public Lobby use case
  * Given a player who would like to join a public lobby, adds this player
@@ -30,12 +34,18 @@ public class JplInteractor implements JplInputBoundary {
         private boolean hasCancelled;
         private final JplInputData data;
 
+        private final Lock lock;
+
+        private final Condition conditionVariable;
+
         /**
          * @param data Data passed into this use case
          */
         public JplThread (JplInputData data) {
             this.data = data;
             hasCancelled = false;
+            lock = new ReentrantLock();
+            conditionVariable = lock.newCondition();
         }
 
         /**
@@ -46,6 +56,8 @@ public class JplInteractor implements JplInputBoundary {
         @Override
         public void onJoinGamePlayer(Game game) {
             this.game = game;
+            // There is always only one thread waiting for this signal
+            conditionVariable.signal();
         }
 
         /**
@@ -55,6 +67,13 @@ public class JplInteractor implements JplInputBoundary {
         @Override
         public void onCancelPlayer() {
             hasCancelled = true;
+            // There is always only one thread waiting for this signal
+            conditionVariable.signal();
+        }
+
+        @Override
+        public Lock getLock() {
+            return lock;
         }
 
         /**
@@ -63,6 +82,9 @@ public class JplInteractor implements JplInputBoundary {
         @Override
         public void run() {
             try {
+                // It is better to always lock the whole critical section (a useful rule of thumb)
+                lock.lock();
+
                 // Throws IdInUseException, code after runs if this line succeeded
                 Player player = lobbyManager.createNewPlayer(data.getDisplayName(), data.getId());
 
@@ -78,7 +100,7 @@ public class JplInteractor implements JplInputBoundary {
                 // Block thread until an update is heard on the player in the pool
                 while (game == null && !hasCancelled) {
                     // Makes this waiting loop less CPU expensive
-                    Thread.onSpinWait();
+                    conditionVariable.await();
                 }
 
                 if (game != null) {
@@ -95,13 +117,15 @@ public class JplInteractor implements JplInputBoundary {
                             player.getPlayerId()));
                 }
 
-            } catch (EntityException e) {
+            } catch (EntityException | InterruptedException e) {
                 // Notifies that adding player with given ID to pool has failed
                 presenter.inPool(
                         new JplOutputDataResponse(
                                 // Response object with IdInUseException response code
                                 Response.fromException(e, e.getMessage()),
                                 data.getId()));
+            } finally {
+                lock.unlock();
             }
         }
     }
