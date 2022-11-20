@@ -44,41 +44,63 @@ public class RgTaskTests {
             return players;
         }
 
+        /**
+         * Copied from GameRegular
+         * Currently implemented as no-operation
+         */
         @Override
-        public void onTimerUpdate() {
+        public void onTimerUpdate() {}
 
-        }
-
+        /**
+         * Unused custom getPlayerById
+         * @param playerId Id of searched player
+         * @return null
+         */
         @Override
-        public Player getPlayerById(String playerId) {
-            return null;
-        }
+        public Player getPlayerById(String playerId) { return null; }
 
+        /**
+         * Unused custom removePlayer
+         * @param playerToRemove The Player to be removed
+         * @return true
+         */
         @Override
-        public boolean removePlayer(Player playerToRemove) {
-            return players.remove(playerToRemove);
-        }
+        public boolean removePlayer(Player playerToRemove) { return true; }
 
+        /**
+         * Copied from GameRegular
+         * Adds the player specified to this game instance
+         * @param playerToAdd The Player to be added
+         * @return if the player was successfully added
+         */
         @Override
-        public boolean addPlayer(Player playerToAdd) {
-            return players.add(playerToAdd);
-        }
+        public boolean addPlayer(Player playerToAdd) { return players.add(playerToAdd); }
 
+        /**
+         * Copied from GameRegular
+         * Moves the player whose turn it currently is from the front of the list of players to the back
+         * It is now the new player in the front's turn
+         * @return if the turn switch was successful
+         */
         @Override
         public boolean switchTurn() {
             setSecondsLeftInCurrentTurn(getSecondsPerTurn());
             return players.add(players.remove());
         }
 
+        /**
+         * Copied from GameRegular
+         * @return the first player in the player list, whose turn is currently taking place
+         */
         @Override
-        public Player getCurrentTurnPlayer() {
-            return players.peek();
-        }
+        public Player getCurrentTurnPlayer() { return players.peek(); }
 
+        /**
+         * Custom isGameOver, returns fixed value
+         * @return specified value
+         */
         @Override
-        public boolean isGameOver() {
-            return this.gameOverValue;
-        }
+        public boolean isGameOver() { return this.gameOverValue; }
     }
 
     private static class CustomizablePgeInputBoundary implements PgeInputBoundary {
