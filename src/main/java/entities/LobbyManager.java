@@ -38,7 +38,7 @@ public class LobbyManager {
     }
 
     private final List<PlayerObserverLink> playerPool;
-    private Game game;
+    private volatile Game game;
     private final GameFactory gameFac;
     private final PlayerFactory playerFac;
     private final Timer sortPlayersTimer;

@@ -32,8 +32,8 @@ public class JplInteractor implements JplInputBoundary {
      */
     public class JplThread implements Runnable, PlayerPoolListener {
 
-        private Game game;
-        private boolean hasCancelled;
+        private volatile Game game;
+        private volatile boolean hasCancelled;
         private final JplInputData data;
 
         private final Lock lock;
