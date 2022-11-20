@@ -25,6 +25,8 @@ public class JplInteractor implements JplInputBoundary {
     private final LobbyManager lobbyManager;
     private final JplOutputBoundary presenter;
 
+    private final Lock gameLock;
+
     /**
      * Thread which executes the core logic of this use case
      */
@@ -104,10 +106,13 @@ public class JplInteractor implements JplInputBoundary {
                 }
 
                 if (game != null) {
+                    JplInteractor.this.gameLock.lock();
+                    GameDTO gameState = GameDTO.fromGame(game);
+                    JplInteractor.this.gameLock.lock();
+
                     presenter.inGame(new JplOutputDataJoinedGame(
                             Response.getSuccessful("Player successfully joined a game"),
-                            player.getPlayerId(), GameDTO.fromGame(game)));
-
+                            player.getPlayerId(), gameState));
                 }
 
                 // Player has cancelled waiting
@@ -134,9 +139,10 @@ public class JplInteractor implements JplInputBoundary {
      * @param lobbyManager Shared object representing game state
      * @param presenter Object to call for output
      */
-    public JplInteractor (LobbyManager lobbyManager, JplOutputBoundary presenter) {
+    public JplInteractor (LobbyManager lobbyManager, JplOutputBoundary presenter, Lock gameLock) {
         this.lobbyManager = lobbyManager;
         this.presenter = presenter;
+        this.gameLock = gameLock;
     }
 
     /**
