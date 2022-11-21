@@ -47,7 +47,7 @@ public abstract class Game {
     public int getSecondsPerTurn() {return secondsPerTurn;}
 
     /**
-     * @return Returns how many seconds are left for the current turn
+     * @return Returns how many seconds are left for the current turn, or null if game timer not yet started
      */
     public int getSecondsLeftInCurrentTurn() {return secondsLeftInCurrentTurn;}
 
@@ -100,9 +100,10 @@ public abstract class Game {
     public abstract void onTimerUpdate();
 
     /**
-     * Returns the player by its id
+     * @return the player object with the corresponding playerId, or null if not found
      */
-    public abstract Player getPlayerById(String PlayerId);
+    public abstract Player getPlayerById(String playerId);
+
     /**
      * Removes the player specified from this GameRegular instance
      * @param playerToRemove The Player to be removed

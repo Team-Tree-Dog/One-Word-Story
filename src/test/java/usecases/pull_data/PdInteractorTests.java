@@ -3,21 +3,17 @@ package usecases.pull_data;
 import entities.Player;
 import entities.ValidityChecker;
 import entities.games.Game;
-import entities.games.GameRegular;
 import exceptions.InvalidWordException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.*;
+import org.junit.Test;
 import usecases.GameDTO;
 import usecases.PlayerDTO;
-import usecases.pull_data.PdInputData;
-import usecases.pull_data.PdInteractor;
-import usecases.pull_data.PdOutputBoundary;
-import usecases.pull_data.PdOutputData;
-
-import static org.junit.Assert.*;
 
 import java.util.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -33,7 +29,6 @@ public class PdInteractorTests {
     private static class CustomizableTestGame extends Game {
 
         private final Queue<Player> players = new LinkedList<>();
-
         private final boolean allowAddingPlayers;
 
         /**
@@ -65,7 +60,7 @@ public class PdInteractorTests {
         }
 
         @Override
-        public Player getPlayerById(String PlayerId) {
+        public Player getPlayerById(String playerId) {
             return null;
         }
 
@@ -91,6 +86,7 @@ public class PdInteractorTests {
         public Player getCurrentTurnPlayer() {
             return this.players.peek();
         }
+
     }
 
     private final Game g = new CustomizableTestGame(true);

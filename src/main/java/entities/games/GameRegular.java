@@ -2,14 +2,14 @@ package entities.games;
 
 import entities.Player;
 
-
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * A game, with the "regular" rules and constraints
  */
 public class GameRegular extends Game {
-
 
     public static int REGULAR_GAME_SECONDS_PER_TURN = 15;
     private final Queue<Player> players;
@@ -39,11 +39,21 @@ public class GameRegular extends Game {
 
     }
 
+    /**
+     * Gets Player from this game by its id
+     * @param playerId ID of searched player
+     * @return searched Player
+     */
     @Override
     public Player getPlayerById(String playerId) {
         return players.stream().filter(p -> p.getPlayerId().equals(playerId)).findAny().orElse(null);
     }
 
+    /**
+     * Removes requested player from this game
+     * @param playerToRemove The Player to be removed
+     * @return success of failure as boolean
+     */
     @Override
     public boolean removePlayer(Player playerToRemove) {
         return players.remove(playerToRemove);
