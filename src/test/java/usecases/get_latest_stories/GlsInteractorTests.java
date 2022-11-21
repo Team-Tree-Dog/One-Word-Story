@@ -7,6 +7,7 @@ import usecases.StoryData;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -81,7 +82,7 @@ public class GlsInteractorTests {
     /**
      * Simple test without any curveballs
      */
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testSimpleTest() {
 
         pres = new CustomizableGlsOutputBoundary();
@@ -90,8 +91,15 @@ public class GlsInteractorTests {
         GlsInputData d = new GlsInputData(2);
         gls.getLatestStories(d);
 
-        StoryData[] stories = ((CustomizableGlsOutputBoundary) pres).getReceivedData().getStories();
-        assertNotNull("Presenter was not accessed", stories);
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ex) {
+            System.out.println("Impossible error, good luck");
+        }
+
+        GlsOutputData receivedData = ((CustomizableGlsOutputBoundary) pres).getReceivedData();
+        assertNotNull("Presenter was not accessed", receivedData);
+        StoryData[] stories = receivedData.getStories();
         assertEquals("Returned wrong number of stories", 2, stories.length);
         assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
         assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
@@ -100,7 +108,7 @@ public class GlsInteractorTests {
     /**
      * Testing null-case
      */
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testNull() {
 
         pres = new CustomizableGlsOutputBoundary();
@@ -109,8 +117,15 @@ public class GlsInteractorTests {
         GlsInputData d = new GlsInputData(null);
         gls.getLatestStories(d);
 
-        StoryData[] stories = ((CustomizableGlsOutputBoundary) pres).getReceivedData().getStories();
-        assertNotNull("Presenter was not accessed", stories);
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ex) {
+            System.out.println("Impossible error, good luck");
+        }
+
+        GlsOutputData receivedData = ((CustomizableGlsOutputBoundary) pres).getReceivedData();
+        assertNotNull("Presenter was not accessed", receivedData);
+        StoryData[] stories = receivedData.getStories();
         assertEquals("Returned wrong number of stories", 3, stories.length);
         assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
         assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
@@ -120,7 +135,7 @@ public class GlsInteractorTests {
     /**
      * Testing in the case when the number to get out of bound
      */
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testOutOfBound() {
 
         pres = new CustomizableGlsOutputBoundary();
@@ -129,8 +144,15 @@ public class GlsInteractorTests {
         GlsInputData d = new GlsInputData(10);
         gls.getLatestStories(d);
 
-        StoryData[] stories = ((CustomizableGlsOutputBoundary) pres).getReceivedData().getStories();
-        assertNotNull("Presenter was not accessed", stories);
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ex) {
+            System.out.println("Impossible error, good luck");
+        }
+
+        GlsOutputData receivedData = ((CustomizableGlsOutputBoundary) pres).getReceivedData();
+        assertNotNull("Presenter was not accessed", receivedData);
+        StoryData[] stories = receivedData.getStories();
         assertEquals("Returned wrong number of stories", 3, stories.length);
         assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
         assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
