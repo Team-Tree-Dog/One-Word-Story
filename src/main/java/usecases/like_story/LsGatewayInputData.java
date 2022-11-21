@@ -11,7 +11,6 @@ public class LsGatewayInputData {
         this.storyId = storyId;
     }
 
-
     /**
      * @return Returns the id of the story that should be liked
      * */
