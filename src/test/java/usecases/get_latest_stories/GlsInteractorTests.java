@@ -4,11 +4,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import usecases.StoryData;
-import usecases.run_game.RgInteractor;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -19,7 +17,7 @@ public class GlsInteractorTests {
     /**
      * Customizable class to imitate GlsPresenter during testing
      */
-    class CustomizableGlsOutputBoundary implements GlsOutputBoundary {
+    static class CustomizableGlsOutputBoundary implements GlsOutputBoundary {
 
         private GlsOutputData receivedData;
 
@@ -39,7 +37,7 @@ public class GlsInteractorTests {
     /**
      * Customizable class to imitate repository with stories during testing
      */
-    class CustomizableGlsGateway implements GlsGateway {
+    static class CustomizableGlsGateway implements GlsGateway {
 
         private final GlsGatewayOutputData data;
 
@@ -52,7 +50,7 @@ public class GlsInteractorTests {
         }
     }
 
-    private static String[] authors = {"Jeremy", "Stephen"};
+    private static final String[] authors = {"Jeremy", "Stephen"};
 
     GlsOutputBoundary pres;
     GlsGateway repo;
