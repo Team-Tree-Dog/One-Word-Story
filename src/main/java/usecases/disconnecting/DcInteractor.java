@@ -82,6 +82,10 @@ public class DcInteractor implements DcInputBoundary {
                 gameLock.lock();
                 try {
                     // In this catch block, we know player was not in the pool.
+                    // We first check if it's the player's turn. If it is, then we switch the turn so play can continue.
+                    if (lm.getCurrentTurnPlayer().getPlayerId().equals(this.playerId)) {
+                        lm.switchTurn();
+                    }
                     // Now try to remove player from game.
                     lm.removePlayerFromGame(playerToDisconnect);
                 } catch (PlayerNotFoundException | GameDoesntExistException e) {

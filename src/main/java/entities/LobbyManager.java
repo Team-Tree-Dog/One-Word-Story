@@ -365,4 +365,8 @@ public class LobbyManager {
      */
     public Lock getPlayerPoolLock() { return playerPoolLock; }
 
+    /**
+     * @return the player whose turn it is
+     */
+    public Player getCurrentTurnPlayer() { return this.game.getCurrentTurnPlayer(); }
 }
