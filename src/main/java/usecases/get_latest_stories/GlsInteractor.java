@@ -44,6 +44,14 @@ public class GlsInteractor implements GlsInputBoundary{
             GlsGatewayOutputData outputData = repo.getAllStories();
             StoryData[] stories = outputData.getStories();
             Arrays.sort(stories);
+            if (data.getNumToGet() != null && data.getNumToGet() <= stories.length){
+                StoryData[] stories2 = new StoryData[data.getNumToGet()];
+                for(int i=0; i< data.getNumToGet(); i++){
+                    stories2[i] = stories[i];
+                    GlsOutputData outputData2 = new GlsOutputData(stories2);
+                    pres.putStories(outputData2);
+                }
+            }
             GlsOutputData outputData1 = new GlsOutputData(stories);
             pres.putStories(outputData1);
         }

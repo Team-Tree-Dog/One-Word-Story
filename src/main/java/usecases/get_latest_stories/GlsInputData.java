@@ -19,7 +19,7 @@ public class GlsInputData {
      * Getter for GlsInputData
      * @return corresponding maximum number of stories to get
      */
-    public int getNumToGet() {
+    public Integer getNumToGet() {
         return numToGet;
     }
 
