@@ -2,9 +2,12 @@ package usecases.disconnecting;
 
 import entities.LobbyManager;
 import entities.Player;
+import entities.PlayerPoolListener;
 import exceptions.GameDoesntExistException;
 import exceptions.PlayerNotFoundException;
 import usecases.Response;
+
+import java.util.concurrent.locks.Lock;
 
 /**
  * Interactor for Disconnecting Use Case
@@ -12,6 +15,8 @@ import usecases.Response;
 public class DcInteractor implements DcInputBoundary {
     private final LobbyManager lm;
     private final DcOutputBoundary dcOutputBoundary;
+    private final Lock playerPoolLock;
+    private final Lock gameLock;
 
     /**
      * Constructor for DcInteractor
@@ -21,6 +26,8 @@ public class DcInteractor implements DcInputBoundary {
     public DcInteractor(LobbyManager lm, DcOutputBoundary dcOutputBoundary) {
         this.lm = lm;
         this.dcOutputBoundary = dcOutputBoundary;
+        this.playerPoolLock = lm.getPlayerPoolLock();
+        this.gameLock = lm.getGameLock();
     }
 
     /**
@@ -52,12 +59,27 @@ public class DcInteractor implements DcInputBoundary {
             // Innocent until proven guilty
             Response response = Response.getSuccessful("Disconnecting was successful.");
 
+            playerPoolLock.lock();
+
+            // Null if player not found, looks through pool hence above lock is needed
+            LobbyManager.PlayerObserverLink playerLink = lm.getLinkFromPlayer(playerToDisconnect);
+
+            PlayerPoolListener playerListener = null;
+
             try {
+                // If player was not in pool, throw exception, run catch, and release pool in finally block
+                if(playerLink == null) {
+                    throw new PlayerNotFoundException("Player is not present in the pool");
+                }
+                playerListener = playerLink.getPlayerPoolListener();
+                // Before we continue, we should lock the pool listener's lock
+                playerListener.getLock().lock();
+
                 // Try to cancel player from pool. Will throw PlayerNotFound
                 // if player isn't in pool so no need to check contains explicitly
                 lm.removeFromPoolCancel(playerToDisconnect);
             } catch (PlayerNotFoundException ignored) {
-
+                gameLock.lock();
                 try {
                     // In this catch block, we know player was not in the pool.
                     // Now try to remove player from game.
@@ -67,7 +89,15 @@ public class DcInteractor implements DcInputBoundary {
                     // not found to be in the game, so respond with fail
                     response = Response.fromException(e, "Player not found");
                     e.printStackTrace();
+                } finally {
+                    gameLock.unlock();
                 }
+            }
+            finally {
+                if(playerListener != null) {
+                    playerListener.getLock().unlock();
+                }
+                playerPoolLock.unlock();
             }
 
             DcOutputData outputData = new DcOutputData(response, playerId);
