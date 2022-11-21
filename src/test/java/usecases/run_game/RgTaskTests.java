@@ -11,9 +11,13 @@ import usecases.pull_game_ended.*;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class RgTaskTests {
+
+    private Lock gameLock;
 
     /**
      * We use custom implementations of Game, PgeInputBoundary, PdInputBoundary used to test RgTask in RunGame use-case
@@ -23,7 +27,6 @@ public class RgTaskTests {
 
         public static int REGULAR_GAME_SECONDS_PER_TURN = 15;
         private final Queue<Player> players;
-
         private final boolean gameOverValue;
 
         /**
@@ -44,41 +47,64 @@ public class RgTaskTests {
             return players;
         }
 
+        /**
+         * Copied from GameRegular
+         * Currently implemented as no-operation
+         */
         @Override
-        public void onTimerUpdate() {
+        public void onTimerUpdate() {}
 
-        }
-
+        /**
+         * Unused custom getPlayerById
+         * @param playerId Id of searched player
+         * @return null
+         */
         @Override
-        public Player getPlayerById(String playerId) {
-            return null;
-        }
+        public Player getPlayerById(String playerId) { return null; }
 
+        /**
+         * Unused custom removePlayer
+         * @param playerToRemove The Player to be removed
+         * @return true
+         */
         @Override
-        public boolean removePlayer(Player playerToRemove) {
-            return players.remove(playerToRemove);
-        }
+        public boolean removePlayer(Player playerToRemove) { return true; }
 
+        /**
+         * Copied from GameRegular
+         * Adds the player specified to this game instance
+         * @param playerToAdd The Player to be added
+         * @return if the player was successfully added
+         */
         @Override
-        public boolean addPlayer(Player playerToAdd) {
-            return players.add(playerToAdd);
-        }
+        public boolean addPlayer(Player playerToAdd) { return players.add(playerToAdd); }
 
+        /**
+         * Copied from GameRegular
+         * Moves the player whose turn it currently is from the front of the list of players to the back
+         * It is now the new player in the front's turn
+         * @return if the turn switch was successful
+         */
         @Override
         public boolean switchTurn() {
             setSecondsLeftInCurrentTurn(getSecondsPerTurn());
             return players.add(players.remove());
         }
 
+        /**
+         * Copied from GameRegular
+         * @return the first player in the player list, whose turn is currently taking place
+         */
         @Override
-        public Player getCurrentTurnPlayer() {
-            return players.peek();
-        }
+        public Player getCurrentTurnPlayer() { return players.peek(); }
 
+        /**
+         * Custom isGameOver, returns fixed value
+         * @return specified value
+         */
         @Override
-        public boolean isGameOver() {
-            return this.gameOverValue;
-        }
+        public boolean isGameOver() { return this.gameOverValue; }
+
     }
 
     private static class CustomizablePgeInputBoundary implements PgeInputBoundary {
@@ -145,7 +171,7 @@ public class RgTaskTests {
 
     @Before
     public void setUp() {
-
+        gameLock = new ReentrantLock();
     }
 
     @After
@@ -166,7 +192,7 @@ public class RgTaskTests {
         pge = new CustomizablePgeInputBoundary();
         pd = new CustomizablePdInputBoundary();
 
-        RgInteractor rg = new RgInteractor(g, pge, pd);
+        RgInteractor rg = new RgInteractor(g, pge, pd, gameLock);
         RgInteractor.RgTask innerTaskInstance = rg.new RgTask();
 
         innerTaskInstance.run();
@@ -199,7 +225,7 @@ public class RgTaskTests {
         pge = new CustomizablePgeInputBoundary();
         pd = new CustomizablePdInputBoundary();
 
-        RgInteractor rg = new RgInteractor(g, pge, pd);
+        RgInteractor rg = new RgInteractor(g, pge, pd, gameLock);
         RgInteractor.RgTask innerTaskInstance = rg.new RgTask();
 
         String curPlayerId = g.getCurrentTurnPlayer().getPlayerId();
@@ -241,7 +267,7 @@ public class RgTaskTests {
         pge = new CustomizablePgeInputBoundary();
         pd = new CustomizablePdInputBoundary();
 
-        RgInteractor rg = new RgInteractor(g, pge, pd);
+        RgInteractor rg = new RgInteractor(g, pge, pd, gameLock);
         RgInteractor.RgTask innerTaskInstance = rg.new RgTask();
 
         g.setSecondsLeftInCurrentTurn(3);

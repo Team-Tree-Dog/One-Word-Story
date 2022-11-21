@@ -12,6 +12,7 @@ import usecases.run_game.RgInteractor;
 
 import java.util.Map;
 import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Interactor for Sort Players use case
@@ -20,18 +21,22 @@ public class SpInteractor {
     private final LobbyManager lobbyManager;
     private final PgeInputBoundary pge;
     private final PdInputBoundary pd;
+    private final Lock playerPoolLock;
+    private final Lock gameLock;
 
     /**
      * Constructor for SpInteractor
      * @param lobbyManager the lobby manager players are being sorted from
      * @param pge pull game ended use case input boundary
-     * @param pd pull data use case input boundary
+     * @param pd pull data use case input boundary4
      */
     public SpInteractor(LobbyManager lobbyManager, PgeInputBoundary pge,
                          PdInputBoundary pd) {
         this.lobbyManager = lobbyManager;
         this.pge = pge;
         this.pd = pd;
+        this.playerPoolLock = lobbyManager.getPlayerPoolLock();
+        this.gameLock = lobbyManager.getGameLock();
     }
 
     /**
@@ -45,6 +50,9 @@ public class SpInteractor {
     public class SpTask extends TimerTask {
         @Override
         public void run() {
+            // We need to lock all the accesses to the pool and the game to avoid race conditions
+            gameLock.lock();
+            playerPoolLock.lock();
             // If game has ended, set it to null.
             if (!lobbyManager.isGameNull()) {
                 if (lobbyManager.isGameEnded()) {
@@ -54,38 +62,35 @@ public class SpInteractor {
                     try {
                         lobbyManager.setGameNull();
                     } catch (GameRunningException e) {
+                        gameLock.unlock();
+                        playerPoolLock.unlock();
                         throw new RuntimeException(e);
                     }
 
                 } else {
-
                     for (LobbyManager.PlayerObserverLink playerObserverLink : lobbyManager.getPool()) {
                         Player player = playerObserverLink.getPlayer();
-                        boolean wasPlayerAdded;
 
-                        // IMPOSSIBLE Error. In this if block, game is not null and only SortPlayers
-                        // Sets game to null
+                        Lock lock = playerObserverLink.getPlayerPoolListener().getLock();
+                        lock.lock();
                         try {
-                            wasPlayerAdded = lobbyManager.addPlayerToGame(player);
-                        } catch (GameDoesntExistException e) {
-                            throw new RuntimeException(e);
-                        }
 
-                        // GameDoesntExistException IMPOSSIBLE. PlayerNotFoundException occurs if
-                        // player is removed from the pool from another thread. Proper lock architecture
-                        // Will prevent this
-                        if (wasPlayerAdded) {
-                            try {
-                                lobbyManager.removeFromPoolJoin(player);
-                            } catch (PlayerNotFoundException | GameDoesntExistException e) {
-                                throw new RuntimeException(e);
-                            }
+                            lobbyManager.addPlayerToGameRemoveFromPool(player);
+                        } catch (PlayerNotFoundException | GameDoesntExistException e) {
+                            // GameDoesntExist is an IMPOSSIBLE Error. In this if block, game is not null and
+                            // only SortPlayers sets game to null.
+                            // PlayerNotFoundException occurs if player is removed from the pool from another
+                            // thread. Proper lock architecture will prevent this
+                            gameLock.unlock();
+                            playerPoolLock.unlock();
+                            throw new RuntimeException(e);
+                        } finally {
+                            lock.unlock();
                         }
                     }
                 }
             }
-
-            if (lobbyManager.isGameNull() && lobbyManager.getPool().size() >= 2) {
+            else if (lobbyManager.getPool().size() >= LobbyManager.PLAYERS_TO_START_GAME) {
                 Map<String, Integer> settings = null; // currently player settings isn't a feature, thus null
                 Game game = lobbyManager.newGameFromPool(settings);
 
@@ -94,12 +99,18 @@ public class SpInteractor {
                 try {
                     lobbyManager.setGame(game);
                 } catch (GameRunningException e) {
+                    gameLock.unlock();
+                    playerPoolLock.unlock();
                     throw new RuntimeException(e);
                 }
 
+                // This method has built in thread safety which ensures that each
+                // PlayerPoolListener lock is engaged during callback execution
                 lobbyManager.removeAllFromPoolJoin();
-                new RgInteractor(game, pge, pd).startTimer();
+                new RgInteractor(game, pge, pd, gameLock).startTimer();
             }
+            gameLock.unlock();
+            playerPoolLock.unlock();
         }
     }
 

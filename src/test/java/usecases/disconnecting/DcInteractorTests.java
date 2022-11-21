@@ -2,25 +2,21 @@ package usecases.disconnecting;
 
 import entities.*;
 import entities.games.Game;
-
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
-
 import exceptions.InvalidDisplayNameException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import usecases.Response;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Testing Disconnecting Use Case
@@ -28,26 +24,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DcInteractorTests {
 
     private DcInteractor dcInteractor;
+
     private static final List<Player> players = new ArrayList<>();
     private static final DisplayNameChecker displayNameChecker = displayName -> true;
     private static final PlayerFactory playerFactory = new PlayerFactory(displayNameChecker);
 
-    @Before
-    public void setUp() {}
-
-    @After
-    public void teardown() {}
-
     /**
      * Testing disconnecting player who are in the game
-     *
-     * @throws IdInUseException
-     * @throws GameRunningException
      */
     @Test(timeout = 1000)
     public void testDisconnectPlayerFromGame() throws
             IdInUseException, GameRunningException,
-            InterruptedException, InvalidDisplayNameException {
+            InvalidDisplayNameException {
         Player player1 = playerFactory.createPlayer("John", "1");
         Player player2 = playerFactory.createPlayer("Kate", "2");
         players.add(player1);
@@ -59,13 +47,15 @@ public class DcInteractorTests {
         assertTrue(lm.getPlayersFromGame().contains(player1));
         assertTrue(lm.getPlayersFromGame().contains(player2));
 
-        DcOutputBoundary dcOutputBoundary = data -> {};
+        AtomicReference<Boolean> hasFinished = new AtomicReference<>(false);
+
+        DcOutputBoundary dcOutputBoundary = data -> hasFinished.set(true);
         dcInteractor = new DcInteractor(lm, dcOutputBoundary);
 
-        DcInputData data = new DcInputData(players.get(1).getPlayerId());
+        DcInputData data = new DcInputData(player2.getPlayerId());
         dcInteractor.disconnect(data);
 
-        while(lm.getPlayersFromGame().contains(player2)) {
+        while(!hasFinished.get()) {
             Thread.onSpinWait();
         }
 
@@ -75,14 +65,11 @@ public class DcInteractorTests {
 
     /**
      * Testing disconnecting player who are in the pool
-     *
-     * @throws IdInUseException
-     * @throws GameRunningException
      */
     @Test(timeout = 1000)
     public void testDisconnectPlayerFromPool() throws
             IdInUseException, GameRunningException,
-            InterruptedException, InvalidDisplayNameException {
+            InvalidDisplayNameException {
         Player player3 = playerFactory.createPlayer("Nick", "3");
         Player player4 = playerFactory.createPlayer("Ann", "4");
 
@@ -95,13 +82,15 @@ public class DcInteractorTests {
         assertTrue(lm.getPlayersFromPool().contains(player3));
         assertTrue(lm.getPlayersFromPool().contains(player4));
 
-        DcOutputBoundary dcOutputBoundary = data -> {};
+        AtomicReference<Boolean> hasFinished = new AtomicReference<>(false);
+
+        DcOutputBoundary dcOutputBoundary = data -> hasFinished.set(true);
         dcInteractor = new DcInteractor(lm, dcOutputBoundary);
 
         DcInputData data = new DcInputData(player4.getPlayerId());
         dcInteractor.disconnect(data);
 
-        while (lm.getPlayersFromPool().contains(player4)) {
+        while (!hasFinished.get()) {
             Thread.onSpinWait();
         }
 
@@ -225,14 +214,23 @@ public class DcInteractorTests {
 
         @Override
         public Player getCurrentTurnPlayer() { return null; }
+
     }
 
     private static class BlankPoolListener implements PlayerPoolListener {
+
+        private final Lock lock = new ReentrantLock();
         @Override
         public void onJoinGamePlayer(Game game) {}
 
         @Override
         public void onCancelPlayer() {}
+
+        @Override
+        public Lock getLock() {
+            return lock;
+        }
+
     }
 
 }

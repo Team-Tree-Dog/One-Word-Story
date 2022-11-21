@@ -2,22 +2,19 @@ package usecases.sort_players;
 
 import entities.*;
 import entities.games.Game;
-import entities.games.GameFactory;
 import exceptions.GameRunningException;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import usecases.pull_data.PdInteractor;
-import usecases.pull_data.PdOutputBoundary;
-import usecases.pull_data.PdOutputData;
 import usecases.pull_game_ended.PgeInteractor;
-import usecases.pull_game_ended.PgeOutputBoundary;
-import usecases.pull_game_ended.PgeOutputData;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static org.junit.Assert.*;
 
 /**
  * Test the sort players timer task for proper functionality
@@ -35,12 +32,7 @@ public class SpInteractorTests {
          * @param allowAddingPlayers Does addPlayer successfully add the player and return true
          */
         public CustomizableTestGame(boolean gameOver, boolean allowAddingPlayers) {
-            super(99, new ValidityChecker() {
-                @Override
-                public boolean isValid(String word) {
-                    return true;
-                }
-            });
+            super(99, word -> true);
             this.gameOver = gameOver;
             this.allowAddingPlayers = allowAddingPlayers;
         }
@@ -87,35 +79,37 @@ public class SpInteractorTests {
         public Player getCurrentTurnPlayer() {
             return null;
         }
+
     }
 
     private static class BlankOutputPdInteractor extends PdInteractor {
         public BlankOutputPdInteractor () {
-            super(new PdOutputBoundary() {
-                @Override
-                public void updateGameInfo(PdOutputData d) {}
-            });
+            super(d -> {});
         }
     }
 
     private static class BlankOutputPgeInteractor extends PgeInteractor {
         public BlankOutputPgeInteractor () {
-            super(new PgeOutputBoundary() {
-                @Override
-                public void notifyGameEnded (PgeOutputData d) {}
-            });
+            super(d -> {});
         }
     }
 
     private static class TestPlayerPoolListener implements PlayerPoolListener {
 
         public boolean joinedGameFlag = false;
+        private final Lock lock = new ReentrantLock();
 
         @Override
         public void onJoinGamePlayer(Game game) { joinedGameFlag = true; }
 
         @Override
         public void onCancelPlayer() {}
+
+        @Override
+        public Lock getLock() {
+            return lock;
+        }
+
     }
 
     private static class NaiveDisplayNameChecker implements DisplayNameChecker {
@@ -171,7 +165,8 @@ public class SpInteractorTests {
 
         // Execute one round of the TimerTask. This should get a new game with players from
         // the pool, set it as m.game, clear the pool, and call the PlayerPoolListeners
-        SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(), new BlankOutputPdInteractor());
+        SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(),
+                new BlankOutputPdInteractor());
         SpInteractor.SpTask spTimerTask = sp.new SpTask();
         spTimerTask.run();
 
@@ -208,7 +203,8 @@ public class SpInteractorTests {
         g.setTimerStopped();
 
         // Execute one round of the TimerTask. This should set the game to null
-        SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(), new BlankOutputPdInteractor());
+        SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(),
+                new BlankOutputPdInteractor());
         SpInteractor.SpTask spTimerTask = sp.new SpTask();
         spTimerTask.run();
 
@@ -247,7 +243,8 @@ public class SpInteractorTests {
 
         // Execute one round of the TimerTask. Based on the Game instance used, Bob and Billy
         // should both be successfully added to the currently running game
-        SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(), new BlankOutputPdInteractor());
+        SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(),
+                new BlankOutputPdInteractor());
         SpInteractor.SpTask spTimerTask = sp.new SpTask();
         spTimerTask.run();
 
@@ -293,7 +290,8 @@ public class SpInteractorTests {
 
         // Execute one round of the TimerTask. Based on the Game instance used, Bob and Billy
         // should both be successfully added to the currently running game
-        SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(), new BlankOutputPdInteractor());
+        SpInteractor sp = new SpInteractor(m, new BlankOutputPgeInteractor(),
+                new BlankOutputPdInteractor());
         SpInteractor.SpTask spTimerTask = sp.new SpTask();
         spTimerTask.run();
 
