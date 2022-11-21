@@ -28,6 +28,9 @@ public class LsTests {
         random = new Random();
     }
 
+    /**
+     * This test checks that all the likes are added correctly
+     * */
     @Test(timeout = 10000)
     public void testLikesAreAddedCorrectly() {
         int numberOfStories = random.nextInt(100);
@@ -54,6 +57,9 @@ public class LsTests {
         }
     }
 
+    /**
+     * This test checks that the use case works correctly with non-existing stories
+     * */
     @Test(timeout = 10000)
     public void testInteractorReturnsFailForIncorrectStories() {
         int numberOfStories = random.nextInt(100);
@@ -69,7 +75,9 @@ public class LsTests {
         }
     }
 
-
+    /**
+     * The test presenter that just stores the responses
+     * */
     private static class TestLsPresenter implements LsOutputBoundary {
 
         private final List<LsOutputData> responses = new CopyOnWriteArrayList<>();
@@ -81,6 +89,9 @@ public class LsTests {
 
     }
 
+    /**
+     * This is a simple runtime storage that keeps the stories` likes in a map
+     * */
     private static class TestLsGateway implements LsGateway {
 
         private final Map<Integer, Integer> storyToLikes = new HashMap<>();
