@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import usecases.StoryData;
+import usecases.run_game.RgInteractor;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -80,25 +81,25 @@ public class GlsInteractorTests {
     }
 
     /**
-     * Simple test without any curveballs
+     * Testing the case when numToGet is within the size of the repository.
+     * Expect to receive numToGet stories starting from the latest one
      */
-    @Test(timeout = 10000)
+    @Test(timeout = 1000)
     public void testSimpleTest() {
 
+        // Instantiating interactor
         pres = new CustomizableGlsOutputBoundary();
         GlsInteractor gls = new GlsInteractor(pres, repo);
 
         GlsInputData d = new GlsInputData(2);
-        gls.getLatestStories(d);
+        GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d);
+        innerThreadInstance.run();
 
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException ex) {
-            System.out.println("Impossible error, good luck");
-        }
-
+        // Check presenter receives non-null data
         GlsOutputData receivedData = ((CustomizableGlsOutputBoundary) pres).getReceivedData();
         assertNotNull("Presenter was not accessed", receivedData);
+
+        // Verify received data is correct
         StoryData[] stories = receivedData.getStories();
         assertEquals("Returned wrong number of stories", 2, stories.length);
         assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
@@ -106,25 +107,50 @@ public class GlsInteractorTests {
     }
 
     /**
-     * Testing null-case
+     * Testing the case when numToGet is zero.
+     * Expect to receive empty DataStory[], but not null
      */
-    @Test(timeout = 10000)
-    public void testNull() {
+    @Test(timeout = 1000)
+    public void testZeroTest() {
 
+        // Instantiating interactor
         pres = new CustomizableGlsOutputBoundary();
         GlsInteractor gls = new GlsInteractor(pres, repo);
 
-        GlsInputData d = new GlsInputData(null);
-        gls.getLatestStories(d);
+        GlsInputData d = new GlsInputData(0);
+        GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d);
+        innerThreadInstance.run();
 
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException ex) {
-            System.out.println("Impossible error, good luck");
-        }
-
+        // Check presenter receives non-null data
         GlsOutputData receivedData = ((CustomizableGlsOutputBoundary) pres).getReceivedData();
         assertNotNull("Presenter was not accessed", receivedData);
+
+        // Verify received data is correct
+        StoryData[] stories = receivedData.getStories();
+        assertEquals("Returned wrong number of stories", 0, stories.length);
+    }
+
+    /**
+     * Testing  the case when numToGet is null.
+     * Expect to receive all available stories from latest to earliest
+     */
+    @Test(timeout = 1000)
+    public void testNull() {
+
+        // Instantiating interactor
+        pres = new CustomizableGlsOutputBoundary();
+        GlsInteractor gls = new GlsInteractor(pres, repo);
+
+        // Running inner thread
+        GlsInputData d = new GlsInputData(null);
+        GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d);
+        innerThreadInstance.run();
+
+        // Check presenter receives non-null data
+        GlsOutputData receivedData = ((CustomizableGlsOutputBoundary) pres).getReceivedData();
+        assertNotNull("Presenter was not accessed", receivedData);
+
+        // Verify received data is correct
         StoryData[] stories = receivedData.getStories();
         assertEquals("Returned wrong number of stories", 3, stories.length);
         assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
@@ -133,25 +159,26 @@ public class GlsInteractorTests {
     }
 
     /**
-     * Testing in the case when the number to get out of bound
+     * Testing the case when numToGet exceeds repository size.
+     * Expect to receive all available stories from latest to earliest
      */
-    @Test(timeout = 10000)
+    @Test(timeout = 1000)
     public void testOutOfBound() {
 
+        // Instantiating interactor
         pres = new CustomizableGlsOutputBoundary();
         GlsInteractor gls = new GlsInteractor(pres, repo);
 
+        // Running inner thread
         GlsInputData d = new GlsInputData(10);
-        gls.getLatestStories(d);
+        GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d);
+        innerThreadInstance.run();
 
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException ex) {
-            System.out.println("Impossible error, good luck");
-        }
-
+        // Check presenter receives non-null data
         GlsOutputData receivedData = ((CustomizableGlsOutputBoundary) pres).getReceivedData();
         assertNotNull("Presenter was not accessed", receivedData);
+
+        // Verify received data is correct
         StoryData[] stories = receivedData.getStories();
         assertEquals("Returned wrong number of stories", 3, stories.length);
         assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
