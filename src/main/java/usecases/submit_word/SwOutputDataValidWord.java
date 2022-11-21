@@ -8,17 +8,17 @@ public class SwOutputDataValidWord {
     /**
      * Word that was submitted, represented as a string.
      */
-    private String word;
+    private final String word;
 
     /**
      * ID of the player that attempted to submit.
      */
-    private String playerId;
+    private final String playerId;
 
     /**
      * Response.
      */
-    private Response response;
+    private final Response response;
 
     /**
      * Constructor.

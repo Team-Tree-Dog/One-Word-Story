@@ -11,9 +11,13 @@ import usecases.pull_game_ended.*;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class RgTaskTests {
+
+    private Lock gameLock;
 
     /**
      * We use custom implementations of Game, PgeInputBoundary, PdInputBoundary used to test RgTask in RunGame use-case
@@ -23,7 +27,6 @@ public class RgTaskTests {
 
         public static int REGULAR_GAME_SECONDS_PER_TURN = 15;
         private final Queue<Player> players;
-
         private final boolean gameOverValue;
 
         /**
@@ -101,6 +104,7 @@ public class RgTaskTests {
          */
         @Override
         public boolean isGameOver() { return this.gameOverValue; }
+
     }
 
     private static class CustomizablePgeInputBoundary implements PgeInputBoundary {
@@ -167,7 +171,7 @@ public class RgTaskTests {
 
     @Before
     public void setUp() {
-
+        gameLock = new ReentrantLock();
     }
 
     @After
@@ -188,7 +192,7 @@ public class RgTaskTests {
         pge = new CustomizablePgeInputBoundary();
         pd = new CustomizablePdInputBoundary();
 
-        RgInteractor rg = new RgInteractor(g, pge, pd);
+        RgInteractor rg = new RgInteractor(g, pge, pd, gameLock);
         RgInteractor.RgTask innerTaskInstance = rg.new RgTask();
 
         innerTaskInstance.run();
@@ -221,7 +225,7 @@ public class RgTaskTests {
         pge = new CustomizablePgeInputBoundary();
         pd = new CustomizablePdInputBoundary();
 
-        RgInteractor rg = new RgInteractor(g, pge, pd);
+        RgInteractor rg = new RgInteractor(g, pge, pd, gameLock);
         RgInteractor.RgTask innerTaskInstance = rg.new RgTask();
 
         String curPlayerId = g.getCurrentTurnPlayer().getPlayerId();
@@ -263,7 +267,7 @@ public class RgTaskTests {
         pge = new CustomizablePgeInputBoundary();
         pd = new CustomizablePdInputBoundary();
 
-        RgInteractor rg = new RgInteractor(g, pge, pd);
+        RgInteractor rg = new RgInteractor(g, pge, pd, gameLock);
         RgInteractor.RgTask innerTaskInstance = rg.new RgTask();
 
         g.setSecondsLeftInCurrentTurn(3);
