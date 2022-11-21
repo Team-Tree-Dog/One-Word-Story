@@ -323,7 +323,6 @@ public class LobbyManager {
         this.playerPool.add(pol);
         playerPoolLock.unlock();
     }
-
     /**
 
      * Combines functionality of removing the player from pool, adding player to game, and notifying
