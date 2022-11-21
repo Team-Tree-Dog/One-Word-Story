@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -47,8 +48,8 @@ public class GmlsInteractorTests {
         }
     }
 
-    private static LocalDateTime dt = LocalDateTime.of(2015, Month.JULY, 29, 19, 30, 40);
-    private static String[] authors = {"Jeremy", "Stephen"};
+    private static final LocalDateTime dt = LocalDateTime.of(2015, Month.JULY, 29, 19, 30, 40);
+    private static final String[] authors = {"Jeremy", "Stephen"};
 
     GmlsOutputBoundary pres;
     GmlsGateway repo;
@@ -74,17 +75,24 @@ public class GmlsInteractorTests {
     /**
      * Simple test without any curveballs
      */
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testSimpleTest() {
 
         pres = new CustomizableGmlsOutputBoundary();
         GmlsInteractor gmls = new GmlsInteractor(pres, repo);
 
         GmlsInputData d = new GmlsInputData(0, 2);
-        gmls.getLatestStories(d);
+        gmls.getMostLikedStories(d);
 
-        StoryData[] stories = ((CustomizableGmlsOutputBoundary) pres).getReceivedData().getStories();
-        assertNotNull("Presenter was not accessed", stories);
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ex) {
+            System.out.println("Impossible error, good luck");
+        }
+
+        GmlsOutputData receivedData = ((CustomizableGmlsOutputBoundary) pres).getReceivedData();
+        assertNotNull("Presenter was not accessed", receivedData);
+        StoryData[] stories = receivedData.getStories();
         assertEquals("Returned wrong number of stories", 2, stories.length);
         assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
         assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
@@ -94,17 +102,24 @@ public class GmlsInteractorTests {
     /**
      * Testing left null
      */
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testLeftNull() {
 
         pres = new CustomizableGmlsOutputBoundary();
         GmlsInteractor gmls = new GmlsInteractor(pres, repo);
 
         GmlsInputData d = new GmlsInputData(null, 2);
-        gmls.getLatestStories(d);
+        gmls.getMostLikedStories(d);
 
-        StoryData[] stories = ((CustomizableGmlsOutputBoundary) pres).getReceivedData().getStories();
-        assertNotNull("Presenter was not accessed", stories);
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ex) {
+            System.out.println("Impossible error, good luck");
+        }
+
+        GmlsOutputData receivedData = ((CustomizableGmlsOutputBoundary) pres).getReceivedData();
+        assertNotNull("Presenter was not accessed", receivedData);
+        StoryData[] stories = receivedData.getStories();
         assertEquals("Returned wrong number of stories", 2, stories.length);
         assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
         assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
@@ -113,17 +128,24 @@ public class GmlsInteractorTests {
     /**
      * Testing right null
      */
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testRightNull() {
 
         pres = new CustomizableGmlsOutputBoundary();
         GmlsInteractor gmls = new GmlsInteractor(pres, repo);
 
         GmlsInputData d = new GmlsInputData(1, null);
-        gmls.getLatestStories(d);
+        gmls.getMostLikedStories(d);
 
-        StoryData[] stories = ((CustomizableGmlsOutputBoundary) pres).getReceivedData().getStories();
-        assertNotNull("Presenter was not accessed", stories);
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ex) {
+            System.out.println("Impossible error, good luck");
+        }
+
+        GmlsOutputData receivedData = ((CustomizableGmlsOutputBoundary) pres).getReceivedData();
+        assertNotNull("Presenter was not accessed", receivedData);
+        StoryData[] stories = receivedData.getStories();
         assertEquals("Returned wrong number of stories", 2, stories.length);
         assertEquals("Returned incorrect story", "text 2", stories[0].getStory());
         assertEquals("Returned incorrect story", "text 1", stories[1].getStory());
@@ -132,17 +154,24 @@ public class GmlsInteractorTests {
     /**
      * Testing both null
      */
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testBothNull() {
 
         pres = new CustomizableGmlsOutputBoundary();
         GmlsInteractor gmls = new GmlsInteractor(pres, repo);
 
         GmlsInputData d = new GmlsInputData(null, null);
-        gmls.getLatestStories(d);
+        gmls.getMostLikedStories(d);
 
-        StoryData[] stories = ((CustomizableGmlsOutputBoundary) pres).getReceivedData().getStories();
-        assertNotNull("Presenter was not accessed", stories);
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ex) {
+            System.out.println("Impossible error, good luck");
+        }
+
+        GmlsOutputData receivedData = ((CustomizableGmlsOutputBoundary) pres).getReceivedData();
+        assertNotNull("Presenter was not accessed", receivedData);
+        StoryData[] stories = receivedData.getStories();
         assertEquals("Returned wrong number of stories", 3, stories.length);
         assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
         assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
@@ -152,34 +181,48 @@ public class GmlsInteractorTests {
     /**
      * Testing right bound <= left bound
      */
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testInvalidInput() {
 
         pres = new CustomizableGmlsOutputBoundary();
         GmlsInteractor gmls = new GmlsInteractor(pres, repo);
 
         GmlsInputData d = new GmlsInputData(2, 0);
-        gmls.getLatestStories(d);
+        gmls.getMostLikedStories(d);
 
-        StoryData[] stories = ((CustomizableGmlsOutputBoundary) pres).getReceivedData().getStories();
-        assertNotNull("Presenter was not accessed", stories);
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ex) {
+            System.out.println("Impossible error, good luck");
+        }
+
+        GmlsOutputData receivedData = ((CustomizableGmlsOutputBoundary) pres).getReceivedData();
+        assertNotNull("Presenter was not accessed", receivedData);
+        StoryData[] stories = receivedData.getStories();
         assertEquals("Returned wrong number of stories", 0, stories.length);
     }
 
     /**
      * Testing left and right endpoint out of bounds
      */
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testOutOfBounds() {
 
         pres = new CustomizableGmlsOutputBoundary();
         GmlsInteractor gmls = new GmlsInteractor(pres, repo);
 
         GmlsInputData d = new GmlsInputData(-10, 10);
-        gmls.getLatestStories(d);
+        gmls.getMostLikedStories(d);
 
-        StoryData[] stories = ((CustomizableGmlsOutputBoundary) pres).getReceivedData().getStories();
-        assertNotNull("Presenter was not accessed", stories);
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ex) {
+            System.out.println("Impossible error, good luck");
+        }
+
+        GmlsOutputData receivedData = ((CustomizableGmlsOutputBoundary) pres).getReceivedData();
+        assertNotNull("Presenter was not accessed", receivedData);
+        StoryData[] stories = receivedData.getStories();
         assertEquals("Returned wrong number of stories", 3, stories.length);
         assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
         assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
