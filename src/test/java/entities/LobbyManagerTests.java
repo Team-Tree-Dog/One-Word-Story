@@ -10,6 +10,8 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class LobbyManagerTests {
 
@@ -184,11 +186,19 @@ public class LobbyManagerTests {
         GameFactory gamefac = new CustomizableTestGameFactory();
         LobbyManager lobman = new LobbyManager(playerfac, gamefac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {}
 
             @Override
             public void onCancelPlayer() {}
+
+            @Override
+            public Lock getLock() {
+                return this.lock;
+            }
         };
 
         Player player1 = lobman.createNewPlayer("player1", "1");
@@ -267,6 +277,9 @@ public class LobbyManagerTests {
         GameFactory gamefac = new CustomizableTestGameFactory();
         LobbyManager lobman = new LobbyManager(playerfac, gamefac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {
                 System.out.println("onJoinGamePlayer is successfully called ;)");
@@ -274,7 +287,12 @@ public class LobbyManagerTests {
 
             @Override
             public void onCancelPlayer() {
-                assertEquals("AYO onCancelPlayer SHOULDNT BE CALLED HERE", 1, 2);
+                assertEquals("AYO onCancelPlayer SHOULDN'T BE CALLED HERE", 1, 2);
+            }
+
+            @Override
+            public Lock getLock() {
+                return this.lock;
             }
         };
 
@@ -303,11 +321,19 @@ public class LobbyManagerTests {
         GameFactory gamefac = new CustomizableTestGameFactory();
         LobbyManager lobman = new LobbyManager(playerfac, gamefac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {}
 
             @Override
             public void onCancelPlayer() {}
+
+            @Override
+            public Lock getLock() {
+                return this.lock;
+            }
         };
 
         Player player1 = lobman.createNewPlayer("player1", "1");
@@ -358,14 +384,22 @@ public class LobbyManagerTests {
         GameFactory gamefac = new CustomizableTestGameFactory();
         LobbyManager lobman = new LobbyManager(playerfac, gamefac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {
-                System.out.println("onJoinGamePlayer was called succesfully ;)");
+                System.out.println("onJoinGamePlayer was called successfully ;)");
             }
 
             @Override
             public void onCancelPlayer() {
                 assertEquals("AYO onCancelPlayer SHOULDN'T BE CALLED HERE", 1, 2);
+            }
+
+            @Override
+            public Lock getLock() {
+                return this.lock;
             }
         };
 
@@ -396,14 +430,22 @@ public class LobbyManagerTests {
         GameFactory gamefac = new CustomizableTestGameFactory();
         LobbyManager lobman = new LobbyManager(playerfac, gamefac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {
-                assertEquals("AYO ONJOINGAMEPLAYER SHOULDN'T BE CALLED", 1, 2);
+                assertEquals("AYO onJoinGamePlayer SHOULDN'T BE CALLED", 1, 2);
             }
 
             @Override
             public void onCancelPlayer() {
                 System.out.println("This is what should be called! Test fully passed ;)");
+            }
+
+            @Override
+            public Lock getLock() {
+                return lock;
             }
         };
 
@@ -435,12 +477,20 @@ public class LobbyManagerTests {
         GameFactory gamefac = new CustomizableTestGameFactory();
         LobbyManager lobman = new LobbyManager(playerfac, gamefac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {
             }
 
             @Override
             public void onCancelPlayer() {
+            }
+
+            @Override
+            public Lock getLock() {
+                return lock;
             }
         };
 
@@ -465,12 +515,20 @@ public class LobbyManagerTests {
         GameFactory gamefac = new CustomizableTestGameFactory();
         LobbyManager lobman = new LobbyManager(playerfac, gamefac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {
             }
 
             @Override
             public void onCancelPlayer() {
+            }
+
+            @Override
+            public Lock getLock() {
+                return this.lock;
             }
         };
 
@@ -498,12 +556,20 @@ public class LobbyManagerTests {
         GameFactory gamefac = new CustomizableTestGameFactory();
         LobbyManager lobman = new LobbyManager(playerfac, gamefac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {
             }
 
             @Override
             public void onCancelPlayer() {
+            }
+
+            @Override
+            public Lock getLock() {
+                return this.lock;
             }
         };
 
@@ -594,16 +660,24 @@ public class LobbyManagerTests {
      * Test that newGameFromPool works as intended.
      */
     @Test(timeout = 1000)
-    public void testnewGameFromPool() throws IdInUseException, InvalidDisplayNameException {
+    public void testNewGameFromPool() throws IdInUseException, InvalidDisplayNameException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
         LobbyManager lobman = new LobbyManager(playerfac, gamefac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {}
 
             @Override
             public void onCancelPlayer() {}
+
+            @Override
+            public Lock getLock() {
+                return this.lock;
+            }
         };
 
         Player player1 = lobman.createNewPlayer("player1", "1");
@@ -628,14 +702,22 @@ public class LobbyManagerTests {
         GameFactory gamefac = new CustomizableTestGameFactory();
         LobbyManager lobman = new LobbyManager(playerfac, gamefac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {
-                assertEquals("AYO onJoinGamePlayer SHOULDNT BE CALLED HERE", 1, 2);
+                assertEquals("AYO onJoinGamePlayer SHOULDN'T BE CALLED HERE", 1, 2);
             }
 
             @Override
             public void onCancelPlayer() {
                 System.out.println("onCancelPlayer was called successfully ;)");
+            }
+
+            @Override
+            public Lock getLock() {
+                return this.lock;
             }
         };
 
@@ -656,13 +738,6 @@ public class LobbyManagerTests {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
         LobbyManager lobman = new LobbyManager(playerfac, gamefac);
-        PlayerPoolListener ppl = new PlayerPoolListener() {
-            @Override
-            public void onJoinGamePlayer(Game game) {}
-
-            @Override
-            public void onCancelPlayer() {}
-        };
 
         Player player1 = lobman.createNewPlayer("player1", "1");
 
@@ -717,11 +792,19 @@ public class LobbyManagerTests {
         GameFactory gamefac = new CustomizableTestGameFactory();
         LobbyManager lobman = new LobbyManager(playerfac, gamefac);
         PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
             @Override
             public void onJoinGamePlayer(Game game) {}
 
             @Override
             public void onCancelPlayer() {}
+
+            @Override
+            public Lock getLock() {
+                return this.lock;
+            }
         };
 
         Player player1 = lobman.createNewPlayer("player1", "1");
