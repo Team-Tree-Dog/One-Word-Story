@@ -60,7 +60,7 @@ public class StoryData implements Comparable<StoryData> {
      * Getter for StoryData
      * @return likes the story has
      */
-    public int getNumberOfLikes() {
+    public int getLikes() {
         return numberOfLikes;
     }
 
