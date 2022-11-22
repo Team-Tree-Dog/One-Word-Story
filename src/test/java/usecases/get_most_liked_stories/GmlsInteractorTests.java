@@ -3,6 +3,7 @@ package usecases.get_most_liked_stories;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import usecases.StoryData;
 
 import java.time.LocalDateTime;
 import java.time.Month;

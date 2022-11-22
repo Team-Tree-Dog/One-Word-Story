@@ -1,5 +1,7 @@
 package usecases.get_most_liked_stories;
 
+import usecases.StoryData;
+
 /**
  * Contains output data for Get Most Liked Stories use case.
  */
