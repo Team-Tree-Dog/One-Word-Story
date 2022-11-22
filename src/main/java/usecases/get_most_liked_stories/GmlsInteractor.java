@@ -80,11 +80,11 @@ public class GmlsInteractor {
          * @return the range of stories sorted in descending
          */
         private StoryData[] sortAndExtractStories(StoryData[] stories, GmlsInputData data){
+            sortStoriesByLikes(stories);
             int[] INDICES = getIndices(stories, data.getLowerInclusive(), data.getUpperExclusive());
             if (INDICES[0] > INDICES[1] || stories.length == 0){
                 return new StoryData[]{};
             }
-            sortStoriesByLikes(stories);
             return Arrays.copyOfRange(stories, INDICES[0], INDICES[1]);
         }
 
@@ -105,6 +105,28 @@ public class GmlsInteractor {
             int B = (upper == null)? length:upper;
             return new int[]{Math.max(0,A), Math.min(length,B)};
         }
+
+        /**
+         * Private helper method
+         * @param story the story for which the number of likes are compare to the bounds
+         * @param lower the lower bound for likes specified by the user, can be null, in which case it corresponds
+         *              to a lower bound of 0 likes
+         * @param upper the upper bounds for likes specified by the user, can be null, in which case it corresponds
+         *              to no upper bound on the desired range of likes
+         * @return      True if and only if the number of likes in this story is within the bounds
+         *              specified by the user
+         */
+        private boolean inBounds(StoryData story, Integer lower, Integer upper){
+            boolean WITHIN_UPPER_BOUND;
+            boolean WITHIN_LOWER_BOUND;
+            if (lower == null){ WITHIN_LOWER_BOUND = (story.getLikes() >= 0); }
+            else {WITHIN_LOWER_BOUND = (story.getLikes() >= lower);}
+            if (upper == null){ WITHIN_UPPER_BOUND = true;}
+            else {WITHIN_UPPER_BOUND = (story.getLikes() < upper);}
+            return (WITHIN_LOWER_BOUND && WITHIN_UPPER_BOUND);
+        }
+
+        private StoryData[] extractStoriesInBounds(StoryData[] stories, Integer lower, Integer upper){}
 
         /**
          * Private helper method for helper method sortAndExtractStories. Returns an array containing the indices
