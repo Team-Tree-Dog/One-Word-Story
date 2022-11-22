@@ -9,7 +9,8 @@ public class GlsInputData {
 
     /**
      * Constructor for GlsInputData
-     * @param numToGet number of stories to get
+     * @param numToGet number of stories to get, if null
+     * all stories are retrieved
      */
     public GlsInputData(Integer numToGet) {
         this.numToGet = numToGet;

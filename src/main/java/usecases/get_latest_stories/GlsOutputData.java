@@ -20,6 +20,7 @@ public class GlsOutputData {
     /**
      * Getter for GlsOutputData
      * @return  data.numToGet StoryData retrieved from repo
+     * sorted from latest date to earliest public date
      */
     public StoryData[] getStories(){
         return this.stories;

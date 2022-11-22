@@ -6,5 +6,8 @@ package usecases.get_latest_stories;
  */
 
 public interface GlsGateway {
+    /**
+     * @return all stories from the repository
+     */
     GlsGatewayOutputData getAllStories ();
 }
