@@ -35,7 +35,11 @@ public class DcInteractor implements DcInputBoundary {
      * @param data input data which contains playerId
      */
     @Override
-    public void disconnect(DcInputData data) {new Thread(new DcThread(data.getPlayerId())).start();}
+    public void disconnect(DcInputData data) {
+        // new Thread(new DcThread(data.getPlayerId())).start();
+        DcInteractor.DcThread dcThread = this.new DcThread(data.getPlayerId());
+        dcThread.run();
+    }
 
     /**
      * Thread for disconnecting the player
@@ -81,13 +85,22 @@ public class DcInteractor implements DcInputBoundary {
             } catch (PlayerNotFoundException ignored) {
                 gameLock.lock();
                 try {
-                    // In this catch block, we know player was not in the pool.
-                    // We first check if it's the player's turn. If it is, then we switch the turn so play can continue.
-                    if (lm.getCurrentTurnPlayer().getPlayerId().equals(this.playerId)) {
-                        lm.switchTurn();
+                    // In this catch block, we know player was not in the pool. However, we don't know if the player
+                    // is in the game. We try to see if the player is in the game using .contains, which uses .equals,
+                    // so only playerIDs are compared. If the game is null, GameDoesntExistException is thrown.
+                    if (lm.getPlayersFromGame().contains(playerToDisconnect)){
+                        // The player is in the game. We then check if it's the player's turn.
+                        // If it is, then we switch the turn so play can continue.
+                        if (lm.getCurrentTurnPlayer().getPlayerId().equals(this.playerId)) {
+                            lm.switchTurn();
+                        }
+                        // Now try to remove player from game.
+                        lm.removePlayerFromGame(playerToDisconnect);
                     }
-                    // Now try to remove player from game.
-                    lm.removePlayerFromGame(playerToDisconnect);
+                    else {
+                        throw new PlayerNotFoundException("Player is not present in the pool or the game.");
+                    }
+
                 } catch (PlayerNotFoundException | GameDoesntExistException e) {
                     // In both PlayerNotFound & GameDoesntExist, player was
                     // not found to be in the game, so respond with fail

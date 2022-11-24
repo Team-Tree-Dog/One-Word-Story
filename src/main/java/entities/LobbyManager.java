@@ -323,7 +323,6 @@ public class LobbyManager {
         this.playerPool.add(pol);
         playerPoolLock.unlock();
     }
-
     /**
 
      * Combines functionality of removing the player from pool, adding player to game, and notifying
@@ -351,7 +350,10 @@ public class LobbyManager {
      * Gets all the players from the game
      * @return an arraylist of players
      */
-    public List<Player> getPlayersFromGame () {
+    public List<Player> getPlayersFromGame () throws GameDoesntExistException {
+        if (this.isGameNull()){
+            throw new GameDoesntExistException("Game does not exist.");
+        }
         return new ArrayList<>(game.getPlayers());
     }
 
