@@ -82,29 +82,26 @@ public class GmlsInteractor {
         private StoryData[] sortAndExtractStories(StoryData[] stories, GmlsInputData data){
             sortStoriesByLikes(stories);
             int[] INDICES = getIndices(stories, data.getLowerInclusive(), data.getUpperExclusive());
-            if (INDICES[0] > INDICES[1] || stories.length == 0){
-                return new StoryData[]{};
-            }
             return Arrays.copyOfRange(stories, INDICES[0], INDICES[1]);
         }
 
-        /**
-         * Private helper method for helper method getIndices. Returns the range of likes
-         * corresponding to the range of likes specified by the InputData
-         * @param lower     the lower bound for likes specified by the user, can be null
-         * @param upper     the upper bound for likes specified by the user, can be null
-         * @param length    the length of the list
-         * @return an array of length 2, for which:
-         * 1. the element at index 0 is a new lower bound for likes that is
-         *    within 0 to length inclusive, and is equal to 0 if lower == null
-         * 2. the element at index 1 is a new upper bound for likes that is
-         *    within 0 to length inclusive, and is equal to length if upper == null
-         */
-        private int[] getBoundsInArrayRange(Integer lower, Integer upper, int length){
-            int A = (lower == null)? 0:lower;
-            int B = (upper == null)? length:upper;
-            return new int[]{Math.max(0,A), Math.min(length,B)};
-        }
+//        /**
+//         * Private helper method for helper method getIndices. Returns the range of likes
+//         * corresponding to the range of likes specified by the InputData
+//         * @param lower     the lower bound for likes specified by the user, can be null
+//         * @param upper     the upper bound for likes specified by the user, can be null
+//         * @param length    the length of the list
+//         * @return an array of length 2, for which:
+//         * 1. the element at index 0 is a new lower bound for likes that is
+//         *    within 0 to length inclusive, and is equal to 0 if lower == null
+//         * 2. the element at index 1 is a new upper bound for likes that is
+//         *    within 0 to length inclusive, and is equal to length if upper == null
+//         */
+//        private int[] getBoundsInArrayRange(Integer lower, Integer upper, int length){
+//            int A = (lower == null)? 0:lower;
+//            int B = (upper == null)? length:upper;
+//            return new int[]{Math.max(0,A), Math.min(length,B)};
+//        }
 
         /**
          * Private helper method
@@ -126,8 +123,6 @@ public class GmlsInteractor {
             return (WITHIN_LOWER_BOUND && WITHIN_UPPER_BOUND);
         }
 
-        private StoryData[] extractStoriesInBounds(StoryData[] stories, Integer lower, Integer upper){}
-
         /**
          * Private helper method for helper method sortAndExtractStories. Returns an array containing the indices
          * that specify the desired range of stories in the StoryData[] object stories.
@@ -138,32 +133,26 @@ public class GmlsInteractor {
          * @return n array of length 2, for which:
          * 1. the element at index 0 is the 'start' index for the subarray of stories that we want to extract
          * 2. the element at index 1 is the 'to' index for the subarray of stories that we want to extract
+         * The method returns [0,0] if there are no stories that fall within the bounds
          */
         private int[] getIndices(StoryData[] stories, Integer lower , Integer upper){
-            int[] BOUNDS = getBoundsInArrayRange(lower, upper, stories.length);
-            //The method returns [0,0] if the upper bound (exclusive) is greater than or equal to the lower bound
-            //(inclusive)
-            if (BOUNDS[0] >= BOUNDS[1]){return new int[]{0,0};}
-            int INDEX_LOWER = stories.length;
+            int INDEX_LOWER = 0;
             int INDEX_UPPER = 0;
-            // the following loop iterates from the start of the array till we find an story with
-            // likes >= the lower bound
+            // the following loop iterates from the start of the array till we find an story
+            // whose number of likes is within the bounds specified by the user
             for (int i = 0; i < stories.length; i++){
-                if (stories[i].getLikes() >= BOUNDS[0]){
+                if (inBounds(stories[i], lower, upper)){
                     INDEX_LOWER = i;
                     break; }
             }
-            // the following loop iterates from the end of the array till we find an story with
-            // likes < the upper bound
+            // the following loop iterates from the end of the array till we find an story
+            // whose number of likes is within the bounds specified by the user
             for (int i = stories.length-1; i >= 0; i--){
-                if (stories[i].getLikes() < BOUNDS[1]){
+                if (inBounds(stories[i], lower, upper)){
                     INDEX_UPPER = i+1;
                     break; }
             }
-            //The method returns [0,0] if the list does not lie in the desired range of likes
-            if (INDEX_LOWER == stories.length || INDEX_UPPER == 0){ return new int[]{0,0};}
-            int[] INDICES = {INDEX_LOWER, INDEX_UPPER};
-            return INDICES;
+            return new int[]{INDEX_LOWER, INDEX_UPPER};
         }
     }
 

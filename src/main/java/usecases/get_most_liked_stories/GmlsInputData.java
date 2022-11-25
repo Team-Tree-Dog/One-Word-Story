@@ -16,9 +16,9 @@ public class GmlsInputData {
         this.upperExclusive = upperExclusive;
     }
 
-    public int getLowerInclusive(){
+    public Integer getLowerInclusive(){
         return this.lowerInclusive;
     }
 
-    public int getUpperExclusive(){ return this.upperExclusive; }
+    public Integer getUpperExclusive(){ return this.upperExclusive; }
 }
