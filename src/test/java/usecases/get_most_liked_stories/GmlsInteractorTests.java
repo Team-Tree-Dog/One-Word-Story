@@ -77,7 +77,8 @@ public class GmlsInteractorTests {
 
     /**
      * Testing the case where endpoints are within boundaries.
-     * Expect to receive output in accordance with specifications
+     * Expect to receive output in accordance with specifications,
+     * similar to [l:r] slice in Python
      */
     @Test(timeout = 1000)
     public void testSimpleTest() {
@@ -104,7 +105,8 @@ public class GmlsInteractorTests {
 
     /**
      * Testing the case where left endpoint is null.
-     * Expect to receive output in accordance with specifications
+     * Expect to receive output in accordance with specifications,
+     * similar to [:r] slice in Python
      */
     @Test(timeout = 1000)
     public void testLeftNull() {
@@ -131,9 +133,10 @@ public class GmlsInteractorTests {
 
     /**
      * Testing the case where right endpoint is null.
-     * Expect to receive output in accordance with specifications
+     * Expect to receive output in accordance with specifications,
+     * similar to [l:] slice in Python
      */
-    @Test(timeout = 10000)
+    @Test(timeout = 1000)
     public void testRightNull() {
 
         // Instantiating interactor
@@ -158,7 +161,8 @@ public class GmlsInteractorTests {
 
     /**
      * Testing the case where both endpoints are null.
-     * Expect to receive all stories in the repository
+     * Expect to receive all stories in the repository,
+     * similar to [:] slice in Python
      */
     @Test(timeout = 1000)
     public void testBothNull() {
@@ -211,7 +215,8 @@ public class GmlsInteractorTests {
 
     /**
      * Testing the case where endpoints are out of bound.
-     * Expect to receive output in accordance with specifications
+     * Expect to receive output in accordance with specifications,
+     * full dataset in this case
      */
     @Test(timeout = 1000)
     public void testOutOfBounds() {

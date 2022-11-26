@@ -90,24 +90,6 @@ public class GmlsInteractor {
             return Arrays.copyOfRange(stories, INDICES[0], INDICES[1]);
         }
 
-//        /**
-//         * Private helper method for helper method getIndices. Returns the range of likes
-//         * corresponding to the range of likes specified by the InputData
-//         * @param lower     the lower bound for likes specified by the user, can be null
-//         * @param upper     the upper bound for likes specified by the user, can be null
-//         * @param length    the length of the list
-//         * @return an array of length 2, for which:
-//         * 1. the element at index 0 is a new lower bound for likes that is
-//         *    within 0 to length inclusive, and is equal to 0 if lower == null
-//         * 2. the element at index 1 is a new upper bound for likes that is
-//         *    within 0 to length inclusive, and is equal to length if upper == null
-//         */
-//        private int[] getBoundsInArrayRange(Integer lower, Integer upper, int length){
-//            int A = (lower == null)? 0:lower;
-//            int B = (upper == null)? length:upper;
-//            return new int[]{Math.max(0,A), Math.min(length,B)};
-//        }
-
         /**
          * Private helper method
          * @param index the story for which the number of likes are compare to the bounds
