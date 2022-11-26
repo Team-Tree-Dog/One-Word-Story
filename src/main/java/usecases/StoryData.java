@@ -16,14 +16,14 @@ public class StoryData implements Comparable<StoryData> {
      * @param authors authors of a particular story
      * @param dt1 published date
      * @param title title of the story
-     * @param i number of likes corresponding to a story
+     * @param numLikes number of likes corresponding to a story
      */
-    public StoryData(String story, String[] authors, LocalDateTime dt1, String title, int i) {
+    public StoryData(String story, String[] authors, LocalDateTime dt1, String title, int numLikes) {
         this.title = title;
         this.story = story;
         this.authorNames = authors;
         this.publishTimeStamp = dt1;
-        this.numberOfLikes = i;
+        this.numberOfLikes = numLikes;
     }
 
     /**

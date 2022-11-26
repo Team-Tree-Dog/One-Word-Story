@@ -53,7 +53,8 @@ public class GmlsInteractor {
              *
              * @param stories1 the first story to be compared.
              * @param stories2 the second story to be compared.
-             * @return a value n of type int. n > 0 if stories1 has less likes than stories2,
+             * @return a value n of type int:
+             * n > 0 if stories1 has less likes than stories2,
              * n < 0 if stories 1 has more likes than stories2,
              * n = 0 if stories1 and stories2 have the same number of likes.
              */

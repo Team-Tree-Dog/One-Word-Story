@@ -100,7 +100,6 @@ public class GmlsInteractorTests {
         assertEquals("Returned wrong number of stories", 2, stories.length);
         assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
         assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
-        assertEquals("Returned incorrect story", "text 1", stories[2].getStory());
     }
 
     /**
