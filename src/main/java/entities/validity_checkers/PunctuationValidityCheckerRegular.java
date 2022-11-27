@@ -8,7 +8,7 @@ public class PunctuationValidityCheckerRegular implements PunctuationValidityChe
     private final int PUNC_LENGTH = 3;
 
     /**
-     * Verifies punctuation is valid (dependent on implementing class)
+     * Verifies punctuation is valid based on game mode regular criteria
      * Makes changes to the punctuation if error is forgivable
      * @param punctuation the punctuation to validate (trimmed)
      * @return valid punctuation, or if not valid, null
@@ -24,7 +24,7 @@ public class PunctuationValidityCheckerRegular implements PunctuationValidityChe
                 return punctuation;
             }
             return null;
-        } else if (punctuation.matches("^\\.*") || punctuation.matches("^[!?]*")) {
+        } else if (punctuation.matches("\\.*") || punctuation.matches("[!?]*")) {
             return punctuation;
         }
         return null;
