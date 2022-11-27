@@ -27,7 +27,7 @@ public class WordFactory {
      */
     public Word create(String word, Player author) throws InvalidWordException {
         String checkedWord = validityChecker.isValid(word);
-        if(checkedWord.equals(null))
+        if(checkedWord == null)
             throw new InvalidWordException("The word is not valid!");
         else
             return new Word(word, author);
