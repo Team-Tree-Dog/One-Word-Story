@@ -3,11 +3,12 @@ package entities;
 import exceptions.EntityException;
 import exceptions.PlayerNotFoundException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import usecases.Response;
 
 public class ResponseTest {
 
-    @org.junit.Test
+    @Test
     public void testResultCodeIsCorrectForGivenException() {
         String message = "My super message";
         Response response = Response.fromException(new PlayerNotFoundException(message), message);
@@ -15,7 +16,7 @@ public class ResponseTest {
         Assertions.assertEquals(response.getMessage(), message);
     }
 
-    @org.junit.Test
+    @Test
     public void testResultCodeFailIsReturnedWhenExceptionIsIncorrect() {
         String message = "My super message";
         EntityException myStrangeException = new EntityException("Rickroll");
