@@ -5,7 +5,7 @@ package entities.validity_checkers;
  */
 public class PunctuationValidityCheckerRegular implements PunctuationValidityChecker {
 
-    private final int PUNC_LENGTH = 3;
+    private static final int PUNC_LENGTH = 3;
 
     /**
      * Verifies punctuation is valid based on game mode regular criteria
