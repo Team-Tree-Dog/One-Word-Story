@@ -1,6 +1,7 @@
 package entities.games;
 
 import entities.Player;
+import entities.validity_checkers.*;
 
 
 import java.util.*;
@@ -12,16 +13,19 @@ public class GameRegular extends Game {
 
     public static int REGULAR_GAME_SECONDS_PER_TURN = 15;
     private final Queue<Player> players;
+    private static final PunctuationValidityChecker puncValidityCheckerRegular =
+            new PunctuationValidityCheckerRegular();
+    private static final WordValidityChecker wordValidityCheckerRegular =
+            new WordValidityCheckerRegular();
+    public static final ValidityCheckerFacade v = new ValidityCheckerFacade(
+            puncValidityCheckerRegular, wordValidityCheckerRegular);
 
     /**
      * Constructor for GameRegular
      * @param initialPlayers The initial players in this GameRegular
      */
     public GameRegular(Queue<Player> initialPlayers) {
-        super(REGULAR_GAME_SECONDS_PER_TURN, word -> {
-            // Currently accepting all the words
-            return true;
-        });
+        super(REGULAR_GAME_SECONDS_PER_TURN, v);
         players = new LinkedList<>(initialPlayers);
     }
 

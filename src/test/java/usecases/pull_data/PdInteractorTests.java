@@ -1,8 +1,8 @@
 package usecases.pull_data;
 
 import entities.Player;
-import entities.ValidityChecker;
 import entities.games.Game;
+import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.InvalidWordException;
 import org.junit.After;
 import org.junit.Before;
@@ -31,16 +31,16 @@ public class PdInteractorTests {
 
         private final boolean allowAddingPlayers;
 
+        public static final ValidityCheckerFacade v = new ValidityCheckerFacade(
+                puncValidityChecker -> "",
+                wordValidityChecker -> ""
+        );
+
         /**
          * @param allowAddingPlayers Does addPlayer successfully add the player and return true
          */
         public CustomizableTestGame(boolean allowAddingPlayers) {
-            super(99, new ValidityChecker() {
-                @Override
-                public boolean isValid(String word) {
-                    return true;
-                }
-            });
+            super(99, v);
             this.allowAddingPlayers = allowAddingPlayers;
         }
 

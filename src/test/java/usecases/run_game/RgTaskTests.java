@@ -2,6 +2,7 @@ package usecases.run_game;
 
 import entities.Player;
 import entities.games.Game;
+import entities.validity_checkers.ValidityCheckerFacade;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.*;
@@ -26,15 +27,17 @@ public class RgTaskTests {
 
         private final boolean gameOverValue;
 
+        public static final ValidityCheckerFacade v = new ValidityCheckerFacade(
+                puncValidityChecker -> "",
+                wordValidityChecker -> ""
+        );
+
         /**
          * Constructor of CustomizableTestGame for our tests
          * @param gameOverValue fixed isGameOver return value
          */
         public CustomizableTestGame(boolean gameOverValue) {
-            super(REGULAR_GAME_SECONDS_PER_TURN, word -> {
-                // Currently accepting all the words
-                return true;
-            });
+            super(REGULAR_GAME_SECONDS_PER_TURN, v);
             players = new LinkedList<>();
             this.gameOverValue = gameOverValue;
         }
