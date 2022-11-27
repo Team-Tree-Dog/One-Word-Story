@@ -24,7 +24,8 @@ public class PunctuationValidityCheckerRegular implements PunctuationValidityChe
                 return punctuation;
             }
             return null;
-        } else if (punctuation.matches("\\.*") || punctuation.matches("[!?]*")) {
+        } 
+        if (punctuation.matches("\\.*") || punctuation.matches("[!?]*")) {
             return punctuation;
         }
         return null;
