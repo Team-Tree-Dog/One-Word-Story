@@ -5,7 +5,7 @@ package entities.validity_checkers;
  */
 public class WordValidityCheckerRegular implements WordValidityChecker{
 
-    private final int WORD_LENGTH = 22;
+    private static final int WORD_LENGTH = 22;
 
     /**
      * Verifies word is valid based on game mode regular criteria
