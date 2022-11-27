@@ -29,8 +29,7 @@ public class WordFactory {
         String checkedWord = validityChecker.isValid(word);
         if(checkedWord == null)
             throw new InvalidWordException("The word is not valid!");
-        else
-            return new Word(word, author);
+        return new Word(word, author);
     }
 
 }
