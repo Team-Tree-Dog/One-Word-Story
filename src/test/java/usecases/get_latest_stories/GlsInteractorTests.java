@@ -1,15 +1,15 @@
 package usecases.get_latest_stories;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import usecases.StoryData;
 
 import java.time.LocalDateTime;
 import java.time.Month;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class GlsInteractorTests {
@@ -58,7 +58,7 @@ public class GlsInteractorTests {
     /**
      * In the setup, we only initialize our repository with stories
      */
-    @Before
+    @BeforeEach
     public void setup () {
 
         LocalDateTime dt1 = LocalDateTime.of(2001, Month.JULY, 29, 19, 30, 40);
@@ -73,7 +73,7 @@ public class GlsInteractorTests {
         repo = new CustomizableGlsGateway(stories);
     }
 
-    @After
+    @AfterEach
     public void teardown () {
 
     }
@@ -82,7 +82,8 @@ public class GlsInteractorTests {
      * Testing the case when numToGet is within the size of the repository.
      * Expect to receive numToGet stories starting from the latest one
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testSimpleTest() {
 
         // Instantiating interactor
@@ -95,20 +96,21 @@ public class GlsInteractorTests {
 
         // Check presenter receives non-null data
         GlsOutputData receivedData = ((CustomizableGlsOutputBoundary) pres).getReceivedData();
-        assertNotNull("Presenter was not accessed", receivedData);
+        assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
         StoryData[] stories = receivedData.getStories();
-        assertEquals("Returned wrong number of stories", 2, stories.length);
-        assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
-        assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
+        assertEquals(2, stories.length, "Returned wrong number of stories");
+        assertEquals("text 3", stories[0].getStory(), "Returned incorrect story");
+        assertEquals("text 2", stories[1].getStory(), "Returned incorrect story");
     }
 
     /**
      * Testing the case when numToGet is zero.
      * Expect to receive empty DataStory[], but not null
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testZeroTest() {
 
         // Instantiating interactor
@@ -121,18 +123,19 @@ public class GlsInteractorTests {
 
         // Check presenter receives non-null data
         GlsOutputData receivedData = ((CustomizableGlsOutputBoundary) pres).getReceivedData();
-        assertNotNull("Presenter was not accessed", receivedData);
+        assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
         StoryData[] stories = receivedData.getStories();
-        assertEquals("Returned wrong number of stories", 0, stories.length);
+        assertEquals(0, stories.length, "Returned wrong number of stories");
     }
 
     /**
      * Testing  the case when numToGet is null.
      * Expect to receive all available stories from latest to earliest
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testNull() {
 
         // Instantiating interactor
@@ -146,21 +149,22 @@ public class GlsInteractorTests {
 
         // Check presenter receives non-null data
         GlsOutputData receivedData = ((CustomizableGlsOutputBoundary) pres).getReceivedData();
-        assertNotNull("Presenter was not accessed", receivedData);
+        assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
         StoryData[] stories = receivedData.getStories();
-        assertEquals("Returned wrong number of stories", 3, stories.length);
-        assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
-        assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
-        assertEquals("Returned incorrect story", "text 1", stories[2].getStory());
+        assertEquals(3, stories.length, "Returned wrong number of stories");
+        assertEquals("text 3", stories[0].getStory(), "Returned incorrect story");
+        assertEquals("text 2", stories[1].getStory(), "Returned incorrect story");
+        assertEquals("text 1", stories[2].getStory(), "Returned incorrect story");
     }
 
     /**
      * Testing the case when numToGet exceeds repository size.
      * Expect to receive all available stories from latest to earliest
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testOutOfBound() {
 
         // Instantiating interactor
@@ -174,14 +178,14 @@ public class GlsInteractorTests {
 
         // Check presenter receives non-null data
         GlsOutputData receivedData = ((CustomizableGlsOutputBoundary) pres).getReceivedData();
-        assertNotNull("Presenter was not accessed", receivedData);
+        assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
         StoryData[] stories = receivedData.getStories();
-        assertEquals("Returned wrong number of stories", 3, stories.length);
-        assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
-        assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
-        assertEquals("Returned incorrect story", "text 1", stories[2].getStory());
+        assertEquals(3, stories.length, "Returned wrong number of stories");
+        assertEquals("text 3", stories[0].getStory(), "Returned incorrect story");
+        assertEquals("text 2", stories[1].getStory(), "Returned incorrect story");
+        assertEquals("text 1", stories[2].getStory(), "Returned incorrect story");
     }
 
 }

@@ -1,8 +1,9 @@
 package usecases.like_story;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import usecases.Response;
 
 import java.util.HashMap;
@@ -20,7 +21,7 @@ public class LsTests {
     private LsInputBoundary interactor;
     private Random random;
 
-    @Before
+    @BeforeEach
     public void setup() {
         presenter = new TestLsPresenter();
         repository = new TestLsGateway();
@@ -31,7 +32,8 @@ public class LsTests {
     /**
      * This test checks that all the likes are added correctly
      * */
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(10000)
     public void testLikesAreAddedCorrectly() {
         int numberOfStories = random.nextInt(100);
         for(int i = 0; i < numberOfStories; i++) {
@@ -60,7 +62,8 @@ public class LsTests {
     /**
      * This test checks that the use case works correctly with non-existing stories
      * */
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(10000)
     public void testInteractorReturnsFailForIncorrectStories() {
         int numberOfStories = random.nextInt(100);
         for (int i = 0; i < numberOfStories; i++) {

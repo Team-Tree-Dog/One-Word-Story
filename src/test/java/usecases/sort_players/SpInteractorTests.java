@@ -3,9 +3,10 @@ package usecases.sort_players;
 import entities.*;
 import entities.games.Game;
 import exceptions.GameRunningException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import usecases.pull_data.PdInteractor;
 import usecases.pull_game_ended.PgeInteractor;
 
@@ -14,7 +15,8 @@ import java.util.Collection;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * Test the sort players timer task for proper functionality
@@ -122,13 +124,13 @@ public class SpInteractorTests {
     /**
      * Pre-test setup, none in this case
      */
-    @Before
+    @BeforeEach
     public void setup () {}
 
     /**
      * Post-test breakdown, none in this case
      */
-    @After
+    @AfterEach
     public void teardown () {}
 
     /**
@@ -136,7 +138,8 @@ public class SpInteractorTests {
      * should in this case empty the players from the pool into a new game
      * and start the game timer.
      */
-    @Test(timeout=1000)
+    @Test
+    @Timeout(1000)
     public void testTwoPlayersInPoolStartGame () {
 
         CustomizableTestGame customizableTestGame = new CustomizableTestGame(false, true);
@@ -189,7 +192,8 @@ public class SpInteractorTests {
      * Test the scenario where the game is not null but is over. Sort players
      * should set the game to null
      */
-    @Test(timeout=1000)
+    @Test
+    @Timeout(1000)
     public void testGameNotNullIsOverSetNull () {
         CustomizableTestGame g = new CustomizableTestGame(true, true);
 
@@ -218,7 +222,8 @@ public class SpInteractorTests {
      * and remove them from the pool. The players will be successfully added due
      * to the game implementation used for this test
      */
-    @Test(timeout=1000)
+    @Test
+    @Timeout(1000)
     public void testGameRunningPlayersInPoolAdded () {
         CustomizableTestGame g = new CustomizableTestGame(false, true);
 
@@ -263,7 +268,8 @@ public class SpInteractorTests {
      * In this case, the pool listeners should not be called and the players
      * should remain in the pool
      */
-    @Test(timeout=1000)
+    @Test
+    @Timeout(1000)
     public void testGameRunningPlayersInPoolRefused () {
         CustomizableTestGame g = new CustomizableTestGame(false, false);
 
