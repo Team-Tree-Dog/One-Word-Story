@@ -2,15 +2,15 @@ package usecases.disconnecting;
 
 import entities.*;
 import entities.games.Game;
+import exceptions.GameDoesntExistException;
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
 import exceptions.InvalidDisplayNameException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import usecases.Response;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
@@ -32,10 +32,11 @@ public class DcInteractorTests {
     /**
      * Testing disconnecting player who are in the game
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testDisconnectPlayerFromGame() throws
             IdInUseException, GameRunningException,
-            InvalidDisplayNameException {
+            InvalidDisplayNameException, GameDoesntExistException {
         Player player1 = playerFactory.createPlayer("John", "1");
         Player player2 = playerFactory.createPlayer("Kate", "2");
         players.add(player1);
@@ -66,7 +67,8 @@ public class DcInteractorTests {
     /**
      * Testing disconnecting player who are in the pool
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testDisconnectPlayerFromPool() throws
             IdInUseException, GameRunningException,
             InvalidDisplayNameException {
@@ -102,7 +104,8 @@ public class DcInteractorTests {
      * Test a malicious or bugged call to disconnect where a player
      * is NOT in the pool, and game is null. A fail code should be returned
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testGameNullPlayerNotInPool () throws
             IdInUseException, InvalidDisplayNameException, GameRunningException {
         Player player5 = playerFactory.createPlayer("Alby", "5");
@@ -129,9 +132,10 @@ public class DcInteractorTests {
 
     /**
      * Test a call to disconnect a player who is neither in the game nor in the
-     * pool. Fail code should be returned
+     * pool. PLAYER_NOT_FOUND code should be returned.
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testPlayerNowhere () throws
             GameRunningException, IdInUseException, InvalidDisplayNameException {
         Player player6 = playerFactory.createPlayer("Sam", "6");
@@ -179,11 +183,11 @@ public class DcInteractorTests {
      */
     private static class TestGame extends Game {
 
-        private final List<Player> players;
+        private final Queue<Player> players;
 
         public TestGame(List<Player> players) {
             super(10, word -> true);
-            this.players = players;
+            this.players = new LinkedList<>(players);
         }
 
         @Override
@@ -210,10 +214,13 @@ public class DcInteractorTests {
         public boolean addPlayer(Player playerToAdd) { return players.add(playerToAdd); }
 
         @Override
-        public boolean switchTurn() { return false; }
+        public boolean switchTurn() {
+            setSecondsLeftInCurrentTurn(getSecondsPerTurn());
+            return players.add(players.remove());
+        }
 
         @Override
-        public Player getCurrentTurnPlayer() { return null; }
+        public Player getCurrentTurnPlayer() { return players.peek(); }
 
     }
 

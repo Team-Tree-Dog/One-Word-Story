@@ -2,17 +2,18 @@ package usecases.run_game;
 
 import entities.Player;
 import entities.games.Game;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import usecases.pull_data.*;
 import usecases.pull_game_ended.*;
-
-import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class RgTaskTests {
@@ -169,12 +170,12 @@ public class RgTaskTests {
     private PgeInputBoundary pge;
     private PdInputBoundary pd;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         gameLock = new ReentrantLock();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
 
     }
@@ -183,7 +184,8 @@ public class RgTaskTests {
      * Tests GameOver Scenario, when game timer is cancelled
      * and Pull-Game-Ended use-case is called
      */
-    @Test(timeout = 1000)
+    @Test
+@Timeout(1000)
     public void testGameOverScenario() {
 
         g = new CustomizableTestGame(true);
@@ -198,14 +200,14 @@ public class RgTaskTests {
         innerTaskInstance.run();
 
         // Verify that PGE is called in onGameEnded
-        assertNotNull("PGE use-case is not accessed", ((CustomizablePgeInputBoundary) pge).getPassedData());
+        assertNotNull(((CustomizablePgeInputBoundary) pge).getPassedData(), "PGE use-case is not accessed");
 
         // Verify that onGameEnded receives correct input
         ArrayList<Player> pgeList = new ArrayList<>(((CustomizablePgeInputBoundary) pge).getPassedData().getPlayers());
         ArrayList<Player> ourList = new ArrayList<>(g.getPlayers());
-        assertEquals("PGE received input of incorrect length", pgeList.size(), ourList.size());
+        assertEquals(pgeList.size(), ourList.size(), "PGE received input of incorrect length");
         for (int i = 0; i < pgeList.size(); i++) {
-            assertEquals("PGE received incorrect input", pgeList.get(i), ourList.get(i));
+            assertEquals(pgeList.get(i), ourList.get(i), "PGE received incorrect input");
         }
     }
 
@@ -214,7 +216,8 @@ public class RgTaskTests {
      * We expect secondsLeftCurrentTurn to decrease appropriately,
      * without change of turn
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testTimerDecrementScenario() {
 
         g = new CustomizableTestGame(false);
@@ -236,17 +239,20 @@ public class RgTaskTests {
         innerTaskInstance.run();
 
         // Verify pd use-case is accessed
-        assertNotNull("PD use-case is not accessed", ((CustomizablePdInputBoundary) pd).getPassedData());
+        assertNotNull(((CustomizablePdInputBoundary) pd).getPassedData(),
+                "PD use-case is not accessed");
 
         // Verify that onTimerUpdate receives correct input
-        assertEquals("PD received incorrect input",
-                     ((CustomizablePdInputBoundary) pd).getPassedData().getGame(), g);
+        assertEquals(((CustomizablePdInputBoundary) pd).getPassedData().getGame(), g,
+                "PD received incorrect input");
 
         // Verify decrement
-        assertEquals("Invalid decrement of secondsLeftInCurrentTurn", g.getSecondsLeftInCurrentTurn(), 7);
+        assertEquals(g.getSecondsLeftInCurrentTurn(), 7,
+                "Invalid decrement of secondsLeftInCurrentTurn");
 
         // Verify no switch of turn
-        assertEquals("Unplanned switch of turn", g.getCurrentTurnPlayer().getPlayerId(), curPlayerId);
+        assertEquals(g.getCurrentTurnPlayer().getPlayerId(), curPlayerId,
+                "Unplanned switch of turn");
 
     }
 
@@ -256,7 +262,8 @@ public class RgTaskTests {
      * We expect secondsLeftCurrentTurn to be reinstated appropriately,
      * with a valid switch of turn performed
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testTimerSwitchTurnScenario() {
 
         g = new CustomizableTestGame(false);
@@ -277,18 +284,19 @@ public class RgTaskTests {
         innerTaskInstance.run();
 
         // Verify pd use-case is accessed
-        assertNotNull("PD use-case is not accessed", ((CustomizablePdInputBoundary) pd).getPassedData());
+        assertNotNull(((CustomizablePdInputBoundary) pd).getPassedData(), "PD use-case is not accessed");
 
         // Verify that onTimerUpdate receives correct input
-        assertEquals("PD received incorrect input",
-                ((CustomizablePdInputBoundary) pd).getPassedData().getGame(), g);
+        assertEquals(((CustomizablePdInputBoundary) pd).getPassedData().getGame(), g,
+                "PD received incorrect input");
 
         // Verify correct switch of turn
-        assertEquals("Invalid switch of turn", g.getCurrentTurnPlayer().getPlayerId(), "2");
+        assertEquals(g.getCurrentTurnPlayer().getPlayerId(), "2",
+                "Invalid switch of turn");
 
         // Verify secondsLeftInCurrentTurn is correctly updated
-        assertEquals("Invalid secondsLeftInCurrentTurn after switch of turn", g.getSecondsLeftInCurrentTurn(),
-                g.getSecondsPerTurn());
+        assertEquals(g.getSecondsLeftInCurrentTurn(), g.getSecondsPerTurn(),
+                "Invalid secondsLeftInCurrentTurn after switch of turn");
 
     }
 
