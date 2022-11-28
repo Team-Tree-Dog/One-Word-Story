@@ -104,6 +104,8 @@ public class LobbyManager {
     public Timer getSortPlayersTimer () { return this.sortPlayersTimer; }
 
     /**
+     * This method engages no locks, and is not thread-safe.
+     * Before/after this method is called, locks should be engaged/unlocked accordingly.
      * @return a shallow copy of the player pool
      */
     public List<PlayerObserverLink> getPool () {
@@ -192,6 +194,8 @@ public class LobbyManager {
     }
 
     /**
+     * NOT THREAD-SAFE, DOESN'T ENGAGE/UNLOCK LOCKS.
+     * Engage locks accordingly before calling this method, and unlock after.
      * Gets all the players from the players pool
      * @return an arraylist of players
      */
