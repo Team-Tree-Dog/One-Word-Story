@@ -52,7 +52,7 @@ public class PgeInteractorTests {
      * Test that the data is built correctly (the proper player ids were extracted)
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testBuiltData() {
         ArrayList<String> expectedPlayerIds = new ArrayList<>();
         expectedPlayerIds.add("1");

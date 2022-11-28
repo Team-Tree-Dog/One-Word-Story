@@ -82,7 +82,7 @@ public class GmlsInteractorTests {
      * similar to [l:r] slice in Python
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testSimpleTest() {
 
         // Instantiating interactor
@@ -111,7 +111,7 @@ public class GmlsInteractorTests {
      * similar to [:r] slice in Python
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testLeftNull() {
 
         // Instantiating interactor
@@ -140,7 +140,7 @@ public class GmlsInteractorTests {
      * similar to [l:] slice in Python
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testRightNull() {
 
         // Instantiating interactor
@@ -169,7 +169,7 @@ public class GmlsInteractorTests {
      * similar to [:] slice in Python
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testBothNull() {
 
         // Instantiating interactor
@@ -198,7 +198,7 @@ public class GmlsInteractorTests {
      * Expect to receive empty data, but not null
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testInvalidInput() {
 
         // Instantiating interactor
@@ -225,7 +225,7 @@ public class GmlsInteractorTests {
      * full dataset in this case
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testOutOfBounds() {
 
         // Instantiating interactor

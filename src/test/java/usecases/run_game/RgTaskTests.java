@@ -185,7 +185,7 @@ public class RgTaskTests {
      * and Pull-Game-Ended use-case is called
      */
     @Test
-@Timeout(1000)
+@Timeout(1)
     public void testGameOverScenario() {
 
         g = new CustomizableTestGame(true);
@@ -217,7 +217,7 @@ public class RgTaskTests {
      * without change of turn
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testTimerDecrementScenario() {
 
         g = new CustomizableTestGame(false);
@@ -263,7 +263,7 @@ public class RgTaskTests {
      * with a valid switch of turn performed
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testTimerSwitchTurnScenario() {
 
         g = new CustomizableTestGame(false);

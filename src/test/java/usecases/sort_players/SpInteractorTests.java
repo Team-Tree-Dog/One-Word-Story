@@ -139,7 +139,7 @@ public class SpInteractorTests {
      * and start the game timer.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testTwoPlayersInPoolStartGame () {
 
         CustomizableTestGame customizableTestGame = new CustomizableTestGame(false, true);
@@ -193,7 +193,7 @@ public class SpInteractorTests {
      * should set the game to null
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testGameNotNullIsOverSetNull () {
         CustomizableTestGame g = new CustomizableTestGame(true, true);
 
@@ -223,7 +223,7 @@ public class SpInteractorTests {
      * to the game implementation used for this test
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testGameRunningPlayersInPoolAdded () {
         CustomizableTestGame g = new CustomizableTestGame(false, true);
 
@@ -269,7 +269,7 @@ public class SpInteractorTests {
      * should remain in the pool
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testGameRunningPlayersInPoolRefused () {
         CustomizableTestGame g = new CustomizableTestGame(false, false);
 
