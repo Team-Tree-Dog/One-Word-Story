@@ -1,7 +1,9 @@
 package usecases.suggest_title;
 
 /**
- * Gateway Output Data for the use case. Records whether the title was successfully added to the database.
+ * Gateway Output Data for the use case. Records whether the title was successfully added to the database. This
+ * output data will be passed to the presenter, and depending on the success or fail, the presenter will
+ * update the view model.
  */
 public class StGatewayOutputData {
     boolean success;
