@@ -1,29 +1,26 @@
 import entities.*;
 import entities.games.Game;
 import entities.games.GameFactory;
+
 import exceptions.IdInUseException;
 import exceptions.InvalidDisplayNameException;
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import usecases.disconnecting.DcInputData;
-import usecases.disconnecting.DcInteractor;
-import usecases.disconnecting.DcOutputBoundary;
+
+import org.junit.jupiter.api.*;
+
+import usecases.disconnecting.*;
 import usecases.join_public_lobby.*;
 import usecases.pull_data.PdInputBoundary;
-import usecases.pull_data.PdInputData;
 import usecases.pull_game_ended.PgeInputBoundary;
-import usecases.pull_game_ended.PgeInputData;
 import usecases.sort_players.SpInteractor;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
 public class ThreadLockTests {
@@ -134,10 +131,10 @@ public class ThreadLockTests {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {}
 
-    @After
+    @AfterEach
     public void tearDown() {}
 
     /**
@@ -150,8 +147,8 @@ public class ThreadLockTests {
      * DC1, JPL2, SP: Only Player 2 remains in the pool, no game started.
      * We end up having only two scenarios which are predicted to happen. We test that any of these two scenarios happens.
      */
-    // @RepeatedTest(REPEAT_TIMES)
-    @Test(timeout = 10000)
+    @RepeatedTest(REPEAT_TIMES)
+    @Timeout(10000)
     public void testPlayerEntersPlayerDisconnects() throws IdInUseException, InvalidDisplayNameException {
         PlayerFactory playerFac = new PlayerFactory(new LocalDisplayName());
         GameFactory gameFac = new GameFactoryTest();
@@ -247,8 +244,8 @@ public class ThreadLockTests {
         // Now we detect scenarios.
         if (lobman.getPlayersFromPool().contains(ghost)) {
             // In this case, Scenario 1 is possible.
-            assertTrue("A game shouldn't have started i.e. should be null.", lobman.isGameNull());
-            assertFalse("The pool shouldn't have Player 1.", lobman.getPlayersFromPool().contains(player1));
+            assertTrue(lobman.isGameNull(),"A game shouldn't have started i.e. should be null.");
+            assertFalse(lobman.getPlayersFromPool().contains(player1),"The pool shouldn't have Player 1.");
             System.out.println("Scenario 1 happened: Player 2 remains in the pool, Player 1 disconnected, no game exists.");
 
             // Cancel 2nd player from pool so JPL can end (teardown procedure)
@@ -271,10 +268,8 @@ public class ThreadLockTests {
             }
             lobman.getGameLock().lock();
             // So the game is over.
-            assertEquals("No player should be in the pool, but someone is.",
-                    lobman.getPlayersFromPool(), new ArrayList<>());
-            assertTrue("If you can read this, no game was ever created when it should have been.",
-                    jplFlagJoined.get()); // So we know the game was created, but now vanished.
+            assertEquals(0, lobman.getPlayersFromPool().size(), "No player should be in the pool, but someone is.");
+            assertTrue(jplFlagJoined.get(), "If you can read this, no game was ever created when it should have been."); // So we know the game was created, but now vanished.
 
             System.out.println("Scenario 2 happened.");
         }
