@@ -13,3 +13,13 @@
 .fourth-color {
     background: #674f04;
 }
+
+.story {
+    border-style: solid;
+    margin: 10px;
+}
+
+#all_stories {
+    height: 300px;
+    overflow-y: scroll;
+}
