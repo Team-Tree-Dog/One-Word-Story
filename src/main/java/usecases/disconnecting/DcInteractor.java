@@ -62,8 +62,26 @@ public class DcInteractor implements DcInputBoundary {
 
             // Innocent until proven guilty
             Response response = Response.getSuccessful("Disconnecting was successful.");
+            System.out.println("STEP 3.1: BEFORE PLAYERPOOL GETS LOCKED");
+            System.out.println("LM GAME LOCK: " + lm.getGameLock().toString());
+            System.out.println("LM PLAYER POOL LOCK: " + lm.getPlayerPoolLock().toString());
+            System.out.println("THIS GAME LOCK: " + gameLock.toString());
+            System.out.println("THIS PLAYER POOL LOCK: " + playerPoolLock.toString());
 
-            playerPoolLock.lock();
+            boolean flagPlayer = false;
+            while (!flagPlayer) {
+                System.out.println("Tries to lock");
+                System.out.println("LOCK BEFORE: " + playerPoolLock.toString());
+                flagPlayer = playerPoolLock.tryLock();
+                System.out.println("LOCK AFTER: " + playerPoolLock.toString());
+            }
+            // playerPoolLock.lock();
+
+            System.out.println("STEP 3.2: AFTER PLAYERPOOL GETS LOCKED");
+            System.out.println("LM GAME LOCK: " + lm.getGameLock().toString());
+            System.out.println("LM PLAYER POOL LOCK: " + lm.getPlayerPoolLock().toString());
+            System.out.println("THIS GAME LOCK: " + gameLock.toString());
+            System.out.println("THIS PLAYER POOL LOCK: " + playerPoolLock.toString());
 
             // Null if player not found, looks through pool hence above lock is needed
             LobbyManager.PlayerObserverLink playerLink = lm.getLinkFromPlayer(playerToDisconnect);
@@ -83,7 +101,25 @@ public class DcInteractor implements DcInputBoundary {
                 // if player isn't in pool so no need to check contains explicitly
                 lm.removeFromPoolCancel(playerToDisconnect);
             } catch (PlayerNotFoundException ignored) {
-                gameLock.lock();
+                System.out.println("STEP 3.3: BEFORE GAME GETS LOCKED");
+                System.out.println("LM GAME LOCK: " + lm.getGameLock().toString());
+                System.out.println("LM PLAYER POOL LOCK: " + lm.getPlayerPoolLock().toString());
+                System.out.println("THIS GAME LOCK: " + gameLock.toString());
+                System.out.println("THIS PLAYER POOL LOCK: " + playerPoolLock.toString());
+
+                boolean flagGame = false;
+                while (!flagGame) {
+                    System.out.println("Tries to lock");
+                    System.out.println("LOCK BEFORE: " + gameLock.toString());
+                    flagGame = gameLock.tryLock();
+                    System.out.println("LOCK AFTER: " + gameLock.toString());
+                }
+
+                System.out.println("STEP 3.4: AFTER GAME GETS LOCKED");
+                System.out.println("LM GAME LOCK: " + lm.getGameLock().toString());
+                System.out.println("LM PLAYER POOL LOCK: " + lm.getPlayerPoolLock().toString());
+                System.out.println("THIS GAME LOCK: " + gameLock.toString());
+                System.out.println("THIS PLAYER POOL LOCK: " + playerPoolLock.toString());
                 try {
                     // In this catch block, we know player was not in the pool. However, we don't know if the player
                     // is in the game. We try to see if the player is in the game using .contains, which uses .equals,

@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ThreadLockTests {
 
-    private static final int REPEAT_TIMES = 5;
+    private static final int REPEAT_TIMES = 1;
 
     private static class GameTest extends Game {
         public static final int REGULAR_GAME_SECONDS_PER_TURN = 15;
@@ -148,7 +148,7 @@ public class ThreadLockTests {
      * We end up having only two scenarios which are predicted to happen. We test that any of these two scenarios happens.
      */
     @RepeatedTest(REPEAT_TIMES)
-    @Timeout(10000)
+    @Timeout(10)
     public void testPlayerEntersPlayerDisconnects() throws IdInUseException, InvalidDisplayNameException {
         PlayerFactory playerFac = new PlayerFactory(new LocalDisplayName());
         GameFactory gameFac = new GameFactoryTest();
@@ -208,30 +208,49 @@ public class ThreadLockTests {
         PdInputBoundary pdInputBoundary = d -> {};
         SpInteractor spinny = new SpInteractor(lobman, pgeInputBoundary, pdInputBoundary);
         SpInteractor.SpTask spTimerTask = spinny.new SpTask();
+        Timer timer = new Timer();
 
-        int newint = new Random().nextInt(4);
+        // int newint = new Random().nextInt(4);
+        int newint = 1;
         switch (newint) {
             case 0 :
                 jplInteractor.joinPublicLobby(jplInputData);
                 dcInteractor.disconnect(dcInputData);
+                timer.scheduleAtFixedRate(spTimerTask, 0, 100);
                 break;
             case 1 :
+                System.out.println("STEP 1: BEFORE JPL");
+                System.out.println("GAME LOCK: " + lobman.getGameLock().toString());
+                System.out.println("PLAYER POOL LOCK: " + lobman.getPlayerPoolLock().toString());
+
                 jplInteractor.joinPublicLobby(jplInputData);
-                spTimerTask.run();
+                System.out.println("STEP 2: AFTER JPL, BEFORE TIMER STARTS");
+                System.out.println("GAME LOCK: " + lobman.getGameLock().toString());
+                System.out.println("PLAYER POOL LOCK: " + lobman.getPlayerPoolLock().toString());
+
+                timer.scheduleAtFixedRate(spTimerTask, 0, 100);
+                System.out.println("STEP 3: AFTER TIMER STARTS, BEFORE DC");
+                System.out.println("GAME LOCK: " + lobman.getGameLock().toString());
+                System.out.println("PLAYER POOL LOCK: " + lobman.getPlayerPoolLock().toString());
+
                 dcInteractor.disconnect(dcInputData);
+                System.out.println("STEP 4: AFTER DC");
+                System.out.println("GAME LOCK: " + lobman.getGameLock().toString());
+                System.out.println("PLAYER POOL LOCK: " + lobman.getPlayerPoolLock().toString());
                 break;
             case 2 :
                 dcInteractor.disconnect(dcInputData);
-                spTimerTask.run();
+                timer.scheduleAtFixedRate(spTimerTask, 0, 100);
                 jplInteractor.joinPublicLobby(jplInputData);
                 break;
             case 3 :
                 dcInteractor.disconnect(dcInputData);
                 jplInteractor.joinPublicLobby(jplInputData);
+                timer.scheduleAtFixedRate(spTimerTask, 0, 100);
                 break;
         }
 
-        spTimerTask.run();
+        // spTimerTask.run();
         while(!dcFlag.get() | !jplFlagPool.get()) {
             Thread.onSpinWait();
         }
@@ -254,9 +273,9 @@ public class ThreadLockTests {
         else {
             // In this case, Scenario 2 is possible.
             lobman.getGameLock().unlock();
-            spTimerTask.run();
+            // spTimerTask.run();
             while (!jplFlagJoined.get()) { // If this never happens, test timeout will make the test crash.
-                spTimerTask.run();
+                // spTimerTask.run();
             }
 
             while (true) { // If this never happens, test timeout will make the test crash.
@@ -264,7 +283,7 @@ public class ThreadLockTests {
                 boolean nullbool = lobman.isGameNull();
                 lobman.getGameLock().unlock();
                 if (nullbool) {break;}
-                spTimerTask.run();
+                // spTimerTask.run();
             }
             lobman.getGameLock().lock();
             // So the game is over.
@@ -276,13 +295,7 @@ public class ThreadLockTests {
         lobman.getPlayerPoolLock().unlock();
         lobman.getGameLock().unlock();
         lobman.getSortPlayersTimer().cancel();
+        spTimerTask.cancel();
     }
-
-    /**
-     * Tests the lock architecture, for the case in which one player submits word, but loses connection before word
-     * is processed, or if the player lags out and disconnects at the same time it submits the word.
-     *
-     *
-     */
 
 }
