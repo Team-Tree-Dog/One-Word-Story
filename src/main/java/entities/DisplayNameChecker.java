@@ -2,7 +2,7 @@ package entities;
 
 /**
  * Passes a new display name for a new Player.
- * Will also be used in the future to check if the name is valid (no inappropiate names).
+ * Will also be used in the future to check if the name is valid (no inappropriate names).
  */
 public interface DisplayNameChecker {
 
