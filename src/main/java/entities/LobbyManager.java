@@ -350,7 +350,10 @@ public class LobbyManager {
      * Gets all the players from the game
      * @return an arraylist of players
      */
-    public List<Player> getPlayersFromGame () {
+    public List<Player> getPlayersFromGame () throws GameDoesntExistException {
+        if (this.isGameNull()){
+            throw new GameDoesntExistException("Game does not exist.");
+        }
         return new ArrayList<>(game.getPlayers());
     }
 
@@ -364,4 +367,8 @@ public class LobbyManager {
      */
     public Lock getPlayerPoolLock() { return playerPoolLock; }
 
+    /**
+     * @return the player whose turn it is
+     */
+    public Player getCurrentTurnPlayer() { return this.game.getCurrentTurnPlayer(); }
 }
