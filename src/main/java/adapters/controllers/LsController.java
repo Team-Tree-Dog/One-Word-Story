@@ -23,9 +23,8 @@ public class LsController {
      * @param requestId The request's id
      * @param storyId The story's id
      * */
-    public void likeStory(String requestId, String storyId) {
-        int storyIdInteger = Integer.parseInt(storyId);
-        LsInputData inputData = new LsInputData(requestId, storyIdInteger);
+    public void likeStory(String requestId, int storyId) {
+        LsInputData inputData = new LsInputData(requestId, storyId);
         inputBoundary.likeStory(inputData);
     }
 
