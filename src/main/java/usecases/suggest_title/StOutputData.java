@@ -1,2 +1,4 @@
-package usecases.suggest_title;public class StOutputData {
+package usecases.suggest_title;
+
+public class StOutputData {
 }

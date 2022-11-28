@@ -1,2 +1,4 @@
-package usecases.suggest_title;public class StOutputBoundary {
+package usecases.suggest_title;
+
+public interface StOutputBoundary {
 }

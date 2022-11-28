@@ -1,2 +1,4 @@
-package usecases.suggest_title;public class StInteractor {
+package usecases.suggest_title;
+
+public class StInteractor {
 }
