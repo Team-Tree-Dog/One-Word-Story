@@ -2,9 +2,10 @@ package entities;
 
 import exceptions.EntityException;
 import exceptions.PlayerNotFoundException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import usecases.Response;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ResponseTest {
 
@@ -12,8 +13,8 @@ public class ResponseTest {
     public void testResultCodeIsCorrectForGivenException() {
         String message = "My super message";
         Response response = Response.fromException(new PlayerNotFoundException(message), message);
-        Assertions.assertEquals(response.getCode(), Response.ResCode.PLAYER_NOT_FOUND);
-        Assertions.assertEquals(response.getMessage(), message);
+        assertEquals(response.getCode(), Response.ResCode.PLAYER_NOT_FOUND);
+        assertEquals(response.getMessage(), message);
     }
 
     @Test
@@ -21,8 +22,8 @@ public class ResponseTest {
         String message = "My super message";
         EntityException myStrangeException = new EntityException("Rickroll");
         Response response = Response.fromException(myStrangeException, message);
-        Assertions.assertEquals(response.getCode(), Response.ResCode.FAIL);
-        Assertions.assertEquals(response.getMessage(), message);
+        assertEquals(response.getCode(), Response.ResCode.FAIL);
+        assertEquals(response.getMessage(), message);
     }
 
 }

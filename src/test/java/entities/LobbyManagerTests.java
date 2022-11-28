@@ -317,8 +317,7 @@ public class LobbyManagerTests {
 
         // Asserts:
         assertFalse(lobman.getPlayersFromPool().contains(player1), "Player 1 should not be in the pool, but it is.");
-        assertEquals(lobman.getPlayersFromPool(), new ArrayList<Player>(),
-                "There shouldn't be any players in the pool, but there are.");
+        assertEquals(0, lobman.getPlayersFromPool().size(), "There shouldn't be any players in the pool, but there are.");
     }
 
     /**
@@ -375,8 +374,7 @@ public class LobbyManagerTests {
         // Sanity Check Assertions:
         assertFalse(lobman.getPlayersFromPool().contains(player1), "Player 1 should not be in the pool, but it is.");
         assertFalse(testGame.getPlayers().contains(player1), "Player 1 should not be in the game");
-        assertEquals(lobman.getPlayersFromPool(), new ArrayList<Player>(),
-                "There shouldn't be any players in the pool, but there are.");
+        assertEquals(0, lobman.getPlayersFromPool().size(), "There shouldn't be any players in the pool, but there are.");
         // What we want to test:
         assertThrows(PlayerNotFoundException.class, () -> lobman.removeFromPoolJoin(player1));
     }
@@ -424,8 +422,7 @@ public class LobbyManagerTests {
         // What we want to test:
         lobman.removeAllFromPoolJoin();
         // Assertions:
-        assertEquals(lobman.getPlayersFromPool(), new ArrayList<Player>(),
-                "No player should be in the pool, but someone still is there.");
+        assertEquals(0, lobman.getPlayersFromPool().size(),"No player should be in the pool, but someone still is there.");
     }
 
     /**
@@ -472,8 +469,7 @@ public class LobbyManagerTests {
         // Final Assertions:
         assertFalse(lobman.getPlayersFromPool().contains(player1), "Player 1 shouldn't be in the pool, but it is.");
         assertFalse(lobman.getPlayersFromPool().contains(player2), "Player 2 shouldn't be in the pool, but it is.");
-        assertEquals(new ArrayList<Player>(), lobman.getPlayersFromPool(),
-                "Nobody should be in the pool, but someone is.");
+        assertEquals(0, lobman.getPlayersFromPool().size(),"Nobody should be in the pool, but someone is.");
 
     }
 
@@ -736,8 +732,7 @@ public class LobbyManagerTests {
 
         // Asserts:
         assertFalse(lobman.getPlayersFromPool().contains(player1), "Player 1 should not be in the pool, but it is.");
-        assertEquals(lobman.getPlayersFromPool(), new ArrayList<Player>(),
-                "There shouldn't be any players in the pool, but there are.");
+        assertEquals(0, lobman.getPlayersFromPool().size(),"There shouldn't be any players in the pool, but there are.");
     }
 
     @Test
