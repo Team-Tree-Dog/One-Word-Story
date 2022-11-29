@@ -250,13 +250,25 @@ public class ThreadLockTests {
                 break;
         }
 
+        System.out.println("STEP 5: BEFORE FIRST WHILE LOOP");
+        System.out.println("GAME LOCK: " + lobman.getGameLock().toString());
+        System.out.println("PLAYER POOL LOCK: " + lobman.getPlayerPoolLock().toString());
+
         // spTimerTask.run();
         while(!dcFlag.get() | !jplFlagPool.get()) {
             Thread.onSpinWait();
         }
 
+        System.out.println("STEP 6: AFTER FIRST WHILE LOOP");
+        System.out.println("GAME LOCK: " + lobman.getGameLock().toString());
+        System.out.println("PLAYER POOL LOCK: " + lobman.getPlayerPoolLock().toString());
+
         lobman.getPlayerPoolLock().lock();
         lobman.getGameLock().lock();
+
+        System.out.println("STEP 7: AFTER BOTH LOCKS HAPPEN");
+        System.out.println("GAME LOCK: " + lobman.getGameLock().toString());
+        System.out.println("PLAYER POOL LOCK: " + lobman.getPlayerPoolLock().toString());
 
         Player ghost = new Player("", "2"); // Ghost Player.
 
