@@ -34,7 +34,7 @@ public class ValidityCheckerFacade {
             word = wordValidity.isWordValid(puncAndWord[1].trim());
         } else {
             punc = "";
-            word = wordValidity.isWordValid(wordExpression.trim());
+            word = wordValidity.isWordValid(wordExpression);
         }
 
         if (punc != null && word != null) {

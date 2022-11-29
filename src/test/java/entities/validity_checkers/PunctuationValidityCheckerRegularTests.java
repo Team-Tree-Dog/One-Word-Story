@@ -9,16 +9,8 @@ import static org.junit.Assert.assertNull;
 
 public class PunctuationValidityCheckerRegularTests {
 
-    /**
-     * We use an implementation of a validity checker where the word value is irrelevant
-     * This allows us to specifically test PunctuationValidityCheckerRegular
-     */
-    public final PunctuationValidityChecker puncValidityChecker =
+    public final PunctuationValidityChecker pvc =
             new PunctuationValidityCheckerRegular();
-    public final ValidityCheckerFacade v = new ValidityCheckerFacade(
-            puncValidityChecker,
-            wordValidityChecker -> ""
-    );
 
     @Before
     public void setUp() {}
@@ -27,124 +19,135 @@ public class PunctuationValidityCheckerRegularTests {
     public void tearDown() {}
 
     /**
-     * Tests scenario where a word with no punctuation is checked
+     * Tests scenario where blank punctuation is checked
      */
     @Test(timeout = 1000)
     public void testNoPunctuation() {
-        String word = "noPunc";
-        String validifiedWord = v.isValid(word);
-        assertEquals("", validifiedWord);
+        String punc = "";
+        String validifiedPunc = pvc.isPunctuationValid(punc);
+        assertEquals("", validifiedPunc);
     }
 
     /**
-     * Tests scenario where a word with invalid punctuation is checked
+     * Tests scenario where entirely invalid punctuation is checked
      */
     @Test(timeout = 1000)
     public void testInvalidPunctuation() {
-        String word = "not_right noPunc";
-        String validifiedWord = v.isValid(word);
-        assertNull(validifiedWord);
+        String punc = "not_right";
+        String validifiedPunc = pvc.isPunctuationValid(punc);
+        assertNull(validifiedPunc);
     }
 
     /**
-     * Tests scenario where a word with a single, non-duplicable punctuation character is checked
+     * Tests scenario where punctuation with a single, non-duplicable character is checked
      */
     @Test(timeout = 1000)
     public void testNonDuplicableSingle() {
-        String word = "; hotdog";
-        String validifiedWord = v.isValid(word);
-        assertEquals(";", validifiedWord);
+        String punc = ";";
+        String validifiedPunc = pvc.isPunctuationValid(punc);
+        assertEquals(";", validifiedPunc);
     }
 
     /**
-     * Tests scenario where a word with a single, duplicable period for punctuation is checked
+     * Tests scenario where punctuation with a single dash (character needed to be escaped)
+     * is checked
+     */
+    @Test(timeout = 1000)
+    public void testNonDuplicableSingleDash() {
+        String punc = "-";
+        String validifiedPunc = pvc.isPunctuationValid(punc);
+        assertEquals("-", validifiedPunc);
+    }
+
+    /**
+     * Tests scenario where punctuation with a single, duplicable period is checked
      */
     @Test(timeout = 1000)
     public void testDuplicablePeriodSingle() {
-        String word = ". sausage";
-        String validifiedWord = v.isValid(word);
-        assertEquals(".", validifiedWord);
+        String punc = ".";
+        String validifiedPunc = pvc.isPunctuationValid(punc);
+        assertEquals(".", validifiedPunc);
     }
 
     /**
-     * Tests scenario where a word with a single, duplicable mark for punctuation is checked
+     * Tests scenario where punctuation with a single, duplicable mark is checked
      */
     @Test(timeout = 1000)
     public void testDuplicableMarkSingle() {
-        String word = "? beans";
-        String validifiedWord = v.isValid(word);
-        assertEquals("?", validifiedWord);
+        String punc = "?";
+        String validifiedPunc = pvc.isPunctuationValid(punc);
+        assertEquals("?", validifiedPunc);
     }
 
     /**
-     * Tests scenario where a word with multiple, non-duplicable punctuation characters is checked
+     * Tests scenario where punctuation with multiple, non-duplicable characters is checked
      */
     @Test(timeout = 1000)
     public void testNonDuplicableMultiple() {
-        String word = ";,: equinox";
-        String validifiedWord = v.isValid(word);
-        assertNull(validifiedWord);
+        String punc = ";,: equinox";
+        String validifiedPunc = pvc.isPunctuationValid(punc);
+        assertNull(validifiedPunc);
     }
 
     /**
-     * Tests scenario where a word with multiple, duplicable periods for punctuation is checked
+     * Tests scenario where punctuation with multiple, duplicable periods is checked
      */
     @Test(timeout = 1000)
     public void testDuplicablePeriodMultiple() {
-        String word = "... Stewart";
-        String validifiedWord = v.isValid(word);
-        assertEquals("...", validifiedWord);
+        String punc = "...";
+        String validifiedPunc = pvc.isPunctuationValid(punc);
+        assertEquals("...", validifiedPunc);
     }
 
     /**
-     * Tests scenario where a word with multiple, duplicable marks for punctuation is checked
+     * Tests scenario where punctuation with multiple, duplicable marks is checked
      */
     @Test(timeout = 1000)
     public void testDuplicableMarkMultiple() {
-        String word = "?!! huhhhhh";
-        String validifiedWord = v.isValid(word);
-        assertEquals("?!!", validifiedWord);
+        String punc = "?!!";
+        String validifiedPunc = pvc.isPunctuationValid(punc);
+        assertEquals("?!!", validifiedPunc);
     }
 
     /**
-     * Tests scenario where a word with non-duplicable characters combined with duplicable ones
-     * for punctuation is checked
+     * Tests scenario where punctuation with non-duplicable characters combined with duplicable
+     * ones is checked
      */
     @Test(timeout = 1000)
     public void testSingleNonDuplicableAndDuplicable() {
-        String word = ",.. Ford-F150";
-        String validifiedWord = v.isValid(word);
-        assertNull(validifiedWord);
+        String punc = ",..";
+        String validifiedPunc = pvc.isPunctuationValid(punc);
+        assertNull(validifiedPunc);
     }
 
     /**
-     * Tests scenario where a word with more than three valid punctuation characters is checked
+     * Tests scenario where punctuation with more than three valid characters is checked
      */
     @Test(timeout = 1000)
     public void testMoreThanThreeValidCharacters() {
-        String word = "?????????????? confusion";
-        String validifiedWord = v.isValid(word);
-        assertEquals("???", validifiedWord);
+        String punc = "??????????????";
+        String validifiedPunc = pvc.isPunctuationValid(punc);
+        assertEquals("???", validifiedPunc);
     }
 
     /**
-     * Tests scenario where a word with more than three punctuation characters
+     * Tests scenario where punctuation with more than three characters
      * (the first three only are valid) is checked
      */
     @Test(timeout = 1000)
     public void testFirstThreeValidCharacters() {
-        String word = "...kkkkkk confusion";
-        String validifiedWord = v.isValid(word);
-        assertEquals("...", validifiedWord);
+        String punc = "...kkkkkk";
+        String validifiedPunc = pvc.isPunctuationValid(punc);
+        assertEquals("...", validifiedPunc);
     }
 
     /**
-     * Tests scenario where a word with more than three invalid punctuation characters is checked
+     * Tests scenario where punctuation with more than three invalid characters is checked
      */
     @Test(timeout = 1000)
     public void testMoreThanThreeInvalidCharacters() {
-        String word = "AAAAAAAAA screams";
-        String validifiedWord = v.isValid(word);
-        assertNull(validifiedWord);
+        String punc = "AAAAAAAAA";
+        String validifiedPunc = pvc.isPunctuationValid(punc);
+        assertNull(validifiedPunc);
     }
 }

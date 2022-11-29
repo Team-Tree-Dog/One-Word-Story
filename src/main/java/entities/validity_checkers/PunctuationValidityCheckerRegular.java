@@ -16,11 +16,14 @@ public class PunctuationValidityCheckerRegular implements PunctuationValidityChe
     @Override
     public String isPunctuationValid(String punctuation) {
         int puncLength = punctuation.length();
+        if (puncLength == 0) {
+            return punctuation;
+        }
         if (puncLength > PUNC_LENGTH) {
             punctuation = punctuation.substring(0, PUNC_LENGTH);
         }
-        if (punctuation.substring(0, 1).matches("[,;:-]?")) {
-            if (puncLength <= 1) {
+        if (punctuation.substring(0, 1).matches("[,;:\\-]?")) {
+            if (puncLength == 1) {
                 return punctuation;
             }
             return null;

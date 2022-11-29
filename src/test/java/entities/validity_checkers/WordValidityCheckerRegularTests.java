@@ -9,16 +9,8 @@ import static org.junit.Assert.assertNull;
 
 public class WordValidityCheckerRegularTests {
 
-    /**
-     * We use an implementation of a validity checker where the punctuation value is irrelevant
-     * This allows us to specifically test WordValidityCheckerRegular
-     */
-    public final WordValidityChecker wordValidityChecker =
+    public final WordValidityChecker wvc =
             new WordValidityCheckerRegular();
-    public final ValidityCheckerFacade v = new ValidityCheckerFacade(
-            puncValidityChecker -> "",
-            wordValidityChecker
-    );
 
     @Before
     public void setUp() {}
@@ -32,8 +24,8 @@ public class WordValidityCheckerRegularTests {
     @Test(timeout = 1000)
     public void testNoWord() {
         String word = "";
-        String validifiedWord = v.isValid(word);
-        assertEquals("", validifiedWord);
+        String validifiedWord = wvc.isWordValid(word);
+        assertNull(validifiedWord);
     }
 
     /**
@@ -41,8 +33,8 @@ public class WordValidityCheckerRegularTests {
      */
     @Test(timeout = 1000)
     public void testLetter() {
-        String word = "thisDoesNotMatter H";
-        String validifiedWord = v.isValid(word);
+        String word = "H";
+        String validifiedWord = wvc.isWordValid(word);
         assertEquals("H", validifiedWord);
     }
 
@@ -52,8 +44,8 @@ public class WordValidityCheckerRegularTests {
      */
     @Test(timeout = 1000)
     public void testMultipleLettersUnderCap() {
-        String word = "... ungabUnga";
-        String validifiedWord = v.isValid(word);
+        String word = "ungabUnga";
+        String validifiedWord = wvc.isWordValid(word);
         assertEquals("ungabUnga", validifiedWord);
     }
 
@@ -64,7 +56,7 @@ public class WordValidityCheckerRegularTests {
     @Test(timeout = 1000)
     public void testMultipleLettersOverCap() {
         String word = "qwertyuiopasdfghjklzxcvbnm";
-        String validifiedWord = v.isValid(word);
+        String validifiedWord = wvc.isWordValid(word);
         assertEquals("qwertyuiopasdfghjklzxc", validifiedWord);
     }
 
@@ -74,7 +66,7 @@ public class WordValidityCheckerRegularTests {
     @Test(timeout = 1000)
     public void testIncludesNonLetters() {
         String word = "hell0";
-        String validifiedWord = v.isValid(word);
+        String validifiedWord = wvc.isWordValid(word);
         assertNull(validifiedWord);
     }
 }

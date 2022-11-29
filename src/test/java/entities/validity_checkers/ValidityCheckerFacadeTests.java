@@ -9,44 +9,6 @@ import static org.junit.Assert.assertEquals;
 public class ValidityCheckerFacadeTests {
 
     /**
-     * We create a custom implementation of ValidityCheckerFacade to have isValid return
-     * the punctuation and word with a space in between, so we can isolate them while testing
-     */
-    public static class TestValidityCheckerFacade extends ValidityCheckerFacade {
-
-        /**
-         * Constructor for ValidityCheckerFacade
-         *
-         * @param pv A punctuation validity checker
-         * @param wv A word validity checker
-         */
-        public TestValidityCheckerFacade(PunctuationValidityChecker pv, WordValidityChecker wv) {
-            super(pv, wv);
-        }
-
-        @Override
-        public String isValid(String wordExpression) {
-            String punc;
-            String word;
-
-            wordExpression = wordExpression.trim();
-            if (wordExpression.contains(" ")) {
-                String[] puncAndWord = wordExpression.split(" ", 2);
-                punc = puncValidity.isPunctuationValid(puncAndWord[0].trim());
-                word = wordValidity.isWordValid(puncAndWord[1].trim());
-            } else {
-                punc = "";
-                word = wordValidity.isWordValid(wordExpression.trim());
-            }
-
-            if (punc != null && word != null) {
-                return punc + " " + word;
-            }
-            return null;
-        }
-    }
-
-    /**
      * This punctuation validity checker does nothing to the word when checked
      */
     public static class TestPunctuationValidityChecker implements PunctuationValidityChecker {
@@ -67,15 +29,15 @@ public class ValidityCheckerFacadeTests {
     }
 
     /**
-     * We use an implementation of TestValidityCheckerFacade where the punctuation and word
-     * validity checkers do nothing, meaning the only changes are made by TestValidityCheckerFacade
+     * We use an implementation of ValidityCheckerFacade where the punctuation and word
+     * validity checkers do nothing, meaning the only changes are made by ValidityCheckerFacade
      * logic
      */
     TestPunctuationValidityChecker puncValidityChecker =
             new TestPunctuationValidityChecker();
     TestWordValidityChecker wordValidityChecker =
             new TestWordValidityChecker();
-    public final TestValidityCheckerFacade v = new TestValidityCheckerFacade(
+    public final ValidityCheckerFacade v = new ValidityCheckerFacade(
             puncValidityChecker, wordValidityChecker
     );
 
@@ -92,11 +54,17 @@ public class ValidityCheckerFacadeTests {
     public void testNoPuncNoWord() {
         String inputWord = "";
         String validifiedWord = v.isValid(inputWord);
-        String[] puncAndWord = validifiedWord.split(" ", 2);
-        String punc = puncAndWord[0];
-        String word = puncAndWord[1];
-        assertEquals("", punc);
-        assertEquals("", word);
+        assertEquals("", validifiedWord);
+    }
+
+    /**
+     * Tests scenario where the word expression has blank punctuation and blank word
+     */
+    @Test(timeout = 1000)
+    public void testNoPuncNoWordSpace() {
+        String inputWord = " ";
+        String validifiedWord = v.isValid(inputWord);
+        assertEquals("", validifiedWord);
     }
 
     /**
@@ -106,11 +74,7 @@ public class ValidityCheckerFacadeTests {
     public void testNoPuncWord() {
         String inputWord = "word";
         String validifiedWord = v.isValid(inputWord);
-        String[] puncAndWord = validifiedWord.split(" ", 2);
-        String punc = puncAndWord[0];
-        String word = puncAndWord[1];
-        assertEquals("", punc);
-        assertEquals("word", word);
+        assertEquals("word", validifiedWord);
     }
 
     /**
@@ -120,11 +84,7 @@ public class ValidityCheckerFacadeTests {
     public void testNoPuncWordWithSpaces() {
         String inputWord = "  word   ";
         String validifiedWord = v.isValid(inputWord);
-        String[] puncAndWord = validifiedWord.split(" ", 2);
-        String punc = puncAndWord[0];
-        String word = puncAndWord[1];
-        assertEquals("", punc);
-        assertEquals("word", word);
+        assertEquals("word", validifiedWord);
     }
 
     /**
@@ -134,11 +94,7 @@ public class ValidityCheckerFacadeTests {
     public void testPuncWord() {
         String inputWord = "! word";
         String validifiedWord = v.isValid(inputWord);
-        String[] puncAndWord = validifiedWord.split(" ", 2);
-        String punc = puncAndWord[0];
-        String word = puncAndWord[1];
-        assertEquals("!", punc);
-        assertEquals("word", word);
+        assertEquals("!word", validifiedWord);
     }
 
     /**
@@ -148,10 +104,6 @@ public class ValidityCheckerFacadeTests {
     public void testPuncWordSpaces() {
         String inputWord = "    !   word  ";
         String validifiedWord = v.isValid(inputWord);
-        String[] puncAndWord = validifiedWord.split(" ", 2);
-        String punc = puncAndWord[0];
-        String word = puncAndWord[1];
-        assertEquals("!", punc);
-        assertEquals("word", word);
+        assertEquals("!word", validifiedWord);
     }
 }

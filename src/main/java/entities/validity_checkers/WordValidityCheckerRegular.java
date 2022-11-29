@@ -19,7 +19,7 @@ public class WordValidityCheckerRegular implements WordValidityChecker{
         if (wordLength > WORD_LENGTH) {
             word = word.substring(0, WORD_LENGTH);
         }
-        if (word.matches("[A-Za-z]*")) {
+        if (word.matches("[A-Za-z]*") && wordLength > 0) {
             return word;
         }
         return null;
