@@ -68,13 +68,14 @@ public class DcInteractor implements DcInputBoundary {
             System.out.println("THIS GAME LOCK: " + gameLock.toString());
             System.out.println("THIS PLAYER POOL LOCK: " + playerPoolLock.toString());
 
-            boolean flagPlayer = false;
-            while (!flagPlayer) {
-                System.out.println("Tries to lock");
-                System.out.println("LOCK BEFORE: " + playerPoolLock.toString());
-                flagPlayer = playerPoolLock.tryLock();
-                System.out.println("LOCK AFTER: " + playerPoolLock.toString());
-            }
+            //boolean flagPlayer = false;
+            //while (!flagPlayer) {
+              //  System.out.println("Tries to lock");
+              //  System.out.println("LOCK BEFORE: " + playerPoolLock.toString());
+              //  flagPlayer = playerPoolLock.tryLock();
+              //  System.out.println("LOCK AFTER: " + playerPoolLock.toString());
+            //}
+            playerPoolLock.lock();
             // playerPoolLock.lock();
 
             System.out.println("STEP 3.2: AFTER PLAYERPOOL GETS LOCKED");
@@ -107,13 +108,14 @@ public class DcInteractor implements DcInputBoundary {
                 System.out.println("THIS GAME LOCK: " + gameLock.toString());
                 System.out.println("THIS PLAYER POOL LOCK: " + playerPoolLock.toString());
 
-                boolean flagGame = false;
-                while (!flagGame) {
-                    System.out.println("Tries to lock");
-                    System.out.println("LOCK BEFORE: " + gameLock.toString());
-                    flagGame = gameLock.tryLock();
-                    System.out.println("LOCK AFTER: " + gameLock.toString());
-                }
+                //boolean flagGame = false;
+                //while (!flagGame) {
+                  //  System.out.println("Tries to lock");
+                  //  System.out.println("LOCK BEFORE: " + gameLock.toString());
+                  //  flagGame = gameLock.tryLock();
+                  //  System.out.println("LOCK AFTER: " + gameLock.toString());
+                // }
+                gameLock.lock();
 
                 System.out.println("STEP 3.4: AFTER GAME GETS LOCKED");
                 System.out.println("LM GAME LOCK: " + lm.getGameLock().toString());
@@ -155,6 +157,7 @@ public class DcInteractor implements DcInputBoundary {
 
             DcOutputData outputData = new DcOutputData(response, playerId);
             dcOutputBoundary.hasDisconnected(outputData);
+            System.out.println("MADE IT TO THE END OF DC!");
         }
     }
 }

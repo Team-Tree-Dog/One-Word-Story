@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ThreadLockTests {
 
-    private static final int REPEAT_TIMES = 1;
+    private static final int REPEAT_TIMES = 10;
 
     private static class GameTest extends Game {
         public static final int REGULAR_GAME_SECONDS_PER_TURN = 15;
@@ -274,6 +274,7 @@ public class ThreadLockTests {
 
         // Now we detect scenarios.
         if (lobman.getPlayersFromPool().contains(ghost)) {
+            System.out.println("MADE IT THROUGH THE IF STATEMENT, IN SCENARIO 1 BLOCK");
             // In this case, Scenario 1 is possible.
             assertTrue(lobman.isGameNull(),"A game shouldn't have started i.e. should be null.");
             assertFalse(lobman.getPlayersFromPool().contains(player1),"The pool shouldn't have Player 1.");
@@ -283,27 +284,50 @@ public class ThreadLockTests {
             dcInteractor.disconnect(new DcInputData("2"));
         }
         else {
+            System.out.println("MADE IT THROUGH THE ELSE STATEMENT, IN SCENARIO 2 BLOCK");
             // In this case, Scenario 2 is possible.
+            System.out.println("STEP 8: IN SCENARIO 2 BLOCK, BEFORE UNLOCKING GAMELOCK");
+            System.out.println("GAME LOCK: " + lobman.getGameLock().toString());
+            System.out.println("PLAYER POOL LOCK: " + lobman.getPlayerPoolLock().toString());
             lobman.getGameLock().unlock();
+            lobman.getPlayerPoolLock().unlock();
             // spTimerTask.run();
+            System.out.println("STEP 9: IN SCENARIO 2 BLOCK, AFTER UNLOCKING GAMELOCK, BEFORE JPLFLAG WHILE");
+            System.out.println("GAME LOCK: " + lobman.getGameLock().toString());
+            System.out.println("PLAYER POOL LOCK: " + lobman.getPlayerPoolLock().toString());
             while (!jplFlagJoined.get()) { // If this never happens, test timeout will make the test crash.
                 // spTimerTask.run();
             }
+            System.out.println("STEP 10: IN SCENARIO 2 BLOCK, AFTER JPLFLAG WHILE, BEFORE GAMELOCK WHILE");
+            System.out.println("GAME LOCK: " + lobman.getGameLock().toString());
+            System.out.println("PLAYER POOL LOCK: " + lobman.getPlayerPoolLock().toString());
 
             while (true) { // If this never happens, test timeout will make the test crash.
-                lobman.getGameLock().lock();
+                // lobman.getGameLock().lock(); // Locking here will not let SpTimer do its thing.
                 boolean nullbool = lobman.isGameNull();
-                lobman.getGameLock().unlock();
+                // lobman.getGameLock().unlock(); See two lines before.
                 if (nullbool) {break;}
                 // spTimerTask.run();
             }
+
+            System.out.println("STEP 11: IN SCENARIO 2 BLOCK, AFTER GAMELOCK WHILE, BEFORE GAMELOCK/PLAYERPOOL LOCKING");
+            System.out.println("GAME LOCK: " + lobman.getGameLock().toString());
+            System.out.println("PLAYER POOL LOCK: " + lobman.getPlayerPoolLock().toString());
+
             lobman.getGameLock().lock();
+            lobman.getPlayerPoolLock().lock(); // LOCKS BEFORE ASSERTIONS
+
             // So the game is over.
             assertEquals(0, lobman.getPlayersFromPool().size(), "No player should be in the pool, but someone is.");
             assertTrue(jplFlagJoined.get(), "If you can read this, no game was ever created when it should have been."); // So we know the game was created, but now vanished.
 
             System.out.println("Scenario 2 happened.");
         }
+
+        System.out.println("STEP 12: AFTER ASSERTING EVERYTHING, BEFORE UNLOCKING EVERYTHING");
+        System.out.println("GAME LOCK: " + lobman.getGameLock().toString());
+        System.out.println("PLAYER POOL LOCK: " + lobman.getPlayerPoolLock().toString());
+
         lobman.getPlayerPoolLock().unlock();
         lobman.getGameLock().unlock();
         lobman.getSortPlayersTimer().cancel();
