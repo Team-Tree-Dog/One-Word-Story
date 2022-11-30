@@ -59,8 +59,8 @@ public class LobbyManager {
         this.playerPool = new CopyOnWriteArrayList<>();
         this.sortPlayersTimer = new Timer();
         this.startedSortTimer = false;
-        this.playerPoolLock = new ReentrantLock();
-        this.gameLock = new ReentrantLock();
+        this.playerPoolLock = new ReentrantLock(true);
+        this.gameLock = new ReentrantLock(true);
     }
 
     /**

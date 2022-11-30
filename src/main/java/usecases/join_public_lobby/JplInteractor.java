@@ -46,7 +46,7 @@ public class JplInteractor implements JplInputBoundary {
         public JplThread (JplInputData data) {
             this.data = data;
             hasCancelled = false;
-            lock = new ReentrantLock();
+            lock = new ReentrantLock(true);
             conditionVariable = lock.newCondition();
         }
 
@@ -85,7 +85,9 @@ public class JplInteractor implements JplInputBoundary {
         public void run() {
             try {
                 // It is better to always lock the whole critical section (a useful rule of thumb)
+                System.out.println("JPL wants to lock itself.");
                 lock.lock();
+                System.out.println("JPL locked itself!");
 
                 // Throws IdInUseException, code after runs if this line succeeded
                 Player player = lobbyManager.createNewPlayer(data.getDisplayName(), data.getId());
@@ -106,9 +108,12 @@ public class JplInteractor implements JplInputBoundary {
                 }
 
                 if (game != null) {
+                    System.out.println("JPL wants to lock Game.");
                     JplInteractor.this.gameLock.lock();
+                    System.out.println("JPL locked Game!");
                     GameDTO gameState = GameDTO.fromGame(game);
                     JplInteractor.this.gameLock.unlock();
+                    System.out.println("JPL unlocked Game!");
 
                     presenter.inGame(new JplOutputDataJoinedGame(
                             Response.getSuccessful("Player successfully joined a game"),
@@ -139,6 +144,7 @@ public class JplInteractor implements JplInputBoundary {
             }
             finally {
                 lock.unlock();
+                System.out.println("JPL unlocked itself!");
             }
         }
     }

@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ThreadLockTests {
 
-    private static final int REPEAT_TIMES = 10;
+    private static final int REPEAT_TIMES = 50;
 
     private static class GameTest extends Game {
         public static final int REGULAR_GAME_SECONDS_PER_TURN = 15;
@@ -209,6 +209,7 @@ public class ThreadLockTests {
         Timer timer = new Timer();
 
         int newint = new Random().nextInt(4);
+        System.out.println("Case Number: " + newint);
         switch (newint) {
             case 0 :
                 jplInteractor.joinPublicLobby(jplInputData);
@@ -232,6 +233,7 @@ public class ThreadLockTests {
                 break;
         }
 
+        System.out.println("Switch over.");
         while(!dcFlag.get() | !jplFlagPool.get()) {
             Thread.onSpinWait();
         }
@@ -254,16 +256,16 @@ public class ThreadLockTests {
         else {
             // In this case, Scenario 2 is possible.
             lobman.getGameLock().unlock();
-            lobman.getPlayerPoolLock().unlock(); // These unlocks let SpTimer do its thing.
+            lobman.getPlayerPoolLock().unlock(); // These unlock methods let SpTimer do its thing.
 
             while (!jplFlagJoined.get()) { // If this never happens, test timeout will make the test crash.
                 Thread.onSpinWait();
             }
 
             while (true) { // If this never happens, test timeout will make the test crash.
-                // lobman.getGameLock().lock(); // Locking here will not let SpTimer do its thing.
+                lobman.getGameLock().lock(); // Locking here will not let SpTimer do its thing.
                 boolean nullbool = lobman.isGameNull();
-                // lobman.getGameLock().unlock(); See two lines before.
+                lobman.getGameLock().unlock(); //  See two lines before.
                 if (nullbool) {break;}
             }
 
@@ -391,7 +393,7 @@ public class ThreadLockTests {
         System.out.println("Case number: " + newint);
 
         // We first need to make sure DC and SW have finished their respective threads.
-        while(!swFlag.get() & !dcFlag.get()) {
+        while(!swFlag.get() | !dcFlag.get()) {
             Thread.onSpinWait();
         }
 

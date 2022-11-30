@@ -51,8 +51,13 @@ public class SpInteractor {
         @Override
         public void run() {
             // We need to lock all the accesses to the pool and the game to avoid race conditions
+            System.out.println("SP wants to lock Game.");
             gameLock.lock();
+            System.out.println("SP locked Game!");
+            System.out.println("SP wants to lock PlayerPool.");
+            System.out.println("PlayerPoolLock at this time: "  + playerPoolLock.toString());
             playerPoolLock.lock();
+            System.out.println("SP locked PlayerPool!");
             // If game has ended, set it to null.
             if (!lobbyManager.isGameNull()) {
                 if (lobbyManager.isGameEnded()) {
@@ -63,7 +68,9 @@ public class SpInteractor {
                         lobbyManager.setGameNull();
                     } catch (GameRunningException e) {
                         gameLock.unlock();
+                        System.out.println("SP unlocked Game!");
                         playerPoolLock.unlock();
+                        System.out.println("SP unlocked PlayerPool!");
                         throw new RuntimeException(e);
                     }
 
@@ -82,7 +89,9 @@ public class SpInteractor {
                             // PlayerNotFoundException occurs if player is removed from the pool from another
                             // thread. Proper lock architecture will prevent this
                             gameLock.unlock();
+                            System.out.println("SP unlocked Game!");
                             playerPoolLock.unlock();
+                            System.out.println("SP unlocked PlayerPool!");
                             throw new RuntimeException(e);
                         } finally {
                             lock.unlock();
@@ -100,7 +109,9 @@ public class SpInteractor {
                     lobbyManager.setGame(game);
                 } catch (GameRunningException e) {
                     gameLock.unlock();
+                    System.out.println("SP unlocked Game!");
                     playerPoolLock.unlock();
+                    System.out.println("SP unlocked PlayerPool!");
                     throw new RuntimeException(e);
                 }
 
@@ -110,7 +121,9 @@ public class SpInteractor {
                 new RgInteractor(game, pge, pd, gameLock).startTimer();
             }
             gameLock.unlock();
+            System.out.println("SP unlocked Game!");
             playerPoolLock.unlock();
+            System.out.println("SP unlocked PlayerPool!");
         }
     }
 
