@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ThreadLockTests {
 
-    private static final int REPEAT_TIMES = 50;
+    private static final int REPEAT_TIMES = 100;
 
     private static class GameTest extends Game {
         public static final int REGULAR_GAME_SECONDS_PER_TURN = 15;
@@ -148,7 +148,7 @@ public class ThreadLockTests {
      */
     @RepeatedTest(REPEAT_TIMES)
     @Timeout(10)
-    public void testPlayerEntersPlayerDisconnects() throws IdInUseException, InvalidDisplayNameException {
+    public void testPlayerEntersPlayerDisconnects() throws IdInUseException, InvalidDisplayNameException, InterruptedException {
         PlayerFactory playerFac = new PlayerFactory(new LocalDisplayName());
         GameFactory gameFac = new GameFactoryTest();
         LobbyManager lobman = new LobbyManager(playerFac, gameFac);
@@ -209,54 +209,74 @@ public class ThreadLockTests {
         Timer timer = new Timer();
 
         int newint = new Random().nextInt(4);
+        int randTime1 = new Random().nextInt(20);
+        int randTime2 = new Random().nextInt(20);
         System.out.println("Case Number: " + newint);
         switch (newint) {
             case 0 :
                 jplInteractor.joinPublicLobby(jplInputData);
+                Thread.sleep(randTime1);
                 dcInteractor.disconnect(dcInputData);
+                Thread.sleep(randTime2);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 break;
             case 1 :
                 jplInteractor.joinPublicLobby(jplInputData);
+                Thread.sleep(randTime1);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
+                Thread.sleep(randTime2);
                 dcInteractor.disconnect(dcInputData);
                 break;
             case 2 :
                 dcInteractor.disconnect(dcInputData);
+                Thread.sleep(randTime1);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
+                Thread.sleep(randTime2);
                 jplInteractor.joinPublicLobby(jplInputData);
                 break;
             case 3 :
                 dcInteractor.disconnect(dcInputData);
+                Thread.sleep(randTime1);
                 jplInteractor.joinPublicLobby(jplInputData);
+                Thread.sleep(randTime2);
+                System.out.println("SpTimer should now start");
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
+                System.out.println("SpTimer should have just started.");
                 break;
         }
 
         System.out.println("Switch over.");
         while(!dcFlag.get() | !jplFlagPool.get()) {
+            System.out.println("Inside while loop.");
             Thread.onSpinWait();
         }
 
-        lobman.getPlayerPoolLock().lock();
-        lobman.getGameLock().lock();
-
         Player ghost = new Player("", "2"); // Ghost Player.
+
+        System.out.println("Test wants to lock PlayerPool.");
+        lobman.getPlayerPoolLock().lock();
+        System.out.println("Test locked PlayerPool!");
 
         // Now we detect scenarios.
         if (lobman.getPlayersFromPool().contains(ghost)) {
+            System.out.println("Enter Scenario 1.");
             // In this case, Scenario 1 is possible.
+            System.out.println("Test wants to lock Game.");
+            lobman.getGameLock().lock();
+            System.out.println("Test locked Game!");
             assertTrue(lobman.isGameNull(),"A game shouldn't have started i.e. should be null.");
             assertFalse(lobman.getPlayersFromPool().contains(player1),"The pool shouldn't have Player 1.");
             System.out.println("Scenario 1 happened: Player 2 remains in the pool, Player 1 disconnected, no game exists.");
 
             // Cancel 2nd player from pool so JPL can end (teardown procedure)
             dcInteractor.disconnect(new DcInputData("2"));
+            // If the above line would be commented out, Java would still force-terminate the JPL thread.
         }
         else {
+            System.out.println("Enter Scenario 2.");
             // In this case, Scenario 2 is possible.
-            lobman.getGameLock().unlock();
-            lobman.getPlayerPoolLock().unlock(); // These unlock methods let SpTimer do its thing.
+            lobman.getPlayerPoolLock().unlock(); // This unlock method lets SpTimer do its thing.
+            System.out.println("Test unlocked PlayerPool!");
 
             while (!jplFlagJoined.get()) { // If this never happens, test timeout will make the test crash.
                 Thread.onSpinWait();
@@ -268,9 +288,12 @@ public class ThreadLockTests {
                 lobman.getGameLock().unlock(); //  See two lines before.
                 if (nullbool) {break;}
             }
-
+            System.out.println("Test wants to lock Game.");
             lobman.getGameLock().lock();
-            lobman.getPlayerPoolLock().lock(); // LOCKS BEFORE ASSERTIONS
+            System.out.println("Test locked Game!");
+            System.out.println("Test wants to lock PlayerPool.");
+            lobman.getPlayerPoolLock().lock();
+            System.out.println("Test locked PlayerPool!"); // LOCKS BEFORE ASSERTIONS
 
             // So the game is over.
             assertEquals(0, lobman.getPlayersFromPool().size(), "No player should be in the pool, but someone is.");
@@ -279,6 +302,7 @@ public class ThreadLockTests {
             System.out.println("Scenario 2 happened.");
         }
 
+        System.out.println("Unlock Everything.");
         lobman.getPlayerPoolLock().unlock();
         lobman.getGameLock().unlock();
         lobman.getSortPlayersTimer().cancel();

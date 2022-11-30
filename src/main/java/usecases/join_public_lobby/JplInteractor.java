@@ -93,7 +93,9 @@ public class JplInteractor implements JplInputBoundary {
                 Player player = lobbyManager.createNewPlayer(data.getDisplayName(), data.getId());
 
                 // Add player to matchmaking pool and subscribe to hear updates
+                System.out.println("JPL wants to lock PlayerPool, and then unlock.");
                 lobbyManager.addPlayerToPool(player, this);
+                System.out.println("JPL has locked/unlocked PlayerPool!");
 
                 // Notifies presenter that player was successfully added to pool
                 presenter.inPool(new JplOutputDataResponse(
@@ -106,6 +108,7 @@ public class JplInteractor implements JplInputBoundary {
                     // Makes this waiting loop less CPU expensive
                     conditionVariable.await();
                 }
+                System.out.println("JPL progressed!");
 
                 if (game != null) {
                     System.out.println("JPL wants to lock Game.");
@@ -145,6 +148,7 @@ public class JplInteractor implements JplInputBoundary {
             finally {
                 lock.unlock();
                 System.out.println("JPL unlocked itself!");
+                System.out.println("JPL progressed!");
             }
         }
     }
