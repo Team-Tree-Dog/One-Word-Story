@@ -17,11 +17,12 @@ import usecases.submit_word.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static usecases.Response.ResCode.PLAYER_NOT_FOUND;
+import static usecases.Response.ResCode.*;
 
 
 public class ThreadLockTests {
@@ -454,5 +455,154 @@ public class ThreadLockTests {
         lobman.getGameLock().unlock();
         lobman.getPlayerPoolLock().unlock();
         rgTimerTask.cancel();
+    }
+
+    /**
+     * Tests the case in which one player enters a lobby using JPL but immediately loses connection.
+     * This can be simulated as JPL and DC happening at approximately the same time.
+     * The only persistent thread that has a role is SP, but only because it engages/disengages locks.
+     * SP won't actually change anything, but still needs to be included since it will be part of the thread arch.
+     *
+     * Possible Outcomes:
+     * JPL1, DC1, SP: The player joins, then disconnects. No net change.
+     * JPL1, SP, DC1: The player joins, then disconnects. No net change.
+     * DC1, SP, JPL1: The player attempts to disconnect, responding PlayerNotFound. Player then joins the game successfully.
+     * DC1, JPL1, SP: The player attempts to disconnect, responding PlayerNotFound. Player then joins the game successfully.
+     * We end up having only two scenarios which are predicted to happen. We test that any of these two scenarios happens.
+     */
+    @RepeatedTest(REPEAT_TIMES)
+    @Timeout(10)
+    public void testJoinsThenDisconnects() throws InterruptedException {
+        PlayerFactory playerFac = new PlayerFactory(new LocalDisplayName());
+        GameFactory gameFac = new GameFactoryTest();
+        LobbyManager lobman = new LobbyManager(playerFac, gameFac);
+
+        // Setup is above.
+        // We now introduce all flags and use-case objects:
+
+        AtomicBoolean jplFlagPool = new AtomicBoolean(false);
+        AtomicBoolean jplFlagJoined = new AtomicBoolean(false);
+        AtomicReference<Response.ResCode> codeJpl = new AtomicReference<>();
+        AtomicBoolean jplCancel = new AtomicBoolean(false);
+        JplInputData jplInputData = new JplInputData("player1", "1");
+        JplOutputBoundary jplPres = new JplOutputBoundary() {
+            @Override
+            public void inPool(JplOutputDataResponse dataJoinedPool) {
+                jplFlagPool.set(true);
+                codeJpl.set(dataJoinedPool.getRes().getCode());
+            }
+
+            @Override
+            public void inGame(JplOutputDataJoinedGame dataJoinedGame) {
+                jplFlagJoined.set(true);
+                codeJpl.set(dataJoinedGame.getRes().getCode());
+            }
+
+            @Override
+            public void cancelled(JplOutputDataResponse dataCancelled) {
+                jplCancel.set(true);
+                codeJpl.set(dataCancelled.getRes().getCode());
+            }
+        };
+        JplInteractor jplInteractor = new JplInteractor(lobman, jplPres);
+
+        AtomicBoolean dcFlag = new AtomicBoolean(false);
+        AtomicReference<Response.ResCode> codeDc = new AtomicReference<>();
+        DcInputData dcInputData = new DcInputData("1");
+        DcOutputBoundary dcPres = data -> {
+            codeDc.set(data.getResponse().getCode());
+            dcFlag.set(true);
+        };
+        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres);
+
+        PgeInputBoundary pgeInputBoundary = data -> {};
+        PdInputBoundary pdInputBoundary = d -> {};
+        SpInteractor spinny = new SpInteractor(lobman, pgeInputBoundary, pdInputBoundary);
+        SpInteractor.SpTask spTimerTask = spinny.new SpTask();
+        Timer timer = new Timer();
+
+        int newint = new Random().nextInt(4);
+        int randTime1 = new Random().nextInt(20);
+        int randTime2 = new Random().nextInt(20);
+        System.out.println("Case Number: " + newint);
+        switch (newint) {
+            case 0 :
+                jplInteractor.joinPublicLobby(jplInputData);
+                Thread.sleep(randTime1);
+                dcInteractor.disconnect(dcInputData);
+                Thread.sleep(randTime2);
+                timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
+                break;
+            case 1 :
+                jplInteractor.joinPublicLobby(jplInputData);
+                Thread.sleep(randTime1);
+                timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
+                Thread.sleep(randTime2);
+                dcInteractor.disconnect(dcInputData);
+                break;
+            case 2 :
+                dcInteractor.disconnect(dcInputData);
+                Thread.sleep(randTime1);
+                timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
+                Thread.sleep(randTime2);
+                jplInteractor.joinPublicLobby(jplInputData);
+                break;
+            case 3 :
+                dcInteractor.disconnect(dcInputData);
+                Thread.sleep(randTime1);
+                jplInteractor.joinPublicLobby(jplInputData);
+                Thread.sleep(randTime2);
+                timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
+                break;
+        }
+
+        System.out.println("Switch over.");
+        System.out.println("Before while loop.");
+        while(!dcFlag.get() | !jplFlagPool.get() | codeJpl.get() == null) {
+            Thread.onSpinWait();
+        }
+        System.out.println("After while loop.");
+
+        Player ghost = new Player("", "1"); // Ghost Player.
+
+        System.out.println("Test wants to lock PlayerPool.");
+        lobman.getPlayerPoolLock().lock();
+        System.out.println("Test locked PlayerPool!");
+
+        // We can distinguish between both scenarios based on if Player 1 is in the pool.
+        if (!lobman.getPlayersFromPool().contains(ghost)) {
+            System.out.println("Scenario 1 happens: Player 1 is not in the pool.");
+
+            // As a sanity check, we need to make sure no one is in the pool at this time.
+            assertEquals(0, lobman.getPlayersFromPool().size(),
+                    "No one should be in the pool, but someone is.");
+            // Now, we need to check that the player joined at some point. We can check this using response code.
+            assertEquals(SUCCESS, codeJpl.get(),
+                    "The code returned by JPL should be SUCCESS, but it isn't this code.");
+            // We also need to check that the player disconnected. We can check this using response code.
+            assertEquals(SUCCESS, codeDc.get(),
+                    "The code returned by DC should be SUCCESS, but it isn't this code.");
+        }
+        else {
+            System.out.println("Scenario 2 happens: Player 1 is in the pool.");
+
+            // As a sanity check, we need to make sure Player 1 is the only one in the pool at this time.
+            ArrayList<Player> playerArrayList = new ArrayList<>();
+            playerArrayList.add(new Player("player1", "1"));
+            assertEquals(playerArrayList, lobman.getPlayersFromPool(),
+                    "No one should be in the pool, but someone is.");
+            // Now, we need to check that the player joined at some point. We can check this using response code.
+            assertEquals(SUCCESS, codeJpl.get(),
+                    "The code returned by JPL should be SUCCESS, but it isn't this code.");
+            // We also need to check that the player couldn't disconnect because it didn't exist in the pool.
+            // DcInteractor checks in game after checking in pool, and should find the game doesn't exist.
+            // We can check this using response code.
+            assertEquals(GAME_DOESNT_EXIST, codeDc.get(),
+                    "The code returned by DC should be GAME_DOESNT_EXIST, but it isn't this code.");
+        }
+        System.out.println("Unlock everything.");
+        lobman.getPlayerPoolLock().unlock();
+        lobman.getSortPlayersTimer().cancel();
+        spTimerTask.cancel();
     }
 }
