@@ -58,12 +58,15 @@ public class DcInteractor implements DcInputBoundary {
             // Player existence in both removeFromPoolCancel and removePlayerFromGame
             // is checked via Player.equals, which checks only the ID, thus we can
             // have an empty display name as a dummy
+            System.out.println("DcInteractor has started.");
             Player playerToDisconnect = new Player("", playerId);
 
             // Innocent until proven guilty
             Response response = Response.getSuccessful("Disconnecting was successful.");
 
+            System.out.println("DcInteractor wants to lock PlayerPool.");
             playerPoolLock.lock();
+            System.out.println("DcInteractor locked PlayerPool!");
 
             // Null if player not found, looks through pool hence above lock is needed
             LobbyManager.PlayerObserverLink playerLink = lm.getLinkFromPlayer(playerToDisconnect);
@@ -83,7 +86,9 @@ public class DcInteractor implements DcInputBoundary {
                 // if player isn't in pool so no need to check contains explicitly
                 lm.removeFromPoolCancel(playerToDisconnect);
             } catch (PlayerNotFoundException ignored) {
+                System.out.println("DcInteractor wants to lock Game.");
                 gameLock.lock();
+                System.out.println("DcInteractor locked Game!");
                 try {
                     // In this catch block, we know player was not in the pool. However, we don't know if the player
                     // is in the game. We try to see if the player is in the game using .contains, which uses .equals,
@@ -108,6 +113,7 @@ public class DcInteractor implements DcInputBoundary {
                     e.printStackTrace();
                 } finally {
                     gameLock.unlock();
+                    System.out.println("DcInteractor unlocked Game!");
                 }
             }
             finally {
@@ -115,10 +121,12 @@ public class DcInteractor implements DcInputBoundary {
                     playerListener.getLock().unlock();
                 }
                 playerPoolLock.unlock();
+                System.out.println("DcInteractor unlocked PlayerPool!");
             }
 
             DcOutputData outputData = new DcOutputData(response, playerId);
             dcOutputBoundary.hasDisconnected(outputData);
+            System.out.println("DcInteractor has ended.");
         }
     }
 }

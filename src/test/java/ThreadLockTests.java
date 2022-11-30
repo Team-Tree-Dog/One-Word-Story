@@ -2,8 +2,7 @@ import entities.*;
 import entities.games.Game;
 import entities.games.GameFactory;
 
-import exceptions.IdInUseException;
-import exceptions.InvalidDisplayNameException;
+import exceptions.*;
 
 import org.junit.jupiter.api.*;
 
@@ -11,16 +10,16 @@ import usecases.disconnecting.*;
 import usecases.join_public_lobby.*;
 import usecases.pull_data.PdInputBoundary;
 import usecases.pull_game_ended.PgeInputBoundary;
+import usecases.run_game.RgInteractor;
 import usecases.sort_players.SpInteractor;
+import usecases.submit_word.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ThreadLockTests {
@@ -198,7 +197,6 @@ public class ThreadLockTests {
         };
         JplInteractor jplInteractor = new JplInteractor(lobman, jplPres);
 
-
         AtomicBoolean dcFlag = new AtomicBoolean(false);
         DcInputData dcInputData = new DcInputData(player1.getPlayerId());
         DcOutputBoundary dcPres = data -> dcFlag.set(true);
@@ -215,22 +213,22 @@ public class ThreadLockTests {
             case 0 :
                 jplInteractor.joinPublicLobby(jplInputData);
                 dcInteractor.disconnect(dcInputData);
-                timer.scheduleAtFixedRate(spTimerTask, 0, 50);
+                timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 break;
             case 1 :
                 jplInteractor.joinPublicLobby(jplInputData);
-                timer.scheduleAtFixedRate(spTimerTask, 0, 50);
+                timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 dcInteractor.disconnect(dcInputData);
                 break;
             case 2 :
                 dcInteractor.disconnect(dcInputData);
-                timer.scheduleAtFixedRate(spTimerTask, 0, 50);
+                timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 jplInteractor.joinPublicLobby(jplInputData);
                 break;
             case 3 :
                 dcInteractor.disconnect(dcInputData);
                 jplInteractor.joinPublicLobby(jplInputData);
-                timer.scheduleAtFixedRate(spTimerTask, 0, 50);
+                timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 break;
         }
 
@@ -285,4 +283,148 @@ public class ThreadLockTests {
         spTimerTask.cancel();
     }
 
+    /**
+     * Tests the case in which one player submits a word, but loses connection before the word is processed.
+     * In some cases, the player could also "submit a word", but in reality the request never happens because the
+     * player is lagged out, so the request is received by the controller after the player disconnected.
+     * We ensure in this test that there are more than two players to not immediately stop a game.
+     *
+     * Outcomes:
+     * SW1, RG, DC1: The word will be processed, turn is switched by RG, and then the player disconnects.
+     * SW1, DC1, RG: The word is processed, then player disconnects, so turn is switched to next player. RG works as normal.
+     * DC1, RG, SW1: The player disconnects, so turn is switched to next player. RG works as normal, then SW1 raises PlayerNotFound.
+     * DC1, SW1, RG: The player disconnects, so turn is switched to next player. SW1 raises PlayerNotFound. RG works as normal.
+     * Same cases if PD goes first.
+     */
+    @RepeatedTest(REPEAT_TIMES)
+    @Timeout(10)
+    public void testPlayerSubmitsPlayerDisconnects() throws IdInUseException, InvalidDisplayNameException, GameRunningException {
+        PlayerFactory playerFac = new PlayerFactory(new LocalDisplayName());
+        GameFactory gameFac = new GameFactoryTest();
+        LobbyManager lobman = new LobbyManager(playerFac, gameFac);
+        PlayerPoolListener ppl = new PlayerPoolListener() {
+
+            private final Lock lock = new ReentrantLock();
+
+            @Override
+            public void onJoinGamePlayer(Game game) {}
+
+            @Override
+            public void onCancelPlayer() {}
+
+            @Override
+            public Lock getLock() {
+                return lock;
+            }
+        };
+
+        Player player1 = lobman.createNewPlayer("player1", "1");
+        Player player2 = lobman.createNewPlayer("player2", "2");
+        Player player3 = lobman.createNewPlayer("player3", "3");
+
+        lobman.addPlayerToPool(player1, ppl);
+        lobman.addPlayerToPool(player2, ppl);
+        lobman.addPlayerToPool(player3, ppl);
+
+        Game currGame = lobman.newGameFromPool(new HashMap<>());
+        lobman.setGame(currGame);
+
+        assertTrue(currGame.getPlayers().contains(player1), "Player 1 is not in the Game");
+        assertTrue(currGame.getPlayers().contains(player2), "Player 2 is not in the Game");
+        assertTrue(currGame.getPlayers().contains(player3), "Player 3 is not in the Game");
+
+        assertEquals(player1, currGame.getCurrentTurnPlayer(), "It should be Player 1's turn, but it isn't.");
+
+        // At this point, setup and sanity asssertions finish.
+        // We now build the interactors:
+        SwInputData swInputData = new SwInputData("bloop", player1.getPlayerId());
+        AtomicBoolean swFlag = new AtomicBoolean(false);
+        SwOutputBoundary swPres = new SwOutputBoundary() {
+            @Override
+            public void valid(SwOutputDataValidWord outputDataValidWord) {
+                swFlag.set(true);
+            }
+
+            @Override
+            public void invalid(SwOutputDataFailure outputDataFailure) {
+                fail("THIS SHOULD NOT HAPPEN, WHY DOES IT CALL VALID???");
+            }
+        };
+        SwInteractor swInteractor = new SwInteractor(swPres, lobman);
+
+        AtomicBoolean dcFlag = new AtomicBoolean(false);
+        DcInputData dcInputData = new DcInputData(player1.getPlayerId());
+        DcOutputBoundary dcPres = data -> dcFlag.set(true);
+        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres);
+
+        PgeInputBoundary pgeInputBoundary = data -> {};
+        PdInputBoundary pdInputBoundary = d -> {};
+        RgInteractor rgInteractor = new RgInteractor(currGame, pgeInputBoundary, pdInputBoundary, lobman.getGameLock());
+        RgInteractor.RgTask rgTimerTask = rgInteractor.new RgTask();
+        Timer timer = new Timer();
+
+        int newint = new Random().nextInt(4);
+        switch (newint) {
+            case 0 : // SW1, RG, DC1: Word processed, player disconnects.
+                swInteractor.submitWord(swInputData);
+                timer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                dcInteractor.disconnect(dcInputData);
+                break;
+            case 1 : // SW1, DC1, RG: Word processed, player disconnects.
+                swInteractor.submitWord(swInputData);
+                dcInteractor.disconnect(dcInputData);
+                timer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                break;
+            case 2 : // DC1, RG, SW1: PlayerNotFound, word not processed.
+                dcInteractor.disconnect(dcInputData);
+                timer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                assertThrows(PlayerNotFoundException.class,
+                        () -> swInteractor.submitWord(swInputData));
+                break;
+            case 3 : // DC1, SW1, RG: PlayerNotFound, word not processed.
+                dcInteractor.disconnect(dcInputData);
+                assertThrows(PlayerNotFoundException.class,
+                        () -> swInteractor.submitWord(swInputData));
+                timer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                break;
+        }
+        System.out.println("Case number: " + newint);
+
+        // We first need to make sure DC and SW have finished their respective threads.
+        while(!swFlag.get() & !dcFlag.get()) {
+            Thread.onSpinWait();
+        }
+
+        System.out.println("Test right now locking both...");
+        lobman.getPlayerPoolLock().lock();
+        lobman.getGameLock().lock();
+        System.out.println("Test has locked both!");
+
+        // We can distinguish between both cases if the word (bloop) is in the story or not.
+
+        if (newint == 0 | newint == 1) {
+            System.out.println("Scenario 1 happens. The word gets added to the story.");
+            assertEquals("bloop ", currGame.getStory().toString(),
+                    "The story should have the word in it, but it doesn't.");
+        }
+        else {
+            System.out.println("Scenario 2 happens. The word shouldn't have been added to the story.");
+            assertEquals("", currGame.getStory().toString(),
+                    "The story should have nothing in it, but something is there.");
+        }
+
+
+        // In both cases, Player 2's turn shouldn't have finished because we have set the turn time at 15 seconds,
+        // more than the timeout of the test, which is 10 seconds.
+        assertEquals(player2, currGame.getCurrentTurnPlayer(), "It should be Player 2's turn, but it isn't.");
+        // We also test that Player 1 is gone for good.
+        assertFalse(currGame.getPlayers().contains(player1), "Player 1 should no longer be in the game, but it still is.");
+        assertFalse(lobman.getPlayersFromPool().contains(player1), "Player 1 shouldn't be in the pool, but it still is.");
+
+        // Cancel threads and unlock everything.
+        System.out.println("Everything is unlocked now.");
+        lobman.getPlayerPoolLock().unlock();
+        lobman.getGameLock().unlock();
+        rgTimerTask.cancel();
+    }
 }

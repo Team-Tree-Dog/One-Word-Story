@@ -83,7 +83,10 @@ public class SwInteractor implements SwInputBoundary{
          */
         @Override
         public void run() {
+            System.out.println("SwInteractor has started.");
+            System.out.println("SwInteractor wants to lock Game");
             gameLock.lock();
+            System.out.println("SwInteractor locked Game!");
             boolean success = true;
 
             try{
@@ -117,6 +120,8 @@ public class SwInteractor implements SwInputBoundary{
                 presenter.valid(new SwOutputDataValidWord(inputData.getWord(), this.playerId, resp));
             }
             gameLock.unlock();
+            System.out.println("SwInteractor unlocked Game!");
+            System.out.println("SwInteractor has ended.");
         }
     }
 }

@@ -42,7 +42,9 @@ public class RgInteractor {
          */
         @Override
         public void run () {
+            System.out.println("RgInteractor wants to lock Game.");
             gameLock.lock();
+            System.out.println("RgInteractor locked Game!");
             if (RgInteractor.this.g.isGameOver()) {
                 // Game ending procedure:
 
@@ -72,6 +74,7 @@ public class RgInteractor {
 
             }
             gameLock.unlock();
+            System.out.println("RgInteractor unlocked Game!");
         }
     }
 
