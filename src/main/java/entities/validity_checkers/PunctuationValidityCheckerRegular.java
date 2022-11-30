@@ -8,8 +8,10 @@ public class PunctuationValidityCheckerRegular implements PunctuationValidityChe
     private static final int PUNC_LENGTH = 3;
 
     /**
-     * Verifies punctuation is valid based on game mode regular criteria
-     * Makes changes to the punctuation if error is forgivable
+     * Verifies punctuation is valid by basic criteria. Accepts punctuation combinations
+     * which consist of a single character from {, ; : -}. Accepts punctuation which
+     * consists of any number of periods, or !? combinations. Any valid punctuation longer than 3
+     * characters gets trimmed to 3 characters by cutting off the rest
      * @param punctuation the punctuation to validate (trimmed)
      * @return valid punctuation, or if not valid, null
      */
@@ -22,7 +24,7 @@ public class PunctuationValidityCheckerRegular implements PunctuationValidityChe
         if (puncLength > PUNC_LENGTH) {
             punctuation = punctuation.substring(0, PUNC_LENGTH);
         }
-        if (punctuation.substring(0, 1).matches("[,;:\\-]?")) {
+        if (punctuation.substring(0, 1).matches("[,;:\-]?")) {
             if (puncLength == 1) {
                 return punctuation;
             }
