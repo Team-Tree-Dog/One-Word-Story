@@ -24,7 +24,7 @@ public class PunctuationValidityCheckerRegular implements PunctuationValidityChe
         if (puncLength > PUNC_LENGTH) {
             punctuation = punctuation.substring(0, PUNC_LENGTH);
         }
-        if (punctuation.substring(0, 1).matches("[,;:\-]?")) {
+        if (punctuation.substring(0, 1).matches("[,;:\\-]?")) {
             if (puncLength == 1) {
                 return punctuation;
             }
