@@ -10,7 +10,7 @@ public class StInputData {
 
     /**
      * Constructor for Input Data for Suggest Title use case
-     * @param requestId the ID that the ViewModel uses to identify this request
+     * @param requestId the ID that the ViewModel uses to identify this specific suggestion request
      * @param title     the title for the story that is suggested by the user
      * @param storyId   the ID used to identify the story
      */
