@@ -1,5 +1,4 @@
 package usecases.suggest_title;
-
 import usecases.Response;
 
 /**

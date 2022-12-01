@@ -15,7 +15,7 @@ public interface StGateway {
      * @return  a gateway output data object that records whether adding the suggested title to the story in the
      *          database was successful
      */
-    StGatewayOutputDataSuccess suggestTitle(StGatewayInputData d);
+    StGatewayOutputDataSuccess suggestTitle(StGatewayInputDataSuggest d);
 
     /**
      * Abstract method to retrieve all previously suggested story titles from the repository, and to return these
