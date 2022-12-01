@@ -6,13 +6,14 @@ import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.InvalidWordException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.*;
+import org.junit.Test;
 import usecases.GameDTO;
 import usecases.PlayerDTO;
 
-import static org.junit.Assert.*;
-
 import java.util.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -28,7 +29,6 @@ public class PdInteractorTests {
     private static class CustomizableTestGame extends Game {
 
         private final Queue<Player> players = new LinkedList<>();
-
         private final boolean allowAddingPlayers;
 
         public static final ValidityCheckerFacade v = new ValidityCheckerFacade(
@@ -60,7 +60,7 @@ public class PdInteractorTests {
         }
 
         @Override
-        public Player getPlayerById(String PlayerId) {
+        public Player getPlayerById(String playerId) {
             return null;
         }
 
@@ -86,6 +86,7 @@ public class PdInteractorTests {
         public Player getCurrentTurnPlayer() {
             return this.players.peek();
         }
+
     }
 
     private final Game g = new CustomizableTestGame(true);

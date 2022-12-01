@@ -5,12 +5,17 @@ import entities.games.Game;
 import entities.games.GameFactory;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Core entity which keeps track of all the games which are running
  * Every use case has access to an instance of this shared gamestate
  */
 public class LobbyManager {
+
+    public static final int PLAYERS_TO_START_GAME = 2;
 
     /**
      * Pairs Player objects with the corresponding Listener (join public lobby thread)
@@ -35,12 +40,14 @@ public class LobbyManager {
         }
     }
 
-    private final ArrayList<PlayerObserverLink> playerPool;
-    private Game game;
+    private final List<PlayerObserverLink> playerPool;
+    private volatile Game game;
     private final GameFactory gameFac;
     private final PlayerFactory playerFac;
     private final Timer sortPlayersTimer;
     private boolean startedSortTimer;
+    private final Lock playerPoolLock;
+    private final Lock gameLock;
 
     /**
      * @param playerFac Inject a factory to determine how players are made
@@ -49,10 +56,11 @@ public class LobbyManager {
     public LobbyManager (PlayerFactory playerFac, GameFactory gameFac) {
         this.gameFac = gameFac;
         this.playerFac = playerFac;
-
-        this.playerPool = new ArrayList<>();
+        this.playerPool = new CopyOnWriteArrayList<>();
         this.sortPlayersTimer = new Timer();
         this.startedSortTimer = false;
+        this.playerPoolLock = new ReentrantLock();
+        this.gameLock = new ReentrantLock();
     }
 
     /**
@@ -105,6 +113,7 @@ public class LobbyManager {
     /**
      * Remove a player from the pool and call the linked PlayerPoolListener's
      * onJoinGamePlayer method, indicating that the player has joined the game
+     * Notice that this method is not thread-safe AT ALL! It engages no locks
      * @param p Player you would like to remove
      * @throws PlayerNotFoundException if the player was not found in the pool
      * @throws GameDoesntExistException if the game isn't running, in which case, player can't join it
@@ -141,17 +150,26 @@ public class LobbyManager {
     }
 
     /**
-     * This method removes notifies all the players that the game has started and removes them from the pool
+     * This method removes all the players from the pool and notifies their
+     * corresponding PlayerPoolListeners that the players were added to the game
+     * However, this method DOES NOT add players to any game.
+     * Note that this method is NOT thread safe with regards to pool and game, however,
+     * it IS thread safe with regards to PlayerPoolListener callbacks
      */
     public void removeAllFromPoolJoin() {
         for(PlayerObserverLink playerObserverLink: playerPool) {
+            // We need to lock the critical section for every player
+            Lock lock = playerObserverLink.getPlayerPoolListener().getLock();
+            lock.lock();
             playerObserverLink.playerPoolListener.onJoinGamePlayer(this.game);
+            lock.unlock();
         }
         this.clearPool();
     }
 
     /**
      * This method calls onCancelPlayer on every player and removes all the players from the pool
+     * Note that this method is NOT THREAD SAFE AT ALL! It engages no locks
      */
     public void removeAllFromPoolCancel() {
         for(PlayerObserverLink playerObserverLink: playerPool) {
@@ -225,6 +243,7 @@ public class LobbyManager {
 
     /**
      * Removes a PlayerObserverLink from the pool via its player
+     * Notice that this method is not thread-safe AT ALL! It engages no locks
      * @param p the player in the POL to be removed
      * @throws PlayerNotFoundException if the player was not found in any POLs in playerPool
      */
@@ -283,7 +302,7 @@ public class LobbyManager {
      * @param p the player in the PlayerObserverLink
      * @return the PlayerObserverLink containing player p, null if there isn't one
      */
-    private PlayerObserverLink getLinkFromPlayer(Player p){
+    public PlayerObserverLink getLinkFromPlayer(Player p){
         for (PlayerObserverLink pol : playerPool) {
             if (pol.getPlayer().equals(p)) {
                 return pol;
@@ -294,12 +313,62 @@ public class LobbyManager {
 
     /**
      * Creates PlayerObserverLink from p and o, which is then used to add the player to the pool.
+     * This method engages the playerPoolLock lock
      * @param p the player in the PlayerObserverLink
      * @param o the PlayerPoolListener in the PlayerObserverLink
      */
     public void addPlayerToPool (Player p, PlayerPoolListener o) {
+        playerPoolLock.lock();
         PlayerObserverLink pol = new PlayerObserverLink(p, o);
         this.playerPool.add(pol);
+        playerPoolLock.unlock();
+    }
+    /**
+
+     * Combines functionality of removing the player from pool, adding player to game, and notifying
+     * the corresponding PlayerPoolListener that the player joined the game. If the player
+     * was not in the pool, this method will STILL ADD THEM to the game and will subsequently
+     * throw a PlayerNotFoundException
+     * Note that this method is not thread safe AT ALL (no locks engaged)
+     *
+     * @param p Player you wish to transfer from pool to the game
+     * @throws GameDoesntExistException If game is null
+     * @throws PlayerNotFoundException If player was not found in the pool
+     */
+    public void addPlayerToGameRemoveFromPool (Player p) throws
+            GameDoesntExistException, PlayerNotFoundException {
+        // Throws GameDoesntExist if game is null
+        boolean success = addPlayerToGame(p);
+
+        // Throws GameDoesntExist or PlayerNotFound
+        if (success) {
+            removeFromPoolJoin(p);
+        }
     }
 
+    /**
+     * Gets all the players from the game
+     * @return an arraylist of players
+     */
+    public List<Player> getPlayersFromGame () throws GameDoesntExistException {
+        if (this.isGameNull()){
+            throw new GameDoesntExistException("Game does not exist.");
+        }
+        return new ArrayList<>(game.getPlayers());
+    }
+
+    /**
+     * @return the lock associated with the game reference
+     */
+    public Lock getGameLock() { return gameLock; }
+
+    /**
+     * @return the lock associated with the player pool list
+     */
+    public Lock getPlayerPoolLock() { return playerPoolLock; }
+
+    /**
+     * @return the player whose turn it is
+     */
+    public Player getCurrentTurnPlayer() { return this.game.getCurrentTurnPlayer(); }
 }

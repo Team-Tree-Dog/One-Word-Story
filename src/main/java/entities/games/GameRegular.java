@@ -3,8 +3,9 @@ package entities.games;
 import entities.Player;
 import entities.validity_checkers.*;
 
-
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * A game, with the "regular" rules and constraints

@@ -3,6 +3,9 @@
 
 .idea/
 .DS_Store
+gradlew
+gradlew.bat
+gradle/
 
 # User-specific stuff
 .idea/**/workspace.xml

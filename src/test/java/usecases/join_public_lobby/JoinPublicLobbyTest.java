@@ -8,15 +8,16 @@ import entities.games.Game;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
 import entities.games.GameRegular;
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import usecases.Response;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 public class JoinPublicLobbyTest {
 
@@ -114,8 +115,14 @@ public class JoinPublicLobbyTest {
         initialPlayers.add(secondPlayer);
         Game game = new GameRegular(initialPlayers);
 
-        threadFirst.onJoinGamePlayer(game);
-        threadSecond.onJoinGamePlayer(game);
+        // onJoinGamePlayer signals a condition variable. the signal requires the lock to be engaged, which it is not
+        // The call will set the JplThread's game instance to the passed in game and the subsequent signal call will
+        // throw IllegalMonitor. We expect this to happen so to allow the test to continue, we assert the throw
+        Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadFirst.onJoinGamePlayer(game));
+        Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadSecond.onJoinGamePlayer(game));
+        
+        // threadFirst.game and threadSecond.game are not null so the while loop will be ignored so .await() won't execute
+        // Everything else works as normal
         threadFirst.run();
         threadSecond.run();
         assertEquals(2, this.testOutputBoundary.joinedPoolResponses.size());
@@ -138,7 +145,7 @@ public class JoinPublicLobbyTest {
         JplInteractor.JplThread threadSecond = this.interactor.new JplThread(inputDataSecond);
         JplInteractor.JplThread threadThird = this.interactor.new JplThread(inputDataThird);
 
-        threadThird.onCancelPlayer();
+        Assertions.assertThrows(IllegalMonitorStateException.class, threadThird::onCancelPlayer);
         threadThird.run();
 
         Queue<Player> initialPlayers = new LinkedList<>();
@@ -146,8 +153,8 @@ public class JoinPublicLobbyTest {
         initialPlayers.add(secondPlayer);
         Game game = new GameRegular(initialPlayers);
 
-        threadFirst.onJoinGamePlayer(game);
-        threadSecond.onJoinGamePlayer(game);
+        Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadFirst.onJoinGamePlayer(game));
+        Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadSecond.onJoinGamePlayer(game));
         threadFirst.run();
         threadSecond.run();
         assertEquals(3, this.testOutputBoundary.joinedPoolResponses.size());
@@ -171,8 +178,8 @@ public class JoinPublicLobbyTest {
         initialPlayers.add(secondPlayer);
         Game game = new GameRegular(initialPlayers);
 
-        threadFirst.onJoinGamePlayer(game);
-        threadSecond.onJoinGamePlayer(game);
+        Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadFirst.onJoinGamePlayer(game));
+        Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadSecond.onJoinGamePlayer(game));
         threadFirst.run();
         threadSecond.run();
         assertEquals(2, this.testOutputBoundary.joinedPoolResponses.size());
