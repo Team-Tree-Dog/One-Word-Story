@@ -28,23 +28,25 @@ public class StInteractor {
                 String mess = String.format("'%1$s' is invalid", data.getTitle());
                 Response res = new Response(Response.ResCode.INVALID_TITLE,mess);
                 outputData = new StOutputData(data.getRequestId(), res);
-            } else if (alreadySuggested) {
+            }
+            else if (alreadySuggested) {
                 String mess = String.format("'%1$s' was already suggested", data.getTitle());
                 Response res = new Response(Response.ResCode.INVALID_TITLE,mess);
                 outputData = new StOutputData(data.getRequestId(), res);
             }
-            StGatewayInputDataSuggest INPUT_DATA_SUGGEST =
-                    new StGatewayInputDataSuggest(data.getStoryId(), data.getTitle());
-            StGatewayOutputDataSuccess SUCCESS_DATA = repo.suggestTitle(INPUT_DATA_SUGGEST);
-            if (SUCCESS_DATA.getSuccess()){
-                String mess = String.format("'%1$s' was successfully added to suggested titles", data.getTitle());
-                Response res = new Response(Response.ResCode.INVALID_TITLE,mess);
-                outputData = new StOutputData(data.getRequestId(), res);
-            }
-            else{
-                String mess = String.format("Sorry. '%1$s' was not added", data.getTitle());
-                Response res = new Response(Response.ResCode.INVALID_TITLE,mess);
-                outputData = new StOutputData(data.getRequestId(), res);
+            else {
+                StGatewayInputDataSuggest INPUT_DATA_SUGGEST =
+                        new StGatewayInputDataSuggest(data.getStoryId(), data.getTitle());
+                StGatewayOutputDataSuccess SUCCESS_DATA = repo.suggestTitle(INPUT_DATA_SUGGEST);
+                if (SUCCESS_DATA.getSuccess()) {
+                    String mess = String.format("'%1$s' was successfully added to suggested titles", data.getTitle());
+                    Response res = new Response(Response.ResCode.INVALID_TITLE, mess);
+                    outputData = new StOutputData(data.getRequestId(), res);
+                } else {
+                    String mess = String.format("Sorry. '%1$s' was not added", data.getTitle());
+                    Response res = new Response(Response.ResCode.INVALID_TITLE, mess);
+                    outputData = new StOutputData(data.getRequestId(), res);
+                }
             }
             pres.suggestTitleOutput(outputData);
         }
