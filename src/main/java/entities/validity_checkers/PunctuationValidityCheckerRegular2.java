@@ -5,6 +5,17 @@ import java.util.regex.Pattern;
 
 public class PunctuationValidityCheckerRegular2 implements PunctuationValidityChecker {
 
+    private final Pattern pattern;
+
+    /**
+     * Pre-compile regex
+     */
+    public PunctuationValidityCheckerRegular2 () {
+        // Actual regex, without java escapes: ^([!?]{1,3}|\.{1,3}|[,;:\-])?\"?$
+        String regex = "^([!?]{1,3}|\\.{1,3}|[,;:\\-])?\\\"?$";
+        pattern = Pattern.compile(regex);
+    }
+
     /**
      * Punctuation checker that validates according
      * to the following regex:
@@ -16,10 +27,6 @@ public class PunctuationValidityCheckerRegular2 implements PunctuationValidityCh
      */
     @Override
     public String isPunctuationValid(String punctuation) {
-        // Actual regex, without java escapes: ^([!?]{1,3}|\.{1,3}|[,;:\-])?\"?$
-        String regex = "^([!?]{1,3}|\\.{1,3}|[,;:\\-])?\\\"?$";
-        Pattern p = Pattern.compile(regex);
-
-        return p.matcher(punctuation).matches() ? punctuation : null;
+        return pattern.matcher(punctuation).matches() ? punctuation : null;
     }
 }
