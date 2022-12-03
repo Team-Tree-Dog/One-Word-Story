@@ -79,6 +79,7 @@ public class Main {
         GmlsController gmlsController = new GmlsController(gmls);
         JplController jplController = new JplController(jpl);
         LsController lsController = new LsController(ls);
+        SsController ssController = new SsController(ss);
         SwController swController = new SwController(sw);
 
         // TODO: Setup and run the view

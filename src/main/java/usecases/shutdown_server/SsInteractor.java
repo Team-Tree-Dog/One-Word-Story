@@ -2,7 +2,7 @@ package usecases.shutdown_server;
 
 import usecases.ThreadRegister;
 
-public class SsInteractor {
+public class SsInteractor implements SsInputBoundary {
 
     private final ThreadRegister threadRegister;
 
