@@ -2,9 +2,7 @@ package entities;
 
 import entities.games.Game;
 import entities.games.GameFactory;
-import entities.validity_checkers.PunctuationValidityChecker;
 import entities.validity_checkers.ValidityCheckerFacade;
-import entities.validity_checkers.WordValidityChecker;
 import exceptions.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,12 +18,32 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LobbyManagerTests {
 
     /**
-     * Test Validity Checker Facade which uses always-true non-modifying punct and word checkers
+     * Test Validity Checker Facade which always validates and does not modify input
      */
-    public static class TestValidityCheckerFacade extends ValidityCheckerFacade {
+    static class TestValidityCheckerFacadeTrue extends ValidityCheckerFacade {
 
-        public TestValidityCheckerFacade() {
+        public TestValidityCheckerFacadeTrue() {
             super((p) -> p, (w) -> w);
+        }
+
+        @Override
+        public String isValid(String word) {
+            return word;
+        }
+    }
+
+    /**
+     * Test Validity Checker Facade which always validates and does not modify input
+     */
+    static class TestValidityCheckerFacadeFalse extends ValidityCheckerFacade {
+
+        public TestValidityCheckerFacadeFalse() {
+            super((p) -> p, (w) -> w);
+        }
+
+        @Override
+        public String isValid(String word) {
+            return null;
         }
     }
 
@@ -45,7 +63,7 @@ public class LobbyManagerTests {
         }
 
         public CustomizableTestGame(Queue<Player> initialPlayers) {
-            super(15, new TestValidityCheckerFacade());
+            super(15, new TestValidityCheckerFacadeTrue());
             players = new LinkedList<>(initialPlayers);
         }
 
@@ -660,7 +678,8 @@ public class LobbyManagerTests {
         Player player1 = lobman.createNewPlayer("player1", "1");
         Player player2 = lobman.createNewPlayer("player2", "2");
 
-        CustomizableTestGame testGame = new CustomizableTestGame(new LinkedList<>(), word -> false);
+        CustomizableTestGame testGame = new CustomizableTestGame(new LinkedList<>(),
+                new TestValidityCheckerFacadeFalse());
         lobman.setGame(testGame);
 
         lobman.addPlayerToGame(player1);

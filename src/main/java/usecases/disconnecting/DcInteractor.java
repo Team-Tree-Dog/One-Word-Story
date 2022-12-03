@@ -92,6 +92,9 @@ public class DcInteractor implements DcInputBoundary {
                         // The player is in the game. We then check if it's the player's turn.
                         // If it is, then we switch the turn so play can continue.
                         if (lm.getCurrentTurnPlayer().getPlayerId().equals(this.playerId)) {
+                            // Switch turn returns a boolean of whether switch turn succeeded.
+                            // In this case, it should succeed! If game makes it fail for whatever reason
+                            // then we have an issue. TODO: Perhaps switch turn should not be allowed to fail
                             lm.switchTurn();
                         }
                         // Now try to remove player from game.
@@ -105,7 +108,6 @@ public class DcInteractor implements DcInputBoundary {
                     // In both PlayerNotFound & GameDoesntExist, player was
                     // not found to be in the game, so respond with fail
                     response = Response.fromException(e, "Player not found");
-                    e.printStackTrace();
                 } finally {
                     gameLock.unlock();
                 }

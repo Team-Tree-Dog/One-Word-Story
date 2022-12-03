@@ -3,6 +3,7 @@ package usecases.sort_players;
 import entities.*;
 import entities.display_name_checkers.DisplayNameChecker;
 import entities.games.Game;
+import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.GameRunningException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,21 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class SpInteractorTests {
 
+    /**
+     * Test Validity Checker Facade which always validates and does not modify input
+     */
+    static class TestValidityCheckerTrue extends ValidityCheckerFacade {
+
+        public TestValidityCheckerTrue() {
+            super((p) -> p, (w) -> w);
+        }
+
+        @Override
+        public String isValid(String word) {
+            return word;
+        }
+    }
+
     private static class CustomizableTestGame extends Game {
 
         private final ArrayList<Player> players = new ArrayList<>();
@@ -35,7 +51,7 @@ public class SpInteractorTests {
          * @param allowAddingPlayers Does addPlayer successfully add the player and return true
          */
         public CustomizableTestGame(boolean gameOver, boolean allowAddingPlayers) {
-            super(99, word -> true);
+            super(99, new TestValidityCheckerTrue());
             this.gameOver = gameOver;
             this.allowAddingPlayers = allowAddingPlayers;
         }
