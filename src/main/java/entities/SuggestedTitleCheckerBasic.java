@@ -43,7 +43,7 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
      * @return      true if and only if all the characters in this title are valid
      */
     private boolean checkValidCharacters(String title) {
-        for (int i = 0; i < title.length() - 1; i++){
+        for (int i = 0; i < title.length(); i++){
             if (!isValidCharacter(title.charAt(i))){ return false;}
         }
         return true;
