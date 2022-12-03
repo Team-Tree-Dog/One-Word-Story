@@ -1,23 +1,25 @@
 package entities.games;
 
 import entities.Player;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class GameTests {
 
-    @Before
+    @BeforeEach
     public void setUp() {
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
     }
 
@@ -77,48 +79,53 @@ public class GameTests {
         }
     }
 
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void onTimerUpdate() {
     }
 
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void getPlayerById() {
         Game testGame = new CustomizableTestGame(new LinkedList<>());
         Player player1 = new Player("player1", "1");
         testGame.addPlayer(player1);
 
         // Sanity Check
-        assertTrue("Player 1 should be in the game, but it is not.", testGame.getPlayers().contains(player1));
+        assertTrue(testGame.getPlayers().contains(player1), "Player 1 should be in the game, but it is not.");
         // Main Assertion
-        assertEquals("We should obtain player 1, but we don't.", player1, testGame.getPlayerById("1"));
+        assertEquals(player1, testGame.getPlayerById("1"), "We should obtain player 1, but we don't.");
     }
 
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void removePlayer() {
         Game testGame = new CustomizableTestGame(new LinkedList<>());
         Player player1 = new Player("player1", "1");
         testGame.addPlayer(player1);
 
         // Sanity Check
-        assertTrue("Player 1 should be in the game, but it is not.", testGame.getPlayers().contains(player1));
+        assertTrue(testGame.getPlayers().contains(player1), "Player 1 should be in the game, but it is not.");
         // What we will test:
         testGame.removePlayer(player1);
         // Main Assertion:
-        assertFalse("Player 1 shouldn't be in the game anymore, but it still is.",
-                testGame.getPlayers().contains(player1));
+        assertFalse(testGame.getPlayers().contains(player1),
+                "Player 1 shouldn't be in the game anymore, but it still is.");
     }
 
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void addPlayer() {
         Game testGame = new CustomizableTestGame(new LinkedList<>());
         Player player1 = new Player("player1", "1");
         testGame.addPlayer(player1);
 
         // Our Assertion
-        assertTrue("Player 1 should be in the game, but it is not.", testGame.getPlayers().contains(player1));
+        assertTrue(testGame.getPlayers().contains(player1), "Player 1 should be in the game, but it is not.");
     }
 
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void switchTurn() {
         Game testGame = new CustomizableTestGame(new LinkedList<>());
         Player player1 = new Player("player1", "1");
@@ -128,15 +135,16 @@ public class GameTests {
         testGame.addPlayer(player2);
 
         // Sanity Check
-        assertEquals("It should be Player 1's turn, but it isn't.", player1, testGame.getCurrentTurnPlayer());
+        assertEquals(player1, testGame.getCurrentTurnPlayer(), "It should be Player 1's turn, but it isn't.");
 
         // Here comes the bit we want to test:
         testGame.switchTurn();
-        assertEquals("It should be Player 2's turn, but it isn't.", player2, testGame.getCurrentTurnPlayer());
+        assertEquals(player2, testGame.getCurrentTurnPlayer(), "It should be Player 2's turn, but it isn't.");
 
     }
 
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void getCurrentTurnPlayer() {
         Game testGame = new CustomizableTestGame(new LinkedList<>());
         Player player1 = new Player("player1", "1");
@@ -146,7 +154,7 @@ public class GameTests {
         testGame.addPlayer(player2);
 
         // What we want to check:
-        assertEquals("It should be Player 1's turn, but it isn't.", player1, testGame.getCurrentTurnPlayer());
-        assertNotSame("It shouldn't be Player 2's turn, but it is.", player2, testGame.getCurrentTurnPlayer());
+        assertEquals(player1, testGame.getCurrentTurnPlayer(), "It should be Player 1's turn, but it isn't.");
+        assertNotSame(player2, testGame.getCurrentTurnPlayer(), "It shouldn't be Player 2's turn, but it is.");
     }
 }

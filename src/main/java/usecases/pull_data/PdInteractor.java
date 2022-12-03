@@ -1,6 +1,5 @@
 package usecases.pull_data;
 
-import entities.games.Game;
 import usecases.GameDTO;
 
 /**

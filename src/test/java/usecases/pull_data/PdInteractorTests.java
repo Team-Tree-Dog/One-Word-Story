@@ -4,16 +4,17 @@ import entities.Player;
 import entities.games.Game;
 import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.InvalidWordException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import usecases.GameDTO;
 import usecases.PlayerDTO;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -91,7 +92,7 @@ public class PdInteractorTests {
 
     private final Game g = new CustomizableTestGame(true);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Player p1 = new Player("p1", "1");
         Player p2 = new Player("p2", "2");
@@ -108,7 +109,7 @@ public class PdInteractorTests {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
     }
 
@@ -117,31 +118,29 @@ public class PdInteractorTests {
      * Since we did not redefine equality for those classes, we are checking equality of each
      * attribute directly
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testRegularGameToGameDTO() {
 
         // To simulate the presenter, we create PdOutBoundary with overridden method for testing
-        PdOutputBoundary pob = new PdOutputBoundary() {
-            @Override
-            public void updateGameInfo (PdOutputData d) {
-                GameDTO obj1 = d.getGameInfo();
+        PdOutputBoundary pob = d -> {
+            GameDTO obj1 = d.getGameInfo();
 
-                assertEquals("Incorrect copy of Story", obj1.getStory(), g.getStory().toString());
+            assertEquals(obj1.getStory(), g.getStory().toString(), "Incorrect copy of Story");
 
-                List<String> IdList = new ArrayList<>();
-                for (PlayerDTO p : obj1.getPlayers()) {
-                    IdList.add(p.getPlayerId());
-                }
-                for (Player p : g.getPlayers()) {
-                    assertTrue("Missing Player", IdList.contains(p.getPlayerId()));
-                }
-
-                assertEquals("Incorrect current turn player id", obj1.getCurrentTurnPlayerId(),
-                        g.getCurrentTurnPlayer().getPlayerId());
-
-                assertEquals("Incorrect seconds left in current turn", obj1.getSecondsLeftCurrentTurn(),
-                        g.getSecondsLeftInCurrentTurn());
+            List<String> IdList = new ArrayList<>();
+            for (PlayerDTO p : obj1.getPlayers()) {
+                IdList.add(p.getPlayerId());
             }
+            for (Player p : g.getPlayers()) {
+                assertTrue(IdList.contains(p.getPlayerId()), "Missing Player");
+            }
+
+            assertEquals(obj1.getCurrentTurnPlayerId(), g.getCurrentTurnPlayer().getPlayerId(),
+                    "Incorrect current turn player id");
+
+            assertEquals(obj1.getSecondsLeftCurrentTurn(), g.getSecondsLeftInCurrentTurn(),
+                    "Incorrect seconds left in current turn");
         };
 
         PdInteractor interactor = new PdInteractor(pob);

@@ -8,10 +8,12 @@ import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
 import exceptions.InvalidDisplayNameException;
-import org.junit.*;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static usecases.Response.ResCode.*;
 
 import java.util.*;
@@ -93,10 +95,10 @@ public class SwInteractorTests {
         @Override
         public Player getCurrentTurnPlayer() {return players.peek();}
     }
-    @Before
+    @BeforeEach
     public void setUp() {}
 
-    @After
+    @AfterEach
     public void tearDown() {
     
     }
@@ -104,7 +106,8 @@ public class SwInteractorTests {
     /**
      * Tests creating Game, no timer, but the player submits word out of turn.
      */
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(10000)
     public void testOutOfTurn() throws IdInUseException, GameRunningException, InvalidDisplayNameException {
 
         class LocalDisplayName implements DisplayNameChecker {
@@ -166,28 +169,28 @@ public class SwInteractorTests {
         Game currGame = lobman.newGameFromPool(new HashMap<>());
         lobman.setGame(currGame);
 
-        assertTrue("Player 1 is not in the Game", currGame.getPlayers().contains(player1));
-        assertTrue("Player 2 is not in the Game", currGame.getPlayers().contains(player2));
+        assertTrue(currGame.getPlayers().contains(player1), "Player 1 is not in the Game");
+        assertTrue(currGame.getPlayers().contains(player2), "Player 2 is not in the Game");
 
-        assertEquals("It should be Player 1's turn, but it isn't.", player1, currGame.getCurrentTurnPlayer());
+        assertEquals(player1, currGame.getCurrentTurnPlayer(), "It should be Player 1's turn, but it isn't.");
 
         SwOutputBoundary pres = new SwOutputBoundary() {
             @Override
             public void valid(SwOutputDataValidWord outputDataValidWord){
-                assertEquals("THIS SHOULD NOT HAPPEN, WHY DOES IT CALL VALID???", 1,2);
+                fail("THIS SHOULD NOT HAPPEN, WHY DOES IT CALL VALID???");
             }
 
             @Override
             public void invalid(SwOutputDataFailure outputDataFailure) {
-                assertEquals("Response message is not correct",
-                        "It is not player " + "2" + "'s turn.",
-                        outputDataFailure.getResponse().getMessage());
+                assertEquals("It is not player " + "2" + "'s turn.",
+                        outputDataFailure.getResponse().getMessage(),
+                        "Response message is not correct");
 
-                assertEquals("Response code is not correct", OUT_OF_TURN,
-                        outputDataFailure.getResponse().getCode());
+                assertEquals(OUT_OF_TURN, outputDataFailure.getResponse().getCode(),
+                        "Response code is not correct");
 
-                assertEquals("Offending Player ID is not correct.", "2",
-                        outputDataFailure.getPlayerId());
+                assertEquals("2", outputDataFailure.getPlayerId(),
+                        "Offending Player ID is not correct.");
 
                 System.out.println("The invalid presenter code block was called successfully :)");
             }
@@ -204,7 +207,8 @@ public class SwInteractorTests {
     /**
      * Tests creating Game, no timer, but the player submits word when they don't exist.
      */
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(10000)
     public void testPlayerNotFound() throws IdInUseException, GameRunningException, InvalidDisplayNameException {
 
         class LocalDisplayName implements DisplayNameChecker {
@@ -247,25 +251,25 @@ public class SwInteractorTests {
         Game currGame = lobman.newGameFromPool(new HashMap<>());
         lobman.setGame(currGame);
 
-        assertFalse("Player 1 shouldn't be in the Game", currGame.getPlayers().contains(player1));
+        assertFalse(currGame.getPlayers().contains(player1), "Player 1 shouldn't be in the Game");
 
         SwOutputBoundary pres = new SwOutputBoundary() {
             @Override
             public void valid(SwOutputDataValidWord outputDataValidWord){
-                assertEquals("THIS SHOULD NOT HAPPEN, WHY DOES IT CALL VALID???", 1,2);
+                fail("THIS SHOULD NOT HAPPEN, WHY DOES IT CALL VALID???");
             }
 
             @Override
             public void invalid(SwOutputDataFailure outputDataFailure) {
-                assertEquals("Response message is not correct",
-                        "Player with ID " + "1" + " does not exist or is not in the Game.",
-                        outputDataFailure.getResponse().getMessage());
+                assertEquals("Player with ID " + "1" + " does not exist or is not in the Game.",
+                        outputDataFailure.getResponse().getMessage(),
+                        "Response message is not correct");
 
-                assertEquals("Response code is not correct", PLAYER_NOT_FOUND,
-                        outputDataFailure.getResponse().getCode());
+                assertEquals(PLAYER_NOT_FOUND, outputDataFailure.getResponse().getCode(),
+                        "Response code is not correct");
 
-                assertEquals("Offending Player ID is not correct.", "1",
-                        outputDataFailure.getPlayerId());
+                assertEquals("1", outputDataFailure.getPlayerId(),
+                        "Offending Player ID is not correct.");
 
                 System.out.println("The invalid presenter code block was called successfully! :)");
             }
@@ -282,7 +286,8 @@ public class SwInteractorTests {
     /**
      * Tests submitting a word to a non-existent Game.
      */
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(10000)
     public void testGameDoesntExist() throws IdInUseException, InvalidDisplayNameException {
 
         class LocalDisplayName implements DisplayNameChecker {
@@ -342,20 +347,20 @@ public class SwInteractorTests {
         SwOutputBoundary pres = new SwOutputBoundary() {
             @Override
             public void valid(SwOutputDataValidWord outputDataValidWord){
-                assertEquals("THIS SHOULD NOT HAPPEN, WHY DOES IT CALL VALID???", 1,2);
+                fail("THIS SHOULD NOT HAPPEN, WHY DOES IT CALL VALID???");
             }
 
             @Override
             public void invalid(SwOutputDataFailure outputDataFailure) {
-                assertEquals("Response message is not correct",
-                        "The Game you are trying to submit a word to doesn't exist",
-                        outputDataFailure.getResponse().getMessage());
+                assertEquals("The Game you are trying to submit a word to doesn't exist",
+                        outputDataFailure.getResponse().getMessage(),
+                        "Response message is not correct");
 
-                assertEquals("Response code is not correct", GAME_DOESNT_EXIST,
-                        outputDataFailure.getResponse().getCode());
+                assertEquals(GAME_DOESNT_EXIST, outputDataFailure.getResponse().getCode(),
+                        "Response code is not correct");
 
-                assertEquals("Offending Player ID is not correct.", "1",
-                        outputDataFailure.getPlayerId());
+                assertEquals("1", outputDataFailure.getPlayerId(),
+                        "Offending Player ID is not correct.");
 
                 System.out.println("The invalid presenter code block was called successfully! :)");
             }
@@ -372,7 +377,8 @@ public class SwInteractorTests {
     /**
      * Tests submitting a word that is invalid, with a DisplayNameChecker that always returns false.
      */
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(10000)
     public void testInvalidWord() throws IdInUseException, GameRunningException, InvalidDisplayNameException {
         class LocalDisplayName implements DisplayNameChecker {
             @Override
@@ -430,27 +436,27 @@ public class SwInteractorTests {
         Game currGame = lobman.newGameFromPool(new HashMap<>());
         lobman.setGame(currGame);
 
-        assertTrue("Player 1 is not in the Game", currGame.getPlayers().contains(player1));
+        assertTrue(currGame.getPlayers().contains(player1), "Player 1 is not in the Game");
 
-        assertEquals("It should be Player 1's turn, but it isn't.", player1, currGame.getCurrentTurnPlayer());
+        assertEquals(player1, currGame.getCurrentTurnPlayer(), "It should be Player 1's turn, but it isn't.");
 
         SwOutputBoundary pres = new SwOutputBoundary() {
             @Override
             public void valid(SwOutputDataValidWord outputDataValidWord){
-                assertEquals("THIS SHOULD NOT HAPPEN, WHY DOES IT CALL VALID???", 1,2);
+                fail("THIS SHOULD NOT HAPPEN, WHY DOES IT CALL VALID???");
             }
 
             @Override
             public void invalid(SwOutputDataFailure outputDataFailure) {
-                assertEquals("Response message is not correct",
-                        "The word 'bloop' is not valid, please try another word.",
-                        outputDataFailure.getResponse().getMessage());
+                assertEquals("The word 'bloop' is not valid, please try another word.",
+                        outputDataFailure.getResponse().getMessage(),
+                        "Response message is not correct");
 
-                assertEquals("Response code is not correct", INVALID_WORD,
-                        outputDataFailure.getResponse().getCode());
+                assertEquals(INVALID_WORD, outputDataFailure.getResponse().getCode(),
+                        "Response code is not correct");
 
-                assertEquals("Offending Player ID is not correct.", "1",
-                        outputDataFailure.getPlayerId());
+                assertEquals("1", outputDataFailure.getPlayerId(),
+                        "Offending Player ID is not correct.");
 
                 System.out.println("The invalid presenter code block was called successfully! :)");
             }
@@ -468,7 +474,8 @@ public class SwInteractorTests {
     /**
      * Tests submitting a word that is valid.
      */
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(10000)
     public void testValidWord() throws IdInUseException, GameRunningException, InvalidDisplayNameException {
         class LocalDisplayName implements DisplayNameChecker {
             @Override
@@ -526,30 +533,30 @@ public class SwInteractorTests {
         Game currGame = lobman.newGameFromPool(new HashMap<>());
         lobman.setGame(currGame);
 
-        assertTrue("Player 1 is not in the Game", currGame.getPlayers().contains(player1));
+        assertTrue(currGame.getPlayers().contains(player1), "Player 1 is not in the Game");
 
-        assertEquals("It should be Player 1's turn, but it isn't.", player1, currGame.getCurrentTurnPlayer());
+        assertEquals(player1, currGame.getCurrentTurnPlayer(), "It should be Player 1's turn, but it isn't.");
 
         SwOutputBoundary pres = new SwOutputBoundary() {
 
             @Override
             public void valid(SwOutputDataValidWord swOutputDataValidWord) {
-                assertEquals("Response message is not correct",
-                        "Word 'bloop' has been added!",
-                        swOutputDataValidWord.getResponse().getMessage());
+                assertEquals("Word 'bloop' has been added!",
+                        swOutputDataValidWord.getResponse().getMessage(),
+                        "Response message is not correct");
 
-                assertEquals("Response code is not correct", SUCCESS,
-                        swOutputDataValidWord.getResponse().getCode());
+                assertEquals(SUCCESS, swOutputDataValidWord.getResponse().getCode(),
+                        "Response code is not correct");
 
-                assertEquals("Player ID is not correct.", "1",
-                        swOutputDataValidWord.getPlayerId());
+                assertEquals("1", swOutputDataValidWord.getPlayerId(),
+                        "Player ID is not correct.");
 
                 System.out.println("The valid presenter code block was called successfully! :)");
             }
 
             @Override
             public void invalid(SwOutputDataFailure outputDataFailure){
-                assertEquals("THIS SHOULD NOT HAPPEN, WHY DOES IT CALL INVALID???", 1,2);
+                fail("THIS SHOULD NOT HAPPEN, WHY DOES IT CALL INVALID???");
             }
         };
 

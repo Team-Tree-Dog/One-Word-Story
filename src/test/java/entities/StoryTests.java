@@ -1,26 +1,27 @@
 package entities;
 
 import exceptions.InvalidWordException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.*;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StoryTests {
-    @Before
+    @BeforeEach
     public void setUp() {
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
     }
 
     /**
      * Tests that a word is valid and is added successfully
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testAddWordSuccess() throws InvalidWordException {
         Player player1 = new Player("player1", "1");
         String newword = "bloop";
@@ -30,43 +31,41 @@ public class StoryTests {
         Story story = new Story(wordfac);
         story.addWord(newword, player1);
 
-        assertEquals("The word should be created, with string bloop", "bloop ", story.toString());
+        assertEquals("bloop ", story.toString(), "The word should be created, with string bloop");
     }
-
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
-    // This says it is deprecated, but we are using JUnit 4, and AssertThrows was introduced in JUnit 5
 
     /**
      * Tests that a word is invalid and is refused
      */
-    @Test(timeout = 1000)
-    public void testAddWordFail() throws InvalidWordException {
+    @Test
+    @Timeout(1000)
+    public void testAddWordFail() {
         Player player1 = new Player("player1", "1");
         String newword = "bloop";
 
         ValidityChecker validityFailure = word -> false;
         WordFactory wordfac = new WordFactory(validityFailure);
         Story story = new Story(wordfac);
-        exceptionRule.expect(InvalidWordException.class);
-        story.addWord(newword, player1);
+        assertThrows(InvalidWordException.class, () -> story.addWord(newword, player1));
     }
 
     /**
      * Tests the toString method for a blank story.
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testBlankStory() {
         ValidityChecker validitySuccess = word -> true;
         WordFactory wordfac = new WordFactory(validitySuccess);
         Story story = new Story(wordfac);
-        assertEquals("The Story.toString() should just be a blank string.", "", story.toString());
+        assertEquals("", story.toString(), "The Story.toString() should just be a blank string.");
     }
 
     /**
      * Tests the toString method for a story with multiple words.
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testStorytoString() throws InvalidWordException {
         Player player1 = new Player("player1", "1");
         ValidityChecker validitySuccess = word -> true;
@@ -78,7 +77,7 @@ public class StoryTests {
         story.addWord("a", player1);
         story.addWord("time", player1);
 
-        assertEquals("The Story.toString() should just be Once upon a time, with a space at the end.",
-                "Once upon a time ", story.toString());
+        assertEquals("Once upon a time ", story.toString(),
+                "The Story.toString() should just be Once upon a time, with a space at the end.");
     }
 }

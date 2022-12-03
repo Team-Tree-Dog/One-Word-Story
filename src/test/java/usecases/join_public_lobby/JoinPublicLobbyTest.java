@@ -8,16 +8,16 @@ import entities.games.Game;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
 import entities.games.GameRegular;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import usecases.Response;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JoinPublicLobbyTest {
 
@@ -56,7 +56,7 @@ public class JoinPublicLobbyTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setupJplInteractor(){
         LobbyManager lobbyManager = new LobbyManager(this.playerFactory, this.gameFactory);
         this.interactor = new JplInteractor(lobbyManager, this.testOutputBoundary);
@@ -65,7 +65,8 @@ public class JoinPublicLobbyTest {
     /**
      * Test that the response to players being added the pool is properly being registered
      */
-    @Test(timeout=10000)
+    @Test
+    @Timeout(10000)
     public void checkAllJoinPoolQueriesRegistered() {
         Player firstPlayer = new Player("First", "1");
         Player secondPlayer = new Player("Second", "2");
@@ -101,7 +102,8 @@ public class JoinPublicLobbyTest {
     /**
      * Test that JPL responds properly to players joining the game
      */
-    @Test(timeout=10000)
+    @Test
+    @Timeout(10000)
     public void checkAllJoinedGame() {
         Player firstPlayer = new Player("Name", "1");
         Player secondPlayer = new Player("Name", "2");
@@ -133,7 +135,8 @@ public class JoinPublicLobbyTest {
     /**
      * Test that JPL responds properly to a player cancelling their waiting
      */
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(10000)
     public void testCancelWaiting() {
         Player firstPlayer = new Player("Name", "1");
         Player secondPlayer = new Player("Name", "2");
@@ -165,7 +168,8 @@ public class JoinPublicLobbyTest {
     /**
      * Test that if a player joins with a duplicate ID, they fail properly
      */
-    @Test(timeout=10000)
+    @Test
+    @Timeout(10000)
     public void testDuplicateIds(){
         Player firstPlayer = new Player("Player", "1");
         Player secondPlayer = new Player("player", "1");

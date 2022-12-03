@@ -1,13 +1,15 @@
 package usecases.pull_game_ended;
 
 import entities.Player;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PgeInteractorTests {
 
@@ -28,7 +30,7 @@ public class PgeInteractorTests {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         // Add players for a list of players
         Player p1 = new Player("p1", "1");
@@ -43,13 +45,14 @@ public class PgeInteractorTests {
         pgeid.getPlayers().add(1, p2);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {}
 
     /**
      * Test that the data is built correctly (the proper player ids were extracted)
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testBuiltData() {
         ArrayList<String> expectedPlayerIds = new ArrayList<>();
         expectedPlayerIds.add("1");
