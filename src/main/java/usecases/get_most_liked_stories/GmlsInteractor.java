@@ -7,7 +7,7 @@ import usecases.ThreadRegister;
 import java.util.Arrays;
 import java.util.*;
 
-public class GmlsInteractor {
+public class GmlsInteractor implements GmlsInputBoundary {
     private final GmlsOutputBoundary pres;
     private final GmlsGateway repo;
 
@@ -19,10 +19,11 @@ public class GmlsInteractor {
 
     /**
      * Constructor for use case interactor
+     *
      * @param pres the output boundary to update the view model
      * @param repo the repository from which the stories will be extracted
      */
-    public GmlsInteractor(GmlsOutputBoundary pres, GmlsGateway repo, ThreadRegister register){
+    public GmlsInteractor(GmlsOutputBoundary pres, GmlsGateway repo, ThreadRegister register) {
         this.pres = pres;
         this.repo = repo;
         this.register = register;
@@ -36,6 +37,7 @@ public class GmlsInteractor {
 
         /**
          * Constructor for GmlsThread class
+         *
          * @param data Input data for the use case
          */
         public GmlsThread(GmlsInputData data) {
@@ -80,9 +82,10 @@ public class GmlsInteractor {
         /**
          * Private helper method to use the comparator class orderStoriesByLikes to sort the stories
          * in descending order.
+         *
          * @param stories the stories to be sorted in descending order
          */
-        private void sortStoriesByLikes(StoryData[] stories){
+        private void sortStoriesByLikes(StoryData[] stories) {
             orderStoriesByLikes COMPARATOR = new orderStoriesByLikes();
             Arrays.sort(stories, COMPARATOR);
         }
@@ -90,11 +93,12 @@ public class GmlsInteractor {
         /**
          * Private Helper Method to sort the stories in descending order and extract the desired range.
          * This is a mutating method and mutates stories by sorting them only (no addition or deletion of stories)
+         *
          * @param stories the stories to be sorted and from which the desired range should be extracted
-         * @param data the input data specifying the lower and upper bounds for the range
+         * @param data    the input data specifying the lower and upper bounds for the range
          * @return the range of stories sorted in descending
          */
-        private StoryData[] sortAndExtractStories(StoryData[] stories, GmlsInputData data){
+        private StoryData[] sortAndExtractStories(StoryData[] stories, GmlsInputData data) {
             sortStoriesByLikes(stories);
             int[] INDICES = getIndices(stories, data.getLowerInclusive(), data.getUpperExclusive());
             return Arrays.copyOfRange(stories, INDICES[0], INDICES[1]);
@@ -102,21 +106,28 @@ public class GmlsInteractor {
 
         /**
          * Private helper method
+         *
          * @param index the story for which the number of likes are compare to the bounds
          * @param lower the lower bound for the range of stories specified by the user, can be null,
          *              in which case it corresponds to a lower bound of 0 likes
          * @param upper the upper bounds for the range of stories specified by the user, can be null,
          *              in which case it corresponds to no upper bound on the desired range of likes
-         * @return      True if and only if the number of likes in this story is within the bounds
-         *              specified by the user
+         * @return True if and only if the number of likes in this story is within the bounds
+         * specified by the user
          */
-        private boolean inBounds(int index, Integer lower, Integer upper){
+        private boolean inBounds(int index, Integer lower, Integer upper) {
             boolean WITHIN_UPPER_BOUND;
             boolean WITHIN_LOWER_BOUND;
-            if (lower == null){ WITHIN_LOWER_BOUND = (index >= 0); }
-            else {WITHIN_LOWER_BOUND = (index >= lower);}
-            if (upper == null){ WITHIN_UPPER_BOUND = true;}
-            else {WITHIN_UPPER_BOUND = (index < upper);}
+            if (lower == null) {
+                WITHIN_LOWER_BOUND = (index >= 0);
+            } else {
+                WITHIN_LOWER_BOUND = (index >= lower);
+            }
+            if (upper == null) {
+                WITHIN_UPPER_BOUND = true;
+            } else {
+                WITHIN_UPPER_BOUND = (index < upper);
+            }
             return (WITHIN_LOWER_BOUND && WITHIN_UPPER_BOUND);
         }
 
@@ -124,6 +135,7 @@ public class GmlsInteractor {
          * Private helper method for helper method sortAndExtractStories. Returns an array containing the indices
          * that specify the desired range of stories in the StoryData[] object stories.
          * Precondition: stories is sorted in descending order of likes
+         *
          * @param stories the Collection of stories for which to determine the indices
          * @param upper   the lower bound for the range of stories specified by the user, can be null
          * @param lower   the upper bound for the range of stories specified by the user, can be null
@@ -132,22 +144,24 @@ public class GmlsInteractor {
          * 2. the element at index 1 is the 'to' index for the subarray of stories that we want to extract
          * The method returns [0,0] if there are no stories that fall within the bounds
          */
-        private int[] getIndices(StoryData[] stories, Integer lower , Integer upper){
+        private int[] getIndices(StoryData[] stories, Integer lower, Integer upper) {
             int INDEX_LOWER = 0;
             int INDEX_UPPER = 0;
             // the following loop iterates from the start of the array till we find an story
             // whose number of likes is within the bounds specified by the user
-            for (int i = 0; i < stories.length; i++){
-                if (inBounds(i, lower, upper)){
+            for (int i = 0; i < stories.length; i++) {
+                if (inBounds(i, lower, upper)) {
                     INDEX_LOWER = i;
-                    break; }
+                    break;
+                }
             }
             // the following loop iterates from the end of the array till we find an story
             // whose number of likes is within the bounds specified by the user
-            for (int i = stories.length-1; i >= 0; i--){
-                if (inBounds(i, lower, upper)){
-                    INDEX_UPPER = i+1;
-                    break; }
+            for (int i = stories.length - 1; i >= 0; i--) {
+                if (inBounds(i, lower, upper)) {
+                    INDEX_UPPER = i + 1;
+                    break;
+                }
             }
             return new int[]{INDEX_LOWER, INDEX_UPPER};
         }
@@ -156,10 +170,12 @@ public class GmlsInteractor {
     /**
      * Starts thread for use case interactor
      */
-    public void getLatestStories(GmlsInputData data){
+
+    public void getMostLikedStories(GmlsInputData data) {
         InterruptibleThread thread = new GmlsThread(data);
         if (!register.registerThread(thread)) {
             pres.outputShutdownServer();
         }
     }
+
 }

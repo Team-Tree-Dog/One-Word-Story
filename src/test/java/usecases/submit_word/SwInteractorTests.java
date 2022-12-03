@@ -1,8 +1,13 @@
 package usecases.submit_word;
 
-import entities.*;
+import entities.LobbyManager;
+import entities.Player;
+import entities.PlayerFactory;
+import entities.PlayerPoolListener;
+import entities.display_name_checkers.DisplayNameChecker;
 import entities.games.Game;
 import entities.games.GameFactory;
+import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
 import exceptions.InvalidDisplayNameException;
@@ -12,12 +17,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import usecases.ThreadRegister;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static usecases.Response.ResCode.*;
-
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static usecases.Response.ResCode.*;
 
 public class SwInteractorTests {
 
@@ -33,7 +38,7 @@ public class SwInteractorTests {
          * @param initialPlayers The players that will be included into the new GameTest
          * @param v              The validity checker (to check if a word is valid)
          */
-        public GameTest(Queue<Player> initialPlayers, ValidityChecker v) {
+        public GameTest(Queue<Player> initialPlayers, ValidityCheckerFacade v) {
             super(REGULAR_GAME_SECONDS_PER_TURN, v);
             players = new LinkedList<>(initialPlayers);
         }
@@ -97,6 +102,47 @@ public class SwInteractorTests {
         @Override
         public Player getCurrentTurnPlayer() {return players.peek();}
     }
+
+    /**
+     * Validates everything, does not modify input
+     */
+    static class TestValidityCheckerTrue extends ValidityCheckerFacade {
+
+        public TestValidityCheckerTrue() {
+            super((p) -> p, (w) -> w);
+        }
+
+        /**
+         * Checks whether the word is valid
+         * @param word the word we need to check
+         * @return true
+         */
+        @Override
+        public String isValid(String word) {
+            return word;
+        }
+    }
+
+    /**
+     * Rejects everything
+     */
+    static class TestValidityCheckerFalse extends ValidityCheckerFacade {
+
+        public TestValidityCheckerFalse() {
+            super((p) -> p, (w) -> w);
+        }
+
+        /**
+         * Checks whether the word is valid
+         * @param word the word we need to check
+         * @return false
+         */
+        @Override
+        public String isValid(String word) {
+            return null;
+        }
+    }
+
     @BeforeEach
     public void setUp() {}
 
@@ -119,26 +165,13 @@ public class SwInteractorTests {
             }
         }
 
-        class LocalValidityChecker implements ValidityChecker{
-
-            /**
-             * Checks whether the word is valid
-             * @param word the word we need to check
-             * @return true, since the valid presenter code block will be triggered if the test doesn't go as planned.
-             */
-            @Override
-            public boolean isValid(String word) {
-                return true;
-            }
-        }
-
         class GameFactoryTest implements GameFactory {
             /**
             * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
             */
             public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
                 Queue<Player> queueOfInitialPlayers = new LinkedList<>(initialPlayers);
-                return new GameTest(queueOfInitialPlayers, new LocalValidityChecker());
+                return new GameTest(queueOfInitialPlayers, new TestValidityCheckerTrue());
             }
         }
 
@@ -225,26 +258,13 @@ public class SwInteractorTests {
             }
         }
 
-        class LocalValidityChecker implements ValidityChecker{
-
-            /**
-             * Checks whether the word is valid
-             * @param word the word we need to check
-             * @return true, since the valid presenter code block will be triggered if the test doesn't go as planned.
-             */
-            @Override
-            public boolean isValid(String word) {
-                return true;
-            }
-        }
-
         class GameFactoryTest implements GameFactory {
             /**
              * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
              */
             public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
                 Queue<Player> queueOfInitialPlayers = new LinkedList<>(initialPlayers);
-                return new GameTest(queueOfInitialPlayers, new LocalValidityChecker());
+                return new GameTest(queueOfInitialPlayers, new TestValidityCheckerTrue());
             }
         }
 
@@ -309,26 +329,13 @@ public class SwInteractorTests {
             }
         }
 
-        class LocalValidityChecker implements ValidityChecker{
-
-            /**
-             * Checks whether the word is valid
-             * @param word the word we need to check
-             * @return true, since the valid presenter code block will be triggered if the test doesn't go as planned.
-             */
-            @Override
-            public boolean isValid(String word) {
-                return true;
-            }
-        }
-
         class GameFactoryTest implements GameFactory {
             /**
              * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
              */
             public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
                 Queue<Player> queueOfInitialPlayers = new LinkedList<>(initialPlayers);
-                return new GameTest(queueOfInitialPlayers, new LocalValidityChecker());
+                return new GameTest(queueOfInitialPlayers, new TestValidityCheckerTrue());
             }
         }
 
@@ -404,26 +411,13 @@ public class SwInteractorTests {
             }
         }
 
-        class LocalValidityChecker implements ValidityChecker{
-
-            /**
-             * Checks whether the word is valid
-             * @param word the word we need to check
-             * @return false, since we are locally defining that.
-             */
-            @Override
-            public boolean isValid(String word) {
-                return false;
-            }
-        }
-
         class GameFactoryTest implements GameFactory {
             /**
              * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
              */
             public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
                 Queue<Player> queueOfInitialPlayers = new LinkedList<>(initialPlayers);
-                return new GameTest(queueOfInitialPlayers, new LocalValidityChecker());
+                return new GameTest(queueOfInitialPlayers, new TestValidityCheckerFalse());
             }
         }
 
@@ -506,26 +500,13 @@ public class SwInteractorTests {
             }
         }
 
-        class LocalValidityChecker implements ValidityChecker{
-
-            /**
-             * Checks whether the word is valid
-             * @param word the word we need to check
-             * @return true, since we are locally defining that.
-             */
-            @Override
-            public boolean isValid(String word) {
-                return true;
-            }
-        }
-
         class GameFactoryTest implements GameFactory {
             /**
              * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
              */
             public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
                 Queue<Player> queueOfInitialPlayers = new LinkedList<>(initialPlayers);
-                return new GameTest(queueOfInitialPlayers, new LocalValidityChecker());
+                return new GameTest(queueOfInitialPlayers, new TestValidityCheckerTrue());
             }
         }
 

@@ -85,8 +85,8 @@ public class LobbyManager {
     /**
      * Wrapper for switchTurn
      */
-    public void switchTurn() {
-        game.switchTurn();
+    public boolean switchTurn() {
+        return game.switchTurn();
     }
 
     /**

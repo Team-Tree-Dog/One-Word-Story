@@ -29,9 +29,9 @@ public class LsTests {
     public void setup() {
         presenter = new TestLsPresenter();
         repository = new TestLsGateway();
+        register = new ThreadRegister();
         interactor = new LsInteractor(presenter, repository, register);
         random = new Random();
-        register = new ThreadRegister();
     }
 
     /**
