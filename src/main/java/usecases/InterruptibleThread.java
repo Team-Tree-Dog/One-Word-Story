@@ -24,6 +24,7 @@ public abstract class InterruptibleThread extends Thread {
             threadLogic();
         } catch (InterruptedException exception) {
             register.removeThread(this);
+            outputBoundary.outputShutdownServer();
         }
     }
 
