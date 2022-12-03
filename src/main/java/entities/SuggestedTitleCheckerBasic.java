@@ -117,18 +117,18 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
      * @param title the title we want to check the character repetitions for
      * @return      false if and only if this title contains a repetition of the same character 4 times in a row
      */
-    private boolean checkCharacterRepetitions(String title){
-        for (int i = 0; i < title.length(); i++){
-            if (i <= title.length() - 4){
-                char[] NEXT_FOUR_CHARACTERS = extractNextFourLetters(title, i);
-                boolean CHARACTER_REPEATED = true;
-                for (int j =0; j <= 4; j++){
-                    if (!(NEXT_FOUR_CHARACTERS[j] == NEXT_FOUR_CHARACTERS[0])) {
-                        CHARACTER_REPEATED = false;
-                        break;
-                    }
+    private boolean checkCharacterRepetitions(String title) {
+        for (int i = 0; i < title.length() - 4; i++) {
+            boolean characterRepeated = true;
+            char character = title.charAt(i);
+            for (int j = 1; j < 4; j++) {
+                if (title.charAt(i + j) != character) {
+                    characterRepeated = false;
+                    break;
                 }
-                if (CHARACTER_REPEATED){return false;}
+            }
+            if (characterRepeated) {
+                return false;
             }
         }
         return true;
