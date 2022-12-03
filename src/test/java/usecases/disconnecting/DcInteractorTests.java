@@ -1,6 +1,7 @@
 package usecases.disconnecting;
 
 import entities.*;
+import entities.display_name_checkers.DisplayNameChecker;
 import entities.games.Game;
 import exceptions.GameDoesntExistException;
 import exceptions.GameRunningException;

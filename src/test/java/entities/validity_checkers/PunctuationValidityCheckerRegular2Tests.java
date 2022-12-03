@@ -21,7 +21,11 @@ public class PunctuationValidityCheckerRegular2Tests {
     public void tearDown() {}
 
     /**
-     * Test
+     * Test that each of "!", "?" ,"!!", "!?", "?!", "??", "!!!", "!!?", "!?!",
+     * "!??", "?!!", "?!?", "??!", "???", ".", "..", "...", ";", ",", ":", "-"
+     * are valid punctuations (surrounding quotes ignored). Each of the above
+     * followed by quotes is also valid. Quotes along are also valid. These are not the
+     * only valid combos but just a subset
      */
     @Test(timeout=1000)
     public void testValidMany () {
@@ -46,7 +50,8 @@ public class PunctuationValidityCheckerRegular2Tests {
     }
 
     /**
-     *
+     * Test that each of "????", "!!!!", "!?!?!", "....", "--", ".,", ",.", ":;",
+     * ".!", "!.\"", "\"\"" are invalid punctuations
      */
     @Test(timeout=1000)
     public void testInvalidMany () {

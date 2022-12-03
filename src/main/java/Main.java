@@ -5,6 +5,8 @@ import adapters.controllers.SwController;
 import adapters.presenters.*;
 import entities.LobbyManager;
 import entities.PlayerFactory;
+import entities.display_name_checkers.DisplayNameChecker;
+import entities.display_name_checkers.DisplayNameCheckerBasic;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
 import usecases.disconnecting.DcInteractor;
@@ -29,14 +31,19 @@ public class Main {
 
         // Create all presenters
         DcPresenter dcPresenter = new DcPresenter(viewM);
+        GlsPresenter glsPresenter = new GlsPresenter(viewM);
         JplPresenter jplPresenter = new JplPresenter(viewM);
         PdPresenter pdPresenter = new PdPresenter(viewM);
         PgePresenter pgePresenter = new PgePresenter(viewM);
         SwPresenter swPresenter = new SwPresenter(viewM);
 
+        // Create desired display name checker for injection
+        DisplayNameChecker displayChecker = new DisplayNameCheckerBasic();
+
         // Factory which accepts ALL display names with at least 3 characters (temporary)
-        PlayerFactory playerFac = new PlayerFactory(name -> name.length() > 2);
+        PlayerFactory playerFac = new PlayerFactory(displayChecker);
         GameFactory gameFac = new GameFactoryRegular();
+
         // Inject particular factories into LobbyManager
         LobbyManager manager = new LobbyManager(playerFac, gameFac);
 

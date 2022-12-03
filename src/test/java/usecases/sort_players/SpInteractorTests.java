@@ -1,6 +1,7 @@
 package usecases.sort_players;
 
 import entities.*;
+import entities.display_name_checkers.DisplayNameChecker;
 import entities.games.Game;
 import exceptions.GameRunningException;
 import org.junit.After;

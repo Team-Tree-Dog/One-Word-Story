@@ -6,9 +6,13 @@ import java.util.regex.Pattern;
 public class PunctuationValidityCheckerRegular2 implements PunctuationValidityChecker {
 
     /**
-     *
+     * Punctuation checker that validates according
+     * to the following regex:
+     * <br>
+     * <code> ^([!?]{1,3}|\.{1,3}|[,;:\-])?\"?$ </code>
      * @param punctuation the punctuation to validate (trimmed)
-     * @return null if punctuation invalid, or a modified string if the mistake is correctable
+     * @return null if punctuation invalid, or the passed punctuation if valid. This checker does
+     * not perform any corrections on the input
      */
     @Override
     public String isPunctuationValid(String punctuation) {

@@ -1,8 +1,10 @@
 package usecases.submit_word;
 
 import entities.*;
+import entities.display_name_checkers.DisplayNameChecker;
 import entities.games.Game;
 import entities.games.GameFactory;
+import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
 import exceptions.InvalidDisplayNameException;
@@ -27,7 +29,7 @@ public class SwInteractorTests {
          * @param initialPlayers The players that will be included into the new GameTest
          * @param v              The validity checker (to check if a word is valid)
          */
-        public GameTest(Queue<Player> initialPlayers, ValidityChecker v) {
+        public GameTest(Queue<Player> initialPlayers, ValidityCheckerFacade v) {
             super(REGULAR_GAME_SECONDS_PER_TURN, v);
             players = new LinkedList<>(initialPlayers);
         }
@@ -112,7 +114,7 @@ public class SwInteractorTests {
             }
         }
 
-        class LocalValidityChecker implements ValidityChecker{
+        class LocalValidityChecker extends ValidityCheckerFacade {
 
             /**
              * Checks whether the word is valid
@@ -120,8 +122,8 @@ public class SwInteractorTests {
              * @return true, since the valid presenter code block will be triggered if the test doesn't go as planned.
              */
             @Override
-            public boolean isValid(String word) {
-                return true;
+            public String isValid(String word) {
+                return word;
             }
         }
 
