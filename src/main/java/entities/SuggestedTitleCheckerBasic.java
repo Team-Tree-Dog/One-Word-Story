@@ -81,7 +81,7 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
      * @return      true if and only if this title contains at least one letter
      */
     private boolean checkAtLeastOneLetter(String title){
-        for (int i = 0; i < title.length() - 1; i++){
+        for (int i = 0; i < title.length(); i++){
             if (Character.isLetter(title.charAt(i))){ return true;}
         }
         return false;
@@ -93,7 +93,7 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
      * @return      false if and only if this title contains four consonants in a row
      */
     private boolean checkFourInARowConsonants(String title){
-        for (int i = 0; i < title.length() - 1; i++){
+        for (int i = 0; i < title.length(); i++){
             if (i <= title.length() - 4){
                 boolean ALL_ARE_CONSONANTS = true;
                 for (int j =0; j <= 4; j++){
@@ -112,7 +112,7 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
      * @return      false if and only if this title contains a repetition of the same character 4 times in a row
      */
     private boolean checkCharacterRepetitions(String title){
-        for (int i = 0; i < title.length() - 1; i++){
+        for (int i = 0; i < title.length(); i++){
             if (i <= title.length() - 4){
                 char[] NEXT_FOUR_CHARACTERS = extractNextFourLetters(title, i);
                 boolean CHARACTER_REPEATED = true;
