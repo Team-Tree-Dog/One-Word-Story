@@ -9,11 +9,11 @@ import java.util.Arrays;
  */
 public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
     static ArrayList<Character> VALID_PUNCTUATION =
-            new ArrayList<Character>(Arrays.asList(',','.','"','\'',':',';',')','(','/','-',' '));
+            new ArrayList<>(Arrays.asList(',','.','"','\'',':',';',')','(','/','-',' '));
     static int MINIMUM_TITLE_LENGTH = 10;
     static int MAXIMUM_TITLE_LENGTH = 50;
 
-    /**
+    /*
      * CRITERIA FOR VALID TITLE
      * A title is valid if and only if it meets all the following requirements:
      * 1. Must contain only alphanumeric characters and/or
@@ -59,7 +59,10 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
         boolean IS_ALPHANUMERIC = Character.isLetterOrDigit(c);
         boolean IS_PUNCTUATION = false;
         for (char symbol: VALID_PUNCTUATION) {
-            if (c == symbol){IS_PUNCTUATION = true;}
+            if (c == symbol) {
+                IS_PUNCTUATION = true;
+                break;
+            }
         }
         return (IS_ALPHANUMERIC || IS_PUNCTUATION);
     }
@@ -93,16 +96,19 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
      * @return      false if and only if this title contains four consonants in a row
      */
     private boolean checkFourInARowConsonants(String title){
-        for (int i = 0; i < title.length(); i++){
-            if (i <= title.length() - 4){
-                boolean ALL_ARE_CONSONANTS = true;
-                for (int j =0; j <= 4; j++){
-                    if (!isConsonant(extractNextFourLetters(title,i)[j])){ALL_ARE_CONSONANTS = false;}
+        for (int i = 0; i <= title.length() - 4; i++) {
+            boolean allAreConsonants = false;
+            for (int j = 0; j < 4; j++) {
+                if (!isConsonant(title.charAt(i + j))) {
+                    allAreConsonants = true;
+                    break;
                 }
-                if (ALL_ARE_CONSONANTS){return false;}
+            }
+            if (allAreConsonants) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -117,7 +123,10 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
                 char[] NEXT_FOUR_CHARACTERS = extractNextFourLetters(title, i);
                 boolean CHARACTER_REPEATED = true;
                 for (int j =0; j <= 4; j++){
-                    if (!(NEXT_FOUR_CHARACTERS[j] == NEXT_FOUR_CHARACTERS[0])){CHARACTER_REPEATED = false;}
+                    if (!(NEXT_FOUR_CHARACTERS[j] == NEXT_FOUR_CHARACTERS[0])) {
+                        CHARACTER_REPEATED = false;
+                        break;
+                    }
                 }
                 if (CHARACTER_REPEATED){return false;}
             }
