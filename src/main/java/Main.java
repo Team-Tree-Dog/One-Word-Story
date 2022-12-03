@@ -15,6 +15,7 @@ import usecases.join_public_lobby.JplInteractor;
 import usecases.like_story.LsInteractor;
 import usecases.pull_data.PdInteractor;
 import usecases.pull_game_ended.PgeInteractor;
+import usecases.shutdown_server.SsInteractor;
 import usecases.sort_players.SpInteractor;
 import usecases.submit_word.SwInteractor;
 
@@ -41,7 +42,9 @@ public class Main {
         LsPresenter lsPresenter = new LsPresenter(viewM);
         PdPresenter pdPresenter = new PdPresenter(viewM);
         PgePresenter pgePresenter = new PgePresenter(viewM);
+        SsPresenter ssPresenter = new SsPresenter(viewM);
         SwPresenter swPresenter = new SwPresenter(viewM);
+
 
         // Create desired display name checker for injection
         DisplayNameChecker displayChecker = new DisplayNameCheckerBasic();
@@ -66,6 +69,7 @@ public class Main {
         GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, () -> null, register); // TODO: Inject repo
         JplInteractor jpl = new JplInteractor(manager, jplPresenter, register);
         LsInteractor ls = new LsInteractor(lsPresenter, (e) -> null, register); // TODO: Inject repo
+        SsInteractor ss = new SsInteractor(register, ssPresenter);
         SwInteractor sw = new SwInteractor(swPresenter, manager, register);
 
 

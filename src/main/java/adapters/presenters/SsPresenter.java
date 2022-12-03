@@ -1,11 +1,12 @@
 package adapters.presenters;
 
 import adapters.ViewModel;
+import usecases.shutdown_server.SsOutputBoundary;
 
 /**
  * The presenter for the "shutdown-server" use case
  */
-public class SsPresenter {
+public class SsPresenter implements SsOutputBoundary {
 
     private final ViewModel viewModel;
 
