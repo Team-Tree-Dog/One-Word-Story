@@ -13,4 +13,9 @@ public class GlsPresenter implements GlsOutputBoundary {
     public void putStories(GlsOutputData data) {
 
     }
+
+    @Override
+    public void outputShutdownServer() {
+
+    }
 }

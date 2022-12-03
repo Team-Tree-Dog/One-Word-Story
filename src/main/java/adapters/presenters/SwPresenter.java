@@ -33,4 +33,9 @@ public class SwPresenter implements SwOutputBoundary {
     public void invalid(SwOutputDataFailure outputDataFailure) {
 
     }
+
+    @Override
+    public void outputShutdownServer() {
+
+    }
 }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import usecases.StoryData;
+import usecases.ThreadRegister;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -13,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class GlsInteractorTests {
+
+    private static final ThreadRegister register = new ThreadRegister();
 
     /**
      * Customizable class to imitate GlsPresenter during testing
@@ -31,6 +34,11 @@ public class GlsInteractorTests {
 
         public GlsOutputData getReceivedData() {
             return this.receivedData;
+        }
+
+        @Override
+        public void outputShutdownServer() {
+            throw new RuntimeException("This method is not implemented and should not be called");
         }
     }
 
@@ -88,7 +96,7 @@ public class GlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGlsOutputBoundary();
-        GlsInteractor gls = new GlsInteractor(pres, repo);
+        GlsInteractor gls = new GlsInteractor(pres, repo, register);
 
         GlsInputData d = new GlsInputData(2);
         GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d);
@@ -115,7 +123,7 @@ public class GlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGlsOutputBoundary();
-        GlsInteractor gls = new GlsInteractor(pres, repo);
+        GlsInteractor gls = new GlsInteractor(pres, repo, register);
 
         GlsInputData d = new GlsInputData(0);
         GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d);
@@ -140,7 +148,7 @@ public class GlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGlsOutputBoundary();
-        GlsInteractor gls = new GlsInteractor(pres, repo);
+        GlsInteractor gls = new GlsInteractor(pres, repo, register);
 
         // Running inner thread
         GlsInputData d = new GlsInputData(null);
@@ -169,7 +177,7 @@ public class GlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGlsOutputBoundary();
-        GlsInteractor gls = new GlsInteractor(pres, repo);
+        GlsInteractor gls = new GlsInteractor(pres, repo, register);
 
         // Running inner thread
         GlsInputData d = new GlsInputData(10);

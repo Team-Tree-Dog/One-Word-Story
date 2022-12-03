@@ -1,35 +1,45 @@
 package usecases.get_most_liked_stories;
 
+import usecases.InterruptibleThread;
 import usecases.StoryData;
+import usecases.ThreadRegister;
 
 import java.util.Arrays;
 import java.util.*;
 
 public class GmlsInteractor {
-    private GmlsOutputBoundary pres;
-    private GmlsGateway repo;
+    private final GmlsOutputBoundary pres;
+    private final GmlsGateway repo;
+
+    /**
+     * The ThreadRegister that keeps track of all the running use case threads
+     * for the shutdown-server use case
+     */
+    private final ThreadRegister register;
 
     /**
      * Constructor for use case interactor
      * @param pres the output boundary to update the view model
      * @param repo the repository from which the stories will be extracted
      */
-    public GmlsInteractor(GmlsOutputBoundary pres, GmlsGateway repo){
+    public GmlsInteractor(GmlsOutputBoundary pres, GmlsGateway repo, ThreadRegister register){
         this.pres = pres;
         this.repo = repo;
+        this.register = register;
     }
 
     /**
      * Thread for use case interactor
      */
-    public class GmlsThread implements Runnable {
+    public class GmlsThread extends InterruptibleThread {
         GmlsInputData data;
 
         /**
          * Constructor for GmlsThread class
          * @param data Input data for the use case
          */
-        public GmlsThread(GmlsInputData data){
+        public GmlsThread(GmlsInputData data) {
+            super(GmlsInteractor.this.register, GmlsInteractor.this.pres);
             this.data = data;
         }
 
@@ -39,7 +49,7 @@ public class GmlsInteractor {
          * (no addition or deletion of stories)
          */
         @Override
-        public void run() {
+        public void threadLogic() {
             GmlsGatewayOutputData gatewayOutputData = repo.getAllStories();
             StoryData[] OUTPUT_STORIES = sortAndExtractStories(gatewayOutputData.getStories(), this.data);
 
@@ -147,6 +157,9 @@ public class GmlsInteractor {
      * Starts thread for use case interactor
      */
     public void getLatestStories(GmlsInputData data){
-        (new Thread(new GmlsThread(data))).start();
+        InterruptibleThread thread = new GmlsThread(data);
+        if (!register.registerThread(thread)) {
+            pres.outputShutdownServer();
+        }
     }
 }

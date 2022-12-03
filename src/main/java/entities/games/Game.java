@@ -31,7 +31,7 @@ public abstract class Game {
     public Game(int secondsPerTurn, ValidityChecker v) {
         this.story = new Story(new WordFactory(v));
         this.secondsPerTurn = secondsPerTurn;
-        this.gameTimer = new Timer();
+        this.gameTimer = new Timer(true);
         this.timerStopped = false;
     }
 

@@ -1,9 +1,11 @@
 package usecases.submit_word;
 
+import usecases.shutdown_server.SsOutputBoundary;
+
 /**
  * Methods which will be called by the presenter that become the changes in the GUI.
  */
-public interface SwOutputBoundary {
+public interface SwOutputBoundary extends SsOutputBoundary {
 
     /**
      * Method called if the player is in the game and the word is determined to be valid.

@@ -12,4 +12,9 @@ public class GmlsPresenter implements GmlsOutputBoundary {
     public void putStories(GmlsOutputData data) {
 
     }
+
+    @Override
+    public void outputShutdownServer() {
+
+    }
 }

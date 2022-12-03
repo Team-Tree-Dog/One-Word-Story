@@ -1,6 +1,8 @@
 package usecases.like_story;
 
+import usecases.InterruptibleThread;
 import usecases.Response;
+import usecases.ThreadRegister;
 
 public class LsInteractor implements LsInputBoundary{
 
@@ -11,15 +13,22 @@ public class LsInteractor implements LsInputBoundary{
     private final LsGateway repository;
 
     /**
+     * The ThreadRegister that keeps track of all the running use case threads
+     * for the shutdown-server use case
+     */
+    private final ThreadRegister register;
+
+    /**
      * @param presenter The presenter that is responsible for notifying the client
      * @param repository The repository that stores the data about all the stories
      * */
-    public LsInteractor(LsOutputBoundary presenter, LsGateway repository) {
+    public LsInteractor(LsOutputBoundary presenter, LsGateway repository, ThreadRegister register) {
         this.presenter = presenter;
         this.repository = repository;
+        this.register = register;
     }
 
-    public class LsRunnable implements Runnable {
+    public class LsRunnable extends InterruptibleThread {
 
         private final LsInputData data;
 
@@ -28,6 +37,7 @@ public class LsInteractor implements LsInputBoundary{
          * @param data The input data
          * */
         public LsRunnable(LsInputData data) {
+            super(LsInteractor.this.register, LsInteractor.this.presenter);
             this.data = data;
         }
 
@@ -45,7 +55,7 @@ public class LsInteractor implements LsInputBoundary{
         }
 
         @Override
-        public void run() {
+        public void threadLogic() {
             LsGatewayInputData inputData = new LsGatewayInputData(data.getStoryId());
             LsGatewayOutputData gatewayOutputData = repository.likeStory(inputData);
             Response response = getResponseBasedOnSuccess(gatewayOutputData.isSuccess());
@@ -55,5 +65,10 @@ public class LsInteractor implements LsInputBoundary{
     }
 
     @Override
-    public void likeStory(LsInputData data) { new Thread(new LsRunnable(data)).start(); }
+    public void likeStory(LsInputData data) {
+        InterruptibleThread thread = new LsRunnable(data);
+        if (!register.registerThread(thread)) {
+            presenter.outputShutdownServer();
+        }
+    }
 }

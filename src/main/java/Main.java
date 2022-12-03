@@ -7,6 +7,7 @@ import entities.LobbyManager;
 import entities.PlayerFactory;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
+import usecases.ThreadRegister;
 import usecases.disconnecting.DcInteractor;
 import usecases.join_public_lobby.JplInteractor;
 import usecases.pull_data.PdInteractor;
@@ -26,6 +27,8 @@ public class Main {
      */
     public static void main (String[] args) {
         ViewModel viewM = new ViewModel();
+
+        ThreadRegister register = new ThreadRegister();
 
         // Create all presenters
         DcPresenter dcPresenter = new DcPresenter(viewM);
@@ -47,9 +50,9 @@ public class Main {
         sp.startTimer();
 
         // Use cases called by users
-        JplInteractor jpl = new JplInteractor(manager, jplPresenter);
-        DcInteractor dc = new DcInteractor(manager, dcPresenter);
-        SwInteractor sw = new SwInteractor(swPresenter, manager);
+        JplInteractor jpl = new JplInteractor(manager, jplPresenter, register);
+        DcInteractor dc = new DcInteractor(manager, dcPresenter, register);
+        SwInteractor sw = new SwInteractor(swPresenter, manager, register);
 
         // Controllers
         JplController jplController = new JplController(jpl);

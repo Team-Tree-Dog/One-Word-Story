@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import usecases.ThreadRegister;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static usecases.Response.ResCode.*;
@@ -20,8 +21,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class SwInteractorTests {
 
+    private static final ThreadRegister register = new ThreadRegister();
+
     private static class GameTest extends Game {
         public static final int REGULAR_GAME_SECONDS_PER_TURN = 15;
+
         private final Queue<Player> players;
 
         /**
@@ -192,10 +196,15 @@ public class SwInteractorTests {
 
                 System.out.println("The invalid presenter code block was called successfully :)");
             }
+
+            @Override
+            public void outputShutdownServer() {
+                throw new RuntimeException("This method is not implemented and should not be called");
+            }
         };
 
         SwInputData swinput = new SwInputData(word, player2.getPlayerId());
-        SwInteractor swint = new SwInteractor(pres, lobman);
+        SwInteractor swint = new SwInteractor(pres, lobman, register);
         swint.submitWord(swinput);
 
         System.out.println("bloop");
@@ -271,11 +280,16 @@ public class SwInteractorTests {
 
                 System.out.println("The invalid presenter code block was called successfully! :)");
             }
+
+            @Override
+            public void outputShutdownServer() {
+                throw new RuntimeException("This method is not implemented and should not be called");
+            }
         };
 
         SwInputData swinput = new SwInputData(word, player1.getPlayerId());
 
-        SwInteractor swint = new SwInteractor(pres, lobman);
+        SwInteractor swint = new SwInteractor(pres, lobman, register);
         swint.submitWord(swinput);
 
         System.out.println("Test ran to end successfully! :)");
@@ -362,11 +376,16 @@ public class SwInteractorTests {
 
                 System.out.println("The invalid presenter code block was called successfully! :)");
             }
+
+            @Override
+            public void outputShutdownServer() {
+                throw new RuntimeException("This method is not implemented and should not be called");
+            }
         };
 
         SwInputData swinput = new SwInputData(word, player1.getPlayerId());
 
-        SwInteractor swint = new SwInteractor(pres, lobman);
+        SwInteractor swint = new SwInteractor(pres, lobman, register);
         swint.submitWord(swinput);
 
         System.out.println("Test ran to end successfully! :)");
@@ -458,10 +477,15 @@ public class SwInteractorTests {
 
                 System.out.println("The invalid presenter code block was called successfully! :)");
             }
+
+            @Override
+            public void outputShutdownServer() {
+                throw new RuntimeException("This method is not implemented and should not be called");
+            }
         };
 
         SwInputData swinput = new SwInputData(word, player1.getPlayerId());
-        SwInteractor swint = new SwInteractor(pres, lobman);
+        SwInteractor swint = new SwInteractor(pres, lobman, register);
         swint.submitWord(swinput);
 
         System.out.println("Test ran to end successfully! :)");
@@ -556,10 +580,15 @@ public class SwInteractorTests {
             public void invalid(SwOutputDataFailure outputDataFailure){
                 fail("THIS SHOULD NOT HAPPEN, WHY DOES IT CALL INVALID???");
             }
+
+            @Override
+            public void outputShutdownServer() {
+                throw new RuntimeException("This method is not implemented and should not be called");
+            }
         };
 
         SwInputData swinput = new SwInputData(word, player1.getPlayerId());
-        SwInteractor swint = new SwInteractor(pres, lobman);
+        SwInteractor swint = new SwInteractor(pres, lobman, register);
         swint.submitWord(swinput);
 
         System.out.println("Test ran to end successfully! :)");
