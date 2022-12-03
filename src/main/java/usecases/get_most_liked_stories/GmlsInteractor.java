@@ -5,7 +5,7 @@ import usecases.StoryData;
 import java.util.Arrays;
 import java.util.*;
 
-public class GmlsInteractor {
+public class GmlsInteractor implements GmlsInputBoundary {
     private GmlsOutputBoundary pres;
     private GmlsGateway repo;
 
@@ -146,7 +146,8 @@ public class GmlsInteractor {
     /**
      * Starts thread for use case interactor
      */
-    public void getLatestStories(GmlsInputData data){
+    @Override
+    public void getMostLikedStories(GmlsInputData data){
         (new Thread(new GmlsThread(data))).start();
     }
 }

@@ -2,6 +2,9 @@ package entities;
 
 import entities.games.Game;
 import entities.games.GameFactory;
+import entities.validity_checkers.PunctuationValidityChecker;
+import entities.validity_checkers.ValidityCheckerFacade;
+import entities.validity_checkers.WordValidityChecker;
 import exceptions.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,21 +19,33 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LobbyManagerTests {
 
+    /**
+     * Test Validity Checker Facade which uses always-true non-modifying punct and word checkers
+     */
+    public static class TestValidityCheckerFacade extends ValidityCheckerFacade {
+
+        public TestValidityCheckerFacade() {
+            super((p) -> p, (w) -> w);
+        }
+    }
+
     private static class CustomizableTestGame extends Game {
 
         private final Queue<Player> players;
+
+
 
         /**
          * Constructor for CustomizableTestGame
          * @param initialPlayers The initial players in this CustomizableTestGame
          */
-        public CustomizableTestGame(Queue<Player> initialPlayers, ValidityChecker v) {
+        public CustomizableTestGame(Queue<Player> initialPlayers, ValidityCheckerFacade v) {
             super(15, v);
             players = new LinkedList<>(initialPlayers);
         }
 
         public CustomizableTestGame(Queue<Player> initialPlayers) {
-            super(15, word -> true);
+            super(15, new TestValidityCheckerFacade());
             players = new LinkedList<>(initialPlayers);
         }
 

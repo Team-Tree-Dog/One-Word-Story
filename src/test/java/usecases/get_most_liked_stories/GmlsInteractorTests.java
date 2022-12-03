@@ -1,15 +1,15 @@
 package usecases.get_most_liked_stories;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import usecases.StoryData;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GmlsInteractorTests {
 
@@ -58,7 +58,7 @@ public class GmlsInteractorTests {
     /**
      * In the setup, we only initialize our repository with stories
      */
-    @Before
+    @BeforeEach
     public void setup () {
 
         // Adding three stories for testing purposes
@@ -70,7 +70,7 @@ public class GmlsInteractorTests {
         repo = new CustomizableGmlsGateway(stories);
     }
 
-    @After
+    @AfterEach
     public void teardown () {
 
     }
@@ -80,7 +80,8 @@ public class GmlsInteractorTests {
      * Expect to receive output in accordance with specifications,
      * similar to [l:r] slice in Python
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testSimpleTest() {
 
         // Instantiating interactor
@@ -94,13 +95,13 @@ public class GmlsInteractorTests {
 
         // Check presenter receives non-null data
         GmlsOutputData receivedData = ((CustomizableGmlsOutputBoundary) pres).getReceivedData();
-        assertNotNull("Presenter was not accessed", receivedData);
+        assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
         StoryData[] stories = receivedData.getStories();
-        assertEquals("Returned wrong number of stories", 2, stories.length);
-        assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
-        assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
+        assertEquals(2, stories.length, "Returned wrong number of stories");
+        assertEquals("text 3", stories[0].getStory(), "Returned incorrect story");
+        assertEquals("text 2", stories[1].getStory(), "Returned incorrect story");
     }
 
     /**
@@ -108,7 +109,8 @@ public class GmlsInteractorTests {
      * Expect to receive output in accordance with specifications,
      * similar to [:r] slice in Python
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testLeftNull() {
 
         // Instantiating interactor
@@ -122,13 +124,13 @@ public class GmlsInteractorTests {
 
         // Check presenter receives non-null data
         GmlsOutputData receivedData = ((CustomizableGmlsOutputBoundary) pres).getReceivedData();
-        assertNotNull("Presenter was not accessed", receivedData);
+        assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
         StoryData[] stories = receivedData.getStories();
-        assertEquals("Returned wrong number of stories", 2, stories.length);
-        assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
-        assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
+        assertEquals(2, stories.length, "Returned wrong number of stories");
+        assertEquals( "text 3", stories[0].getStory(), "Returned incorrect story");
+        assertEquals("text 2", stories[1].getStory(), "Returned incorrect story");
     }
 
     /**
@@ -136,7 +138,8 @@ public class GmlsInteractorTests {
      * Expect to receive output in accordance with specifications,
      * similar to [l:] slice in Python
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testRightNull() {
 
         // Instantiating interactor
@@ -150,13 +153,13 @@ public class GmlsInteractorTests {
 
         // Check presenter receives non-null data
         GmlsOutputData receivedData = ((CustomizableGmlsOutputBoundary) pres).getReceivedData();
-        assertNotNull("Presenter was not accessed", receivedData);
+        assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
         StoryData[] stories = receivedData.getStories();
-        assertEquals("Returned wrong number of stories", 2, stories.length);
-        assertEquals("Returned incorrect story", "text 2", stories[0].getStory());
-        assertEquals("Returned incorrect story", "text 1", stories[1].getStory());
+        assertEquals(2, stories.length, "Returned wrong number of stories");
+        assertEquals("text 2", stories[0].getStory(), "Returned incorrect story");
+        assertEquals("text 1", stories[1].getStory(), "Returned incorrect story");
     }
 
     /**
@@ -164,7 +167,8 @@ public class GmlsInteractorTests {
      * Expect to receive all stories in the repository,
      * similar to [:] slice in Python
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testBothNull() {
 
         // Instantiating interactor
@@ -178,21 +182,22 @@ public class GmlsInteractorTests {
 
         // Check presenter receives non-null data
         GmlsOutputData receivedData = ((CustomizableGmlsOutputBoundary) pres).getReceivedData();
-        assertNotNull("Presenter was not accessed", receivedData);
+        assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
         StoryData[] stories = receivedData.getStories();
-        assertEquals("Returned wrong number of stories", 3, stories.length);
-        assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
-        assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
-        assertEquals("Returned incorrect story", "text 1", stories[2].getStory());
+        assertEquals(3, stories.length, "Returned wrong number of stories");
+        assertEquals( "text 3", stories[0].getStory(), "Returned incorrect story");
+        assertEquals( "text 2", stories[1].getStory(), "Returned incorrect story");
+        assertEquals( "text 1", stories[2].getStory(), "Returned incorrect story");
     }
 
     /**
      * Testing the case where endpoints are not in increasing order, i.e. left >= right.
      * Expect to receive empty data, but not null
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testInvalidInput() {
 
         // Instantiating interactor
@@ -206,11 +211,11 @@ public class GmlsInteractorTests {
 
         // Check presenter receives non-null data
         GmlsOutputData receivedData = ((CustomizableGmlsOutputBoundary) pres).getReceivedData();
-        assertNotNull("Presenter was not accessed", receivedData);
+        assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
         StoryData[] stories = receivedData.getStories();
-        assertEquals("Returned wrong number of stories", 0, stories.length);
+        assertEquals(0, stories.length, "Returned wrong number of stories");
     }
 
     /**
@@ -218,7 +223,8 @@ public class GmlsInteractorTests {
      * Expect to receive output in accordance with specifications,
      * full dataset in this case
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testOutOfBounds() {
 
         // Instantiating interactor
@@ -232,13 +238,13 @@ public class GmlsInteractorTests {
 
         // Check presenter receives non-null data
         GmlsOutputData receivedData = ((CustomizableGmlsOutputBoundary) pres).getReceivedData();
-        assertNotNull("Presenter was not accessed", receivedData);
+        assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
         StoryData[] stories = receivedData.getStories();
-        assertEquals("Returned wrong number of stories", 3, stories.length);
-        assertEquals("Returned incorrect story", "text 3", stories[0].getStory());
-        assertEquals("Returned incorrect story", "text 2", stories[1].getStory());
-        assertEquals("Returned incorrect story", "text 1", stories[2].getStory());
+        assertEquals(3, stories.length, "Returned wrong number of stories");
+        assertEquals( "text 3", stories[0].getStory(), "Returned incorrect story");
+        assertEquals( "text 2", stories[1].getStory(), "Returned incorrect story");
+        assertEquals( "text 1", stories[2].getStory(), "Returned incorrect story");
     }
 }

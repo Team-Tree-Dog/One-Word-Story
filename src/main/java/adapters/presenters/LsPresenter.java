@@ -1,12 +1,13 @@
 package adapters.presenters;
 
 import adapters.ViewModel;
+import usecases.like_story.LsOutputBoundary;
 import usecases.like_story.LsOutputData;
 
 /**
  * The presented for the "like-story" use case
  * */
-public class LsPresenter {
+public class LsPresenter implements LsOutputBoundary {
 
     private final ViewModel viewModel;
 

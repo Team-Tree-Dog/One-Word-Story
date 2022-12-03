@@ -1,10 +1,11 @@
 package entities.validity_checkers;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ValidityCheckerFacadeTests {
 
@@ -41,16 +42,17 @@ public class ValidityCheckerFacadeTests {
             puncValidityChecker, wordValidityChecker
     );
 
-    @Before
+    @BeforeEach
     public void setUp() {}
 
-    @After
+    @AfterEach
     public void tearDown() {}
 
     /**
      * Tests scenario where the word expression has no punctuation and no word
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testNoPuncNoWord() {
         String inputWord = "";
         String validifiedWord = v.isValid(inputWord);
@@ -60,7 +62,8 @@ public class ValidityCheckerFacadeTests {
     /**
      * Tests scenario where the word expression has blank punctuation and blank word
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testNoPuncNoWordSpace() {
         String inputWord = " ";
         String validifiedWord = v.isValid(inputWord);
@@ -70,7 +73,8 @@ public class ValidityCheckerFacadeTests {
     /**
      * Tests scenario where the word expression has no punctuation
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testNoPuncWord() {
         String inputWord = "word";
         String validifiedWord = v.isValid(inputWord);
@@ -80,7 +84,8 @@ public class ValidityCheckerFacadeTests {
     /**
      * Tests scenario where the word expression has no punctuation and word has typo spaces
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testNoPuncWordWithSpaces() {
         String inputWord = "  word   ";
         String validifiedWord = v.isValid(inputWord);
@@ -90,7 +95,8 @@ public class ValidityCheckerFacadeTests {
     /**
      * Tests scenario where the word expression has punctuation and word
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testPuncWord() {
         String inputWord = "! word";
         String validifiedWord = v.isValid(inputWord);
@@ -100,7 +106,8 @@ public class ValidityCheckerFacadeTests {
     /**
      * Tests scenario where the word expression has punctuation and word, with typo spaces
      */
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(1000)
     public void testPuncWordSpaces() {
         String inputWord = "    !   word  ";
         String validifiedWord = v.isValid(inputWord);

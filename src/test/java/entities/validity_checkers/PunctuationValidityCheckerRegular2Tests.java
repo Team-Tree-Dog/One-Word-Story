@@ -1,23 +1,24 @@
 package entities.validity_checkers;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class PunctuationValidityCheckerRegular2Tests {
     public final PunctuationValidityChecker pvc =
             new PunctuationValidityCheckerRegular2();
 
-    @Before
+    @BeforeEach
     public void setUp() {}
 
-    @After
+    @AfterEach
     public void tearDown() {}
 
     /**
@@ -27,7 +28,8 @@ public class PunctuationValidityCheckerRegular2Tests {
      * followed by quotes is also valid. Quotes along are also valid. These are not the
      * only valid combos but just a subset
      */
-    @Test(timeout=1000)
+    @Test
+    @Timeout(1000)
     public void testValidMany () {
         ArrayList<String> validCombos = new ArrayList<>(Arrays.asList(
                 "!", "?" ,"!!", "!?", "?!", "??", "!!!", "!!?", "!?!",
@@ -53,7 +55,8 @@ public class PunctuationValidityCheckerRegular2Tests {
      * Test that each of "????", "!!!!", "!?!?!", "....", "--", ".,", ",.", ":;",
      * ".!", "!.\"", "\"\"" are invalid punctuations
      */
-    @Test(timeout=1000)
+    @Test
+    @Timeout(1000)
     public void testInvalidMany () {
         ArrayList<String> invalidCombos = new ArrayList<>(Arrays.asList(
                 "????", "!!!!", "!?!?!", "....", "--", ".,", ",.", ":;",
