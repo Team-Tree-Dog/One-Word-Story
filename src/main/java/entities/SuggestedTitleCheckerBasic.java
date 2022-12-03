@@ -144,7 +144,7 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
      */
     private char[] extractNextFourLetters(String title, int index){
         char[] TO_RETURN = new char[4];
-        for (int i = 0; i <= 4; i ++){
+        for (int i = 0; i < 4; i ++){
             TO_RETURN[i] = title.charAt(index + i);
         }
         return TO_RETURN;
