@@ -28,12 +28,12 @@ public class StInteractor {
         this.pres = pres;
         this.repo = repo;
         this.titleChecker = titleChecker;
-        this.register =register;
+        this.register = register;
     }
 
     /**
      * This nested class is a thread for the processes involved in suggesting a title for the story. The tasks done
-     * by the run() method in this thread are:
+     * by the threadLogic() method in this thread are:
      * 1. Processing the title input by the user. (trimmed and multiple whitespaces replaced with single whitespace)
      * 2. Constructing the input data object corresponding to getting all previously suggested titles from the repo.
      * 3. Returning a failure response if the title suggested by the user is not a valid title or has
@@ -58,9 +58,10 @@ public class StInteractor {
         }
 
         /**
-         * The implementation of the run() method for this Thread. Performs all the tasks as specified in the
-         * description for StThread.
+         * The implementation of the threadLogic() method for this InterruptibleThread. Performs all the tasks
+         * as specified in the description for StThread.
          */
+        @Override
         public void threadLogic(){
             /**
              * Step 1: Process title input: We retrieve the title from the input data, trim leading and trailing
@@ -110,6 +111,7 @@ public class StInteractor {
                 // StGatewayInputDataSuggest inputDataSuggest =
                 // new StGatewayInputDataSuggest(data.getStoryId(), data.getTitle());
                 // StGatewayOutputDataSuccess successData = repo.suggestTitle(inputDataSuggest);
+
                 setBlockInterrupt(true);
                 Response res =  repo.suggestTitle(storyId, title);
                 setBlockInterrupt(false);
