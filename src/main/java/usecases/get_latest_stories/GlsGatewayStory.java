@@ -1,13 +1,8 @@
 package usecases.get_latest_stories;
 
-<<<<<<< HEAD
-import org.jetbrains.annotations.Nullable;
-import usecases.StoryData;
-=======
 import org.jetbrains.annotations.NotNull;
 import usecases.RepoRes;
 import usecases.StoryRepoData;
->>>>>>> 117-view-db-core-changes-2
 
 /**
  * Input Boundary Interface for Get Latest Stories use-case.
