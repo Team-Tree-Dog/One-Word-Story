@@ -2,7 +2,7 @@ package usecases.get_most_liked_stories;
 
 import usecases.InterruptibleThread;
 import usecases.Response;
-import usecases.StoryData;
+import usecases.StoryRepoData;
 import usecases.ThreadRegister;
 
 import java.util.Arrays;
@@ -53,7 +53,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
          */
         @Override
         public void threadLogic() {
-            StoryData[] stories = repo.getAllStories(); // Can be null if DB fails
+            StoryRepoData[] stories = repo.getAllStories(); // Can be null if DB fails
 
             // DB Has failed to get the stories
             if (stories == null) {
@@ -63,7 +63,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
 
             // DB Has gotten the stories
             else {
-                StoryData[] outputStories = sortAndExtractStories(stories, this.data);
+                StoryRepoData[] outputStories = sortAndExtractStories(stories, this.data);
                 pres.putStories(new GmlsOutputData(outputStories,
                         Response.getSuccessful("Stories successfully extracted")));
             }
@@ -72,7 +72,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
         /**
          * Comparator class to sort Stories in descending order.
          */
-        public class orderStoriesByLikes implements Comparator<StoryData> {
+        public class orderStoriesByLikes implements Comparator<StoryRepoData> {
             /**
              * @param stories1 the first story to be compared.
              * @param stories2 the second story to be compared.
@@ -81,7 +81,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
              * n < 0 if stories 1 has more likes than stories2,
              * n = 0 if stories1 and stories2 have the same number of likes.
              */
-            public int compare(StoryData stories1, StoryData stories2) {
+            public int compare(StoryRepoData stories1, StoryRepoData stories2) {
                 int COMPARE_LIKES = Integer.compare(stories2.getLikes(), stories1.getLikes());
                 if (COMPARE_LIKES == 0) {
                     return stories2.getPublishTimeStamp().compareTo(stories1.getPublishTimeStamp());
@@ -96,7 +96,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
          *
          * @param stories the stories to be sorted in descending order
          */
-        private void sortStoriesByLikes(StoryData[] stories) {
+        private void sortStoriesByLikes(StoryRepoData[] stories) {
             orderStoriesByLikes COMPARATOR = new orderStoriesByLikes();
             Arrays.sort(stories, COMPARATOR);
         }
@@ -109,7 +109,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
          * @param data    the input data specifying the lower and upper bounds for the range
          * @return the range of stories sorted in descending
          */
-        private StoryData[] sortAndExtractStories(StoryData[] stories, GmlsInputData data) {
+        private StoryRepoData[] sortAndExtractStories(StoryRepoData[] stories, GmlsInputData data) {
             sortStoriesByLikes(stories);
             int[] INDICES = getIndices(stories, data.getLowerInclusive(), data.getUpperExclusive());
             return Arrays.copyOfRange(stories, INDICES[0], INDICES[1]);
@@ -155,7 +155,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
          * 2. the element at index 1 is the 'to' index for the subarray of stories that we want to extract
          * The method returns [0,0] if there are no stories that fall within the bounds
          */
-        private int[] getIndices(StoryData[] stories, Integer lower, Integer upper) {
+        private int[] getIndices(StoryRepoData[] stories, Integer lower, Integer upper) {
             int INDEX_LOWER = 0;
             int INDEX_UPPER = 0;
             // the following loop iterates from the start of the array till we find an story

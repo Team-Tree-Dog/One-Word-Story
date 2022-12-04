@@ -2,7 +2,7 @@ package usecases.get_latest_stories;
 
 import usecases.InterruptibleThread;
 import usecases.Response;
-import usecases.StoryData;
+import usecases.StoryRepoData;
 import usecases.ThreadRegister;
 
 import java.util.Arrays;
@@ -58,7 +58,7 @@ public class GlsInteractor implements GlsInputBoundary{
 
         @Override
         public void threadLogic() {
-            StoryData[] stories = repo.getAllStories();
+            StoryRepoData[] stories = repo.getAllStories();
 
             // DB Failed to get stories
             if (stories == null) {
@@ -72,7 +72,7 @@ public class GlsInteractor implements GlsInputBoundary{
 
                 if (data.getNumToGet() != null && data.getNumToGet() <= stories.length){
 
-                    StoryData[] stories2 = new StoryData[data.getNumToGet()];
+                    StoryRepoData[] stories2 = new StoryRepoData[data.getNumToGet()];
                     if (data.getNumToGet() >= 0) System.arraycopy(stories, 0, stories2, 0, data.getNumToGet());
                     GlsOutputData outputData2 = new GlsOutputData(stories2,
                             Response.getSuccessful("Succesfully got stories"));
