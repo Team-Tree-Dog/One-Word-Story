@@ -1,6 +1,6 @@
 package usecases.join_public_lobby;
 
-import entities.DisplayNameChecker;
+import entities.display_name_checkers.DisplayNameChecker;
 import entities.LobbyManager;
 import entities.Player;
 import entities.PlayerFactory;

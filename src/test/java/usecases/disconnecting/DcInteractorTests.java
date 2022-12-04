@@ -1,7 +1,9 @@
 package usecases.disconnecting;
 
 import entities.*;
+import entities.display_name_checkers.DisplayNameChecker;
 import entities.games.Game;
+import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.GameDoesntExistException;
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
@@ -22,6 +24,21 @@ import static org.junit.jupiter.api.Assertions.*;
  * Testing Disconnecting Use Case
  */
 public class DcInteractorTests {
+
+    /**
+     * Test Validity Checker Facade which always validates and does not modify input
+     */
+    static class TestValidityCheckerFacadeTrue extends ValidityCheckerFacade {
+
+        public TestValidityCheckerFacadeTrue() {
+            super((p) -> p, (w) -> w);
+        }
+
+        @Override
+        public String isValid(String word) {
+            return word;
+        }
+    }
 
     private DcInteractor dcInteractor;
 
@@ -186,7 +203,7 @@ public class DcInteractorTests {
         private final Queue<Player> players;
 
         public TestGame(List<Player> players) {
-            super(10, word -> true);
+            super(10, new TestValidityCheckerFacadeTrue());
             this.players = new LinkedList<>(players);
         }
 

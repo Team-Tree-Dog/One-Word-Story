@@ -2,6 +2,7 @@ package usecases.pull_data;
 
 import entities.Player;
 import entities.games.Game;
+import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.InvalidWordException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,11 +32,16 @@ public class PdInteractorTests {
         private final Queue<Player> players = new LinkedList<>();
         private final boolean allowAddingPlayers;
 
+        public static final ValidityCheckerFacade v = new ValidityCheckerFacade(
+                puncValidityChecker -> "",
+                wordValidityChecker -> ""
+        );
+
         /**
          * @param allowAddingPlayers Does addPlayer successfully add the player and return true
          */
         public CustomizableTestGame(boolean allowAddingPlayers) {
-            super(99, word -> true);
+            super(99, v);
             this.allowAddingPlayers = allowAddingPlayers;
         }
 
