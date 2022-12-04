@@ -1,6 +1,8 @@
 package usecases.suggest_title;
 
+import usecases.RepoRes;
 import usecases.Response;
+import usecases.TitleRepoData;
 
 /**
  * Gateway interface implemented by the repository for this use case.
@@ -21,12 +23,9 @@ public interface StGateway {
     Response suggestTitle(int storyId, String titleSuggestion);
 
     /**
-     * Abstract method to retrieve all previously suggested story titles from the repository, and to return these
-     * titles in a Titles Gateway Output Data object that is defined for this use case
-     * @param d The Input Data object containing the ID of the story for which we want to get all previously
-     *          suggested titles
-     * @return  A Gateway Output Data object that contains the previously suggested titles for the story
-     *          corresponding to the Get Gateway Input Data d
+     * Abstract method to retrieve all previously suggested story titles from the repository
+     * @param storyId the ID for the story whose previously suggested titles we want to retrieve
+     * @return        the previously suggested titles for this particular story
      */
-    StGatewayOutputDataTitles getAllTitles(StGatewayInputDataGet d);
+    RepoRes<TitleRepoData> getAllTitles(int storyId);
 }

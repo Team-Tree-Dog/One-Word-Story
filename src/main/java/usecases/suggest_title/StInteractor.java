@@ -1,6 +1,7 @@
 package usecases.suggest_title;
 import entities.SuggestedTitleChecker;
-import usecases.Response;
+import usecases.*;
+import usecases.shutdown_server.SsOutputBoundary;
 
 import java.util.Arrays;
 
@@ -13,16 +14,21 @@ public class StInteractor {
     private StGateway repo;
     private SuggestedTitleChecker titleChecker;
 
+    private ThreadRegister register;
+
     /**
      * Constructor for the Interactor
      * @param pres
      * @param repo
      * @param titleChecker
+     * @param register
      */
-    public StInteractor(StOutputBoundary pres, StGateway repo, SuggestedTitleChecker titleChecker) {
+    public StInteractor(StOutputBoundary pres, StGateway repo, SuggestedTitleChecker titleChecker,
+                        ThreadRegister register) {
         this.pres = pres;
         this.repo = repo;
         this.titleChecker = titleChecker;
+        this.register =register;
     }
 
     /**
@@ -39,7 +45,7 @@ public class StInteractor {
      * 6. Passing the output data to the viewModel to update the view according to the success or failure of the
      *    request to change title.
      */
-    public class StThread implements Runnable{
+    public class StThread extends InterruptibleThread {
         private StInputData data;
 
         /**
@@ -48,27 +54,28 @@ public class StInteractor {
          *                  and the user-suggested title.
          */
         public StThread(StInputData data) {
-            this.data = data;
+            super(StInteractor.this.register, (SsOutputBoundary) StInteractor.this.pres);
         }
 
         /**
          * The implementation of the run() method for this Thread. Performs all the tasks as specified in the
          * description for StThread.
          */
-        public void run(){
+        public void threadLogic(){
             /**
              * Step 1: Process title input: We retrieve the title from the input data, trim leading and trailing
              * whitespaces, and replace repeated whitespaces with a single whitespace.
              */
             String title = data.getTitle().trim().replaceAll("\\s{2,}", " ");
 
+            int storyId = data.getStoryId();
+
             /**
-             * Step 2: Create Gateway Input Data: create an StGatewayInputDataGet object that corresponds to the
-             * process of getting all previously suggested titles from the repo, and pass it into repo.getAllTitles()
+             * Step 2: Create a Gateway object that carries out the processes of getting all previously
+             * suggested titles from the repo, and pass it into repo.getAllTitles()
              * to get all previously suggested titles.
              */
-            StGatewayInputDataGet inputDataGet = new StGatewayInputDataGet(data.getStoryId());
-            String[] suggestedTitles = repo.getAllTitles(inputDataGet).getSuggestedTitles();
+            RepoRes<TitleRepoData> suggestedTitles = repo.getAllTitles(storyId);
 
 
             /* outputData is a VARIABLE that is initialized differently depending on the appropriate response
@@ -95,31 +102,31 @@ public class StInteractor {
                 Response res = new Response(Response.ResCode.TITLE_ALREADY_SUGGESTED,mess);
                 outputData = new StOutputData(data.getRequestId(), res);
             }
-
-
             else {
                 // the body of this else block carries out the processes to suggest the title once we have ensured
                 // that the title is valid and has not been already suggested.
-                StGatewayInputDataSuggest inputDataSuggest =
-                        new StGatewayInputDataSuggest(data.getStoryId(), data.getTitle());
-                StGatewayOutputDataSuccess successData = repo.suggestTitle(inputDataSuggest);
+
+
+                // StGatewayInputDataSuggest inputDataSuggest =
+                // new StGatewayInputDataSuggest(data.getStoryId(), data.getTitle());
+                // StGatewayOutputDataSuccess successData = repo.suggestTitle(inputDataSuggest);
+                Response res =  repo.suggestTitle(storyId, title);
+                outputData = new StOutputData(data.getRequestId(), res);
 
                 // this if else statement creates the appropriate output data depending on whether the suggested title
                 // was successfully added.
-                if (successData.getSuccess()) {
-                    String mess = String.format("'%1$s' was successfully added to suggested titles", data.getTitle());
-                    Response res = new Response(Response.ResCode.SUCCESS, mess);
-                    outputData = new StOutputData(data.getRequestId(), res);
-                }
-
-                else {
-                    String mess = String.format("Sorry. '%1$s' was not added", data.getTitle());
-                    Response res = new Response(Response.ResCode.FAIL, mess);
-                    outputData = new StOutputData(data.getRequestId(), res);
-                }
+//                if (successData.getSuccess()) {
+//                    String mess = String.format("'%1$s' was successfully added to suggested titles", data.getTitle());
+//                    Response res = new Response(Response.ResCode.SUCCESS, mess);
+//                    outputData = new StOutputData(data.getRequestId(), res);
+//                }
+//
+//                else {
+//                    String mess = String.format("Sorry. '%1$s' was not added", data.getTitle());
+//                    Response res = new Response(Response.ResCode.FAIL, mess);
+//                    outputData = new StOutputData(data.getRequestId(), res);
+//                }
             }
-            // this is the end of the if ... else if ... else block that handles the various cases and creates the
-            // output data accordingly
 
 
             //passes the output data to the presenter
@@ -135,6 +142,12 @@ public class StInteractor {
          * @param data  the input data for this use case. Contains the user-suggested title as well as the IDs to
          *              track the Story and this particular request to suggest a title for this story
          */
-        public void suggestTitle(StInputData data){}
+        public void suggestTitle(StInputData data){
+            InterruptibleThread thread = new StThread(data);
+            boolean success = register.registerThread(thread);
+            if (!success){
+                pres.outputShutdownServer();
+            }
+        }
     }
 }

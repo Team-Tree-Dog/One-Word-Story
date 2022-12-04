@@ -22,4 +22,9 @@ public class StPresenter implements StOutputBoundary{
      * @param data  the output data that contains the response corresponding to the success of
      */
     public void suggestTitleOutput(StOutputData data){}
+
+    @Override
+    public void outputShutdownServer() {
+
+    }
 }
