@@ -105,16 +105,15 @@ public class LsTests {
     /**
      * This is a simple runtime storage that keeps the stories` likes in a map
      * */
-    private static class TestLsGateway implements LsGateway {
+    private static class TestLsGateway implements LsGatewayStory {
 
         private final Map<Integer, Integer> storyToLikes = new HashMap<>();
         private final Lock lock = new ReentrantLock();
 
         @Override
-        public LsGatewayOutputData likeStory(LsGatewayInputData data) {
+        public boolean likeStory(int storyId) {
             lock.lock();
             boolean success = true;
-            int storyId = data.getStoryId();
             Integer numberOfLikes = storyToLikes.get(storyId);
             if (numberOfLikes == null) {
                 success = false;
@@ -122,7 +121,7 @@ public class LsTests {
                 storyToLikes.put(storyId, numberOfLikes + 1);
             }
             lock.unlock();
-            return new LsGatewayOutputData(success);
+            return success;
         }
 
         public void addStoryId(int storyId) {

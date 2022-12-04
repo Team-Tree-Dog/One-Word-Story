@@ -1,6 +1,7 @@
 package usecases.get_most_liked_stories;
 
 import usecases.InterruptibleThread;
+import usecases.Response;
 import usecases.StoryData;
 import usecases.ThreadRegister;
 
@@ -9,7 +10,7 @@ import java.util.*;
 
 public class GmlsInteractor implements GmlsInputBoundary {
     private final GmlsOutputBoundary pres;
-    private final GmlsGateway repo;
+    private final GmlsGatewayStory repo;
 
     /**
      * The ThreadRegister that keeps track of all the running use case threads
@@ -23,7 +24,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
      * @param pres the output boundary to update the view model
      * @param repo the repository from which the stories will be extracted
      */
-    public GmlsInteractor(GmlsOutputBoundary pres, GmlsGateway repo, ThreadRegister register) {
+    public GmlsInteractor(GmlsOutputBoundary pres, GmlsGatewayStory repo, ThreadRegister register) {
         this.pres = pres;
         this.repo = repo;
         this.register = register;
@@ -52,10 +53,20 @@ public class GmlsInteractor implements GmlsInputBoundary {
          */
         @Override
         public void threadLogic() {
-            GmlsGatewayOutputData gatewayOutputData = repo.getAllStories();
-            StoryData[] OUTPUT_STORIES = sortAndExtractStories(gatewayOutputData.getStories(), this.data);
+            StoryData[] stories = repo.getAllStories(); // Can be null if DB fails
 
-            pres.putStories(new GmlsOutputData(OUTPUT_STORIES));
+            // DB Has failed to get the stories
+            if (stories == null) {
+                pres.putStories(new GmlsOutputData(null,
+                        Response.getFailure("DB Failed to retrieve stories")));
+            }
+
+            // DB Has gotten the stories
+            else {
+                StoryData[] outputStories = sortAndExtractStories(stories, this.data);
+                pres.putStories(new GmlsOutputData(outputStories,
+                        Response.getSuccessful("Stories successfully extracted")));
+            }
         }
 
         /**

@@ -86,4 +86,12 @@ public class Response {
     public static Response getSuccessful (String m) {
         return new Response(Response.ResCode.SUCCESS, m);
     }
+
+    /**
+     * @param m Description of failure
+     * @return A response with plain FAIL code
+     */
+    public static Response getFailure (String m) {
+        return new Response(Response.ResCode.FAIL, m);
+    }
 }

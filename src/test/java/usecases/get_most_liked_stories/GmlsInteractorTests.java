@@ -45,15 +45,15 @@ public class GmlsInteractorTests {
     /**
      * Customizable class to imitate repository with stories during testing
      */
-    class CustomizableGmlsGateway implements GmlsGateway {
+    class CustomizableGmlsGateway implements GmlsGatewayStory {
 
-        private final GmlsGatewayOutputData data;
+        private final StoryData[] data;
 
         public CustomizableGmlsGateway(StoryData[] stories) {
-            this.data = new GmlsGatewayOutputData(stories);
+            this.data = stories;
         }
 
-        public GmlsGatewayOutputData getAllStories() {
+        public StoryData[] getAllStories() {
             return data;
         }
     }
@@ -62,7 +62,7 @@ public class GmlsInteractorTests {
     private static final String[] authors = {"Jeremy", "Stephen"};
 
     GmlsOutputBoundary pres;
-    GmlsGateway repo;
+    GmlsGatewayStory repo;
 
     /**
      * In the setup, we only initialize our repository with stories
