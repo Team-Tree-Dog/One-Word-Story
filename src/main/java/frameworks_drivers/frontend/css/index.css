@@ -1,25 +1,32 @@
-.first-color {
-    background: #f5f0e8;
+:root {
+    --color1: #17252a; /* dark */
+    --color2: #2b7a78;
+    --color3: #3aafa9;
+    --color4: #def2f1;
+    --color5: #feffff;
 }
 
-.second-color {
-    background: #d3bd9a;
+body {
+    background: var(--color3);
 }
 
-.third-color {
-    background: #a28f70;
+#all_stories {
+    display: flex;
+    height: 300px;
+    overflow-y: scroll;
 }
 
-.fourth-color {
-    background: #674f04;
+.column {
+    flex: 50%;
 }
 
 .story {
     border-style: solid;
     margin: 10px;
+    padding: 10px;
+    background-color: var(--color4);
 }
 
-#all_stories {
-    height: 300px;
-    overflow-y: scroll;
+h2 {
+    text-align: center;
 }
