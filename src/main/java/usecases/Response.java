@@ -23,6 +23,7 @@ public class Response {
         mapExceptionToResultCode.put(IdInUseException.class, ResCode.ID_IN_USE);
         mapExceptionToResultCode.put(InvalidDisplayNameException.class, ResCode.INVALID_DISPLAY_NAME);
         mapExceptionToResultCode.put(InvalidWordException.class, ResCode.INVALID_WORD);
+        mapExceptionToResultCode.put(InvalidCommentException.class, ResCode.INVALID_COMMENT);
     }
 
     /**
@@ -39,7 +40,8 @@ public class Response {
         OUT_OF_TURN,
         ID_IN_USE,
         INVALID_DISPLAY_NAME,
-        INVALID_WORD
+        INVALID_WORD,
+        INVALID_COMMENT
     }
 
     private final String message;
