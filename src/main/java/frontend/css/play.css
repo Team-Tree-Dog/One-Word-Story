@@ -1,0 +1,19 @@
+:root {
+    --color1: #17252a; /* dark */
+    --color2: #2b7a78;
+    --color3: #3aafa9;
+    --color4: #def2f1;
+    --color5: #feffff;
+}
+
+body {
+    background: var(--color3);
+}
+
+input:invalid {
+    border: 2px dashed red;
+}
+
+input:invalid:required {
+    background-color: var(--color1);
+}
