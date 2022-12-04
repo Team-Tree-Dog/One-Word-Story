@@ -107,29 +107,10 @@ public class StInteractor {
                 // the body of this else block carries out the processes to suggest the title once we have ensured
                 // that the title is valid and has not been already suggested.
 
-
-                // StGatewayInputDataSuggest inputDataSuggest =
-                // new StGatewayInputDataSuggest(data.getStoryId(), data.getTitle());
-                // StGatewayOutputDataSuccess successData = repo.suggestTitle(inputDataSuggest);
-
                 setBlockInterrupt(true);
                 Response res =  repo.suggestTitle(storyId, title);
                 setBlockInterrupt(false);
                 outputData = new StOutputData(data.getRequestId(), res);
-
-                // this if else statement creates the appropriate output data depending on whether the suggested title
-                // was successfully added.
-//                if (successData.getSuccess()) {
-//                    String mess = String.format("'%1$s' was successfully added to suggested titles", data.getTitle());
-//                    Response res = new Response(Response.ResCode.SUCCESS, mess);
-//                    outputData = new StOutputData(data.getRequestId(), res);
-//                }
-//
-//                else {
-//                    String mess = String.format("Sorry. '%1$s' was not added", data.getTitle());
-//                    Response res = new Response(Response.ResCode.FAIL, mess);
-//                    outputData = new StOutputData(data.getRequestId(), res);
-//                }
             }
 
 
