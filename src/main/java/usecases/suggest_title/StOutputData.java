@@ -6,8 +6,8 @@ import usecases.Response;
  * and a Response containing the response code and description to be sent to the presenter.
  */
 public class StOutputData {
-    String requestID;
-    Response res;
+    private String requestID;
+    private Response res;
 
     /**
      * The constructor for this output data object.

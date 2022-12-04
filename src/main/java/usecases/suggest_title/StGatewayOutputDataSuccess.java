@@ -6,7 +6,7 @@ package usecases.suggest_title;
  * update the view model.
  */
 public class StGatewayOutputDataSuccess {
-    boolean success;
+    private boolean success;
 
     /**
      * Constructor for the Success Gateway Output Data

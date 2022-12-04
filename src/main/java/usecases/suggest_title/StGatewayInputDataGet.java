@@ -6,7 +6,7 @@ package usecases.suggest_title;
  * particular suggestion request.
  */
 public class StGatewayInputDataGet {
-    int storyID;
+    private int storyID;
 
     /**
      * The constructor for this Gateway Input Data Object

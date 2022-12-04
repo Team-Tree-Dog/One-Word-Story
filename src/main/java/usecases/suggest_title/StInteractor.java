@@ -9,9 +9,21 @@ import java.util.Arrays;
  * title.
  */
 public class StInteractor {
-    StOutputBoundary pres;
-    StGateway repo;
-    SuggestedTitleChecker titleChecker;
+    private StOutputBoundary pres;
+    private StGateway repo;
+    private SuggestedTitleChecker titleChecker;
+
+    /**
+     * Constructor for the Interactor
+     * @param pres
+     * @param repo
+     * @param titleChecker
+     */
+    public StInteractor(StOutputBoundary pres, StGateway repo, SuggestedTitleChecker titleChecker) {
+        this.pres = pres;
+        this.repo = repo;
+        this.titleChecker = titleChecker;
+    }
 
     /**
      * This nested class is a thread for the processes involved in suggesting a title for the story. The tasks done
@@ -28,8 +40,8 @@ public class StInteractor {
      *    request to change title.
      */
     public class StThread implements Runnable{
-        StInputData data;
-        StOutputBoundary boundary;
+        private StInputData data;
+        private StOutputBoundary boundary;
 
         /**
          * The implementation of the run() method for this Thread. Performs all the tasks as specified in the
@@ -80,13 +92,13 @@ public class StInteractor {
             else {
                 // the body of this else block carries out the processes to suggest the title once we have ensured
                 // that the title is valid and has not been already suggested.
-                StGatewayInputDataSuggest INPUT_DATA_SUGGEST =
+                StGatewayInputDataSuggest inputDataSuggest =
                         new StGatewayInputDataSuggest(data.getStoryId(), data.getTitle());
-                StGatewayOutputDataSuccess SUCCESS_DATA = repo.suggestTitle(INPUT_DATA_SUGGEST);
+                StGatewayOutputDataSuccess successData = repo.suggestTitle(inputDataSuggest);
 
                 // this if else statement creates the appropriate output data depending on whether the suggested title
                 // was successfully added.
-                if (SUCCESS_DATA.getSuccess()) {
+                if (successData.getSuccess()) {
                     String mess = String.format("'%1$s' was successfully added to suggested titles", data.getTitle());
                     Response res = new Response(Response.ResCode.SUCCESS, mess);
                     outputData = new StOutputData(data.getRequestId(), res);

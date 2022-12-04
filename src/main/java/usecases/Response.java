@@ -41,7 +41,6 @@ public class Response {
         INVALID_DISPLAY_NAME,
         INVALID_WORD,
         INVALID_TITLE,
-
         TITLE_ALREADY_SUGGESTED,
     }
 

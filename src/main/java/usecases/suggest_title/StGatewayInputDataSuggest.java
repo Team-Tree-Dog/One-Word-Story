@@ -8,8 +8,8 @@ package usecases.suggest_title;
  * for a given story.
  */
 public class StGatewayInputDataSuggest {
-    int storyID;
-    String titleSuggestion;
+    private int storyID;
+    private String titleSuggestion;
 
     /**
      * The constructor for this Gateway Input Data Object

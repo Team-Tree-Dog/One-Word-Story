@@ -8,10 +8,10 @@ import java.util.Arrays;
  * a valid story title. This class has a default constructor
  */
 public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
-    static ArrayList<Character> VALID_PUNCTUATION =
+    private static ArrayList<Character> VALID_PUNCTUATION =
             new ArrayList<>(Arrays.asList(',','.','"','\'',':',';',')','(','/','-',' '));
-    static int MINIMUM_TITLE_LENGTH = 3;
-    static int MAXIMUM_TITLE_LENGTH = 50;
+    private static int MINIMUM_TITLE_LENGTH = 3;
+    private static int MAXIMUM_TITLE_LENGTH = 50;
 
     /*
      * CRITERIA FOR VALID TITLE

@@ -7,7 +7,7 @@ package usecases.suggest_title;
  * suggestion request.
  */
 public class StGatewayOutputDataTitles {
-    String[] suggestedTitles;
+    private String[] suggestedTitles;
 
     /**
      * Constructor for Titles Gateway Output Data.

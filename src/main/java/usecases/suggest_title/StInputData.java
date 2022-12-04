@@ -4,9 +4,9 @@ package usecases.suggest_title;
  * The input data for the Suggest Title use case
  */
 public class StInputData {
-    String requestId;
-    String title;
-    int storyId;
+    private String requestId;
+    private String title;
+    private int storyId;
 
     /**
      * Constructor for Input Data for Suggest Title use case
