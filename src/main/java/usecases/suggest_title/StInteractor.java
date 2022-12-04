@@ -110,7 +110,9 @@ public class StInteractor {
                 // StGatewayInputDataSuggest inputDataSuggest =
                 // new StGatewayInputDataSuggest(data.getStoryId(), data.getTitle());
                 // StGatewayOutputDataSuccess successData = repo.suggestTitle(inputDataSuggest);
+                setBlockInterrupt(true);
                 Response res =  repo.suggestTitle(storyId, title);
+                setBlockInterrupt(false);
                 outputData = new StOutputData(data.getRequestId(), res);
 
                 // this if else statement creates the appropriate output data depending on whether the suggested title
