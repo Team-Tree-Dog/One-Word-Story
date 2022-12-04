@@ -1,0 +1,33 @@
+:root {
+    --color1: #17252a; /* dark */
+    --color2: #2b7a78;
+    --color3: #3aafa9;
+    --color4: #def2f1;
+    --color5: #feffff;
+}
+
+body {
+    background: var(--color3);
+}
+
+#two_columns {
+    display: flex;
+}
+
+#column-1 {
+    flex: 30%;
+}
+
+#story_column {
+    flex: 60%;
+}
+
+#story {
+    border-style: solid;
+    overflow-y:scroll;
+    background-color: var(--color4);
+}
+
+ul {
+    list-style-type: none;
+}
