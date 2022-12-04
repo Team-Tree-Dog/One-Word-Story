@@ -1,5 +1,7 @@
 package usecases.suggest_title;
 
+import usecases.Response;
+
 /**
  * Gateway interface implemented by the repository for this use case.
  * This interface contains an abstract method to suggest the story title, for which the
@@ -11,11 +13,12 @@ public interface StGateway {
     /**
      * Abstract method for the repository to suggest a title for the story, and to return an Output Data object
      * that records the success or failure of adding this title to the database.
-     * @param d the input data object that contains the details of the story and the suggested title
-     * @return  a gateway output data object that records whether adding the suggested title to the story in the
-     *          database was successful
+     * @param storyId           the ID to track this story
+     * @param titleSuggestion   the user suggested title for this story
+     * @return  a response object that contains the appropriate message depending on whether the request to add the
+     *          title was successful or not
      */
-    StGatewayOutputDataSuccess suggestTitle(StGatewayInputDataSuggest d);
+    Response suggestTitle(int storyId, String titleSuggestion);
 
     /**
      * Abstract method to retrieve all previously suggested story titles from the repository, and to return these
