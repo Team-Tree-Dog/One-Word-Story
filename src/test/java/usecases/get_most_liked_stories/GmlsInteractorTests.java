@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import usecases.StoryData;
+import usecases.ThreadRegister;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -12,6 +13,9 @@ import java.time.Month;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GmlsInteractorTests {
+
+
+    private static final ThreadRegister register = new ThreadRegister();
 
     /**
      * Customizable class to imitate GmlsPresenter during testing
@@ -30,6 +34,11 @@ public class GmlsInteractorTests {
 
         public GmlsOutputData getReceivedData() {
             return this.receivedData;
+        }
+
+        @Override
+        public void outputShutdownServer() {
+            throw new RuntimeException("This method is not implemented and should not be called");
         }
     }
 
@@ -86,7 +95,7 @@ public class GmlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGmlsOutputBoundary();
-        GmlsInteractor gmls = new GmlsInteractor(pres, repo);
+        GmlsInteractor gmls = new GmlsInteractor(pres, repo, register);
 
         // Running inner thread
         GmlsInputData d = new GmlsInputData(0, 2);
@@ -115,7 +124,7 @@ public class GmlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGmlsOutputBoundary();
-        GmlsInteractor gmls = new GmlsInteractor(pres, repo);
+        GmlsInteractor gmls = new GmlsInteractor(pres, repo, register);
 
         // Running inner thread
         GmlsInputData d = new GmlsInputData(null, 2);
@@ -144,7 +153,7 @@ public class GmlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGmlsOutputBoundary();
-        GmlsInteractor gmls = new GmlsInteractor(pres, repo);
+        GmlsInteractor gmls = new GmlsInteractor(pres, repo, register);
 
         // Running inner thread
         GmlsInputData d = new GmlsInputData(1, null);
@@ -173,7 +182,7 @@ public class GmlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGmlsOutputBoundary();
-        GmlsInteractor gmls = new GmlsInteractor(pres, repo);
+        GmlsInteractor gmls = new GmlsInteractor(pres, repo, register);
 
         // Running inner thread
         GmlsInputData d = new GmlsInputData(null, null);
@@ -202,7 +211,7 @@ public class GmlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGmlsOutputBoundary();
-        GmlsInteractor gmls = new GmlsInteractor(pres, repo);
+        GmlsInteractor gmls = new GmlsInteractor(pres, repo, register);
 
         // Running inner thread
         GmlsInputData d = new GmlsInputData(2, 1);
@@ -229,7 +238,7 @@ public class GmlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGmlsOutputBoundary();
-        GmlsInteractor gmls = new GmlsInteractor(pres, repo);
+        GmlsInteractor gmls = new GmlsInteractor(pres, repo, register);
 
         // Running inner thread
         GmlsInputData d = new GmlsInputData(-10, 10);

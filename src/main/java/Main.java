@@ -7,19 +7,15 @@ import entities.display_name_checkers.DisplayNameChecker;
 import entities.display_name_checkers.DisplayNameCheckerBasic;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
+import usecases.ThreadRegister;
 import usecases.disconnecting.DcInteractor;
-import usecases.get_latest_stories.GlsGateway;
-import usecases.get_latest_stories.GlsGatewayOutputData;
 import usecases.get_latest_stories.GlsInteractor;
-import usecases.get_most_liked_stories.GmlsGateway;
 import usecases.get_most_liked_stories.GmlsInteractor;
 import usecases.join_public_lobby.JplInteractor;
-import usecases.like_story.LsGateway;
-import usecases.like_story.LsGatewayInputData;
-import usecases.like_story.LsGatewayOutputData;
 import usecases.like_story.LsInteractor;
 import usecases.pull_data.PdInteractor;
 import usecases.pull_game_ended.PgeInteractor;
+import usecases.shutdown_server.SsInteractor;
 import usecases.sort_players.SpInteractor;
 import usecases.submit_word.SwInteractor;
 
@@ -36,6 +32,8 @@ public class Main {
     public static void main (String[] args) {
         ViewModel viewM = new ViewModel();
 
+        ThreadRegister register = new ThreadRegister();
+
         // Create all presenters
         DcPresenter dcPresenter = new DcPresenter(viewM);
         GlsPresenter glsPresenter = new GlsPresenter(viewM);
@@ -44,7 +42,9 @@ public class Main {
         LsPresenter lsPresenter = new LsPresenter(viewM);
         PdPresenter pdPresenter = new PdPresenter(viewM);
         PgePresenter pgePresenter = new PgePresenter(viewM);
+        SsPresenter ssPresenter = new SsPresenter(viewM);
         SwPresenter swPresenter = new SwPresenter(viewM);
+
 
         // Create desired display name checker for injection
         DisplayNameChecker displayChecker = new DisplayNameCheckerBasic();
@@ -63,12 +63,15 @@ public class Main {
         sp.startTimer();
 
         // Use cases called by users
-        DcInteractor dc = new DcInteractor(manager, dcPresenter);
-        GlsInteractor gls = new GlsInteractor(glsPresenter, () -> null); // TODO: Inject repo
-        GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, () -> null); // TODO: Inject repo
-        JplInteractor jpl = new JplInteractor(manager, jplPresenter);
-        LsInteractor ls = new LsInteractor(lsPresenter, (e) -> null); // TODO: Inject repo
-        SwInteractor sw = new SwInteractor(swPresenter, manager);
+
+        DcInteractor dc = new DcInteractor(manager, dcPresenter, register);
+        GlsInteractor gls = new GlsInteractor(glsPresenter, () -> null, register); // TODO: Inject repo
+        GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, () -> null, register); // TODO: Inject repo
+        JplInteractor jpl = new JplInteractor(manager, jplPresenter, register);
+        LsInteractor ls = new LsInteractor(lsPresenter, (e) -> null, register); // TODO: Inject repo
+        SsInteractor ss = new SsInteractor(register, ssPresenter);
+        SwInteractor sw = new SwInteractor(swPresenter, manager, register);
+
 
         // Controllers
         DcController dcController = new DcController(dc);
@@ -76,6 +79,7 @@ public class Main {
         GmlsController gmlsController = new GmlsController(gmls);
         JplController jplController = new JplController(jpl);
         LsController lsController = new LsController(ls);
+        SsController ssController = new SsController(ss);
         SwController swController = new SwController(sw);
 
         // TODO: Setup and run the view

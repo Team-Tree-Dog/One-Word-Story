@@ -26,4 +26,8 @@ public class LsPresenter implements LsOutputBoundary {
 
     }
 
+    @Override
+    public void outputShutdownServer() {
+
+    }
 }

@@ -5,7 +5,9 @@ import entities.Player;
 import entities.PlayerPoolListener;
 import exceptions.GameDoesntExistException;
 import exceptions.PlayerNotFoundException;
+import usecases.InterruptibleThread;
 import usecases.Response;
+import usecases.ThreadRegister;
 
 import java.util.concurrent.locks.Lock;
 
@@ -19,15 +21,22 @@ public class DcInteractor implements DcInputBoundary {
     private final Lock gameLock;
 
     /**
+     * The ThreadRegister that keeps track of all the running use case threads
+     * for the shutdown-server use case
+     */
+    private final ThreadRegister register;
+
+    /**
      * Constructor for DcInteractor
      * @param lm Lobby Manager
      * @param dcOutputBoundary DcOutputBoundary
      */
-    public DcInteractor(LobbyManager lm, DcOutputBoundary dcOutputBoundary) {
+    public DcInteractor(LobbyManager lm, DcOutputBoundary dcOutputBoundary, ThreadRegister register) {
         this.lm = lm;
         this.dcOutputBoundary = dcOutputBoundary;
         this.playerPoolLock = lm.getPlayerPoolLock();
         this.gameLock = lm.getGameLock();
+        this.register = register;
     }
 
     /**
@@ -36,23 +45,29 @@ public class DcInteractor implements DcInputBoundary {
      */
     @Override
     public void disconnect(DcInputData data) {
-        new Thread(new DcThread(data.getPlayerId())).start();
+        InterruptibleThread dcThread = this.new DcThread(data.getPlayerId());
+        if (!register.registerThread(dcThread)) {
+            dcOutputBoundary.outputShutdownServer();
+        }
     }
 
     /**
      * Thread for disconnecting the player
      */
-    public class DcThread implements Runnable {
+    public class DcThread extends InterruptibleThread {
         private final String playerId;
 
         /**
          * Constructor for Disconnecting Thread
          * @param playerId ID of the player we need to disconnect
          */
-        public DcThread(String playerId) {this.playerId = playerId;}
+        public DcThread(String playerId) {
+            super(DcInteractor.this.register, DcInteractor.this.dcOutputBoundary);
+            this.playerId = playerId;
+        }
 
         @Override
-        public void run() {
+        public void threadLogic() {
             // Player existence in both removeFromPoolCancel and removePlayerFromGame
             // is checked via Player.equals, which checks only the ID, thus we can
             // have an empty display name as a dummy

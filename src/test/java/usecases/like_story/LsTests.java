@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import usecases.Response;
+import usecases.ThreadRegister;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,11 +22,15 @@ public class LsTests {
     private LsInputBoundary interactor;
     private Random random;
 
+    private ThreadRegister register;
+
+
     @BeforeEach
     public void setup() {
         presenter = new TestLsPresenter();
         repository = new TestLsGateway();
-        interactor = new LsInteractor(presenter, repository);
+        register = new ThreadRegister();
+        interactor = new LsInteractor(presenter, repository, register);
         random = new Random();
     }
 
@@ -88,6 +93,11 @@ public class LsTests {
         @Override
         public void likeOutput(LsOutputData data) {
             responses.add(data);
+        }
+
+        @Override
+        public void outputShutdownServer() {
+            throw new RuntimeException("This method is not implemented and should not be called");
         }
 
     }

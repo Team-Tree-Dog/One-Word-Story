@@ -1,6 +1,5 @@
 package entities.validity_checkers;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PunctuationValidityCheckerRegular2 implements PunctuationValidityChecker {

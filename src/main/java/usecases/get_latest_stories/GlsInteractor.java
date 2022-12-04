@@ -1,6 +1,8 @@
 package usecases.get_latest_stories;
 
+import usecases.InterruptibleThread;
 import usecases.StoryData;
+import usecases.ThreadRegister;
 
 import java.util.Arrays;
 
@@ -13,33 +15,48 @@ public class GlsInteractor implements GlsInputBoundary{
     private final GlsGateway repo;
 
     /**
+     * The ThreadRegister that keeps track of all the running use case threads
+     * for the shutdown-server use case
+     */
+    private final ThreadRegister register;
+
+    /**
      * Constructor for GlsInteractor
      * @param pres GlsOutputBoundary
      * @param repo GlsGateway used by this interactor
      */
-    public GlsInteractor(GlsOutputBoundary pres, GlsGateway repo) {
+    public GlsInteractor(GlsOutputBoundary pres, GlsGateway repo, ThreadRegister register) {
         this.pres = pres;
         this.repo = repo;
+        this.register = register;
     }
 
     @Override
-    public void getLatestStories(GlsInputData data) { new Thread(new GlsThread(data)).start(); }
+    public void getLatestStories(GlsInputData data) {
+        InterruptibleThread thread = new GlsThread(data);
+        if (!register.registerThread(thread)) {
+            pres.outputShutdownServer();
+        }
+    }
 
     /**
      * Thread for getting the latest stories
      */
 
-    public class GlsThread implements Runnable {
+    public class GlsThread extends InterruptibleThread {
         private final GlsInputData data;
 
         /**
          * Constructor for Get Latest Stories Thread
          * @param data GlsInputData
          */
-        public GlsThread(GlsInputData data) { this.data = data; }
+        public GlsThread(GlsInputData data) {
+            super(GlsInteractor.this.register, GlsInteractor.this.pres);
+            this.data = data;
+        }
 
         @Override
-        public void run() {
+        public void threadLogic() {
             GlsGatewayOutputData outputData = repo.getAllStories();
             StoryData[] stories = outputData.getStories();
             Arrays.sort(stories);

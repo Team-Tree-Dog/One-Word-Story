@@ -1,7 +1,5 @@
 package entities.display_name_checkers;
 
-import java.util.Locale;
-
 public class DisplayNameCheckerBasic implements DisplayNameChecker {
 
     public static final int MAX_LENGTH = 20;
