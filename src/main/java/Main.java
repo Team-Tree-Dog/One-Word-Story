@@ -68,7 +68,7 @@ public class Main {
         GlsInteractor gls = new GlsInteractor(glsPresenter, () -> null, register); // TODO: Inject repo
         GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, () -> null, register); // TODO: Inject repo
         JplInteractor jpl = new JplInteractor(manager, jplPresenter, register);
-        LsInteractor ls = new LsInteractor(lsPresenter, (e) -> null, register); // TODO: Inject repo
+        LsInteractor ls = new LsInteractor(lsPresenter, (e) -> true, register); // TODO: Inject repo
         SsInteractor ss = new SsInteractor(register, ssPresenter);
         SwInteractor sw = new SwInteractor(swPresenter, manager, register);
 
