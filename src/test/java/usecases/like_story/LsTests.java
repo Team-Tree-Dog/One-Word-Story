@@ -1,5 +1,6 @@
 package usecases.like_story;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -111,7 +112,7 @@ public class LsTests {
         private final Lock lock = new ReentrantLock();
 
         @Override
-        public boolean likeStory(int storyId) {
+        public @NotNull Response likeStory(int storyId) {
             lock.lock();
             boolean success = true;
             Integer numberOfLikes = storyToLikes.get(storyId);
@@ -121,7 +122,7 @@ public class LsTests {
                 storyToLikes.put(storyId, numberOfLikes + 1);
             }
             lock.unlock();
-            return success;
+            return success ? Response.getSuccessful("") : Response.getFailure("");
         }
 
         public void addStoryId(int storyId) {

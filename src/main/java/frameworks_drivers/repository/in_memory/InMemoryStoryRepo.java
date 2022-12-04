@@ -76,8 +76,7 @@ public class InMemoryStoryRepo implements LsGatewayStory, GlsGatewayStory,
      * @return all the currently saved stories, or null if DB fails
      */
     @Override
-    @Nullable
-    public StoryData[] getAllStories() {
+    public StoryData @NotNull [] getAllStories() {
         StoryData[] stories = new StoryData[storyTable.size()];
 
         // Convert story table row entry to StoryData
@@ -101,7 +100,7 @@ public class InMemoryStoryRepo implements LsGatewayStory, GlsGatewayStory,
      * @return success of adding a like to the requested story
      */
     @Override
-    public boolean likeStory(int storyId) {
+    public @NotNull boolean likeStory(int storyId) {
         for (StoryTableRow row : storyTable) {
             if (row.getStoryId() == storyId) {
                 row.addLike();
