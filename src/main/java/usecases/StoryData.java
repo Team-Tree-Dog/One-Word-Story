@@ -1,5 +1,7 @@
 package usecases;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.time.LocalDateTime;
 
 public class StoryData implements Comparable<StoryData> {
@@ -52,8 +54,9 @@ public class StoryData implements Comparable<StoryData> {
 
     /**
      * Getter for StoryData
-     * @return title of story
+     * @return title of story, can be null if not yet set
      */
+    @Nullable
     public String getName() {return title;}
 
     /**

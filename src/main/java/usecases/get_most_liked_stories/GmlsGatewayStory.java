@@ -1,5 +1,6 @@
 package usecases.get_most_liked_stories;
 
+import org.jetbrains.annotations.Nullable;
 import usecases.StoryData;
 
 /**
@@ -7,8 +8,8 @@ import usecases.StoryData;
  */
 public interface GmlsGatewayStory {
     /**
-     * Abstract method for the repository to retrieve all stories
-     * @return all stories from the repository, or null if the DB fails
+     * @return all the currently saved stories, or null if DB fails
      */
+    @Nullable
     StoryData[] getAllStories();
 }

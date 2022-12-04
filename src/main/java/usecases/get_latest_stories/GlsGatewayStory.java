@@ -1,5 +1,6 @@
 package usecases.get_latest_stories;
 
+import org.jetbrains.annotations.Nullable;
 import usecases.StoryData;
 
 /**
@@ -9,7 +10,8 @@ import usecases.StoryData;
 
 public interface GlsGatewayStory {
     /**
-     * @return all stories from the repository, or null if the DB failed in some way
+     * @return all the currently saved stories, or null if DB fails
      */
+    @Nullable
     StoryData[] getAllStories ();
 }
