@@ -1,14 +1,19 @@
 package usecases.get_latest_stories;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import usecases.StoryData;
+import usecases.RepoRes;
+import usecases.Response;
+import usecases.StoryRepoData;
 import usecases.ThreadRegister;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,14 +52,14 @@ public class GlsInteractorTests {
      */
     static class CustomizableGlsGateway implements GlsGatewayStory {
 
-        private final StoryData[] data;
+        private final List<StoryRepoData> data;
 
-        public CustomizableGlsGateway(StoryData[] stories) {
+        public CustomizableGlsGateway(List<StoryRepoData> stories) {
             this.data = stories;
         }
 
-        public StoryData[] getAllStories() {
-            return data;
+        public @NotNull RepoRes<StoryRepoData> getAllStories() {
+            return new RepoRes<StoryRepoData>(Response.getSuccessful(""), data);
         }
     }
 
@@ -73,12 +78,12 @@ public class GlsInteractorTests {
         LocalDateTime dt2 = LocalDateTime.of(2002, Month.JULY, 29, 19, 30, 40);
         LocalDateTime dt3 = LocalDateTime.of(2003, Month.JULY, 29, 19, 30, 40);
 
-        StoryData sd1 = new StoryData("text 1", authors, dt1, "title 1", 1);
-        StoryData sd2 = new StoryData("text 2", authors, dt2, "title 2", 2);
-        StoryData sd3 = new StoryData("text 3", authors, dt3, "title 3", 3);
-        StoryData[] stories = {sd1, sd2, sd3};
+        StoryRepoData sd1 = new StoryRepoData("text 1", authors, dt1, "title 1", 1);
+        StoryRepoData sd2 = new StoryRepoData("text 2", authors, dt2, "title 2", 2);
+        StoryRepoData sd3 = new StoryRepoData("text 3", authors, dt3, "title 3", 3);
+        StoryRepoData[] stories = {sd1, sd2, sd3};
 
-        repo = new CustomizableGlsGateway(stories);
+        repo = new CustomizableGlsGateway(Arrays.asList(stories));
     }
 
     @AfterEach
@@ -107,7 +112,7 @@ public class GlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        StoryData[] stories = receivedData.getStories();
+        StoryRepoData[] stories = receivedData.getStories();
         assertEquals(2, stories.length, "Returned wrong number of stories");
         assertEquals("text 3", stories[0].getStory(), "Returned incorrect story");
         assertEquals("text 2", stories[1].getStory(), "Returned incorrect story");
@@ -134,7 +139,7 @@ public class GlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        StoryData[] stories = receivedData.getStories();
+        StoryRepoData[] stories = receivedData.getStories();
         assertEquals(0, stories.length, "Returned wrong number of stories");
     }
 
@@ -160,7 +165,7 @@ public class GlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        StoryData[] stories = receivedData.getStories();
+        StoryRepoData[] stories = receivedData.getStories();
         assertEquals(3, stories.length, "Returned wrong number of stories");
         assertEquals("text 3", stories[0].getStory(), "Returned incorrect story");
         assertEquals("text 2", stories[1].getStory(), "Returned incorrect story");
@@ -189,7 +194,7 @@ public class GlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        StoryData[] stories = receivedData.getStories();
+        StoryRepoData[] stories = receivedData.getStories();
         assertEquals(3, stories.length, "Returned wrong number of stories");
         assertEquals("text 3", stories[0].getStory(), "Returned incorrect story");
         assertEquals("text 2", stories[1].getStory(), "Returned incorrect story");
