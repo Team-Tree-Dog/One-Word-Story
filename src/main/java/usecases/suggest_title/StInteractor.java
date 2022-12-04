@@ -41,7 +41,15 @@ public class StInteractor {
      */
     public class StThread implements Runnable{
         private StInputData data;
-        private StOutputBoundary boundary;
+
+        /**
+         * Constructor for the thread.
+         * @param data      the input data for the thread. Contains the ID of the story, the request to change title,
+         *                  and the user-suggested title.
+         */
+        public StThread(StInputData data) {
+            this.data = data;
+        }
 
         /**
          * The implementation of the run() method for this Thread. Performs all the tasks as specified in the
@@ -111,7 +119,7 @@ public class StInteractor {
                 }
             }
             // this is the end of the if ... else if ... else block that handles the various cases and creates the
-            // output data accodingly
+            // output data accordingly
 
 
             //passes the output data to the presenter
