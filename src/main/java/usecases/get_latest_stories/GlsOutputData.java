@@ -1,5 +1,6 @@
 package usecases.get_latest_stories;
 
+import usecases.Response;
 import usecases.StoryData;
 
 /**
@@ -8,13 +9,15 @@ import usecases.StoryData;
 public class GlsOutputData {
 
     private final StoryData[] stories;
+    private final Response res;
 
     /**
      * Constructor for GlsOutputData
      * @param stories StoryData
      */
-    public GlsOutputData (StoryData[] stories) {
+    public GlsOutputData (StoryData[] stories, Response res) {
         this.stories = stories;
+        this.res = res;
     }
 
     /**
@@ -25,4 +28,6 @@ public class GlsOutputData {
     public StoryData[] getStories(){
         return this.stories;
     }
+
+    public Response getRes() { return res; }
 }

@@ -45,15 +45,15 @@ public class GlsInteractorTests {
     /**
      * Customizable class to imitate repository with stories during testing
      */
-    static class CustomizableGlsGateway implements GlsGateway {
+    static class CustomizableGlsGateway implements GlsGatewayStory {
 
-        private final GlsGatewayOutputData data;
+        private final StoryData[] data;
 
         public CustomizableGlsGateway(StoryData[] stories) {
-            this.data = new GlsGatewayOutputData(stories);
+            this.data = stories;
         }
 
-        public GlsGatewayOutputData getAllStories() {
+        public StoryData[] getAllStories() {
             return data;
         }
     }
@@ -61,7 +61,7 @@ public class GlsInteractorTests {
     private static final String[] authors = {"Jeremy", "Stephen"};
 
     GlsOutputBoundary pres;
-    GlsGateway repo;
+    GlsGatewayStory repo;
 
     /**
      * In the setup, we only initialize our repository with stories
