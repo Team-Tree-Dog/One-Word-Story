@@ -1,14 +1,19 @@
 package usecases.get_latest_stories;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import usecases.RepoRes;
+import usecases.Response;
 import usecases.StoryRepoData;
 import usecases.ThreadRegister;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,14 +52,14 @@ public class GlsInteractorTests {
      */
     static class CustomizableGlsGateway implements GlsGatewayStory {
 
-        private final StoryRepoData[] data;
+        private final List<StoryRepoData> data;
 
-        public CustomizableGlsGateway(StoryRepoData[] stories) {
+        public CustomizableGlsGateway(List<StoryRepoData> stories) {
             this.data = stories;
         }
 
-        public StoryRepoData[] getAllStories() {
-            return data;
+        public @NotNull RepoRes<StoryRepoData> getAllStories() {
+            return new RepoRes<StoryRepoData>(Response.getSuccessful(""), data);
         }
     }
 
@@ -78,7 +83,7 @@ public class GlsInteractorTests {
         StoryRepoData sd3 = new StoryRepoData("text 3", authors, dt3, "title 3", 3);
         StoryRepoData[] stories = {sd1, sd2, sd3};
 
-        repo = new CustomizableGlsGateway(stories);
+        repo = new CustomizableGlsGateway(Arrays.asList(stories));
     }
 
     @AfterEach

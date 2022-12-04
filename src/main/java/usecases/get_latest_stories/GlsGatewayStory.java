@@ -1,5 +1,7 @@
 package usecases.get_latest_stories;
 
+import org.jetbrains.annotations.NotNull;
+import usecases.RepoRes;
 import usecases.StoryRepoData;
 
 /**
@@ -9,7 +11,9 @@ import usecases.StoryRepoData;
 
 public interface GlsGatewayStory {
     /**
-     * @return all stories from the repository, or null if the DB failed in some way
+     * @return all stories from the repository in the RepoRes wrapper object. If repo operation
+     *      * fails, RepoRes will reflect it
      */
-    StoryRepoData[] getAllStories ();
+    @NotNull
+    RepoRes<StoryRepoData> getAllStories ();
 }

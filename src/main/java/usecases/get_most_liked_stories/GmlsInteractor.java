@@ -1,9 +1,6 @@
 package usecases.get_most_liked_stories;
 
-import usecases.InterruptibleThread;
-import usecases.Response;
-import usecases.StoryRepoData;
-import usecases.ThreadRegister;
+import usecases.*;
 
 import java.util.Arrays;
 import java.util.*;
@@ -53,18 +50,20 @@ public class GmlsInteractor implements GmlsInputBoundary {
          */
         @Override
         public void threadLogic() {
-            StoryRepoData[] stories = repo.getAllStories(); // Can be null if DB fails
+            RepoRes<StoryRepoData> res = repo.getAllStories();
 
             // DB Has failed to get the stories
-            if (stories == null) {
+            if (!res.isSuccess()) {
                 pres.putStories(new GmlsOutputData(null,
                         Response.getFailure("DB Failed to retrieve stories")));
             }
 
             // DB Has gotten the stories
             else {
+                StoryRepoData[] stories = res.getRows().toArray(new StoryRepoData[0]);
+
                 StoryRepoData[] outputStories = sortAndExtractStories(stories, this.data);
-                pres.putStories(new GmlsOutputData(outputStories,
+                pres.putStories(new GmlsOutputData(Arrays.asList(outputStories),
                         Response.getSuccessful("Stories successfully extracted")));
             }
         }

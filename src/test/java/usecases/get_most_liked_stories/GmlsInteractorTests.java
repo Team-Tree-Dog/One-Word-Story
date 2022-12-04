@@ -1,14 +1,19 @@
 package usecases.get_most_liked_stories;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import usecases.RepoRes;
+import usecases.Response;
 import usecases.StoryRepoData;
 import usecases.ThreadRegister;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,14 +52,14 @@ public class GmlsInteractorTests {
      */
     class CustomizableGmlsGateway implements GmlsGatewayStory {
 
-        private final StoryRepoData[] data;
+        private final List<StoryRepoData> data;
 
-        public CustomizableGmlsGateway(StoryRepoData[] stories) {
+        public CustomizableGmlsGateway(List<StoryRepoData> stories) {
             this.data = stories;
         }
 
-        public StoryRepoData[] getAllStories() {
-            return data;
+        public @NotNull RepoRes<StoryRepoData> getAllStories() {
+            return new RepoRes<StoryRepoData>(Response.getSuccessful(""), data);
         }
     }
 
@@ -76,7 +81,7 @@ public class GmlsInteractorTests {
         StoryRepoData sd3 = new StoryRepoData("text 3", authors, dt, "title 3", 3);
 
         StoryRepoData[] stories = {sd1, sd2, sd3};
-        repo = new CustomizableGmlsGateway(stories);
+        repo = new CustomizableGmlsGateway(Arrays.asList(stories));
     }
 
     @AfterEach
@@ -107,7 +112,7 @@ public class GmlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        StoryRepoData[] stories = receivedData.getStories();
+        StoryRepoData[] stories = receivedData.getStories().toArray(new StoryRepoData[0]);
         assertEquals(2, stories.length, "Returned wrong number of stories");
         assertEquals("text 3", stories[0].getStory(), "Returned incorrect story");
         assertEquals("text 2", stories[1].getStory(), "Returned incorrect story");
@@ -136,7 +141,7 @@ public class GmlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        StoryRepoData[] stories = receivedData.getStories();
+        StoryRepoData[] stories = receivedData.getStories().toArray(new StoryRepoData[0]);
         assertEquals(2, stories.length, "Returned wrong number of stories");
         assertEquals( "text 3", stories[0].getStory(), "Returned incorrect story");
         assertEquals("text 2", stories[1].getStory(), "Returned incorrect story");
@@ -165,7 +170,7 @@ public class GmlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        StoryRepoData[] stories = receivedData.getStories();
+        StoryRepoData[] stories = receivedData.getStories().toArray(new StoryRepoData[0]);
         assertEquals(2, stories.length, "Returned wrong number of stories");
         assertEquals("text 2", stories[0].getStory(), "Returned incorrect story");
         assertEquals("text 1", stories[1].getStory(), "Returned incorrect story");
@@ -194,7 +199,7 @@ public class GmlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        StoryRepoData[] stories = receivedData.getStories();
+        StoryRepoData[] stories = receivedData.getStories().toArray(new StoryRepoData[0]);
         assertEquals(3, stories.length, "Returned wrong number of stories");
         assertEquals( "text 3", stories[0].getStory(), "Returned incorrect story");
         assertEquals( "text 2", stories[1].getStory(), "Returned incorrect story");
@@ -223,7 +228,7 @@ public class GmlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        StoryRepoData[] stories = receivedData.getStories();
+        StoryRepoData[] stories = receivedData.getStories().toArray(new StoryRepoData[0]);
         assertEquals(0, stories.length, "Returned wrong number of stories");
     }
 
@@ -250,7 +255,7 @@ public class GmlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        StoryRepoData[] stories = receivedData.getStories();
+        StoryRepoData[] stories = receivedData.getStories().toArray(new StoryRepoData[0]);
         assertEquals(3, stories.length, "Returned wrong number of stories");
         assertEquals( "text 3", stories[0].getStory(), "Returned incorrect story");
         assertEquals( "text 2", stories[1].getStory(), "Returned incorrect story");

@@ -1,11 +1,10 @@
 package usecases.get_latest_stories;
 
-import usecases.InterruptibleThread;
-import usecases.Response;
-import usecases.StoryRepoData;
-import usecases.ThreadRegister;
+import usecases.*;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Interactor for Get Latest Stories use-case
@@ -58,16 +57,18 @@ public class GlsInteractor implements GlsInputBoundary{
 
         @Override
         public void threadLogic() {
-            StoryRepoData[] stories = repo.getAllStories();
+            RepoRes<StoryRepoData> res = repo.getAllStories();
 
             // DB Failed to get stories
-            if (stories == null) {
+            if (!res.isSuccess()) {
                 pres.putStories(new GlsOutputData(null,
                         Response.getFailure("DB Failed to get stories")));
             }
 
             // DB Successfully retrieved stories
             else {
+                StoryRepoData[] stories = res.getRows().toArray(new StoryRepoData[0]);
+
                 Arrays.sort(stories);
 
                 if (data.getNumToGet() != null && data.getNumToGet() <= stories.length){

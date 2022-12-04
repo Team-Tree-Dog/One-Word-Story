@@ -41,24 +41,11 @@ public class LsInteractor implements LsInputBoundary{
             this.data = data;
         }
 
-        private Response getResponseBasedOnSuccess(boolean success) {
-            Response.ResCode code;
-            String message;
-            if (success) {
-                 code = Response.ResCode.SUCCESS;
-                 message = SUCCESS_RESPONSE;
-            } else {
-                code = Response.ResCode.FAIL;
-                message = FAIL_RESPONSE;
-            }
-            return new Response(code, message);
-        }
-
         @Override
         public void threadLogic() {
             // Don't interrupt during DB write
             setBlockInterrupt(true);
-            Response response = getResponseBasedOnSuccess(repository.likeStory(data.getStoryId()));
+            Response response = repository.likeStory(data.getStoryId());
             setBlockInterrupt(false);
 
             LsOutputData outputData = new LsOutputData(data.getRequestId(), response);

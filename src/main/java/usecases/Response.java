@@ -39,7 +39,8 @@ public class Response {
         OUT_OF_TURN,
         ID_IN_USE,
         INVALID_DISPLAY_NAME,
-        INVALID_WORD
+        INVALID_WORD,
+        STORY_NOT_FOUND
     }
 
     private final String message;
