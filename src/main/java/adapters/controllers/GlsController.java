@@ -16,8 +16,8 @@ public class GlsController {
     }
 
     /**
-     * Provide the number(otherwise null) latest stories one wants to get from the repo
-     * @param numToget number of latest stories to get
+     * Provide the number(otherwise null) the latest stories one wants to get from the repo
+     * @param numToget number of the latest stories to get
      */
 
     public void getLatestStories(Integer numToget) {

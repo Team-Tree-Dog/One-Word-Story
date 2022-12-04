@@ -1,17 +1,20 @@
 package entities;
 
-import exceptions.*;
 import entities.games.Game;
 import entities.games.GameFactory;
+import exceptions.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Core entity which keeps track of all the games which are running
- * Every use case has access to an instance of this shared gamestate
+ * Every use case has access to an instance of this shared game state
  */
 public class LobbyManager {
 
@@ -45,7 +48,7 @@ public class LobbyManager {
     private final GameFactory gameFac;
     private final PlayerFactory playerFac;
     private final Timer sortPlayersTimer;
-    private boolean startedSortTimer;
+    private final boolean startedSortTimer;
     private final Lock playerPoolLock;
     private final Lock gameLock;
 
@@ -57,7 +60,7 @@ public class LobbyManager {
         this.gameFac = gameFac;
         this.playerFac = playerFac;
         this.playerPool = new CopyOnWriteArrayList<>();
-        this.sortPlayersTimer = new Timer();
+        this.sortPlayersTimer = new Timer(true);
         this.startedSortTimer = false;
         this.playerPoolLock = new ReentrantLock();
         this.gameLock = new ReentrantLock();
@@ -82,8 +85,8 @@ public class LobbyManager {
     /**
      * Wrapper for switchTurn
      */
-    public void switchTurn() {
-        game.switchTurn();
+    public boolean switchTurn() {
+        return game.switchTurn();
     }
 
     /**
@@ -107,7 +110,7 @@ public class LobbyManager {
      * @return a shallow copy of the player pool
      */
     public List<PlayerObserverLink> getPool () {
-        return new ArrayList<PlayerObserverLink>(playerPool);
+        return new ArrayList<>(playerPool);
     }
 
     /**
