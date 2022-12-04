@@ -1,15 +1,13 @@
 package usecases.get_most_liked_stories;
 
-import usecases.InterruptibleThread;
-import usecases.StoryData;
-import usecases.ThreadRegister;
+import usecases.*;
 
 import java.util.Arrays;
 import java.util.*;
 
 public class GmlsInteractor implements GmlsInputBoundary {
     private final GmlsOutputBoundary pres;
-    private final GmlsGateway repo;
+    private final GmlsGatewayStory repo;
 
     /**
      * The ThreadRegister that keeps track of all the running use case threads
@@ -23,7 +21,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
      * @param pres the output boundary to update the view model
      * @param repo the repository from which the stories will be extracted
      */
-    public GmlsInteractor(GmlsOutputBoundary pres, GmlsGateway repo, ThreadRegister register) {
+    public GmlsInteractor(GmlsOutputBoundary pres, GmlsGatewayStory repo, ThreadRegister register) {
         this.pres = pres;
         this.repo = repo;
         this.register = register;
@@ -52,16 +50,28 @@ public class GmlsInteractor implements GmlsInputBoundary {
          */
         @Override
         public void threadLogic() {
-            GmlsGatewayOutputData gatewayOutputData = repo.getAllStories();
-            StoryData[] OUTPUT_STORIES = sortAndExtractStories(gatewayOutputData.getStories(), this.data);
+            RepoRes<StoryRepoData> res = repo.getAllStories();
 
-            pres.putStories(new GmlsOutputData(OUTPUT_STORIES));
+            // DB Has failed to get the stories
+            if (!res.isSuccess()) {
+                pres.putStories(new GmlsOutputData(null,
+                        Response.getFailure("DB Failed to retrieve stories")));
+            }
+
+            // DB Has gotten the stories
+            else {
+                StoryRepoData[] stories = res.getRows().toArray(new StoryRepoData[0]);
+
+                StoryRepoData[] outputStories = sortAndExtractStories(stories, this.data);
+                pres.putStories(new GmlsOutputData(Arrays.asList(outputStories),
+                        Response.getSuccessful("Stories successfully extracted")));
+            }
         }
 
         /**
          * Comparator class to sort Stories in descending order.
          */
-        public class orderStoriesByLikes implements Comparator<StoryData> {
+        public class orderStoriesByLikes implements Comparator<StoryRepoData> {
             /**
              * @param stories1 the first story to be compared.
              * @param stories2 the second story to be compared.
@@ -70,7 +80,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
              * n < 0 if stories 1 has more likes than stories2,
              * n = 0 if stories1 and stories2 have the same number of likes.
              */
-            public int compare(StoryData stories1, StoryData stories2) {
+            public int compare(StoryRepoData stories1, StoryRepoData stories2) {
                 int COMPARE_LIKES = Integer.compare(stories2.getLikes(), stories1.getLikes());
                 if (COMPARE_LIKES == 0) {
                     return stories2.getPublishTimeStamp().compareTo(stories1.getPublishTimeStamp());
@@ -85,7 +95,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
          *
          * @param stories the stories to be sorted in descending order
          */
-        private void sortStoriesByLikes(StoryData[] stories) {
+        private void sortStoriesByLikes(StoryRepoData[] stories) {
             orderStoriesByLikes COMPARATOR = new orderStoriesByLikes();
             Arrays.sort(stories, COMPARATOR);
         }
@@ -98,7 +108,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
          * @param data    the input data specifying the lower and upper bounds for the range
          * @return the range of stories sorted in descending
          */
-        private StoryData[] sortAndExtractStories(StoryData[] stories, GmlsInputData data) {
+        private StoryRepoData[] sortAndExtractStories(StoryRepoData[] stories, GmlsInputData data) {
             sortStoriesByLikes(stories);
             int[] INDICES = getIndices(stories, data.getLowerInclusive(), data.getUpperExclusive());
             return Arrays.copyOfRange(stories, INDICES[0], INDICES[1]);
@@ -144,7 +154,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
          * 2. the element at index 1 is the 'to' index for the subarray of stories that we want to extract
          * The method returns [0,0] if there are no stories that fall within the bounds
          */
-        private int[] getIndices(StoryData[] stories, Integer lower, Integer upper) {
+        private int[] getIndices(StoryRepoData[] stories, Integer lower, Integer upper) {
             int INDEX_LOWER = 0;
             int INDEX_UPPER = 0;
             // the following loop iterates from the start of the array till we find an story
