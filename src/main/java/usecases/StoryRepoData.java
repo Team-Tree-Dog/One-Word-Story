@@ -2,7 +2,7 @@ package usecases;
 
 import java.time.LocalDateTime;
 
-public class StoryData implements Comparable<StoryData> {
+public class StoryRepoData implements Comparable<StoryRepoData> {
 
     private final String title;
     private final String story;
@@ -18,7 +18,7 @@ public class StoryData implements Comparable<StoryData> {
      * @param title title of the story
      * @param numLikes number of likes corresponding to a story
      */
-    public StoryData(String story, String[] authors, LocalDateTime dt1, String title, int numLikes) {
+    public StoryRepoData(String story, String[] authors, LocalDateTime dt1, String title, int numLikes) {
         this.title = title;
         this.story = story;
         this.authorNames = authors;
@@ -70,7 +70,7 @@ public class StoryData implements Comparable<StoryData> {
      * published date of other and this
      */
     @Override
-    public int compareTo(StoryData other) {
+    public int compareTo(StoryRepoData other) {
         return other.publishTimeStamp.compareTo(this.publishTimeStamp);
     }
 }

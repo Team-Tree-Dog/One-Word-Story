@@ -1,6 +1,6 @@
 package usecases.join_public_lobby;
 
-import entities.DisplayNameChecker;
+import entities.display_name_checkers.DisplayNameChecker;
 import entities.LobbyManager;
 import entities.Player;
 import entities.PlayerFactory;
@@ -13,11 +13,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import usecases.Response;
+import usecases.ThreadRegister;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 public class JoinPublicLobbyTest {
 
@@ -26,6 +28,8 @@ public class JoinPublicLobbyTest {
     private final GameFactory gameFactory = new GameFactoryRegular();
     private final PlayerFactory playerFactory = new PlayerFactory(simpleDisplayNameChecker);
     private JplInteractor interactor;
+
+    private static final ThreadRegister register = new ThreadRegister();
 
     private static class TestOutputBoundary implements JplOutputBoundary {
 
@@ -47,6 +51,11 @@ public class JoinPublicLobbyTest {
         public void cancelled(JplOutputDataResponse dataCancelled) {
             cancelledResponses.add(dataCancelled);
         }
+
+        @Override
+        public void outputShutdownServer() {
+            throw new RuntimeException("This method is not implemented and should not be called");
+        }
     }
 
     private static class SimpleDisplayNameChecker implements DisplayNameChecker {
@@ -59,7 +68,7 @@ public class JoinPublicLobbyTest {
     @BeforeEach
     public void setupJplInteractor(){
         LobbyManager lobbyManager = new LobbyManager(this.playerFactory, this.gameFactory);
-        this.interactor = new JplInteractor(lobbyManager, this.testOutputBoundary);
+        this.interactor = new JplInteractor(lobbyManager, this.testOutputBoundary, register);
     }
 
     /**
