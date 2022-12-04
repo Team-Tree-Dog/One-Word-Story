@@ -7,11 +7,11 @@ import usecases.suggest_title.*;
  * to suggest title on the given input boundary.
  */
 public class StController {
-    StInputBoundary st;
+    private static StInputBoundary st;
 
     /**
      * Constructor for StController.
-     * @param st    the input boundary for the controller
+     * @param st the input boundary for the controller
      */
     public StController(StInputBoundary st) {
         this.st = st;

@@ -36,36 +36,77 @@ public class StInteractor {
          * description for StThread.
          */
         public void run(){
+            /**
+             * Step 1: Process title input: We retrieve the title from the input data, trim leading and trailing
+             * whitespaces, and replace repeated whitespaces with a single whitespace.
+             */
             String title = data.getTitle().trim().replaceAll("\\s{2,}", " ");
+
+            /**
+             * Step 2: Create Gateway Input Data: create an StGatewayInputDataGet object that corresponds to the
+             * process of getting all previously suggested titles from the repo, and pass it into repo.getAllTitles()
+             * to get all previously suggested titles.
+             */
             StGatewayInputDataGet inputDataGet = new StGatewayInputDataGet(data.getStoryId());
             String[] suggestedTitles = repo.getAllTitles(inputDataGet).getSuggestedTitles();
+
+
+            /* outputData is a VARIABLE that is initialized differently depending on the appropriate response
+             * for each case (title is invalid, title was already suggested, success or failure of adding title) */
             StOutputData outputData;
-            boolean isValid = titleChecker.checkValid(title);
-            boolean alreadySuggested = Arrays.asList(suggestedTitles).contains(title);
-            if (!isValid){
+
+
+            /**
+             * Step 3: Depending on the case (title is invalid, title was already suggested,
+             * success or failure of adding title), suggest the title (if not invalid or previously suggested)
+             * and create the output data.
+             */
+            if (!titleChecker.checkValid(title)){
+                // check if the title is not valid and initialize output Data accordingly
                 String mess = String.format("'%1$s' is invalid", data.getTitle());
                 Response res = new Response(Response.ResCode.INVALID_TITLE,mess);
                 outputData = new StOutputData(data.getRequestId(), res);
             }
-            else if (alreadySuggested) {
+
+
+            else if (Arrays.asList(suggestedTitles).contains(title)) {
+                // check if the title was already suggested and initialize output data accordingly
                 String mess = String.format("'%1$s' was already suggested", data.getTitle());
                 Response res = new Response(Response.ResCode.TITLE_ALREADY_SUGGESTED,mess);
                 outputData = new StOutputData(data.getRequestId(), res);
             }
+
+
             else {
+                // the body of this else block carries out the processes to suggest the title once we have ensured
+                // that the title is valid and has not been already suggested.
                 StGatewayInputDataSuggest INPUT_DATA_SUGGEST =
                         new StGatewayInputDataSuggest(data.getStoryId(), data.getTitle());
                 StGatewayOutputDataSuccess SUCCESS_DATA = repo.suggestTitle(INPUT_DATA_SUGGEST);
+
+                // this if else statement creates the appropriate output data depending on whether the suggested title
+                // was successfully added.
                 if (SUCCESS_DATA.getSuccess()) {
                     String mess = String.format("'%1$s' was successfully added to suggested titles", data.getTitle());
                     Response res = new Response(Response.ResCode.SUCCESS, mess);
                     outputData = new StOutputData(data.getRequestId(), res);
-                } else {
+                }
+
+                else {
                     String mess = String.format("Sorry. '%1$s' was not added", data.getTitle());
                     Response res = new Response(Response.ResCode.FAIL, mess);
                     outputData = new StOutputData(data.getRequestId(), res);
                 }
             }
+            // this is the end of the if ... else if ... else block that handles the various cases and creates the
+            // output data accodingly
+
+
+            //passes the output data to the presenter
+            /**
+             * Step 4: Pass the output data to the presenter, which updates the View Model that notifies the user
+             * of the outcome of their request to suggest a title.
+             */
             pres.suggestTitleOutput(outputData);
         }
 

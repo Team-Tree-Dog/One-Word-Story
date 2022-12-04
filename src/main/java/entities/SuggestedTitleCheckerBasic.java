@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
     static ArrayList<Character> VALID_PUNCTUATION =
             new ArrayList<>(Arrays.asList(',','.','"','\'',':',';',')','(','/','-',' '));
-    static int MINIMUM_TITLE_LENGTH = 10;
+    static int MINIMUM_TITLE_LENGTH = 3;
     static int MAXIMUM_TITLE_LENGTH = 50;
 
     /*
@@ -21,7 +21,7 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
      * 2. Must contain at least one letter.
      * 3. Cannot contain more than four consonants in a row.
      * 4. Cannot repeat a character more than 4 times in a row.
-     * 5. Must be between 10 and 50 characters long, inclusive.
+     * 5. Must be between 3 and 50 characters long, inclusive.
      */
 
     /**
@@ -56,15 +56,15 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
      * @return  true if and only if this character is valid
      */
     private boolean isValidCharacter(char c){
-        boolean IS_ALPHANUMERIC = Character.isLetterOrDigit(c);
-        boolean IS_PUNCTUATION = false;
+        boolean isAlphanumeric = Character.isLetterOrDigit(c);
+        boolean isPunctuation = false;
         for (char symbol: VALID_PUNCTUATION) {
             if (c == symbol) {
-                IS_PUNCTUATION = true;
+                isPunctuation = true;
                 break;
             }
         }
-        return (IS_ALPHANUMERIC || IS_PUNCTUATION);
+        return (isAlphanumeric || isPunctuation);
     }
 
     /**
@@ -143,11 +143,11 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
      * @return      an array of type char and length 4, where char[i] = title.charAt(index + i)
      */
     private char[] extractNextFourLetters(String title, int index){
-        char[] TO_RETURN = new char[4];
+        char[] toReturn = new char[4];
         for (int i = 0; i < 4; i ++){
-            TO_RETURN[i] = title.charAt(index + i);
+            toReturn[i] = title.charAt(index + i);
         }
-        return TO_RETURN;
+        return toReturn;
     }
 
     /**
