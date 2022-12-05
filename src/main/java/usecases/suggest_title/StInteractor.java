@@ -1,10 +1,8 @@
 package usecases.suggest_title;
-import entities.SuggestedTitleChecker;
+import entities.suggested_title_checkers.SuggestedTitleChecker;
 import usecases.*;
-import usecases.shutdown_server.SsOutputBoundary;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * The interactor for this use case. Contains a thread that carries out the processes involved in suggesting a story\

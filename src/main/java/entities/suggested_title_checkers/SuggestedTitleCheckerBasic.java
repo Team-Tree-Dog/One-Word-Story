@@ -1,4 +1,4 @@
-package entities;
+package entities.suggested_title_checkers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -140,6 +140,7 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
      * @return  true if and only if c is a consonant, i.e. c is a letter and is not a vowel.
      */
     private boolean isConsonant(char c){
-        return (Character.isLetter(c) && !(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'));
+        return (Character.isLetter(c) &&
+                !(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u' || c == 'y'));
     }
 }

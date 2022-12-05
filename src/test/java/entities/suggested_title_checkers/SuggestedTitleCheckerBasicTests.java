@@ -1,4 +1,4 @@
-package entities;
+package entities.suggested_title_checkers;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

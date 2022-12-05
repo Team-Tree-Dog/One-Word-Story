@@ -1,6 +1,6 @@
 package usecases.suggest_title;
 
-import entities.SuggestedTitleChecker;
+import entities.suggested_title_checkers.SuggestedTitleChecker;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
