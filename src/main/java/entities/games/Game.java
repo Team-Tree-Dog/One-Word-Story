@@ -17,7 +17,22 @@ import java.util.Timer;
 
 /**
  * An abstract game
- * Every type of game extends this class
+ * Every type of game extends this class.
+ * <br> <br>
+ * <h2>Thread Safety:</h2>
+ * <p>
+ *     The game is not a thread safe object on its own. A game must
+ *     only exist inside the LobbyManager which possesses a game lock.
+ *     The lobby manager does not give direct access to the game object
+ *     and instead contains pertinent wrappers for public use. It is
+ *     LobbyManager's job to maintain thread safety with the game object.
+ * </p>
+ * <p>
+ *     However, some code such as RG engages with the Game object directly.
+ *     If this is the case, such code should also request the LobbyManger's
+ *     game lock to be injected and should engage the lock for all method
+ *     calls in Game, since Game is by default not thread safe
+ * </p>
  */
 public abstract class Game implements GameReadOnly {
 
@@ -64,8 +79,6 @@ public abstract class Game implements GameReadOnly {
     }
 
     /**
-     * <br> <br>
-     * <b><u>THREAD SAFETY:</u></b> Not safe; Does not engage any locks
      * @return Single string of the entire story in the game currently
      */
     @Override
@@ -75,8 +88,6 @@ public abstract class Game implements GameReadOnly {
 
     /**
      * Thin wrapper to add a word to the story
-     * <br> <br>
-     * <b><u>THREAD SAFETY:</u></b> Not safe; Does not engage any locks
      * @param word Word string to be added
      * @param author Player who submitted this word
      */
@@ -92,24 +103,18 @@ public abstract class Game implements GameReadOnly {
     }
 
     /**
-     * <br> <br>
-     * <b><u>THREAD SAFETY:</u></b> Not safe; Does not engage any locks
      * @return Returns how many seconds is given for every player per turn (therefore, every player gets the same
      * amount of time every turn)
      */
     public int getSecondsPerTurn() {return secondsPerTurn;}
 
     /**
-     * <br> <br>
-     * <b><u>THREAD SAFETY:</u></b> Not safe; Does not engage any locks
      * @return Returns how many seconds are left for the current turn, or null if game timer not yet started
      */
     public int getSecondsLeftInCurrentTurn() {return secondsLeftInCurrentTurn;}
 
     /**
      * Sets the seconds left in the current turn
-     * <br> <br>
-     * <b><u>THREAD SAFETY:</u></b> Not safe; Does not engage any locks
      * @param newSeconds The amount of seconds to set the current turn for
      */
     public void setSecondsLeftInCurrentTurn(int newSeconds) {
