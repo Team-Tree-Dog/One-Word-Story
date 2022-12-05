@@ -41,8 +41,6 @@ public class InMemoryCommentsRepo implements GscGatewayComments, CagGatewayComme
         public int getCommentId() { return commentId; }
         public String getComment() { return comment; }
         public int getStoryId() { return storyId; }
-
-        public void setComment(@NotNull String comment) { this.comment = comment; }
     }
 
     private final List<CommentsTableRow> commentsTable;
@@ -63,7 +61,7 @@ public class InMemoryCommentsRepo implements GscGatewayComments, CagGatewayComme
     @NotNull
     public Response commentAsGuest (int storyId, @NotNull String displayName, @NotNull String comment) {
         commentsTable.add(new CommentsTableRow(storyId, displayName, comment));
-        return Response.getSuccessful("Comment successfully added");
+        return Response.getSuccessful("Comment successfully added to Story ID" + storyId);
     }
 
     /**

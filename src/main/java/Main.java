@@ -11,6 +11,9 @@ import entities.display_name_checkers.DisplayNameChecker;
 import entities.display_name_checkers.DisplayNameCheckerBasic;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
+import frameworks_drivers.repository.in_memory.InMemoryCommentsRepo;
+import frameworks_drivers.repository.in_memory.InMemoryStoryRepo;
+import frameworks_drivers.repository.in_memory.InMemoryTitlesRepo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import usecases.*;
@@ -58,14 +61,15 @@ public class Main {
         SwPresenter swPresenter = new SwPresenter(viewM);
         StPresenter stPresenter = new StPresenter(viewM);
 
-        // Create desired comment checker for injection
+        // Create desired comment checker, display checker, and title checker for injection
         CommentChecker commentChecker = new CommentCheckerBasic();
-
-        // Create desired display name checker for injection
         DisplayNameChecker displayChecker = new DisplayNameCheckerBasic();
-
-        // Create desired story title checker for injection
         SuggestedTitleChecker titleChecker = new SuggestedTitleCheckerBasic();
+
+        // Create desired Story, Titles, and Comments repos
+        InMemoryTitlesRepo titlesRepo = new InMemoryTitlesRepo();
+        InMemoryCommentsRepo commentsRepo = new InMemoryCommentsRepo();
+        InMemoryStoryRepo storyRepo = new InMemoryStoryRepo();
 
         // Factory which accepts ALL display names with at least 3 characters (temporary)
         PlayerFactory playerFac = new PlayerFactory(displayChecker);
@@ -81,28 +85,16 @@ public class Main {
         sp.startTimer();
 
         // Use cases called by users
-
-        CagInteractor cag = new CagInteractor(cagPresenter, (storyId, displayName, comment) -> null,
-                commentChecker, displayChecker, register); // TODO: Inject repo
+        CagInteractor cag = new CagInteractor(cagPresenter, commentsRepo, commentChecker, displayChecker, register);
         DcInteractor dc = new DcInteractor(manager, dcPresenter, register);
-        GlsInteractor gls = new GlsInteractor(glsPresenter, () -> null, register); // TODO: Inject repo
-        GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, () -> null, register); // TODO: Inject repo
-        GscInteractor gsc = new GscInteractor(gscPresenter, storyId -> null, register); // TODO: Inject repo
+        GlsInteractor gls = new GlsInteractor(glsPresenter, storyRepo, register);
+        GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, storyRepo, register);
+        GscInteractor gsc = new GscInteractor(gscPresenter, commentsRepo, register);
         JplInteractor jpl = new JplInteractor(manager, jplPresenter, register);
-        LsInteractor ls = new LsInteractor(lsPresenter, (e) -> null, register); // TODO: Inject repo
+        LsInteractor ls = new LsInteractor(lsPresenter, storyRepo, register);
         SsInteractor ss = new SsInteractor(register, ssPresenter);
         SwInteractor sw = new SwInteractor(swPresenter, manager, register);
-        StInteractor st = new StInteractor(stPresenter, new StGatewayTitles() {
-            @Override
-            public @NotNull Response suggestTitle(int storyId, @Nullable String titleSuggestion) {
-                return null;
-            }
-
-            @Override
-            public @NotNull RepoRes<TitleRepoData> getAllTitles(int storyId) {
-                return null;
-            }
-        }, titleChecker, register);
+        StInteractor st = new StInteractor(stPresenter, titlesRepo, titleChecker, register);
 
 
         // Controllers
