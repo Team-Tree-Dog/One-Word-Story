@@ -7,11 +7,15 @@ import entities.display_name_checkers.DisplayNameChecker;
 import entities.display_name_checkers.DisplayNameCheckerBasic;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
+import usecases.RepoRes;
+import usecases.Response;
+import usecases.StoryRepoData;
 import usecases.ThreadRegister;
 import usecases.disconnecting.DcInteractor;
 import usecases.get_latest_stories.GlsInteractor;
 import usecases.get_most_liked_stories.GmlsInteractor;
 import usecases.join_public_lobby.JplInteractor;
+import usecases.like_story.LsGatewayStory;
 import usecases.like_story.LsInteractor;
 import usecases.pull_data.PdInteractor;
 import usecases.pull_game_ended.PgeInteractor;
@@ -65,10 +69,16 @@ public class Main {
         // Use cases called by users
 
         DcInteractor dc = new DcInteractor(manager, dcPresenter, register);
-        GlsInteractor gls = new GlsInteractor(glsPresenter, () -> null, register); // TODO: Inject repo
-        GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, () -> null, register); // TODO: Inject repo
+        GlsInteractor gls = new GlsInteractor(glsPresenter,
+                () -> new RepoRes<StoryRepoData>(Response.getFailure("Dummy Lambda, Always failure")),
+                register); // TODO: Inject repo
+        GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter,
+                () -> new RepoRes<StoryRepoData>(Response.getFailure("Dummy Lambda, Always failure")),
+                register); // TODO: Inject repo
         JplInteractor jpl = new JplInteractor(manager, jplPresenter, register);
-        LsInteractor ls = new LsInteractor(lsPresenter, (e) -> true, register); // TODO: Inject repo
+        LsInteractor ls = new LsInteractor(lsPresenter,
+                storyId -> Response.getSuccessful("Dummy Lambda, Always successful"),
+                register); // TODO: Inject repo
         SsInteractor ss = new SsInteractor(register, ssPresenter);
         SwInteractor sw = new SwInteractor(swPresenter, manager, register);
 

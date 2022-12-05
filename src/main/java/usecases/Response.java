@@ -42,6 +42,7 @@ public class Response {
         INVALID_WORD,
         INVALID_TITLE,
         TITLE_ALREADY_SUGGESTED,
+        STORY_NOT_FOUND
     }
 
     private final String message;
