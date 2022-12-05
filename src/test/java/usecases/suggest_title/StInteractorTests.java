@@ -56,10 +56,6 @@ public class StInteractorTests {
      */
     static class CustomizableStGateway implements StGateway {
 
-        private Integer receivedStoryIdST;
-        private String receivedTitleSuggestion;
-        private Integer receivedStoryIdGAT;
-
         private final boolean suggestTitleSuccess;
         private final boolean getAllTitlesReturnNull;
 
@@ -68,9 +64,6 @@ public class StInteractorTests {
          * @param getAllTitlesReturnNull detirmines return value for getAllTitles
          */
         public CustomizableStGateway(boolean suggestTitleSuccess, boolean getAllTitlesReturnNull) {
-            receivedStoryIdST = null;
-            receivedTitleSuggestion = null;
-            receivedStoryIdGAT = null;
             this.suggestTitleSuccess = suggestTitleSuccess;
             this.getAllTitlesReturnNull = getAllTitlesReturnNull;
         }
@@ -83,12 +76,10 @@ public class StInteractorTests {
          * @return "success" when suggestTitleSuccess is true, and "failure" otherwise
          */
         public Response suggestTitle(int storyId, String titleSuggestion) {
-            receivedStoryIdST = storyId;
-            receivedTitleSuggestion = titleSuggestion;
             if (this.suggestTitleSuccess) {
                 return Response.getSuccessful("Customizable StGateway would accept anything");
             } else {
-                return Response.getSuccessful("Customizable StGateway would reject anything");
+                return Response.getFailure("Customizable StGateway would reject anything");
             }
         }
 
@@ -99,7 +90,6 @@ public class StInteractorTests {
          * @return null when getAllTitlesReturnNull is true, and "duplicate" row otherwise
          */
         public RepoRes<TitleRepoData> getAllTitles(int storyId) {
-            receivedStoryIdGAT = storyId;
 
             Response res = Response.getFailure("Customizable StGateway would reject anything");
             List<TitleRepoData> rows = null;
@@ -252,7 +242,7 @@ public class StInteractorTests {
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
         assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
-        assertEquals(Response.ResCode.INVALID_TITLE, receivedData.getRes().getCode(), "Wrong code");
+        assertEquals(Response.ResCode.TITLE_ALREADY_SUGGESTED, receivedData.getRes().getCode(), "Wrong code");
     }
 
     /**
