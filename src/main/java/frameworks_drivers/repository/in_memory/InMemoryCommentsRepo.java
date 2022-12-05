@@ -2,6 +2,7 @@ package frameworks_drivers.repository.in_memory;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import usecases.RepoRes;
 import usecases.Response;
 
 import java.util.List;
@@ -52,7 +53,8 @@ public class InMemoryCommentsRepo implements GscGatewayComments, CagGatewayComme
     @Override
     @NotNull
     public Response commentAsGuest (int storyId, @NotNull String displayName, @NotNull String comment) {
-        commentsTable.add()
+        commentsTable.add(new CommentsTableRow(storyId, displayName, comment));
+        return Response.getSuccessful("Comment successfully added");
     }
 
     /**
@@ -63,6 +65,6 @@ public class InMemoryCommentsRepo implements GscGatewayComments, CagGatewayComme
     @Override
     @NotNull
     public RepoRes<CommentRepoData> getAllComments (int storyId) {
-
+        RepoRes<CommentRepoData>
     }
 }
