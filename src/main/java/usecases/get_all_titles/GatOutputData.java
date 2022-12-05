@@ -1,6 +1,8 @@
 package usecases.get_all_titles;
 
 import usecases.Response;
+import usecases.TitleRepoData;
+import java.util.*;
 
 public class GatOutputData {
     private List<TitleRepoData> suggestedTitles;
