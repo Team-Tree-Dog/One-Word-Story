@@ -78,9 +78,9 @@ public class GlsInteractorTests {
         LocalDateTime dt2 = LocalDateTime.of(2002, Month.JULY, 29, 19, 30, 40);
         LocalDateTime dt3 = LocalDateTime.of(2003, Month.JULY, 29, 19, 30, 40);
 
-        StoryRepoData sd1 = new StoryRepoData("text 1", authors, dt1, 1);
-        StoryRepoData sd2 = new StoryRepoData("text 2", authors, dt2, 2);
-        StoryRepoData sd3 = new StoryRepoData("text 3", authors, dt3, 3);
+        StoryRepoData sd1 = new StoryRepoData(0, "text 1", authors, dt1, 1);
+        StoryRepoData sd2 = new StoryRepoData(1, "text 2", authors, dt2, 2);
+        StoryRepoData sd3 = new StoryRepoData(2, "text 3", authors, dt3, 3);
         StoryRepoData[] stories = {sd1, sd2, sd3};
 
         repo = new CustomizableGlsGateway(Arrays.asList(stories));

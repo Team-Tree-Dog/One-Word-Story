@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public class StoryRepoData implements Comparable<StoryRepoData> {
 
+    private final int storyId;
     private final String story;
     private final String[] authorNames;
     private final LocalDateTime publishTimeStamp;
@@ -18,7 +19,8 @@ public class StoryRepoData implements Comparable<StoryRepoData> {
      * @param dt1 published date
      * @param numLikes number of likes corresponding to a story
      */
-    public StoryRepoData(String story, String[] authors, LocalDateTime dt1, int numLikes) {
+    public StoryRepoData(int storyId, String story, String[] authors, LocalDateTime dt1, int numLikes) {
+        this.storyId = storyId;
         this.story = story;
         this.authorNames = authors;
         this.publishTimeStamp = dt1;
@@ -29,33 +31,31 @@ public class StoryRepoData implements Comparable<StoryRepoData> {
      * Getter for StoryData
      * @return the story
      */
-    public String getStory() {
-        return story;
-    }
+    public String getStory() { return story; }
 
     /**
      * Getter for StoryData
      * @return author names
      */
-    public String[] getAuthorNames() {
-        return authorNames;
-    }
+    public String[] getAuthorNames() { return authorNames; }
 
     /**
      * Getter for StoryData
      * @return published date
      */
-    public LocalDateTime getPublishTimeStamp() {
-        return publishTimeStamp;
-    }
+    public LocalDateTime getPublishTimeStamp() { return publishTimeStamp; }
 
     /**
      * Getter for StoryData
      * @return likes the story has
      */
-    public int getLikes() {
-        return numberOfLikes;
-    }
+    public int getLikes() { return numberOfLikes; }
+
+    /**
+     * Getter for StoryData
+     * @return id of story
+     */
+    public int getStoryId() { return storyId; }
 
     /**
      * @param other StoryData compared on publishTimeStamp

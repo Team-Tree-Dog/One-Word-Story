@@ -79,7 +79,7 @@ public class InMemoryStoryRepo implements LsGatewayStory, GlsGatewayStory,
         for (StoryTableRow row : storyTable) {
 
             storyData.addRow(new StoryRepoData(
-                    row.getStory(), row.getAuthors(),
+                    row.getStoryId(), row.getStory(), row.getAuthors(),
                     // No idea what offset means, or nanoOfSecond. Just guessing here
                     LocalDateTime.ofEpochSecond((long) row.getPublishUnixTimestamp(),
                             0, ZoneOffset.UTC), row.getLikes()
