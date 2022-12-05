@@ -88,7 +88,7 @@ public class CagInteractor implements CagInputBoundary {
                     output = outputHelper(SUCCESS, "Comment added successfully");
                 } else {
                 // there was a database error, in which case output is made with a code
-                    output = outputHelper(successData.getCode(), "Database error, see ResCode");
+                    output = outputHelper(successData.getCode(), successData.getMessage());
                 }
             }
             pres.commentAsGuestOutput(output);
