@@ -5,9 +5,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import usecases.RepoRes;
 import usecases.Response;
 import usecases.ThreadRegister;
+import usecases.TitleRepoData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,7 +58,7 @@ public class StInteractorTests {
 
         private Integer receivedStoryIdST;
         private String receivedTitleSuggestion;
-        private Integer recievedStoryIdGAT;
+        private Integer receivedStoryIdGAT;
 
         private final boolean suggestTitleSuccess;
         private final boolean getAllTitlesReturnNull;
@@ -67,7 +70,7 @@ public class StInteractorTests {
         public CustomizableStGateway(boolean suggestTitleSuccess, boolean getAllTitlesReturnNull) {
             receivedStoryIdST = null;
             receivedTitleSuggestion = null;
-            recievedStoryIdGAT = null;
+            receivedStoryIdGAT = null;
             this.suggestTitleSuccess = suggestTitleSuccess;
             this.getAllTitlesReturnNull = getAllTitlesReturnNull;
         }
@@ -96,9 +99,9 @@ public class StInteractorTests {
          * @return null when getAllTitlesReturnNull is true, and "duplicate" row otherwise
          */
         public RepoRes<TitleRepoData> getAllTitles(int storyId) {
-            recievedStoryIdGAT = storyId;
+            receivedStoryIdGAT = storyId;
 
-            Response res = new Response.getFailure("Customizable StGateway would reject anything");
+            Response res = Response.getFailure("Customizable StGateway would reject anything");
             List<TitleRepoData> rows = null;
 
             if (!getAllTitlesReturnNull) {
@@ -106,7 +109,7 @@ public class StInteractorTests {
                 rows = duplicateRow;
             }
 
-            return RepoRes<TitleRepoData>(res, rows);
+            return new RepoRes<TitleRepoData>(res, rows);
         }
 
     }
