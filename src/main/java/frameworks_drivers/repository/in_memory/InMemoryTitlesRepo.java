@@ -1,8 +1,10 @@
 package frameworks_drivers.repository.in_memory;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import usecases.RepoRes;
 import usecases.Response;
+import usecases.TitleRepoData;
+import usecases.suggest_title.StGatewayTitles;
 
 /**
  * In memory implementation of the database component in charge of storing

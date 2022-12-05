@@ -23,7 +23,7 @@ public class StInteractorTests {
     private static final List<TitleRepoData> duplicateRow = new ArrayList<TitleRepoData>(List.of(duplicateTRD));
 
     StOutputBoundary pres;
-    StGateway repo;
+    StGatewayTitles repo;
     SuggestedTitleChecker titleChecker;
 
     /**
@@ -55,7 +55,7 @@ public class StInteractorTests {
      * Customizable class to imitate repository with stories during testing.
      * Records received data to be compared with applied requests
      */
-    static class CustomizableStGateway implements StGateway {
+    static class CustomizableStGateway implements StGatewayTitles {
 
         private final boolean suggestTitleSuccess;
         private final boolean getAllTitlesReturnNull;

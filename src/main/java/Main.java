@@ -26,7 +26,7 @@ import usecases.pull_game_ended.PgeInteractor;
 import usecases.shutdown_server.SsInteractor;
 import usecases.sort_players.SpInteractor;
 import usecases.submit_word.SwInteractor;
-import usecases.suggest_title.StGateway;
+import usecases.suggest_title.StGatewayTitles;
 import usecases.suggest_title.StInteractor;
 
 /**
@@ -92,7 +92,7 @@ public class Main {
         LsInteractor ls = new LsInteractor(lsPresenter, (e) -> null, register); // TODO: Inject repo
         SsInteractor ss = new SsInteractor(register, ssPresenter);
         SwInteractor sw = new SwInteractor(swPresenter, manager, register);
-        StInteractor st = new StInteractor(stPresenter, new StGateway() {
+        StInteractor st = new StInteractor(stPresenter, new StGatewayTitles() {
             @Override
             public @NotNull Response suggestTitle(int storyId, @Nullable String titleSuggestion) {
                 return null;

@@ -1,10 +1,8 @@
 package usecases.suggest_title;
 import entities.SuggestedTitleChecker;
 import usecases.*;
-import usecases.shutdown_server.SsOutputBoundary;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * The interactor for this use case. Contains a thread that carries out the processes involved in suggesting a story\
@@ -12,7 +10,7 @@ import java.util.Arrays;
  */
 public class StInteractor implements StInputBoundary {
     private final StOutputBoundary pres;
-    private final StGateway repo;
+    private final StGatewayTitles repo;
     private final SuggestedTitleChecker titleChecker;
 
     private final ThreadRegister register;
@@ -24,7 +22,7 @@ public class StInteractor implements StInputBoundary {
      * @param titleChecker
      * @param register
      */
-    public StInteractor(StOutputBoundary pres, StGateway repo, SuggestedTitleChecker titleChecker,
+    public StInteractor(StOutputBoundary pres, StGatewayTitles repo, SuggestedTitleChecker titleChecker,
                         ThreadRegister register) {
         this.pres = pres;
         this.repo = repo;
