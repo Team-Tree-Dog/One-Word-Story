@@ -7,7 +7,7 @@ import usecases.ThreadRegister;
 /**
  * Interactor for the Get Story Comments use case
  */
-public class GscInteractor {
+public class GscInteractor implements GscInputBoundary {
 
     GscOutputBoundary pres;
     GscGatewayComments repo;

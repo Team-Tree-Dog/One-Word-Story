@@ -93,6 +93,7 @@ public class Main {
         DcController dcController = new DcController(dc);
         GlsController glsController = new GlsController(gls);
         GmlsController gmlsController = new GmlsController(gmls);
+        GscController gscController = new GscController(gsc);
         JplController jplController = new JplController(jpl);
         LsController lsController = new LsController(ls);
         SsController ssController = new SsController(ss);
