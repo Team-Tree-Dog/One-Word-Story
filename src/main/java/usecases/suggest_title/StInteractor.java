@@ -55,7 +55,7 @@ public class StInteractor implements StInputBoundary {
          *                  and the user-suggested title.
          */
         public StThread(StInputData data) {
-            super(StInteractor.this.register, (SsOutputBoundary) StInteractor.this.pres);
+            super(StInteractor.this.register, StInteractor.this.pres);
             this.data = data;
         }
 
