@@ -1,8 +1,6 @@
 package usecases.get_story_comments;
 
-import usecases.InterruptibleThread;
-import usecases.Response;
-import usecases.ThreadRegister;
+import usecases.*;
 
 /**
  * Interactor for the Get Story Comments use case
@@ -47,10 +45,11 @@ public class GscInteractor implements GscInputBoundary {
 
             GscOutputData output;
             // true if there were no database errors
-            boolean success = repo.getAllComments(data.getStoryId()).isSuccess();
-            if (success) {
+            RepoRes<CommentRepoData> res = repo.getAllComments(data.getStoryId());
+
+            if (res.isSuccess()) {
                 output = new GscOutputData(
-                        repo.getAllComments(data.getStoryId()).getRows(),
+                        res.getRows(),
                         new Response(Response.ResCode.SUCCESS, "Comments pulled successfully")
                 );
             } else {
