@@ -9,9 +9,9 @@ import usecases.ThreadRegister;
  */
 public class GscInteractor implements GscInputBoundary {
 
-    GscOutputBoundary pres;
-    GscGatewayComments repo;
-    ThreadRegister register;
+    private final GscOutputBoundary pres;
+    private final GscGatewayComments repo;
+    private final ThreadRegister register;
 
     /**
      * Constructor for GscInteractor
@@ -31,7 +31,7 @@ public class GscInteractor implements GscInputBoundary {
      */
     public class GscThread extends InterruptibleThread {
 
-        GscInputData data;
+        private final GscInputData data;
 
         /**
          * Constructor for GscThread

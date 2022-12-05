@@ -13,11 +13,11 @@ import static usecases.Response.ResCode.*;
  */
 public class CagInteractor implements CagInputBoundary {
 
-    CagOutputBoundary pres;
-    CagGatewayComments repo;
-    CommentChecker commentChecker;
-    DisplayNameChecker displayChecker;
-    ThreadRegister register;
+    private final CagOutputBoundary pres;
+    private final CagGatewayComments repo;
+    private final CommentChecker commentChecker;
+    private final DisplayNameChecker displayChecker;
+    private final ThreadRegister register;
 
     /**
      * Constructor for CagInteractor
@@ -42,7 +42,7 @@ public class CagInteractor implements CagInputBoundary {
      */
     public class CagThread extends InterruptibleThread {
 
-        CagInputData data;
+        private final CagInputData data;
 
         /**
          * Constructor for CagThread
