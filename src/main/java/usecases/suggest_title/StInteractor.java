@@ -92,10 +92,8 @@ public class StInteractor implements StInputBoundary {
              * and create the output data.
              */
 
-            if (suggestedTitles.getRows() == null) {
-                String mess = "Could not access all titles";
-                Response res = new Response(Response.ResCode.FAIL, mess);
-                outputData = new StOutputData(data.getRequestId(), res);
+            if (!suggestedTitles.isSuccess()) {
+                outputData = new StOutputData(data.getRequestId(), suggestedTitles.getRes());
             }
 
             else if (!titleChecker.checkValid(title)){
