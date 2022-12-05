@@ -3,19 +3,21 @@ package usecases.get_latest_stories;
 import usecases.Response;
 import usecases.StoryRepoData;
 
+import java.util.List;
+
 /**
  * Output data class of Get Latest Stories use-case
  */
 public class GlsOutputData {
 
-    private final StoryRepoData[] stories;
+    private final List<StoryRepoData> stories;
     private final Response res;
 
     /**
      * Constructor for GlsOutputData
      * @param stories StoryData
      */
-    public GlsOutputData (StoryRepoData[] stories, Response res) {
+    public GlsOutputData (List<StoryRepoData> stories, Response res) {
         this.stories = stories;
         this.res = res;
     }
@@ -25,7 +27,7 @@ public class GlsOutputData {
      * @return  data.numToGet StoryData retrieved from repo
      * sorted from latest date to earliest public date
      */
-    public StoryRepoData[] getStories(){
+    public List<StoryRepoData> getStories(){
         return this.stories;
     }
 
