@@ -5,10 +5,10 @@ package usecases;
  */
 public class CommentRepoData {
 
-    private int commentId;
-    private int storyId;
-    private String displayName;
-    private String content;
+    private final int commentId;
+    private final int storyId;
+    private final String displayName;
+    private final String content;
 
     /**
      * Constructor for CommentRepoData
@@ -24,4 +24,12 @@ public class CommentRepoData {
         this.displayName = displayName;
         this.content = content;
     }
+
+    public String getDisplayName() { return displayName; }
+
+    public int getCommentId() { return commentId; }
+
+    public int getStoryId() { return storyId; }
+
+    public String getContent() { return content; }
 }
