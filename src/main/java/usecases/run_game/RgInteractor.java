@@ -52,7 +52,9 @@ public class RgInteractor {
                 RgInteractor.this.g.getGameTimer().cancel();
 
                 // Perform "Game Ended" use-case via PgeInteractor
+                System.out.println("PGE has started via RG");
                 RgInteractor.this.pge.onGameEnded(new PgeInputData(new ArrayList<>(RgInteractor.this.g.getPlayers())));
+                System.out.println("PGE has ended via RG");
 
                 // Notify the game, after timer cancellation, when the
                 // last execution of the run method has finished, meaning,
@@ -75,6 +77,7 @@ public class RgInteractor {
             }
             gameLock.unlock();
             System.out.println("RgInteractor unlocked Game!");
+            System.out.println("RG has ended.");
         }
     }
 

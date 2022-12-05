@@ -119,12 +119,15 @@ public class SpInteractor {
                 // This method has built in thread safety which ensures that each
                 // PlayerPoolListener lock is engaged during callback execution
                 lobbyManager.removeAllFromPoolJoin();
+                System.out.println("RG has started via SP");
                 new RgInteractor(game, pge, pd, gameLock).startTimer();
+                System.out.println("RG has ended via SP");
             }
             gameLock.unlock();
             System.out.println("SP unlocked Game!");
             playerPoolLock.unlock();
             System.out.println("SP unlocked PlayerPool!");
+            System.out.println("SP has ended.");
         }
     }
 

@@ -33,5 +33,6 @@ public class PgeInteractor implements PgeInputBoundary {
             playerIds[i] = players.get(i).getPlayerId();
         }
         presenter.notifyGameEnded(new PgeOutputData(playerIds));
+        System.out.println("PGE has ended.");
     }
 }

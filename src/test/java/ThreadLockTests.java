@@ -10,7 +10,7 @@ import usecases.Response;
 import usecases.disconnecting.*;
 import usecases.join_public_lobby.*;
 import usecases.pull_data.PdInputBoundary;
-import usecases.pull_game_ended.PgeInputBoundary;
+import usecases.pull_game_ended.*;
 import usecases.run_game.RgInteractor;
 import usecases.sort_players.SpInteractor;
 import usecases.submit_word.*;
@@ -291,9 +291,9 @@ public class ThreadLockTests {
             }
 
             while (true) { // If this never happens, test timeout will make the test crash.
-                lobman.getGameLock().lock(); // Locking here will not let SpTimer do its thing.
+                lobman.getGameLock().lock();
                 boolean nullbool = lobman.isGameNull();
-                lobman.getGameLock().unlock(); //  See two lines before.
+                lobman.getGameLock().unlock();
                 if (nullbool) {break;}
             }
             System.out.println("Test wants to lock Game.");
@@ -430,19 +430,11 @@ public class ThreadLockTests {
         System.out.println("Test has locked both!");
 
         // We can distinguish between both cases if the word (bloop) is in the story or not.
+        // This, however, is the only difference between the two cases.
+        assertTrue("bloop ".equals(currGame.getStory().toString()) | "".equals(currGame.getStory().toString()),
+                "The story should either be bloop or nothing, but it is somehow neither");
 
-        if (newint == 0 | newint == 1) {
-            System.out.println("Scenario 1 happens. The word gets added to the story.");
-            assertEquals("bloop ", currGame.getStory().toString(),
-                    "The story should have the word in it, but it doesn't.");
-        }
-        else {
-            System.out.println("Scenario 2 happens. The word shouldn't have been added to the story.");
-            assertEquals("", currGame.getStory().toString(),
-                    "The story should have nothing in it, but something is there.");
-        }
-
-
+        // We can now test using the elements the two cases have in common (which is everything except the above assert).
         // In both cases, Player 2's turn shouldn't have finished because we have set the turn time at 15 seconds,
         // more than the timeout of the test, which is 10 seconds.
         assertEquals(player2, currGame.getCurrentTurnPlayer(), "It should be Player 2's turn, but it isn't.");
@@ -462,7 +454,6 @@ public class ThreadLockTests {
      * This can be simulated as JPL and DC happening at approximately the same time.
      * The only persistent thread that has a role is SP, but only because it engages/disengages locks.
      * SP won't actually change anything, but still needs to be included since it will be part of the thread arch.
-     *
      * Possible Outcomes:
      * JPL1, DC1, SP: The player joins, then disconnects. No net change.
      * JPL1, SP, DC1: The player joins, then disconnects. No net change.
@@ -604,5 +595,205 @@ public class ThreadLockTests {
         lobman.getPlayerPoolLock().unlock();
         lobman.getSortPlayersTimer().cancel();
         spTimerTask.cancel();
+    }
+
+    /**
+     * Tests when a player disconnects when the game over condition is reached. Assume there is only one player in the
+     * game. The test game over condition is that less than two players are in the game, so we only set the game
+     * according to this condition before starting the threads.
+     * Outcomes:
+     * RG, DC, SP: RG detects game over, cancels game timer, notifies that game ended, flags presenter to "disconnect"
+     *             player. DC disconnects player from game/pool. SP sets game to null. SCE 1.
+     * RG, SP, DC: RG detects game over, cancels game timer, notifies that game ended, flags presenter to "disconnect"
+     *             player. SP sets game to null. DC cannot disconnect player from game/pool. SCE 2.
+     * SP, RG, DC: SP does nothing. RG detects game over, cancels game timer, notifies that game ended, flags
+     *             presenter to "disconnect" player. DC disconnects player from game/pool. SCE 1.
+     * SP, DC, RG: SP does nothing. DC disconnects player from game/pool. RG detects game over, cancels game timer,
+     *             notifies that game ended, but detects no players to "disconnect". SCE 3.
+     * DC, SP, RG: DC disconnects player from game/pool. SP does nothing. RG detects game over, cancels game timer,
+     *             notifies that game ended, but detects no players to "disconnect". SCE 3.
+     * DC, RG, SP: DC disconnects player from game/pool. RG detects game over, cancels game timer,
+     *             notifies that game ended, but detects no players to "disconnect". SP sets game to null. SCE 3.
+     */
+    @RepeatedTest(REPEAT_TIMES)
+    @Timeout(10)
+    public void testRGAndDCGameOver() throws IdInUseException, InvalidDisplayNameException, GameRunningException, GameDoesntExistException {
+        PlayerFactory playerFac = new PlayerFactory(new LocalDisplayName());
+        GameFactory gameFac = new GameFactoryTest();
+        LobbyManager lobman = new LobbyManager(playerFac, gameFac);
+
+        Player player1 = lobman.createNewPlayer("player 1", "1");
+
+        List<Player> players = new ArrayList<>();
+        players.add(player1);
+
+        Game currGame = new GameTest(players, new LocalValidityChecker());
+        lobman.setGame(currGame);
+
+        assertEquals(0, lobman.getPlayersFromPool().size(),
+                "No one should be in the pool, but someone is.");
+        assertTrue(lobman.getPlayersFromGame().contains(player1), "Player 1 is not in the Game");
+        assertTrue(currGame.getPlayers().contains(player1), "Player 1 is not in the Game");
+        assertEquals(player1, currGame.getCurrentTurnPlayer(), "It should be Player 1's turn, but it isn't.");
+
+        // At this point, setup and sanity asssertions finish.
+        // We now build the interactors:
+
+        // RG:
+        AtomicReference<String[]> playersPge = new AtomicReference<>();
+        AtomicBoolean pgeFlag = new AtomicBoolean(false);
+        PgeOutputBoundary pgePres = data -> {
+            playersPge.set(data.getPlayerIds());
+            pgeFlag.set(true);
+            //if (!pgeFlag.get()) { // So that playersPge only changes if RG never ended.
+              //  playersPge.set(data.getPlayerIds());
+              //  pgeFlag.set(true);
+            System.out.println("players PGE:" + Arrays.toString(playersPge.get()));
+            // }
+        };
+        PgeInteractor pgeInteractor = new PgeInteractor(pgePres);
+        PdInputBoundary pdInputBoundary = d -> {};
+        RgInteractor rgInteractor = new RgInteractor(currGame, pgeInteractor, pdInputBoundary, lobman.getGameLock());
+        RgInteractor.RgTask rgTimerTask = rgInteractor.new RgTask();
+        Timer rgTimer = new Timer();
+
+        // SP:
+        SpInteractor spinny = new SpInteractor(lobman, pgeInteractor, pdInputBoundary);
+        SpInteractor.SpTask spTimerTask = spinny.new SpTask();
+        Timer spTimer = new Timer();
+
+        // DC:
+        AtomicBoolean dcFlag = new AtomicBoolean(false);
+        AtomicReference<String> messageDc = new AtomicReference<>();
+        DcInputData dcInputData = new DcInputData(player1.getPlayerId());
+        DcOutputBoundary dcPres = data -> {
+            messageDc.set(data.getResponse().getMessage());
+            dcFlag.set(true);
+            System.out.println("DC Message: " + messageDc.get());
+        };
+        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres);
+
+        int newint = new Random().nextInt(6);
+        System.out.println("Case number: " + newint);
+        switch (newint) {
+            case 0 : // RG, DC, SP
+                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                dcInteractor.disconnect(dcInputData);
+                spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
+                break;
+            case 1 : // RG, SP, DC
+                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
+                dcInteractor.disconnect(dcInputData);
+                break;
+            case 2 : // SP, RG, DC
+                spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
+                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                dcInteractor.disconnect(dcInputData);
+                break;
+            case 3 : // SP, DC, RG
+                spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
+                dcInteractor.disconnect(dcInputData);
+                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                break;
+            case 4 : // DC, SP, RG
+                dcInteractor.disconnect(dcInputData);
+                spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
+                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                break;
+            case 5 : // DC, RG, SP
+                dcInteractor.disconnect(dcInputData);
+                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
+                break;
+        }
+        System.out.println("Switch Over");
+
+        // We first need to make sure DC has finished its thread, as well as RG.
+        while(!dcFlag.get()) {
+            Thread.onSpinWait();
+        }
+        assertTrue(dcFlag.get(), "How did we get out of the while loop if dcFlag is still false?");
+
+        while(!pgeFlag.get()) {
+            Thread.onSpinWait();
+        }
+        assertTrue(pgeFlag.get(), "How did we get out of the while loop if pgeFlag is still false?");
+
+        // Now, we need to stop both RG and SP before their next iterations. The cancel() method will still let both
+        // TimerTasks finish their current iteration if there is one running.
+        rgTimerTask.cancel();
+        spTimerTask.cancel();
+        System.out.println("All Tasks Canceled.");
+
+        System.out.println("Test right now locking PlayerPool...");
+        lobman.getPlayerPoolLock().lock();
+        System.out.println("Test has locked PlayerPool!");
+
+        System.out.println("Test right now locking Game..");
+        lobman.getGameLock().lock();
+        System.out.println("Test has locked Game!");
+
+        // We can switch between either scenarios 1&2, or scenario 3, based on if RG detected a player to "disconnect".
+        // Scenario 3 happens if RG didn't detect a player to disconnect.
+        // Then, switch between either scenario 1 or scenario 2, based on if DC was able to disconnect.
+        // If DC was not able to disconnect (scenario 2), SP should have already set the game to null.
+
+        if (playersPge.get().length == 0) {
+            System.out.println("Scenario 3: RG notified that no players were still in-game, " +
+                    "so DC should have detected a player to disconnect (and disconnected the player).");
+            // In this case, DC should have detected a player to disconnect.
+            // We don't care if the game was set to null or not.
+
+            // Assert that the player was removed from the game entity:
+            assertFalse(currGame.getPlayers().contains(player1),
+                    "Player 1 shouldn't be in the game anymore, but it still is.");
+            // And that DC should have disconnected the player:
+            assertEquals("Disconnecting was successful.", messageDc.get(),
+                    "The message is supposed to be Disconnecting was successful, but it isn't.");
+        } else if (Arrays.equals(playersPge.get(), new String[]{player1.getPlayerId()})){
+            if (messageDc.get().equals("Player not found")) {
+                System.out.println("Scenario 2: RG notified player 1 was still in-game, " +
+                        "and DC didn't detect any players in-game, so SP should have already set the game to null.");
+
+                // Sanity assert that DC couldn't remove players from the game entity:
+                assertTrue(currGame.getPlayers().contains(player1),
+                        "Player 1 should still be in the game, but it isn't.");
+                // Check that the game was already set to null:
+                assertTrue(lobman.isGameNull());
+            }
+            else if (messageDc.get().equals("Disconnecting was successful.")){
+                System.out.println("Scenario 1: RG notified player 1 was still in-game, " +
+                        "and DC detected a player still in the game.");
+                // There isn't really much to assert here, other than the general asserts.
+            }
+            else {fail("Something unexpected happened with DC, based on the message.");}
+        } else {fail("playersPGE should either have only player 1 or no players, but it's different.");}
+
+        // In any case, SP should end up setting the game to null.
+        // We can let SP do that by starting up a new TimerTask/Timer.
+
+        SpInteractor.SpTask spTimerTaskNew = spinny.new SpTask();
+        Timer spTimerNew = new Timer();
+
+        // Unlock Game and PlayerPool:
+        lobman.getGameLock().unlock();
+        System.out.println("Test has unlocked Game!");
+        lobman.getPlayerPoolLock().unlock();
+        System.out.println("Test has unlocked PlayerPool!");
+
+        System.out.println("Trying to set game to null...");
+        spTimerNew.scheduleAtFixedRate(spTimerTaskNew, 0, 100);
+        while (true) { // If this never happens, test timeout will make the test crash, so this functions as an assert.
+            System.out.println("Inside null while loop.");
+            lobman.getGameLock().lock();
+            boolean nullbool = lobman.isGameNull();
+            lobman.getGameLock().unlock();
+            if (nullbool) {break;}
+        }
+        spTimerNew.cancel(); // And cancel.
+        // Actually, sanity assert this just in case.
+        assertTrue(lobman.isGameNull(), "Why did it break out of the while loop, but the game is still null?");
+        System.out.println("Test has ended.");
     }
 }

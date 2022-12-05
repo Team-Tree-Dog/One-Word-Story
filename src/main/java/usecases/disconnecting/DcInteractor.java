@@ -36,9 +36,9 @@ public class DcInteractor implements DcInputBoundary {
      */
     @Override
     public void disconnect(DcInputData data) {
-        // new Thread(new DcThread(data.getPlayerId())).start();
-        DcInteractor.DcThread dcThread = this.new DcThread(data.getPlayerId());
-        dcThread.run();
+        new Thread(new DcThread(data.getPlayerId())).start();
+        // DcInteractor.DcThread dcThread = this.new DcThread(data.getPlayerId());
+        // dcThread.run();
     }
 
     /**

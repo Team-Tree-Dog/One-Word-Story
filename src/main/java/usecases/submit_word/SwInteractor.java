@@ -50,8 +50,9 @@ public class SwInteractor implements SwInputBoundary{
      */
     @Override
     public void submitWord (SwInputData inputData) {
-        SwInteractor.SwThread swintThread = this.new SwThread(inputData);
-        swintThread.run();
+        // SwInteractor.SwThread swintThread = this.new SwThread(inputData);
+        // swintThread.run();
+        new Thread(new SwThread(inputData)).start();
     }
 
     /**
