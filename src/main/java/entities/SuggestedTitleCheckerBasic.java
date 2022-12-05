@@ -97,18 +97,18 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
      */
     private boolean checkFourInARowConsonants(String title){
         for (int i = 0; i <= title.length() - 4; i++) {
-            boolean allAreConsonants = false;
+            boolean allAreConsonants = true;
             for (int j = 0; j < 4; j++) {
                 if (!isConsonant(title.charAt(i + j))) {
-                    allAreConsonants = true;
+                    allAreConsonants = false;
                     break;
                 }
             }
             if (allAreConsonants) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     /**
@@ -132,22 +132,6 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
             }
         }
         return true;
-    }
-
-    /**
-     * Private helper method for checkCharacterRepetitions() and checkFourInARowConsonants(). Extracts the next
-     * four characters of the title beginning from and including the given index.
-     * Precondition: index <= title.length - 4
-     * @param title the title which we want to extract 4 characters from
-     * @param index the index from which we want to extract the next four characters
-     * @return      an array of type char and length 4, where char[i] = title.charAt(index + i)
-     */
-    private char[] extractNextFourLetters(String title, int index){
-        char[] toReturn = new char[4];
-        for (int i = 0; i < 4; i ++){
-            toReturn[i] = title.charAt(index + i);
-        }
-        return toReturn;
     }
 
     /**
