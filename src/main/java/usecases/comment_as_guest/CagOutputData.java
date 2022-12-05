@@ -1,5 +1,6 @@
 package usecases.comment_as_guest;
 
+import org.jetbrains.annotations.NotNull;
 import usecases.Response;
 
 /**
@@ -7,17 +8,23 @@ import usecases.Response;
  */
 public class CagOutputData {
 
-    private String requestId;
-    private Response res;
+    private final String requestId;
+    private final Response res;
 
     /**
      * Constructor for CagOutputData
      * @param requestId the id of this specific request
      * @param res the response, describing what the response was when commentAsGuest was called
      */
-    public CagOutputData(String requestId, Response res) {
+    public CagOutputData(@NotNull String requestId, @NotNull Response res) {
 
         this.requestId = requestId;
         this.res = res;
     }
+
+    @NotNull
+    public Response getRes() { return res; }
+
+    @NotNull
+    public String getRequestId() { return requestId; }
 }
