@@ -1,5 +1,6 @@
 package usecases.comment_as_guest;
 
+import org.jetbrains.annotations.NotNull;
 import usecases.Response;
 
 /**
@@ -14,5 +15,6 @@ public interface CagGatewayComments {
      * @param comment the comment the guest wrote
      * @return true if adding the comment was successful
      */
-    Response commentAsGuest(int storyId, String displayName, String comment);
+    @NotNull
+    Response commentAsGuest(int storyId, @NotNull String displayName, @NotNull String comment);
 }

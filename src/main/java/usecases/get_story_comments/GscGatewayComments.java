@@ -1,5 +1,6 @@
 package usecases.get_story_comments;
 
+import org.jetbrains.annotations.NotNull;
 import usecases.CommentRepoData;
 import usecases.RepoRes;
 
@@ -13,5 +14,6 @@ public interface GscGatewayComments {
      * @param storyId the id for the story comments should be pulled from
      * @return a string array containing all the story comments, each one string
      */
+    @NotNull
     RepoRes<CommentRepoData> getAllComments(int storyId);
 }
