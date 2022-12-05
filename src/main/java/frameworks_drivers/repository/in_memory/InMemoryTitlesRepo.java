@@ -2,6 +2,7 @@ package frameworks_drivers.repository.in_memory;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import usecases.Response;
 
 /**
  * In memory implementation of the database component in charge of storing
@@ -15,7 +16,8 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles {
      * @return if the title was successfully added to the DB
      */
     @Override
-    public boolean suggestTitle (int storyId, @NotNull String titleSuggestion) {
+    @NotNull
+    public Response suggestTitle (int storyId, @NotNull String titleSuggestion) {
 
     }
 
@@ -24,8 +26,8 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles {
      * @return all suggested titles pertaining to the requested story, or null if DB failed
      */
     @Override
-    @Nullable
-    public String[] getAllTitles (int storyId) {
+    @NotNull
+    public RepoRes<TitleRepoData> getAllTitles (int storyId) {
 
     }
 

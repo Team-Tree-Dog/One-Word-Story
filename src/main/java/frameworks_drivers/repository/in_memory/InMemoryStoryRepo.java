@@ -3,7 +3,9 @@ package frameworks_drivers.repository.in_memory;
 import entities.Story;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import usecases.StoryData;
+import usecases.RepoRes;
+import usecases.Response;
+import usecases.StoryRepoData;
 import usecases.get_latest_stories.GlsGatewayStory;
 import usecases.get_most_liked_stories.GmlsGatewayStory;
 import usecases.like_story.LsGatewayStory;
@@ -72,41 +74,51 @@ public class InMemoryStoryRepo implements LsGatewayStory, GlsGatewayStory,
         storyTable = new ArrayList<>();
     }
 
+
     /**
-     * @return all the currently saved stories, or null if DB fails
+     * @return all stories from the repository in the RepoRes wrapper object. If repo operation
+     *      * fails, RepoRes will reflect it
      */
     @Override
-    public StoryData @NotNull [] getAllStories() {
-        StoryData[] stories = new StoryData[storyTable.size()];
+    @NotNull
+    public RepoRes<StoryRepoData> getAllStories() {
+        RepoRes<StoryRepoData> storyData = new RepoRes<>();
 
         // Convert story table row entry to StoryData
         for (int i = 0; i <= storyTable.size(); i++) {
             StoryTableRow row = storyTable.get(i);
 
-            stories[i] = new StoryData(
+            StoryRepoData newRow = new StoryRepoData(
                     row.getStory(), row.getAuthors(),
                     // No idea what offset means, or nanoOfSecond. Just guessing here
                     LocalDateTime.ofEpochSecond((long) row.getPublishUnixTimestamp(),
                             0, ZoneOffset.UTC),
                     row.getTitle(), row.getLikes()
             );
+
+            storyData.addRow(newRow);
         }
 
-        return stories;
+        storyData.setResponse(Response.getSuccessful("Stories successfully retrieved"));
+
+        return storyData;
     }
 
     /**
+     * This method adds a like to the given story
      * @param storyId unique primary key ID of story to which to add a like
-     * @return success of adding a like to the requested story
-     */
+     * @return success of the operation or a fail code
+     * */
     @Override
-    public @NotNull boolean likeStory(int storyId) {
+    @NotNull
+    public Response likeStory(int storyId) {
         for (StoryTableRow row : storyTable) {
             if (row.getStoryId() == storyId) {
                 row.addLike();
-                return true;
+                return Response.getSuccessful("Like added to story with ID: " + storyId);
             }
-        } return false;
+        } return new Response(Response.ResCode.STORY_NOT_FOUND,
+                "A story with ID " + storyId + " doesn't exist");
     }
 
     /**
@@ -117,7 +129,8 @@ public class InMemoryStoryRepo implements LsGatewayStory, GlsGatewayStory,
      * @return success of saving the story to the DB
      */
     @Override
-    public boolean saveStoryNoTitle (String story, double publishUnixTimeStamp,
+    @NotNull
+    public Response saveStoryNoTitle (String story, double publishUnixTimeStamp,
                                      @Nullable String[] authorDisplayNames) {
         if (authorDisplayNames == null) {
             authorDisplayNames = new String[0];
@@ -127,6 +140,6 @@ public class InMemoryStoryRepo implements LsGatewayStory, GlsGatewayStory,
             story, publishUnixTimeStamp, authorDisplayNames
         ));
 
-        return true;
+        return Response.getSuccessful("Story successfully saved");
     }
 }
