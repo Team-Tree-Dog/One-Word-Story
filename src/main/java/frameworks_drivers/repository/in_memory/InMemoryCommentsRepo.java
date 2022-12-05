@@ -65,6 +65,6 @@ public class InMemoryCommentsRepo implements GscGatewayComments, CagGatewayComme
     @Override
     @NotNull
     public RepoRes<CommentRepoData> getAllComments (int storyId) {
-        RepoRes<CommentRepoData>
+        RepoRes<CommentRepoData> res = new RepoRes<>();
     }
 }
