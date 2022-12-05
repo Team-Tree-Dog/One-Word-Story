@@ -55,8 +55,8 @@ public class GscInteractor implements GscInputBoundary {
             } else {
                 // there was a database error, builds output with that specific response code
                 output = new GscOutputData(null,
-                        new Response(repo.getAllComments(data.getStoryId()).getRes().getCode(),
-                                "Database failed"));
+                        new Response(res.getRes().getCode(),
+                                res.getRes().getMessage()));
             }
             pres.putStoryComments(output);
         }
