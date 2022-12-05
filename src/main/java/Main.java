@@ -7,11 +7,9 @@ import entities.display_name_checkers.DisplayNameChecker;
 import entities.display_name_checkers.DisplayNameCheckerBasic;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
-import usecases.RepoRes;
-import usecases.Response;
-import usecases.StoryRepoData;
-import usecases.ThreadRegister;
+import usecases.*;
 import usecases.disconnecting.DcInteractor;
+import usecases.get_all_titles.GatInteractor;
 import usecases.get_latest_stories.GlsInteractor;
 import usecases.get_most_liked_stories.GmlsInteractor;
 import usecases.join_public_lobby.JplInteractor;
@@ -48,6 +46,7 @@ public class Main {
         PgePresenter pgePresenter = new PgePresenter(viewM);
         SsPresenter ssPresenter = new SsPresenter(viewM);
         SwPresenter swPresenter = new SwPresenter(viewM);
+        GatPresenter gatPresenter = new GatPresenter(viewM);
 
 
         // Create desired display name checker for injection
@@ -81,6 +80,9 @@ public class Main {
                 register); // TODO: Inject repo
         SsInteractor ss = new SsInteractor(register, ssPresenter);
         SwInteractor sw = new SwInteractor(swPresenter, manager, register);
+        GatInteractor gat = new GatInteractor(gatPresenter,
+                storyId -> new RepoRes<TitleRepoData>(Response.getFailure("Dummy Lambda, Always failure"))
+                ,register);
 
 
         // Controllers
@@ -91,6 +93,7 @@ public class Main {
         LsController lsController = new LsController(ls);
         SsController ssController = new SsController(ss);
         SwController swController = new SwController(sw);
+        GatController gatController = new GatController();
 
         // TODO: Setup and run the view
     }

@@ -1,6 +1,8 @@
 package usecases.get_all_titles;
 
-public interface GatOutputBoundary{
+import usecases.shutdown_server.SsOutputBoundary;
+
+public interface GatOutputBoundary extends SsOutputBoundary {
 
     void putSuggestedTitles(GatOutputData data);
 }
