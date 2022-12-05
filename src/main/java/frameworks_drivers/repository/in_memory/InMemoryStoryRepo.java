@@ -34,35 +34,26 @@ public class InMemoryStoryRepo implements LsGatewayStory, GlsGatewayStory,
         private final int storyId;
         private final String story;
         private final double publishUnixTimestamp;
-        private String title;
         private final String[] authors;
         private int likes;
 
-        public StoryTableRow (@NotNull String story, double publishUnixTimestamp, String[] authors,
-                              @Nullable String title) {
+        public StoryTableRow (@NotNull String story, double publishUnixTimestamp, String[] authors) {
             storyId = nextAvailableId;
             nextAvailableId++;
 
             this.story = story;
             this.publishUnixTimestamp = publishUnixTimestamp;
-            this.title = title;
             this.authors = authors;
             this.likes = 0;
-        }
-
-        public StoryTableRow (@NotNull String story, double publishUnixTimestamp, String[] authors) {
-            this(story, publishUnixTimestamp, authors, null);
         }
 
         public int getStoryId() { return storyId; }
         public String getStory() { return story; }
         public double getPublishUnixTimestamp() { return publishUnixTimestamp; }
         public int getLikes() { return likes; }
-        public String getTitle() { return title; }
         public String[] getAuthors() { return authors; }
 
         public void addLike () { this.likes++; }
-        public void setTitle (String title) { this.title = title; }
     }
 
     private final List<StoryTableRow> storyTable;
@@ -84,19 +75,15 @@ public class InMemoryStoryRepo implements LsGatewayStory, GlsGatewayStory,
     public RepoRes<StoryRepoData> getAllStories() {
         RepoRes<StoryRepoData> storyData = new RepoRes<>();
 
-        // Convert story table row entry to StoryData
-        for (int i = 0; i <= storyTable.size(); i++) {
-            StoryTableRow row = storyTable.get(i);
+        // Convert story table rows to StoryRepoData objects
+        for (StoryTableRow row : storyTable) {
 
-            StoryRepoData newRow = new StoryRepoData(
+            storyData.addRow(new StoryRepoData(
                     row.getStory(), row.getAuthors(),
                     // No idea what offset means, or nanoOfSecond. Just guessing here
                     LocalDateTime.ofEpochSecond((long) row.getPublishUnixTimestamp(),
-                            0, ZoneOffset.UTC),
-                    row.getTitle(), row.getLikes()
-            );
-
-            storyData.addRow(newRow);
+                            0, ZoneOffset.UTC), row.getLikes()
+            ));
         }
 
         storyData.setResponse(Response.getSuccessful("Stories successfully retrieved"));

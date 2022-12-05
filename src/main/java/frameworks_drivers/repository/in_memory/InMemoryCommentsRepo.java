@@ -2,9 +2,13 @@ package frameworks_drivers.repository.in_memory;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import usecases.CommentRepoData;
 import usecases.RepoRes;
 import usecases.Response;
+import usecases.comment_as_guest.CagGatewayComments;
+import usecases.get_story_comments.GscGatewayComments;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,6 +48,11 @@ public class InMemoryCommentsRepo implements GscGatewayComments, CagGatewayComme
     private final List<CommentsTableRow> commentsTable;
 
     /**
+     * Initialize comments table
+     */
+    public InMemoryCommentsRepo () { commentsTable = new ArrayList<>(); }
+
+    /**
      *
      * @param storyId unique primary key ID of story to which to save a comment
      * @param displayName string guest display name, not null
@@ -66,5 +75,17 @@ public class InMemoryCommentsRepo implements GscGatewayComments, CagGatewayComme
     @NotNull
     public RepoRes<CommentRepoData> getAllComments (int storyId) {
         RepoRes<CommentRepoData> res = new RepoRes<>();
+
+        // Convert to CommentRepoData objects
+        for (CommentsTableRow row : commentsTable) {
+            res.addRow(new CommentRepoData(
+                    row.getCommentId(), row.getStoryId(),
+                    row.getDisplayName(), row.getComment()
+            ));
+        }
+
+        res.setResponse(Response.getSuccessful("Successfully retrieved comments for story " + storyId));
+
+        return res;
     }
 }
