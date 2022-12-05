@@ -55,6 +55,7 @@ public class StInteractor {
          */
         public StThread(StInputData data) {
             super(StInteractor.this.register, (SsOutputBoundary) StInteractor.this.pres);
+            this.data = data;
         }
 
         /**
@@ -89,7 +90,14 @@ public class StInteractor {
              * success or failure of adding title), suggest the title (if not invalid or previously suggested)
              * and create the output data.
              */
-            if (!titleChecker.checkValid(title)){
+
+            if (suggestedTitles.getRows() == null) {
+                String mess = "Could not access all titles";
+                Response res = new Response(Response.ResCode.FAIL, mess);
+                outputData = new StOutputData(data.getRequestId(), res);
+            }
+
+            else if (!titleChecker.checkValid(title)){
                 // check if the title is not valid and initialize output Data accordingly
                 String mess = String.format("'%1$s' is invalid", data.getTitle());
                 Response res = new Response(Response.ResCode.INVALID_TITLE,mess);

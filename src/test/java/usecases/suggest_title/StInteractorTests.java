@@ -173,8 +173,8 @@ public class StInteractorTests {
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals(receivedData.getRequestID(), "request1");
-        assertEquals(receivedData.getRes().getCode(), Response.ResCode.FAIL, "Wrong code");
+        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
+        assertEquals(Response.ResCode.FAIL, receivedData.getRes().getCode(), "Wrong code");
     }
 
     /**
@@ -199,8 +199,8 @@ public class StInteractorTests {
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals(receivedData.getRequestID(), "request1");
-        assertEquals(receivedData.getRes().getCode(), Response.ResCode.INVALID_TITLE, "Wrong code");
+        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
+        assertEquals(Response.ResCode.INVALID_TITLE, receivedData.getRes().getCode(), "Wrong code");
     }
 
     /**
@@ -225,7 +225,7 @@ public class StInteractorTests {
         // Verifying results
         String receivedData = ((CustomizableTitleChecker) titleChecker).getReceivedData();
         assertNotNull(receivedData, "Title checker was not accessed");
-        assertEquals(receivedData, "d d", "Incorrect preprocessing");
+        assertEquals("d d", receivedData, "Incorrect preprocessing");
     }
 
 
@@ -251,8 +251,8 @@ public class StInteractorTests {
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals(receivedData.getRequestID(), "request1");
-        assertEquals(receivedData.getRes().getCode(), Response.ResCode.INVALID_TITLE, "Wrong code");
+        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
+        assertEquals(Response.ResCode.INVALID_TITLE, receivedData.getRes().getCode(), "Wrong code");
     }
 
     /**
@@ -277,8 +277,8 @@ public class StInteractorTests {
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals(receivedData.getRequestID(), "request1");
-        assertEquals(receivedData.getRes().getCode(), Response.ResCode.FAIL, "Wrong code");
+        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
+        assertEquals(Response.ResCode.FAIL, receivedData.getRes().getCode(), "Wrong code");
     }
 
     /**
@@ -303,8 +303,8 @@ public class StInteractorTests {
         // Verifying results for presenter
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals(receivedData.getRequestID(), "request1");
-        assertEquals(receivedData.getRes().getCode(), Response.ResCode.SUCCESS, "Wrong code");
+        assertEquals("request1", receivedData.getRequestID());
+        assertEquals(Response.ResCode.SUCCESS, receivedData.getRes().getCode(), "Wrong code");
     }
 
 }
