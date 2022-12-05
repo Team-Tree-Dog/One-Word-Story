@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 
 public class StoryRepoData implements Comparable<StoryRepoData> {
 
-    private final String title;
     private final String story;
     private final String[] authorNames;
     private final LocalDateTime publishTimeStamp;
@@ -17,11 +16,9 @@ public class StoryRepoData implements Comparable<StoryRepoData> {
      * @param story a single story from the repo
      * @param authors authors of a particular story
      * @param dt1 published date
-     * @param title title of the story
      * @param numLikes number of likes corresponding to a story
      */
-    public StoryRepoData(String story, String[] authors, LocalDateTime dt1, String title, int numLikes) {
-        this.title = title;
+    public StoryRepoData(String story, String[] authors, LocalDateTime dt1, int numLikes) {
         this.story = story;
         this.authorNames = authors;
         this.publishTimeStamp = dt1;
@@ -51,13 +48,6 @@ public class StoryRepoData implements Comparable<StoryRepoData> {
     public LocalDateTime getPublishTimeStamp() {
         return publishTimeStamp;
     }
-
-    /**
-     * Getter for StoryData
-     * @return title of story, can be null if not yet set
-     */
-    @Nullable
-    public String getName() {return title;}
 
     /**
      * Getter for StoryData
