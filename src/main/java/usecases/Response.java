@@ -40,7 +40,9 @@ public class Response {
         ID_IN_USE,
         INVALID_DISPLAY_NAME,
         INVALID_WORD,
-        STORY_NOT_FOUND
+        STORY_NOT_FOUND,
+        INVALID_TITLE,
+        TITLE_ALREADY_SUGGESTED,
     }
 
     private final String message;
