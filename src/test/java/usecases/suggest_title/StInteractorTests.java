@@ -1,6 +1,7 @@
 package usecases.suggest_title;
 
 import entities.SuggestedTitleChecker;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,7 @@ public class StInteractorTests {
          * @param titleSuggestion requested title
          * @return "success" when suggestTitleSuccess is true, and "failure" otherwise
          */
-        public Response suggestTitle(int storyId, String titleSuggestion) {
+        public @NotNull Response suggestTitle(int storyId, String titleSuggestion) {
             if (this.suggestTitleSuccess) {
                 return Response.getSuccessful("Customizable StGateway would accept anything");
             } else {
@@ -89,7 +90,7 @@ public class StInteractorTests {
          * @param storyId requested storyId
          * @return null when getAllTitlesReturnNull is true, and "duplicate" row otherwise
          */
-        public RepoRes<TitleRepoData> getAllTitles(int storyId) {
+        public @NotNull RepoRes<TitleRepoData> getAllTitles(int storyId) {
 
             Response res = Response.getFailure("Customizable StGateway would reject anything");
             List<TitleRepoData> rows = null;

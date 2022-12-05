@@ -10,12 +10,12 @@ import java.util.Arrays;
  * The interactor for this use case. Contains a thread that carries out the processes involved in suggesting a story\
  * title.
  */
-public class StInteractor {
-    private StOutputBoundary pres;
-    private StGateway repo;
-    private SuggestedTitleChecker titleChecker;
+public class StInteractor implements StInputBoundary {
+    private final StOutputBoundary pres;
+    private final StGateway repo;
+    private final SuggestedTitleChecker titleChecker;
 
-    private ThreadRegister register;
+    private final ThreadRegister register;
 
     /**
      * Constructor for the Interactor
@@ -65,7 +65,7 @@ public class StInteractor {
          */
         @Override
         public void threadLogic(){
-            /**
+            /*
              * Step 1: Process title input: We retrieve the title from the input data, trim leading and trailing
              * whitespaces, and replace repeated whitespaces with a single whitespace.
              */
@@ -73,7 +73,7 @@ public class StInteractor {
 
             int storyId = data.getStoryId();
 
-            /**
+            /*
              * Step 2: Create a Gateway object that carries out the processes of getting all previously
              * suggested titles from the repo, and pass it into repo.getAllTitles()
              * to get all previously suggested titles.
@@ -86,7 +86,7 @@ public class StInteractor {
             StOutputData outputData;
 
 
-            /**
+            /*
              * Step 3: Depending on the case (title is invalid, title was already suggested,
              * success or failure of adding title), suggest the title (if not invalid or previously suggested)
              * and create the output data.
@@ -128,29 +128,26 @@ public class StInteractor {
                 }
 
             }
-
-
-
-
             //passes the output data to the presenter
-            /**
+            /*
              * Step 4: Pass the output data to the presenter, which updates the View Model that notifies the user
              * of the outcome of their request to suggest a title.
              */
             pres.suggestTitleOutput(outputData);
         }
+    }
 
-        /**
-         * The method that begins the thread for the use case interactor.
-         * @param data  the input data for this use case. Contains the user-suggested title as well as the IDs to
-         *              track the Story and this particular request to suggest a title for this story
-         */
-        public void suggestTitle(StInputData data){
-            InterruptibleThread thread = new StThread(data);
-            boolean success = register.registerThread(thread);
-            if (!success){
-                pres.outputShutdownServer();
-            }
+    /**
+     * The method that begins the thread for the use case interactor.
+     * @param data  the input data for this use case. Contains the user-suggested title as well as the IDs to
+     *              track the Story and this particular request to suggest a title for this story
+     */
+    @Override
+    public void suggestTitle(StInputData data){
+        InterruptibleThread thread = new StThread(data);
+        boolean success = register.registerThread(thread);
+        if (!success){
+            pres.outputShutdownServer();
         }
     }
 }
