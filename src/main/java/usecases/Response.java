@@ -23,7 +23,6 @@ public class Response {
         mapExceptionToResultCode.put(IdInUseException.class, ResCode.ID_IN_USE);
         mapExceptionToResultCode.put(InvalidDisplayNameException.class, ResCode.INVALID_DISPLAY_NAME);
         mapExceptionToResultCode.put(InvalidWordException.class, ResCode.INVALID_WORD);
-        mapExceptionToResultCode.put(InvalidCommentException.class, ResCode.INVALID_COMMENT);
     }
 
     /**
