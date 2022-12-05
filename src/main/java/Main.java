@@ -5,19 +5,19 @@ import entities.LobbyManager;
 import entities.PlayerFactory;
 import entities.comment_checkers.CommentChecker;
 import entities.comment_checkers.CommentCheckerBasic;
+import entities.SuggestedTitleChecker;
+import entities.SuggestedTitleCheckerBasic;
 import entities.display_name_checkers.DisplayNameChecker;
 import entities.display_name_checkers.DisplayNameCheckerBasic;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
-import usecases.CommentRepoData;
-import usecases.RepoRes;
-import usecases.ThreadRegister;
-import usecases.comment_as_guest.CagGatewayComments;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import usecases.*;
 import usecases.comment_as_guest.CagInteractor;
 import usecases.disconnecting.DcInteractor;
 import usecases.get_latest_stories.GlsInteractor;
 import usecases.get_most_liked_stories.GmlsInteractor;
-import usecases.get_story_comments.GscGatewayComments;
 import usecases.get_story_comments.GscInteractor;
 import usecases.join_public_lobby.JplInteractor;
 import usecases.like_story.LsInteractor;
@@ -26,6 +26,8 @@ import usecases.pull_game_ended.PgeInteractor;
 import usecases.shutdown_server.SsInteractor;
 import usecases.sort_players.SpInteractor;
 import usecases.submit_word.SwInteractor;
+import usecases.suggest_title.StGateway;
+import usecases.suggest_title.StInteractor;
 
 /**
  * Orchestrator. Contains only a main method which boots up
@@ -54,12 +56,16 @@ public class Main {
         PgePresenter pgePresenter = new PgePresenter(viewM);
         SsPresenter ssPresenter = new SsPresenter(viewM);
         SwPresenter swPresenter = new SwPresenter(viewM);
+        StPresenter stPresenter = new StPresenter(viewM);
 
         // Create desired comment checker for injection
         CommentChecker commentChecker = new CommentCheckerBasic();
 
         // Create desired display name checker for injection
         DisplayNameChecker displayChecker = new DisplayNameCheckerBasic();
+
+        // Create desired story title checker for injection
+        SuggestedTitleChecker titleChecker = new SuggestedTitleCheckerBasic();
 
         // Factory which accepts ALL display names with at least 3 characters (temporary)
         PlayerFactory playerFac = new PlayerFactory(displayChecker);
@@ -86,6 +92,17 @@ public class Main {
         LsInteractor ls = new LsInteractor(lsPresenter, (e) -> null, register); // TODO: Inject repo
         SsInteractor ss = new SsInteractor(register, ssPresenter);
         SwInteractor sw = new SwInteractor(swPresenter, manager, register);
+        StInteractor st = new StInteractor(stPresenter, new StGateway() {
+            @Override
+            public @NotNull Response suggestTitle(int storyId, @Nullable String titleSuggestion) {
+                return null;
+            }
+
+            @Override
+            public @NotNull RepoRes<TitleRepoData> getAllTitles(int storyId) {
+                return null;
+            }
+        }, titleChecker, register);
 
 
         // Controllers
@@ -98,6 +115,7 @@ public class Main {
         LsController lsController = new LsController(ls);
         SsController ssController = new SsController(ss);
         SwController swController = new SwController(sw);
+        StController stController = new StController(st);
 
         // TODO: Setup and run the view
     }
