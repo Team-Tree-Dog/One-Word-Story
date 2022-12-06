@@ -45,6 +45,26 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles {
          * Will be used by Upvote Title use case
          */
         public void addUpvote() { upvotes++; }
+
+        /**
+         * Criteria of equality:
+         * <ol>
+         *     <li> obj is of type TitlesRowTable </li>
+         *     <li> both have equal storyId </li>
+         *     <li> both have equal titleSuggestion </li>
+         * </ol>
+         * @param obj object to compare equality to
+         * @return if this row is equal to another object by described criteria
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof TitlesTableRow) {
+                TitlesTableRow row = (TitlesTableRow) obj;
+
+                return row.titleSuggestion.equals(this.titleSuggestion) &&
+                        row.storyId == this.storyId;
+            } return false;
+        }
     }
 
     private final List<TitlesTableRow> titlesTable;
@@ -64,7 +84,15 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles {
     @Override
     @NotNull
     public Response suggestTitle (int storyId, @NotNull String titleSuggestion) {
-        titlesTable.add(new TitlesTableRow(storyId, titleSuggestion, 1));
+        TitlesTableRow newRow = new TitlesTableRow(storyId, titleSuggestion, 1);
+
+        // Row equality is based on storyId and titleSuggestion
+        if (titlesTable.contains(newRow)) {
+            return new Response(Response.ResCode.TITLE_ALREADY_SUGGESTED,
+                    "\"" + titleSuggestion + "\" has already been suggested for Story " + storyId);
+        }
+
+        titlesTable.add(newRow);
         return Response.getSuccessful("Successfully added new suggested title to Story ID" + storyId);
     }
 
