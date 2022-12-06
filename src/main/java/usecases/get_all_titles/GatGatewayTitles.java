@@ -11,7 +11,7 @@ public interface GatGatewayTitles {
     /**
      * Abstract method to get all suggested titles for this story
      * @param storyId   the ID of the story
-     * @return          all suggested titles for this story, or null only if the DB has failed
+     * @return          all suggested titles for this story, or null only if the repo has failed for some reason
      */
     RepoRes<TitleRepoData> getAllTitles(int storyId);
 }
