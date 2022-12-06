@@ -1,5 +1,6 @@
+/* colors of the website */
 :root {
-    --color1: #17252a; /* dark */
+    --color1: #17252a;
     --color2: #2b7a78;
     --color3: #3aafa9;
     --color4: #def2f1;
@@ -16,13 +17,14 @@ form {
 }
 
 input:invalid {
-    border: 2px solid var(--color1);
+    border: 2px solid var(--color5);
 }
 
 input:invalid:required {
-    background-color: var(--color3);
+    background-color: var(--color2);
 }
 
+/* design of button */
 .container {
     height: 150px;
     position: relative;

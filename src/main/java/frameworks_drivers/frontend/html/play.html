@@ -3,23 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../css/play.css">
-    <script src="../js/play.js"> </script>
     <title>Play</title>
 </head>
+
 <body>
+    <!-- game logo -->
     <div>
         <img src="../media/logo.png" alt="logo" onclick="location.href = '/home'">
     </div>
+
+    <!-- form where you need to enter your name and submit it -->
     <form action="/play">
+        <!-- name input -->
         <label for="name">Enter your name:</label>
         <input type="text" id="name" name="name" required><br><br>
 
+        <!-- button "Play" -->
         <div class="container">
             <div class="wrap">
                 <button class="button">Play</button>
             </div>
         </div>
-
     </form>
 </body>
+
 </html>
