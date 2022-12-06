@@ -22,6 +22,14 @@ body {
     flex: 60%;
 }
 
+h3 {
+    font-family: 'Brush Script MT', cursive;
+    font-size: 50px;
+    text-align: center;
+    text-shadow: #2b7a78 3px 3px;
+    padding: -10px;
+}
+
 #story {
     font-family: URW Chancery L, cursive;
     border-style: solid;
