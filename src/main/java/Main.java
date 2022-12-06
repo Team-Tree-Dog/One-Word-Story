@@ -9,11 +9,8 @@ import entities.display_name_checkers.DisplayNameChecker;
 import entities.display_name_checkers.DisplayNameCheckerBasic;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
-<<<<<<< HEAD
-=======
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
->>>>>>> main
 import usecases.*;
 import usecases.disconnecting.DcInteractor;
 import usecases.get_all_titles.GatInteractor;
