@@ -10,7 +10,7 @@ import usecases.shutdown_server.SsOutputBoundary;
  * The interactor for this use case. Carries out all the processes involved in getting all suggested titles for
  * a particular story
  */
-public class GatInteractor {
+public class GatInteractor implements GatInputBoundary{
     private GatOutputBoundary pres;
     private GatGatewayTitles repo;
     private ThreadRegister register;

@@ -107,7 +107,7 @@ public class Main {
 
         // Controllers
         DcController dcController = new DcController(dc);
-        GatController gatController = new GatController();
+        GatController gatController = new GatController(gat);
         GlsController glsController = new GlsController(gls);
         GmlsController gmlsController = new GmlsController(gmls);
         JplController jplController = new JplController(jpl);
