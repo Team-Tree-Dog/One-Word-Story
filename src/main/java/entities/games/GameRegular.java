@@ -6,6 +6,7 @@ import entities.validity_checkers.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -35,7 +36,7 @@ public class GameRegular extends Game {
 
     @Override
     public @NotNull Collection<Player> getPlayers() {
-        return players;
+        return new ArrayList<>(players);
     }
 
     /**

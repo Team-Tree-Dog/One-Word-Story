@@ -28,7 +28,7 @@ public interface GameReadOnly {
     String getStoryString ();
 
     /**
-     * @return Player objects of all players currently in the game
+     * @return shallow copy of all players currently in the game
      */
     @NotNull
     Collection<Player> getPlayers ();

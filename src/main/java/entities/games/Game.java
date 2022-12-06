@@ -173,7 +173,7 @@ public abstract class Game implements GameReadOnly {
     public boolean isTimerStopped() {return timerStopped;}
 
     /**
-     * @return Returns all the present players in the game
+     * @return a shallow copy of all the present players in the game
      */
     @NotNull
     public abstract Collection<Player> getPlayers();

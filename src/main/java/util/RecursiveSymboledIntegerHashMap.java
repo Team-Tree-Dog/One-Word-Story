@@ -53,6 +53,20 @@ public class RecursiveSymboledIntegerHashMap {
     }
 
     /**
+     * Calls map.put internally, does exactly the same thing. That is,
+     * old value gets overwritten if it existed
+     * Note that this method will DO NOTHING is this recursive map
+     * is in the base case
+     * @param key a string key
+     * @param value a recursive value
+     */
+    public void put(String key, RecursiveSymboledIntegerHashMap value) {
+        if (!isBaseCase()) {
+            map.put(key, value);
+        }
+    }
+
+    /**
      * Base case when (map = null) and (value != null)
      * @return If this recursive map is at its base case
      */

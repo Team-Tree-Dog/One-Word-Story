@@ -50,4 +50,13 @@ public class SymboledInteger {
     public void setValue(Integer value) {
         this.value = value;
     }
+
+    /**
+     * @param valueToAdd and integer value to add
+     * @return a new SymboledInteger whose value is the sum of this and other, with the suffix
+     * carried over
+     */
+    public SymboledInteger add (Integer valueToAdd) {
+        return new SymboledInteger(this.value + valueToAdd, this.suffix);
+    }
 }

@@ -22,24 +22,4 @@ import java.util.Map;
  * }
  * </code>
  */
-public interface PerPlayerIntStatistic extends Statistic<Map<Player, RecursiveSymboledIntegerHashMap>> {
-    @Override
-    public void onSubmitWord(String word, Player author) {
-
-    }
-
-    @Override
-    public void onTimerUpdate(GameReadOnly gameInfo) {
-
-    }
-
-    @Override
-    public void onSuccessfulSwitchTurn(Player newCurrentTurnPlayer, int newSecondsLeftInCurrentTurn) {
-
-    }
-
-    @Override
-    public String getStatData() {
-        return null;
-    }
-}
+public interface PerPlayerIntStatistic extends Statistic<Map<Player, RecursiveSymboledIntegerHashMap>> { }
