@@ -1,13 +1,17 @@
 package usecases.suggest_title;
 
-import entities.SuggestedTitleChecker;
+import entities.suggested_title_checkers.SuggestedTitleChecker;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import usecases.RepoRes;
 import usecases.Response;
 import usecases.ThreadRegister;
+import usecases.TitleRepoData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,10 +57,6 @@ public class StInteractorTests {
      */
     static class CustomizableStGateway implements StGateway {
 
-        private Integer receivedStoryIdST;
-        private String receivedTitleSuggestion;
-        private Integer recievedStoryIdGAT;
-
         private final boolean suggestTitleSuccess;
         private final boolean getAllTitlesReturnNull;
 
@@ -65,9 +65,6 @@ public class StInteractorTests {
          * @param getAllTitlesReturnNull detirmines return value for getAllTitles
          */
         public CustomizableStGateway(boolean suggestTitleSuccess, boolean getAllTitlesReturnNull) {
-            receivedStoryIdST = null;
-            receivedTitleSuggestion = null;
-            recievedStoryIdGAT = null;
             this.suggestTitleSuccess = suggestTitleSuccess;
             this.getAllTitlesReturnNull = getAllTitlesReturnNull;
         }
@@ -79,13 +76,11 @@ public class StInteractorTests {
          * @param titleSuggestion requested title
          * @return "success" when suggestTitleSuccess is true, and "failure" otherwise
          */
-        public Response suggestTitle(int storyId, String titleSuggestion) {
-            receivedStoryIdST = storyId;
-            receivedTitleSuggestion = titleSuggestion;
+        public @NotNull Response suggestTitle(int storyId, String titleSuggestion) {
             if (this.suggestTitleSuccess) {
                 return Response.getSuccessful("Customizable StGateway would accept anything");
             } else {
-                return Response.getSuccessful("Customizable StGateway would reject anything");
+                return Response.getFailure("Customizable StGateway would reject anything");
             }
         }
 
@@ -95,10 +90,9 @@ public class StInteractorTests {
          * @param storyId requested storyId
          * @return null when getAllTitlesReturnNull is true, and "duplicate" row otherwise
          */
-        public RepoRes<TitleRepoData> getAllTitles(int storyId) {
-            recievedStoryIdGAT = storyId;
+        public @NotNull RepoRes<TitleRepoData> getAllTitles(int storyId) {
 
-            Response res = new Response.getFailure("Customizable StGateway would reject anything");
+            Response res = Response.getFailure("Customizable StGateway would reject anything");
             List<TitleRepoData> rows = null;
 
             if (!getAllTitlesReturnNull) {
@@ -106,7 +100,7 @@ public class StInteractorTests {
                 rows = duplicateRow;
             }
 
-            return RepoRes<TitleRepoData>(res, rows);
+            return new RepoRes<TitleRepoData>(res, rows);
         }
 
     }
@@ -170,8 +164,8 @@ public class StInteractorTests {
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals(receivedData.getRequestID(), "request1");
-        assertEquals(receivedData.getRes().getCode(), Response.ResCode.FAIL, "Wrong code");
+        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
+        assertEquals(Response.ResCode.FAIL, receivedData.getRes().getCode(), "Wrong code");
     }
 
     /**
@@ -196,8 +190,8 @@ public class StInteractorTests {
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals(receivedData.getRequestID(), "request1");
-        assertEquals(receivedData.getRes().getCode(), Response.ResCode.INVALID_TITLE, "Wrong code");
+        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
+        assertEquals(Response.ResCode.INVALID_TITLE, receivedData.getRes().getCode(), "Wrong code");
     }
 
     /**
@@ -222,7 +216,7 @@ public class StInteractorTests {
         // Verifying results
         String receivedData = ((CustomizableTitleChecker) titleChecker).getReceivedData();
         assertNotNull(receivedData, "Title checker was not accessed");
-        assertEquals(receivedData, "d d", "Incorrect preprocessing");
+        assertEquals("d d", receivedData, "Incorrect preprocessing");
     }
 
 
@@ -248,8 +242,8 @@ public class StInteractorTests {
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals(receivedData.getRequestID(), "request1");
-        assertEquals(receivedData.getRes().getCode(), Response.ResCode.INVALID_TITLE, "Wrong code");
+        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
+        assertEquals(Response.ResCode.TITLE_ALREADY_SUGGESTED, receivedData.getRes().getCode(), "Wrong code");
     }
 
     /**
@@ -274,8 +268,8 @@ public class StInteractorTests {
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals(receivedData.getRequestID(), "request1");
-        assertEquals(receivedData.getRes().getCode(), Response.ResCode.FAIL, "Wrong code");
+        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
+        assertEquals(Response.ResCode.FAIL, receivedData.getRes().getCode(), "Wrong code");
     }
 
     /**
@@ -300,8 +294,8 @@ public class StInteractorTests {
         // Verifying results for presenter
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals(receivedData.getRequestID(), "request1");
-        assertEquals(receivedData.getRes().getCode(), Response.ResCode.SUCCESS, "Wrong code");
+        assertEquals("request1", receivedData.getRequestID());
+        assertEquals(Response.ResCode.SUCCESS, receivedData.getRes().getCode(), "Wrong code");
     }
 
 }

@@ -3,23 +3,31 @@ import adapters.controllers.*;
 import adapters.presenters.*;
 import entities.LobbyManager;
 import entities.PlayerFactory;
+import entities.suggested_title_checkers.SuggestedTitleChecker;
+import entities.suggested_title_checkers.SuggestedTitleCheckerBasic;
 import entities.display_name_checkers.DisplayNameChecker;
 import entities.display_name_checkers.DisplayNameCheckerBasic;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
+<<<<<<< HEAD
+=======
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+>>>>>>> main
 import usecases.*;
 import usecases.disconnecting.DcInteractor;
 import usecases.get_all_titles.GatInteractor;
 import usecases.get_latest_stories.GlsInteractor;
 import usecases.get_most_liked_stories.GmlsInteractor;
 import usecases.join_public_lobby.JplInteractor;
-import usecases.like_story.LsGatewayStory;
 import usecases.like_story.LsInteractor;
 import usecases.pull_data.PdInteractor;
 import usecases.pull_game_ended.PgeInteractor;
 import usecases.shutdown_server.SsInteractor;
 import usecases.sort_players.SpInteractor;
 import usecases.submit_word.SwInteractor;
+import usecases.suggest_title.StGateway;
+import usecases.suggest_title.StInteractor;
 
 /**
  * Orchestrator. Contains only a main method which boots up
@@ -38,6 +46,7 @@ public class Main {
 
         // Create all presenters
         DcPresenter dcPresenter = new DcPresenter(viewM);
+        GatPresenter gatPresenter = new GatPresenter(viewM);
         GlsPresenter glsPresenter = new GlsPresenter(viewM);
         GmlsPresenter gmlsPresenter = new GmlsPresenter(viewM);
         JplPresenter jplPresenter = new JplPresenter(viewM);
@@ -46,11 +55,14 @@ public class Main {
         PgePresenter pgePresenter = new PgePresenter(viewM);
         SsPresenter ssPresenter = new SsPresenter(viewM);
         SwPresenter swPresenter = new SwPresenter(viewM);
-        GatPresenter gatPresenter = new GatPresenter(viewM);
+        StPresenter stPresenter = new StPresenter(viewM);
 
 
         // Create desired display name checker for injection
         DisplayNameChecker displayChecker = new DisplayNameCheckerBasic();
+
+        // Create desired story title checker for injection
+        SuggestedTitleChecker titleChecker = new SuggestedTitleCheckerBasic();
 
         // Factory which accepts ALL display names with at least 3 characters (temporary)
         PlayerFactory playerFac = new PlayerFactory(displayChecker);
@@ -68,6 +80,9 @@ public class Main {
         // Use cases called by users
 
         DcInteractor dc = new DcInteractor(manager, dcPresenter, register);
+        GatInteractor gat = new GatInteractor(gatPresenter,
+                storyId -> new RepoRes<TitleRepoData>(Response.getFailure("Dummy Lambda, Always failure"))
+                ,register);
         GlsInteractor gls = new GlsInteractor(glsPresenter,
                 () -> new RepoRes<StoryRepoData>(Response.getFailure("Dummy Lambda, Always failure")),
                 register); // TODO: Inject repo
@@ -80,20 +95,29 @@ public class Main {
                 register); // TODO: Inject repo
         SsInteractor ss = new SsInteractor(register, ssPresenter);
         SwInteractor sw = new SwInteractor(swPresenter, manager, register);
-        GatInteractor gat = new GatInteractor(gatPresenter,
-                storyId -> new RepoRes<TitleRepoData>(Response.getFailure("Dummy Lambda, Always failure"))
-                ,register);
+        StInteractor st = new StInteractor(stPresenter, new StGateway() {
+            @Override
+            public @NotNull Response suggestTitle(int storyId, @Nullable String titleSuggestion) {
+                return null;
+            }
+
+            @Override
+            public @NotNull RepoRes<TitleRepoData> getAllTitles(int storyId) {
+                return null;
+            }
+        }, titleChecker, register);
 
 
         // Controllers
         DcController dcController = new DcController(dc);
+        GatController gatController = new GatController();
         GlsController glsController = new GlsController(gls);
         GmlsController gmlsController = new GmlsController(gmls);
         JplController jplController = new JplController(jpl);
         LsController lsController = new LsController(ls);
         SsController ssController = new SsController(ss);
         SwController swController = new SwController(sw);
-        GatController gatController = new GatController();
+        StController stController = new StController(st);
 
         // TODO: Setup and run the view
     }

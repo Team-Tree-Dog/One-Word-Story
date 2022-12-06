@@ -1,4 +1,4 @@
-package entities;
+package entities.suggested_title_checkers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,18 +97,18 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
      */
     private boolean checkFourInARowConsonants(String title){
         for (int i = 0; i <= title.length() - 4; i++) {
-            boolean allAreConsonants = false;
+            boolean allAreConsonants = true;
             for (int j = 0; j < 4; j++) {
                 if (!isConsonant(title.charAt(i + j))) {
-                    allAreConsonants = true;
+                    allAreConsonants = false;
                     break;
                 }
             }
             if (allAreConsonants) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     /**
@@ -135,27 +135,12 @@ public class SuggestedTitleCheckerBasic implements SuggestedTitleChecker {
     }
 
     /**
-     * Private helper method for checkCharacterRepetitions() and checkFourInARowConsonants(). Extracts the next
-     * four characters of the title beginning from and including the given index.
-     * Precondition: index <= title.length - 4
-     * @param title the title which we want to extract 4 characters from
-     * @param index the index from which we want to extract the next four characters
-     * @return      an array of type char and length 4, where char[i] = title.charAt(index + i)
-     */
-    private char[] extractNextFourLetters(String title, int index){
-        char[] toReturn = new char[4];
-        for (int i = 0; i < 4; i ++){
-            toReturn[i] = title.charAt(index + i);
-        }
-        return toReturn;
-    }
-
-    /**
      * Private helper method for checkFourInARowConsonants(). Checks whether the given character is a consonant.
      * @param c the character that we want to check is a consonant
      * @return  true if and only if c is a consonant, i.e. c is a letter and is not a vowel.
      */
     private boolean isConsonant(char c){
-        return (Character.isLetter(c) && !(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'));
+        return (Character.isLetter(c) &&
+                !(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u' || c == 'y'));
     }
 }

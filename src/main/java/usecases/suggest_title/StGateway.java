@@ -1,5 +1,7 @@
 package usecases.suggest_title;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import usecases.RepoRes;
 import usecases.Response;
 import usecases.TitleRepoData;
@@ -20,12 +22,14 @@ public interface StGateway {
      * @return  a response object that contains the appropriate message depending on whether the request to add the
      *          title was successful or not
      */
-    Response suggestTitle(int storyId, String titleSuggestion);
+    @NotNull
+    Response suggestTitle(int storyId, @Nullable String titleSuggestion);
 
     /**
      * Abstract method to retrieve all previously suggested story titles from the repository
      * @param storyId the ID for the story whose previously suggested titles we want to retrieve
      * @return        the previously suggested titles for this particular story
      */
+    @NotNull
     RepoRes<TitleRepoData> getAllTitles(int storyId);
 }
