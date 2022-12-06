@@ -11,6 +11,7 @@ import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.InvalidWordException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import util.RecursiveSymboledIntegerHashMap;
 
 import java.util.*;
 
@@ -110,7 +111,7 @@ public abstract class Game implements GameReadOnly {
      */
     @Override
     @NotNull
-    public StatisticReadOnly<?>[] getPlayerStatistics() {
+    public StatisticReadOnly<Map<Player, RecursiveSymboledIntegerHashMap>>[] getPlayerStatistics() {
         return playerStatistics;
     }
 

@@ -2,12 +2,15 @@ package entities.games;
 
 import entities.Player;
 import entities.statistics.AllPlayerNamesStatistic;
+import entities.statistics.Statistic;
 import entities.statistics.StatisticReadOnly;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import util.RecursiveSymboledIntegerHashMap;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,7 +39,7 @@ public interface GameReadOnly {
      */
     @NotNull
     // TODO: Replace <?> with the type of PerPlayerIntStatistic
-    StatisticReadOnly<?>[] getPlayerStatistics ();
+    StatisticReadOnly<Map<Player, RecursiveSymboledIntegerHashMap>>[] getPlayerStatistics ();
 
     /**
      * @return Special statistic which keeps track of the display names of all contributing
