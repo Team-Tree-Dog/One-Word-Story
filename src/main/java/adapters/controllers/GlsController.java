@@ -1,5 +1,8 @@
 package adapters.controllers;
 
+import adapters.presenters.GlsPresenter;
+import adapters.view_models.GlsViewModel;
+import adapters.view_models.ViewModel;
 import usecases.get_latest_stories.GlsInputBoundary;
 import usecases.get_latest_stories.GlsInputData;
 
@@ -20,7 +23,13 @@ public class GlsController {
      * @param numToget number of the latest stories to get
      */
 
-    public void getLatestStories(Integer numToget) {
-        gls.getLatestStories( new GlsInputData(numToget));
+    public ViewModel getLatestStories(Integer numToget) {
+        GlsInputData data = new GlsInputData(numToget);
+        GlsViewModel viewM = new GlsViewModel();
+        GlsPresenter pres = new GlsPresenter(viewM);
+
+        gls.getLatestStories(data, pres);
+
+        return viewM;
     }
 }
