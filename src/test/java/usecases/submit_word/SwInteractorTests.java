@@ -11,6 +11,7 @@ import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
 import exceptions.InvalidDisplayNameException;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,7 @@ public class SwInteractorTests {
          * @return Returns all the present players in the game
          */
         @Override
-        public Collection<Player> getPlayers() {return this.players;}
+        public @NotNull Collection<Player> getPlayers() {return this.players;}
 
         /**
          * @return Returns whether the game is over
@@ -100,7 +101,7 @@ public class SwInteractorTests {
          * Returns the player whose turn it is
          */
         @Override
-        public Player getCurrentTurnPlayer() {return players.peek();}
+        public @NotNull Player getCurrentTurnPlayer() {return players.peek();}
     }
 
     /**

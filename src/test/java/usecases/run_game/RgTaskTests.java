@@ -3,6 +3,7 @@ package usecases.run_game;
 import entities.Player;
 import entities.games.Game;
 import entities.validity_checkers.ValidityCheckerFacade;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,7 @@ public class RgTaskTests {
         }
 
         @Override
-        public Collection<Player> getPlayers() {
+        public @NotNull Collection<Player> getPlayers() {
             return players;
         }
 
@@ -100,7 +101,7 @@ public class RgTaskTests {
          * @return the first player in the player list, whose turn is currently taking place
          */
         @Override
-        public Player getCurrentTurnPlayer() { return players.peek(); }
+        public @NotNull Player getCurrentTurnPlayer() { return players.peek(); }
 
         /**
          * Custom isGameOver, returns fixed value

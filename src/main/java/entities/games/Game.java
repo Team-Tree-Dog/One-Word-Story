@@ -6,14 +6,13 @@ import entities.WordFactory;
 import entities.statistics.AllPlayerNamesStatistic;
 import entities.statistics.PerPlayerIntStatistic;
 import entities.statistics.Statistic;
+import entities.statistics.StatisticReadOnly;
 import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.InvalidWordException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Timer;
+import java.util.*;
 
 /**
  * An abstract game
@@ -43,9 +42,9 @@ public abstract class Game implements GameReadOnly {
     private boolean timerStopped;
 
     private final int secondsPerTurn;
-    private final List<Statistic> statistics;
+    private final Statistic<?>[] statistics;
     private final AllPlayerNamesStatistic authorNames;
-    private final List<PerPlayerIntStatistic> playerStatistics;
+    private final PerPlayerIntStatistic[] playerStatistics;
     protected int secondsLeftInCurrentTurn;
 
     /**
@@ -55,18 +54,20 @@ public abstract class Game implements GameReadOnly {
      * @param playerStatsToTrack Statistics to track during game for each player
      */
     public Game(int secondsPerTurn, ValidityCheckerFacade v,
-                List<PerPlayerIntStatistic> playerStatsToTrack) {
+                PerPlayerIntStatistic[] playerStatsToTrack) {
         this.story = new Story(new WordFactory(v));
         this.secondsPerTurn = secondsPerTurn;
         this.gameTimer = new Timer(true);
         this.timerStopped = false;
-        this.playerStatistics = playerStatsToTrack;
+        playerStatistics = playerStatsToTrack;
+        authorNames = new AllPlayerNamesStatistic();
 
         // ALL statistics go in the general stats list, so they could be tracked
-        statistics = new ArrayList<>();
-        statistics.addAll(playerStatistics);
+        statistics = new Statistic<?>[playerStatistics.length + 1];
+        System.arraycopy(playerStatsToTrack, 0, statistics, 0, playerStatsToTrack.length);
+        statistics[statistics.length - 1] = authorNames;
 
-        authorNames = new AllPlayerNamesStatistic();
+
     }
 
     /**
@@ -75,14 +76,15 @@ public abstract class Game implements GameReadOnly {
      * @param v The validity checker (to check if a word is valid)
      */
     public Game(int secondsPerTurn, ValidityCheckerFacade v) {
-        this(secondsPerTurn, v, new ArrayList<>());
+        this(secondsPerTurn, v, new PerPlayerIntStatistic[0]);
     }
 
     /**
      * @return Single string of the entire story in the game currently
      */
     @Override
-    public @NotNull String getStoryString() {
+    @NotNull
+    public String getStoryString() {
         return story.toString();
     }
 
@@ -100,6 +102,26 @@ public abstract class Game implements GameReadOnly {
         for (Statistic<?> s: statistics) {
             s.onSubmitWord(word, author);
         }
+    }
+
+    /**
+     * @return A list of statistics which track per player data to be displayed
+     * in the game end screen
+     */
+    @Override
+    @NotNull
+    public StatisticReadOnly<?>[] getPlayerStatistics() {
+        return playerStatistics;
+    }
+
+    /**
+     * @return Special statistic which keeps track of the display names of all contributing
+     * players
+     */
+    @Override
+    @NotNull
+    public StatisticReadOnly<Set<String>> getAuthorNamesStatistic() {
+        return authorNames;
     }
 
     /**
@@ -133,6 +155,7 @@ public abstract class Game implements GameReadOnly {
     /**
      * @return Returns the game timer which is used by the use case layer
      */
+    @NotNull
     public Timer getGameTimer() {return this.gameTimer;}
 
     /**
@@ -142,28 +165,57 @@ public abstract class Game implements GameReadOnly {
     public void setTimerStopped() {this.timerStopped = true;}
 
     /**
-     * @return Returns whether timer has been stopped
+     * See the implementation notes for isGameOver to see where this method
+     * falls into the scheme of things
+     * @return If RG has processed the fact that isGameOver is true and stopped the timer
      */
     public boolean isTimerStopped() {return timerStopped;}
 
     /**
      * @return Returns all the present players in the game
      */
+    @NotNull
     public abstract Collection<Player> getPlayers();
 
     /**
-     * @return Returns whether the game is over
+     * <h3>Important Notes: </h3>
+     * The general flow of use cases is as follows:
+     * <ol>
+     *  <li> RG catches lock. if isGameOver is true, it stops itself via setTimeStopped, so isGameEnded now
+     * returns true </li>
+     *  <li> SP catches lock. If isGameEnded, the game object in LobbyManager is set to null </li>
+     *  <li> There is an opportunity for another use case to catch the lock in between, in which case
+     * the game timer stopped but the game still exists </li>
+     *  <li> There is also an opportunity for a use case to catch before RG, where isGameOver is true
+     * but the time has not had a chance to be stopped yet    </li>
+     * </ol>
+
+     *
+     * @return If the game's custom conditions evaluate that the game is over
      */
     public abstract boolean isGameOver();
 
-    /**
-     * Additional actions that can be done by the game every time the timer is updated
-     */
-    public abstract void onTimerUpdate();
 
     /**
+     * Calls onTimerUpdateLogic and calls each statistic event handler
+     */
+    public void onTimerUpdate() {
+        onTimeUpdateLogic();
+        for (Statistic<?> s: statistics) {
+            s.onTimerUpdate(this);
+        }
+    };
+
+    /**
+     * Custom additional actions that can be done by the game every time the timer is updated
+     */
+    protected abstract void onTimeUpdateLogic();
+
+    /**
+     * @param playerId ID of player you'd like to retrieve
      * @return the player object with the corresponding playerId, or null if not found
      */
+    @Nullable
     public abstract Player getPlayerById(String playerId);
 
     /**
@@ -180,12 +232,33 @@ public abstract class Game implements GameReadOnly {
 
     /**
      * Switches this game's turn and resets the timer
+     * @return if the turn was switched successfully
      */
-    public abstract boolean switchTurn();
+    public boolean switchTurn() {
+        boolean output = switchTurnLogic();
+
+        // Notify statistics if turn was successfully switched
+        if (output) {
+            for (Statistic<?> s: statistics) {
+                s.onSuccessfulSwitchTurn(
+                        getCurrentTurnPlayer(), getSecondsLeftInCurrentTurn()
+                );
+            }
+        }
+        return output;
+    }
 
     /**
-     * Returns the player whose turn it is
+     * Switches this game's turn and resets the timer
+     * @return if the turn was switched successfully
      */
+    protected abstract boolean switchTurnLogic();
+
+    /**
+     * @return Player whose turn it is currently in the game, or null if the game
+     * has no players
+     */
+    @Nullable
     public abstract Player getCurrentTurnPlayer();
 
 }

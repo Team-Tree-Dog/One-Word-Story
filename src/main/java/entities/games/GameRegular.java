@@ -1,7 +1,10 @@
 package entities.games;
 
 import entities.Player;
+import entities.statistics.PerPlayerIntStatistic;
 import entities.validity_checkers.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -25,13 +28,13 @@ public class GameRegular extends Game {
      * Constructor for GameRegular
      * @param initialPlayers The initial players in this GameRegular
      */
-    public GameRegular(Queue<Player> initialPlayers) {
-        super(REGULAR_GAME_SECONDS_PER_TURN, v);
+    public GameRegular(Queue<Player> initialPlayers, PerPlayerIntStatistic[] playerStats) {
+        super(REGULAR_GAME_SECONDS_PER_TURN, v, playerStats);
         players = new LinkedList<>(initialPlayers);
     }
 
     @Override
-    public Collection<Player> getPlayers() {
+    public @NotNull Collection<Player> getPlayers() {
         return players;
     }
 
@@ -39,9 +42,7 @@ public class GameRegular extends Game {
      * Currently implemented as no-operation
      */
     @Override
-    public void onTimerUpdate() {
-
-    }
+    protected void onTimeUpdateLogic() {}
 
     /**
      * Gets Player from this game by its id
@@ -79,7 +80,7 @@ public class GameRegular extends Game {
      * @return if the turn switch was successful
      */
     @Override
-    public boolean switchTurn() {
+    protected boolean switchTurnLogic() {
         setSecondsLeftInCurrentTurn(getSecondsPerTurn());
         return players.add(players.remove());
     }
@@ -88,6 +89,7 @@ public class GameRegular extends Game {
      * @return the first player in the player list
      */
     @Override
+    @Nullable
     public Player getCurrentTurnPlayer() {
         return players.peek();
     }

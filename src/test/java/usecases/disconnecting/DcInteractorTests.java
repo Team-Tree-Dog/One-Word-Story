@@ -8,6 +8,7 @@ import exceptions.GameDoesntExistException;
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
 import exceptions.InvalidDisplayNameException;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import usecases.Response;
@@ -261,7 +262,7 @@ public class DcInteractorTests {
         }
 
         @Override
-        public Collection<Player> getPlayers() { return players; }
+        public @NotNull Collection<Player> getPlayers() { return players; }
 
         @Override
         public boolean isGameOver() { return false; }
@@ -290,7 +291,7 @@ public class DcInteractorTests {
         }
 
         @Override
-        public Player getCurrentTurnPlayer() { return players.peek(); }
+        public @NotNull Player getCurrentTurnPlayer() { return players.peek(); }
 
     }
 

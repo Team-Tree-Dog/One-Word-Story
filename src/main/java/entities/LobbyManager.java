@@ -48,7 +48,6 @@ public class LobbyManager {
     private final GameFactory gameFac;
     private final PlayerFactory playerFac;
     private final Timer sortPlayersTimer;
-    private final boolean startedSortTimer;
     private final Lock playerPoolLock;
     private final Lock gameLock;
 
@@ -61,7 +60,6 @@ public class LobbyManager {
         this.playerFac = playerFac;
         this.playerPool = new CopyOnWriteArrayList<>();
         this.sortPlayersTimer = new Timer(true);
-        this.startedSortTimer = false;
         this.playerPoolLock = new ReentrantLock();
         this.gameLock = new ReentrantLock();
     }

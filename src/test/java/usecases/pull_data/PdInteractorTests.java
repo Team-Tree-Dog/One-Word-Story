@@ -4,6 +4,7 @@ import entities.Player;
 import entities.games.Game;
 import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.InvalidWordException;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,7 +47,7 @@ public class PdInteractorTests {
         }
 
         @Override
-        public Collection<Player> getPlayers() {
+        public @NotNull Collection<Player> getPlayers() {
             return players;
         }
 
@@ -84,7 +85,7 @@ public class PdInteractorTests {
         }
 
         @Override
-        public Player getCurrentTurnPlayer() {
+        public @NotNull Player getCurrentTurnPlayer() {
             return this.players.peek();
         }
 

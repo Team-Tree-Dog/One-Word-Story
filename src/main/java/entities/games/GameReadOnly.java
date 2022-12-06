@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An "upcasted" version of the Game abstract class which only
@@ -34,14 +35,15 @@ public interface GameReadOnly {
      * in the game end screen
      */
     @NotNull
-    List<StatisticReadOnly> getPlayerStatistics ();
+    // TODO: Replace <?> with the type of PerPlayerIntStatistic
+    StatisticReadOnly<?>[] getPlayerStatistics ();
 
     /**
      * @return Special statistic which keeps track of the display names of all contributing
      * players
      */
     @NotNull
-    AllPlayerNamesStatistic getAuthorNamesStatistic ();
+    StatisticReadOnly<Set<String>> getAuthorNamesStatistic ();
 
     /**
      * @param playerId ID of player you'd like to retrieve
@@ -51,9 +53,10 @@ public interface GameReadOnly {
     Player getPlayerById (String playerId);
 
     /**
-     * @return Player whose turn it is currently in the game
+     * @return Player whose turn it is currently in the game, or null if the game
+     * has no players
      */
-    @NotNull
+    @Nullable
     Player getCurrentTurnPlayer ();
 
     /**

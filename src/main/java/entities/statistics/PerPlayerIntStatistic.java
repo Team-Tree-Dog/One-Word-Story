@@ -3,7 +3,7 @@ package entities.statistics;
 import entities.Player;
 import entities.games.GameReadOnly;
 
-public class PerPlayerIntStatistic implements Statistic {
+public class PerPlayerIntStatistic implements Statistic<String> {
     @Override
     public void onSubmitWord(String word, Player author) {
 
@@ -20,7 +20,7 @@ public class PerPlayerIntStatistic implements Statistic {
     }
 
     @Override
-    public Object getStatData() {
+    public String getStatData() {
         return null;
     }
 }

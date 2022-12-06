@@ -5,6 +5,7 @@ import entities.display_name_checkers.DisplayNameChecker;
 import entities.games.Game;
 import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.GameRunningException;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,7 @@ public class SpInteractorTests {
         }
 
         @Override
-        public Collection<Player> getPlayers() {
+        public @NotNull Collection<Player> getPlayers() {
             return players;
         }
 
@@ -95,7 +96,7 @@ public class SpInteractorTests {
         }
 
         @Override
-        public Player getCurrentTurnPlayer() {
+        public @NotNull Player getCurrentTurnPlayer() {
             return null;
         }
 
