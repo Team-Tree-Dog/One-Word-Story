@@ -16,7 +16,7 @@ form {
 }
 
 input:invalid {
-    border: 2px dashed var(--color1);
+    border: 2px solid var(--color1);
 }
 
 input:invalid:required {
