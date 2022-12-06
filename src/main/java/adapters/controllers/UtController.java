@@ -8,7 +8,7 @@ public class UtController {
 
     public UtController(UtInputBoundary ut) {this.ut = ut;}
 
-    public void shutdownServer(String requestId, int storyId, String titleToUpvote){
+    public void upvoteTitle(String requestId, int storyId, String titleToUpvote){
         UtInputData inputData = new UtInputData(requestId, storyId, titleToUpvote);
         ut.upvoteTitle(inputData);
     }

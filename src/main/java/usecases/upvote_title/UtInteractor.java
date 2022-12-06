@@ -5,7 +5,7 @@ import usecases.Response;
 import usecases.ThreadRegister;
 import usecases.shutdown_server.SsOutputBoundary;
 
-public class UtInteractor {
+public class UtInteractor implements UtInputBoundary{
     private UtOutputBoundary pres;
     private UtGatewayTitles repo;
     private ThreadRegister register;
