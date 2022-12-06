@@ -23,9 +23,12 @@ body {
 }
 
 #story {
+    font-family: URW Chancery L, cursive;
     border-style: solid;
+    height: 300px;
     overflow-y:scroll;
     background-color: var(--color4);
+    padding: 10px;
 }
 
 ul {
