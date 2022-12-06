@@ -4,6 +4,7 @@ import entities.Player;
 import entities.games.GameReadOnly;
 import org.jetbrains.annotations.Nullable;
 import util.RecursiveSymboledIntegerHashMap;
+import util.SymboledInteger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,8 +56,18 @@ public class AverageTurnDurationPlayerStatistic implements PerPlayerIntStatistic
 
         for (Player p: playerTurnTimes.keySet()) {
             List<Integer> turnTimes = playerTurnTimes.get(p);
-            // TODO: Sum avg
-            output.put(p, )
+
+            // Find average turn time
+            int sum = 0;
+            for (Integer i : turnTimes) sum += i;
+            float avg = ((float) sum) / ((float) turnTimes.size());
+
+            // Map average to player using base case of recursive map
+            output.put(p, new RecursiveSymboledIntegerHashMap(
+                    new SymboledInteger(Math.round(avg), "s")
+            ));
         }
+
+        return output;
     }
 }
