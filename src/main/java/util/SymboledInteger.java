@@ -22,6 +22,14 @@ public class SymboledInteger {
     }
 
     /**
+     * Constructor for symboled integer with no suffix
+     * @param value integer value
+     */
+    public SymboledInteger(@NotNull Integer value) {
+        this(value, null);
+    }
+
+    /**
      * @return numerical component of this symboled integer
      */
     @NotNull
