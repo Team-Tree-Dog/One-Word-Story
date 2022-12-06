@@ -10,10 +10,15 @@ body {
     background: var(--color3);
 }
 
+form {
+    position: center;
+    text-align: center;
+}
+
 input:invalid {
-    border: 2px dashed red;
+    border: 2px dashed var(--color1);
 }
 
 input:invalid:required {
-    background-color: var(--color1);
+    background-color: var(--color3);
 }
