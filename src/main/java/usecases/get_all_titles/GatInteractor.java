@@ -61,4 +61,14 @@ public class GatInteractor {
             pres.putSuggestedTitles(gatOutputData);
         }
     }
+
+    /**
+     * Creates the thread for the use case interactor and registers it into the thread register
+     * @param data  the input data for this use case, contains the storyId of the story we want to get all titles for
+     */
+    public void getAllTitles(GatInputData data){
+        InterruptibleThread thread = new GatThread(data);
+        boolean success = register.registerThread(thread);
+        if (!success){pres.outputShutdownServer();}
+    }
 }
