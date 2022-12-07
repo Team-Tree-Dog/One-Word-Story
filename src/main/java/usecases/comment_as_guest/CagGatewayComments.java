@@ -13,7 +13,7 @@ public interface CagGatewayComments {
      * @param storyId the id of the story the comment was made under
      * @param displayName the chosen display name of the guest who commented
      * @param comment the comment the guest wrote
-     * @return true if adding the comment was successful
+     * @return response with success code if adding the comment was successful, otherwise fail code
      */
     @NotNull
     Response commentAsGuest(int storyId, @NotNull String displayName, @NotNull String comment);
