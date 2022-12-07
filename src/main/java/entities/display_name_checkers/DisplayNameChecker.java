@@ -2,7 +2,7 @@ package entities.display_name_checkers;
 
 /**
  * Validates a new display name for a new Player.
- * Will also be used in the future to check if the name is valid (no inappropriate names).
+ * Also validates guest names for comments (no inappropriate names).
  */
 public interface DisplayNameChecker {
 
