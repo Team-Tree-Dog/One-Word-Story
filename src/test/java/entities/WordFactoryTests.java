@@ -1,5 +1,6 @@
 package entities;
 
+import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.InvalidWordException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,37 @@ import org.junit.jupiter.api.Timeout;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class WordFactoryTests {
+
+    /**
+     * Test Validity Checker Facade which always validates and does not modify input
+     */
+    static class TestValidityCheckerTrue extends ValidityCheckerFacade {
+
+        public TestValidityCheckerTrue() {
+            super((p) -> p, (w) -> w);
+        }
+
+        @Override
+        public String isValid(String word) {
+            return word;
+        }
+    }
+
+    /**
+     * Test Validity Checker Facade which always rejects
+     */
+    static class TestValidityCheckerFalse extends ValidityCheckerFacade {
+
+        public TestValidityCheckerFalse() {
+            super((p) -> p, (w) -> w);
+        }
+
+        @Override
+        public String isValid(String word) {
+            return null;
+        }
+    }
+
     @BeforeEach
     public void setUp() {
     }
@@ -26,8 +58,7 @@ public class WordFactoryTests {
         Player player1 = new Player("player1", "1");
         String newword = "bloop";
 
-        ValidityChecker validitySuccess = word -> true;
-        WordFactory wordfac = new WordFactory(validitySuccess);
+        WordFactory wordfac = new WordFactory(new TestValidityCheckerTrue());
         Word bloop = wordfac.create(newword, player1);
         assertEquals("bloop", bloop.getWord(),
                 "The word should be created, with string bloop");
@@ -42,8 +73,7 @@ public class WordFactoryTests {
         Player player1 = new Player("player1", "1");
         String newword = "bloop";
 
-        ValidityChecker validityFailure = word -> false;
-        WordFactory wordfac = new WordFactory(validityFailure);
+        WordFactory wordfac = new WordFactory(new TestValidityCheckerFalse());
         assertThrows(InvalidWordException.class, () -> wordfac.create(newword, player1));
     }
 }

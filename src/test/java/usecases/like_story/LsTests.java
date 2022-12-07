@@ -1,10 +1,12 @@
 package usecases.like_story;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import usecases.Response;
+import usecases.ThreadRegister;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,11 +23,15 @@ public class LsTests {
     private LsInputBoundary interactor;
     private Random random;
 
+    private ThreadRegister register;
+
+
     @BeforeEach
     public void setup() {
         presenter = new TestLsPresenter();
         repository = new TestLsGateway();
-        interactor = new LsInteractor(presenter, repository);
+        register = new ThreadRegister();
+        interactor = new LsInteractor(presenter, repository, register);
         random = new Random();
     }
 
@@ -90,21 +96,25 @@ public class LsTests {
             responses.add(data);
         }
 
+        @Override
+        public void outputShutdownServer() {
+            throw new RuntimeException("This method is not implemented and should not be called");
+        }
+
     }
 
     /**
      * This is a simple runtime storage that keeps the stories` likes in a map
      * */
-    private static class TestLsGateway implements LsGateway {
+    private static class TestLsGateway implements LsGatewayStory {
 
         private final Map<Integer, Integer> storyToLikes = new HashMap<>();
         private final Lock lock = new ReentrantLock();
 
         @Override
-        public LsGatewayOutputData likeStory(LsGatewayInputData data) {
+        public @NotNull Response likeStory(int storyId) {
             lock.lock();
             boolean success = true;
-            int storyId = data.getStoryId();
             Integer numberOfLikes = storyToLikes.get(storyId);
             if (numberOfLikes == null) {
                 success = false;
@@ -112,7 +122,7 @@ public class LsTests {
                 storyToLikes.put(storyId, numberOfLikes + 1);
             }
             lock.unlock();
-            return new LsGatewayOutputData(success);
+            return success ? Response.getSuccessful("") : Response.getFailure("");
         }
 
         public void addStoryId(int storyId) {

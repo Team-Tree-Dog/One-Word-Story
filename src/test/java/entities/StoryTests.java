@@ -1,5 +1,6 @@
 package entities;
 
+import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.InvalidWordException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,37 @@ import org.junit.jupiter.api.Timeout;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class StoryTests {
+
+    /**
+     * Test Validity Checker Facade which always validates and does not modify input
+     */
+    static class TestValidityCheckerTrue extends ValidityCheckerFacade {
+
+        public TestValidityCheckerTrue() {
+            super((p) -> p, (w) -> w);
+        }
+
+        @Override
+        public String isValid(String word) {
+            return word;
+        }
+    }
+
+    /**
+     * Test Validity Checker Facade which always rejects
+     */
+    static class TestValidityCheckerFalse extends ValidityCheckerFacade {
+
+        public TestValidityCheckerFalse() {
+            super((p) -> p, (w) -> w);
+        }
+
+        @Override
+        public String isValid(String word) {
+            return null;
+        }
+    }
+
     @BeforeEach
     public void setUp() {
     }
@@ -26,8 +58,7 @@ public class StoryTests {
         Player player1 = new Player("player1", "1");
         String newword = "bloop";
 
-        ValidityChecker validitySuccess = word -> true;
-        WordFactory wordfac = new WordFactory(validitySuccess);
+        WordFactory wordfac = new WordFactory(new TestValidityCheckerTrue());
         Story story = new Story(wordfac);
         story.addWord(newword, player1);
 
@@ -43,8 +74,7 @@ public class StoryTests {
         Player player1 = new Player("player1", "1");
         String newword = "bloop";
 
-        ValidityChecker validityFailure = word -> false;
-        WordFactory wordfac = new WordFactory(validityFailure);
+        WordFactory wordfac = new WordFactory(new TestValidityCheckerFalse());
         Story story = new Story(wordfac);
         assertThrows(InvalidWordException.class, () -> story.addWord(newword, player1));
     }
@@ -55,8 +85,7 @@ public class StoryTests {
     @Test
     @Timeout(1000)
     public void testBlankStory() {
-        ValidityChecker validitySuccess = word -> true;
-        WordFactory wordfac = new WordFactory(validitySuccess);
+        WordFactory wordfac = new WordFactory(new TestValidityCheckerTrue());
         Story story = new Story(wordfac);
         assertEquals("", story.toString(), "The Story.toString() should just be a blank string.");
     }
@@ -68,8 +97,8 @@ public class StoryTests {
     @Timeout(1000)
     public void testStorytoString() throws InvalidWordException {
         Player player1 = new Player("player1", "1");
-        ValidityChecker validitySuccess = word -> true;
-        WordFactory wordfac = new WordFactory(validitySuccess);
+
+        WordFactory wordfac = new WordFactory(new TestValidityCheckerTrue());
         Story story = new Story(wordfac);
 
         story.addWord("Once", player1);

@@ -1,6 +1,7 @@
 package entities.games;
 
 import entities.Player;
+import entities.validity_checkers.ValidityCheckerFacade;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class GameTests {
+
+    /**
+     * Test Validity Checker Facade which always validates and does not modify input
+     */
+    static class TestValidityCheckerTrue extends ValidityCheckerFacade {
+
+        public TestValidityCheckerTrue() {
+            super((p) -> p, (w) -> w);
+        }
+
+        @Override
+        public String isValid(String word) {
+            return word;
+        }
+    }
 
     @BeforeEach
     public void setUp() {
@@ -33,7 +49,7 @@ public class GameTests {
          */
 
         public CustomizableTestGame(Queue<Player> initialPlayers) {
-            super(15, word -> true);
+            super(15, new TestValidityCheckerTrue());
             players = new LinkedList<>(initialPlayers);
         }
 
