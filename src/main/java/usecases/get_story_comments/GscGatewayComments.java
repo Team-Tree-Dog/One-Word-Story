@@ -12,7 +12,7 @@ public interface GscGatewayComments {
     /**
      * Gets all comments from the story matching the provided id
      * @param storyId the id for the story comments should be pulled from
-     * @return a string array containing all the story comments, each one string
+     * @return a response containing rows of comment data, or a fail response if repo failed
      */
     @NotNull
     RepoRes<CommentRepoData> getAllComments(int storyId);
