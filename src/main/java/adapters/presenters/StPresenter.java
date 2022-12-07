@@ -21,6 +21,7 @@ public class StPresenter implements StOutputBoundary{
      * Update the view model with the success or failure of suggesting the title for a particular story
      * @param data  the output data that contains the response corresponding to the success of
      */
+    @Override
     public void suggestTitleOutput(StOutputData data){}
 
     @Override

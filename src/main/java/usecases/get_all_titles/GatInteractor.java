@@ -11,9 +11,9 @@ import usecases.shutdown_server.SsOutputBoundary;
  * a particular story
  */
 public class GatInteractor implements GatInputBoundary{
-    private GatOutputBoundary pres;
-    private GatGatewayTitles repo;
-    private ThreadRegister register;
+    private final GatOutputBoundary pres;
+    private final GatGatewayTitles repo;
+    private final ThreadRegister register;
 
     /**
      * Constructor for the Interactor.
@@ -34,14 +34,14 @@ public class GatInteractor implements GatInputBoundary{
      * previously suggested titles for a particular story.
      */
     public class GatThread extends InterruptibleThread{
-        private GatInputData data;
+        private final GatInputData data;
 
         /**
          * Constructor for the Get All Titles use case Thread
          * @param data  The input data containing the storyId of the story we want to get all titles for
          */
         public GatThread(GatInputData data) {
-            super(GatInteractor.this.register, (SsOutputBoundary) GatInteractor.this.pres);
+            super(GatInteractor.this.register, GatInteractor.this.pres);
             this.data = data;
         }
 
@@ -57,8 +57,18 @@ public class GatInteractor implements GatInputBoundary{
         public void threadLogic(){
             int storyId = data.getStoryId();
             RepoRes<TitleRepoData> suggestedTitles = repo.getAllTitles(storyId);
-            GatOutputData gatOutputData = new GatOutputData(suggestedTitles.getRows(), suggestedTitles.getRes());
-            pres.putSuggestedTitles(gatOutputData);
+
+            // Passes along Repo fail response if it failed
+            if (!suggestedTitles.isSuccess()) {
+                pres.putSuggestedTitles(new GatOutputData(
+                        null, suggestedTitles.getRes()
+                ));
+            }
+            // Otherwise success, so pass repo rows content
+            else {
+                GatOutputData gatOutputData = new GatOutputData(suggestedTitles.getRows(), suggestedTitles.getRes());
+                pres.putSuggestedTitles(gatOutputData);
+            }
         }
     }
 
@@ -66,6 +76,7 @@ public class GatInteractor implements GatInputBoundary{
      * Creates the thread for the use case interactor and registers it into the thread register
      * @param data  the input data for this use case, contains the storyId of the story we want to get all titles for
      */
+    @Override
     public void getAllTitles(GatInputData data){
         InterruptibleThread thread = new GatThread(data);
         boolean success = register.registerThread(thread);

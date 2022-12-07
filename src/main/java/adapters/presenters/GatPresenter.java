@@ -9,6 +9,7 @@ public class GatPresenter implements GatOutputBoundary {
 
     public GatPresenter(ViewModel viewM) {this.viewM = viewM;}
 
+    @Override
     public void putSuggestedTitles(GatOutputData data){
 
     }
