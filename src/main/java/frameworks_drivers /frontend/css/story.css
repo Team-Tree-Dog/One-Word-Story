@@ -1,0 +1,119 @@
+img {
+    border-radius: 50%;
+}
+
+img.user_profile{
+    width: 40px;
+    height: 40px;
+    margin-top: 10px;
+    margin-left: 5px;
+    margin-bottom: 10px;
+    vertical-align: middle;
+}
+
+body {
+    background-color: #3aafa9;
+    color: #17252a;
+}
+
+h1 {text-align: center;
+    color: #def2f1;
+    background-color: #17252a;
+    font-family: Lobster, serif;
+}
+
+h3 {text-align: center;
+    font-family: Lobster, serif;}
+
+.center {
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.column {
+    align-items: center;
+    float: left;
+    width: 25%;
+    padding: 10px;
+}
+
+.column2 {
+    float: left;
+    width: 60%;
+    padding: 10px;
+}
+
+.row {
+    display: flex;
+}
+
+p.story{
+    border-radius: 10px;
+    background-color: #def2f1;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+}
+
+.vote{
+
+}
+
+#all_comments {
+    height: 200px;
+    overflow-y: scroll;
+    border-radius: 10px;
+    background-color: #def2f1;
+    margin-left: 150px;
+    margin-right: 150px;
+    padding: 20px;
+}
+
+#all_votes{
+    height: 100px;
+    overflow-y: scroll;
+    border-radius: 10px;
+    background-color: #def2f1;
+    padding: 20px;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+.comments {
+    border-style: solid;
+    margin: 10px;
+    border-radius: 10px;
+    font-family: Arial, serif;
+    font-size: 12px;
+}
+
+p.comment {
+    display: inline-block;
+}
+
+.titles {
+    border-style: solid;
+    margin: 10px;
+    border-radius: 5px;
+    font-family: Arial, serif;
+    font-size: 12px;
+    text-align: center;
+}
+
+#myForm{
+    font-family: Lobster, serif;
+}
+
+.btn{
+    background: transparent;
+    border: none;
+    font-size: 21px;
+    outline: none;
+    color: grey;
+}
+
+.btn i:hover{
+    cursor: pointer;
+}
