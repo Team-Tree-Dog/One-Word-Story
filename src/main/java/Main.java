@@ -12,6 +12,7 @@ import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.context.ConfigurableApplicationContext;
 import usecases.*;
 import usecases.disconnecting.DcInteractor;
 import usecases.get_latest_stories.GlsInteractor;
@@ -25,6 +26,10 @@ import usecases.sort_players.SpInteractor;
 import usecases.submit_word.SwInteractor;
 import usecases.suggest_title.StGateway;
 import usecases.suggest_title.StInteractor;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Orchestrator. Contains only a main method which boots up
@@ -111,7 +116,26 @@ public class Main {
         SwController swController = new SwController(sw);
         StController stController = new StController(st);
 
+        System.out.println("Main: Before Spring Init");
+
         // TODO: Setup and run the view
-        SpringappApplication.main(new String[0]);
+        ConfigurableApplicationContext app = SpringappApplication.startServer(new String[0]);
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+        while (true) {
+            try {
+                String inp = reader.readLine();
+                if (inp.equals("shutdown")) {
+                    app.close();
+                    reader.close();
+                    break;
+                } else {
+                    System.out.println("\"" + inp + "\" is not a valid command");
+                }
+            } catch (IOException e) {
+                break;
+            }
+        }
     }
 }

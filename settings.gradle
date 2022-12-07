@@ -1,3 +1,2 @@
-rootProject.name = 'course-project-team-tree-dog'
+rootProject.name = 'One Word Story'
 include 'springapp'
-
