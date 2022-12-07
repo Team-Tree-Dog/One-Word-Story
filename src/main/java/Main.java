@@ -31,6 +31,7 @@ import usecases.sort_players.SpInteractor;
 import usecases.submit_word.SwInteractor;
 import usecases.suggest_title.StGateway;
 import usecases.suggest_title.StInteractor;
+import usecases.upvote_title.UtInteractor;
 
 /**
  * Orchestrator. Contains only a main method which boots up
@@ -61,6 +62,7 @@ public class Main {
         SsPresenter ssPresenter = new SsPresenter(viewM);
         SwPresenter swPresenter = new SwPresenter(viewM);
         StPresenter stPresenter = new StPresenter(viewM);
+        UtPresenter utPresenter = new UtPresenter(viewM);
 
         // Create desired comment checker for injection
         CommentChecker commentChecker = new CommentCheckerBasic();
@@ -110,6 +112,9 @@ public class Main {
                 return null;
             }
         }, titleChecker, register);
+        UtInteractor ut = new UtInteractor(utPresenter,
+                ((storyId, titleToUpvote) -> Response.getSuccessful("Dummy Lambda, Always successful")),
+                register);
 
 
         // Controllers
@@ -124,6 +129,7 @@ public class Main {
         SsController ssController = new SsController(ss);
         SwController swController = new SwController(sw);
         StController stController = new StController(st);
+        UtController utController = new UtController(ut);
 
         // TODO: Setup and run the view
     }
