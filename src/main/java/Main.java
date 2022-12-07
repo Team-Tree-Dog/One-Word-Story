@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import usecases.*;
 import usecases.disconnecting.DcInteractor;
+import usecases.get_all_titles.GatInteractor;
 import usecases.get_latest_stories.GlsInteractor;
 import usecases.get_most_liked_stories.GmlsInteractor;
 import usecases.get_story_comments.GscInteractor;
@@ -49,6 +50,7 @@ public class Main {
         // Create all presenters
         CagPresenter cagPresenter = new CagPresenter(viewM);
         DcPresenter dcPresenter = new DcPresenter(viewM);
+        GatPresenter gatPresenter = new GatPresenter(viewM);
         GlsPresenter glsPresenter = new GlsPresenter(viewM);
         GmlsPresenter gmlsPresenter = new GmlsPresenter(viewM);
         GscPresenter gscPresenter = new GscPresenter(viewM);
@@ -87,6 +89,9 @@ public class Main {
         CagInteractor cag = new CagInteractor(cagPresenter, (storyId, displayName, comment) -> null,
                 commentChecker, displayChecker, register); // TODO: Inject repo
         DcInteractor dc = new DcInteractor(manager, dcPresenter, register);
+        GatInteractor gat = new GatInteractor(gatPresenter,
+                storyId -> new RepoRes<TitleRepoData>(Response.getFailure("Dummy Lambda, Always failure"))
+                ,register);
         GlsInteractor gls = new GlsInteractor(glsPresenter, () -> null, register); // TODO: Inject repo
         GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, () -> null, register); // TODO: Inject repo
         GscInteractor gsc = new GscInteractor(gscPresenter, storyId -> null, register); // TODO: Inject repo
@@ -110,6 +115,7 @@ public class Main {
         // Controllers
         CagController cagController = new CagController(cag);
         DcController dcController = new DcController(dc);
+        GatController gatController = new GatController(gat);
         GlsController glsController = new GlsController(gls);
         GmlsController gmlsController = new GmlsController(gmls);
         GscController gscController = new GscController(gsc);
