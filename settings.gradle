@@ -1,0 +1,3 @@
+rootProject.name = 'course-project-team-tree-dog'
+include 'springapp'
+
