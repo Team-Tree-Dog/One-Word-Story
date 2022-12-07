@@ -2,8 +2,8 @@ package entities.games;
 
 import entities.Player;
 import entities.Story;
-import entities.ValidityChecker;
 import entities.WordFactory;
+import entities.validity_checkers.ValidityCheckerFacade;
 
 import java.util.Collection;
 import java.util.Timer;
@@ -28,10 +28,10 @@ public abstract class Game {
      * @param secondsPerTurn The amount of seconds for each turn
      * @param v The validity checker (to check if a word is valid)
      */
-    public Game(int secondsPerTurn, ValidityChecker v) {
+    public Game(int secondsPerTurn, ValidityCheckerFacade v) {
         this.story = new Story(new WordFactory(v));
         this.secondsPerTurn = secondsPerTurn;
-        this.gameTimer = new Timer();
+        this.gameTimer = new Timer(true);
         this.timerStopped = false;
     }
 

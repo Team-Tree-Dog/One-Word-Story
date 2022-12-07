@@ -1,20 +1,31 @@
 package usecases.get_most_liked_stories;
+import org.jetbrains.annotations.Nullable;
+import usecases.Response;
+import usecases.StoryRepoData;
 
-import usecases.StoryData;
+import java.util.List;
 
 /**
  * Contains output data for Get Most Liked Stories use case.
  */
 public class GmlsOutputData {
-    private StoryData[] stories;
+    private final List<StoryRepoData> stories;
+    private final Response res;
 
     /**
      * Constructor for output data for this use case
-     * @param stories the desired range of stories sorted in descending order
+     * @param stories the desired range of stories sorted in descending order, or null if repo failed
      */
-    public GmlsOutputData(StoryData[] stories){ this.stories = stories;}
+    public GmlsOutputData(@Nullable List<StoryRepoData> stories, Response res) {
+        this.stories = stories;
+        this.res = res;
+    }
 
-    public StoryData[] getStories() { return this.stories;}
+    /**
+     * @return retrieved stories, or null if repo failed
+     */
+    @Nullable
+    public List<StoryRepoData> getStories() { return this.stories;}
 
-    public void setStories(StoryData[] stories) { this.stories = stories; }
+    public Response getRes() { return res; }
 }

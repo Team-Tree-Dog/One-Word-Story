@@ -1,5 +1,6 @@
 package entities;
 
+import entities.display_name_checkers.DisplayNameChecker;
 import exceptions.IdInUseException;
 import exceptions.InvalidDisplayNameException;
 
@@ -30,6 +31,7 @@ public class PlayerFactory {
      */
     public Player createPlayer(String newName, String newPlayerId) throws
             IdInUseException, InvalidDisplayNameException {
+        newName = newName.trim();
         if (idsInUse.contains(newPlayerId)) {
             throw new IdInUseException("ID " + newPlayerId + " already in use.");
         } else if (!displayChecker.checkValid(newName)) {

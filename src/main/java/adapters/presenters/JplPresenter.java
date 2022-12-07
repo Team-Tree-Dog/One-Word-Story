@@ -43,4 +43,9 @@ public class JplPresenter implements JplOutputBoundary {
     public void cancelled(JplOutputDataResponse dataCancelled) {
 
     }
+
+    @Override
+    public void outputShutdownServer() {
+
+    }
 }
