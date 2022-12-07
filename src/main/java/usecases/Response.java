@@ -40,6 +40,9 @@ public class Response {
         ID_IN_USE,
         INVALID_DISPLAY_NAME,
         INVALID_WORD,
+        INVALID_COMMENT,
+        INVALID_TITLE,
+        TITLE_ALREADY_SUGGESTED,
         STORY_NOT_FOUND
     }
 

@@ -1,5 +1,5 @@
 package usecases.get_most_liked_stories;
-
+import org.jetbrains.annotations.Nullable;
 import usecases.Response;
 import usecases.StoryRepoData;
 
@@ -14,13 +14,17 @@ public class GmlsOutputData {
 
     /**
      * Constructor for output data for this use case
-     * @param stories the desired range of stories sorted in descending order
+     * @param stories the desired range of stories sorted in descending order, or null if repo failed
      */
-    public GmlsOutputData(List<StoryRepoData> stories, Response res) {
+    public GmlsOutputData(@Nullable List<StoryRepoData> stories, Response res) {
         this.stories = stories;
         this.res = res;
     }
 
+    /**
+     * @return retrieved stories, or null if repo failed
+     */
+    @Nullable
     public List<StoryRepoData> getStories() { return this.stories;}
 
     public Response getRes() { return res; }
