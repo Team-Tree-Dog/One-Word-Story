@@ -1,9 +1,11 @@
 package usecases.join_public_lobby;
 
+import usecases.shutdown_server.SsOutputBoundary;
+
 /**
  * Methods needed for an object to be able to accept output from this use case
  */
-public interface JplOutputBoundary {
+public interface JplOutputBoundary extends SsOutputBoundary {
 
     /**
      * Called with success code when player has been added to the matchmaking pool,
