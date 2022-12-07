@@ -39,7 +39,11 @@ public class Response {
         OUT_OF_TURN,
         ID_IN_USE,
         INVALID_DISPLAY_NAME,
-        INVALID_WORD
+        INVALID_WORD,
+        INVALID_COMMENT,
+        INVALID_TITLE,
+        TITLE_ALREADY_SUGGESTED,
+        STORY_NOT_FOUND
     }
 
     private final String message;
@@ -85,5 +89,13 @@ public class Response {
      */
     public static Response getSuccessful (String m) {
         return new Response(Response.ResCode.SUCCESS, m);
+    }
+
+    /**
+     * @param m Description of failure
+     * @return A response with plain FAIL code
+     */
+    public static Response getFailure (String m) {
+        return new Response(Response.ResCode.FAIL, m);
     }
 }
