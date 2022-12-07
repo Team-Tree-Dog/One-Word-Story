@@ -9,7 +9,6 @@ import java.util.ArrayList;
  * title.
  */
 public class StInteractor implements StInputBoundary {
-    private final StOutputBoundary pres;
     private final StGateway repo;
     private final SuggestedTitleChecker titleChecker;
 
@@ -17,14 +16,12 @@ public class StInteractor implements StInputBoundary {
 
     /**
      * Constructor for the Interactor
-     * @param pres
      * @param repo
      * @param titleChecker
      * @param register
      */
-    public StInteractor(StOutputBoundary pres, StGateway repo, SuggestedTitleChecker titleChecker,
+    public StInteractor(StGateway repo, SuggestedTitleChecker titleChecker,
                         ThreadRegister register) {
-        this.pres = pres;
         this.repo = repo;
         this.titleChecker = titleChecker;
         this.register = register;
@@ -46,15 +43,18 @@ public class StInteractor implements StInputBoundary {
      */
     public class StThread extends InterruptibleThread {
         private StInputData data;
+        private StOutputBoundary pres;
 
         /**
          * Constructor for the thread.
          * @param data      the input data for the thread. Contains the ID of the story, the request to change title,
          *                  and the user-suggested title.
+         * @param pres      output boundary for this use case
          */
-        public StThread(StInputData data) {
-            super(StInteractor.this.register, StInteractor.this.pres);
+        public StThread(StInputData data, StOutputBoundary pres) {
+            super(StInteractor.this.register, pres);
             this.data = data;
+            this.pres = pres;
         }
 
         /**
@@ -137,10 +137,11 @@ public class StInteractor implements StInputBoundary {
      * The method that begins the thread for the use case interactor.
      * @param data  the input data for this use case. Contains the user-suggested title as well as the IDs to
      *              track the Story and this particular request to suggest a title for this story
+     * @param pres  output boundary for this use case
      */
     @Override
-    public void suggestTitle(StInputData data){
-        InterruptibleThread thread = new StThread(data);
+    public void suggestTitle(StInputData data, StOutputBoundary pres){
+        InterruptibleThread thread = new StThread(data, pres);
         boolean success = register.registerThread(thread);
         if (!success){
             pres.outputShutdownServer();

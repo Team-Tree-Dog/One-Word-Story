@@ -19,11 +19,6 @@ import java.util.concurrent.locks.Lock;
 public class SwInteractor implements SwInputBoundary {
 
     /**
-     * The presenter used to pass outputs to the ViewModel.
-     */
-    private final SwOutputBoundary presenter;
-
-    /**
      * The LobbyManager from which we obtain the game.
      */
     private final LobbyManager lobbyManager;
@@ -39,11 +34,9 @@ public class SwInteractor implements SwInputBoundary {
     /**
      * The game in which we are changing the Story, and accessing Players and their information.
      * Constructor.
-     * @param presenter The output boundary which will be used to pass outputs to the ViewModel.
      * @param lobbyManager The LobbyManager, as described before.
      */
-    public SwInteractor (SwOutputBoundary presenter, LobbyManager lobbyManager, ThreadRegister register) {
-        this.presenter = presenter;
+    public SwInteractor (LobbyManager lobbyManager, ThreadRegister register) {
         this.lobbyManager = lobbyManager;
         this.gameLock = lobbyManager.getGameLock();
         this.register = register;
@@ -56,10 +49,11 @@ public class SwInteractor implements SwInputBoundary {
      * the presenter.
      *
      * @param inputData the SwInputData object that includes the word to be added as well as the ID of the player.
+     * @param presenter output boundary for this use case
      */
     @Override
-    public void submitWord (SwInputData inputData) {
-        InterruptibleThread swintThread = this.new SwThread(inputData);
+    public void submitWord (SwInputData inputData, SwOutputBoundary presenter) {
+        InterruptibleThread swintThread = this.new SwThread(inputData, presenter);
         if (!register.registerThread(swintThread)) {
             presenter.outputShutdownServer();
         }
@@ -80,13 +74,16 @@ public class SwInteractor implements SwInputBoundary {
          */
         private final String playerId;
 
+        private final SwOutputBoundary presenter;
+
         /**
          * Constructor.
          * @param inputData The SwInputData.
          */
-        public SwThread(SwInputData inputData) {
-            super(SwInteractor.this.register, SwInteractor.this.presenter);
+        public SwThread(SwInputData inputData, SwOutputBoundary presenter) {
+            super(SwInteractor.this.register, presenter);
             this.inputData = inputData;
+            this.presenter = presenter;
             this.playerId = inputData.getPlayerId();
         }
 

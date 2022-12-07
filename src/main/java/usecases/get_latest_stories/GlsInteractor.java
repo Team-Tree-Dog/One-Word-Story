@@ -21,7 +21,6 @@ public class GlsInteractor implements GlsInputBoundary{
 
     /**
      * Constructor for GlsInteractor
-     * @param pres GlsOutputBoundary
      * @param repo GlsGateway used by this interactor
      */
     public GlsInteractor(GlsGatewayStory repo, ThreadRegister register) {
@@ -47,6 +46,7 @@ public class GlsInteractor implements GlsInputBoundary{
         /**
          * Constructor for Get Latest Stories Thread
          * @param data GlsInputData
+         * @param pres Output boundary for use case
          */
         public GlsThread(GlsInputData data, GlsOutputBoundary pres) {
             super(GlsInteractor.this.register, pres);

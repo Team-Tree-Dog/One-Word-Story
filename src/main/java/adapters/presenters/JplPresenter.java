@@ -1,18 +1,18 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
+import adapters.view_models.JplViewModel;
 import usecases.join_public_lobby.JplOutputBoundary;
 import usecases.join_public_lobby.JplOutputDataJoinedGame;
 import usecases.join_public_lobby.JplOutputDataResponse;
 
 public class JplPresenter implements JplOutputBoundary {
 
-    private final ViewModel viewM;
+    private final JplViewModel viewM;
 
     /**
      * @param viewM Instance of the view model to write to
      */
-    public JplPresenter (ViewModel viewM) { this.viewM = viewM; }
+    public JplPresenter (JplViewModel viewM) { this.viewM = viewM; }
 
     /**
      * Notify the view model that a player with a particular ID was added to the pool,

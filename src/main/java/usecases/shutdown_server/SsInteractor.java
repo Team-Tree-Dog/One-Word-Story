@@ -6,14 +6,11 @@ public class SsInteractor implements SsInputBoundary {
 
     private final ThreadRegister threadRegister;
 
-    private final SsOutputBoundary presenter;
-
-    public SsInteractor(ThreadRegister threadRegister, SsOutputBoundary presenter) {
+    public SsInteractor(ThreadRegister threadRegister) {
         this.threadRegister = threadRegister;
-        this.presenter = presenter;
     }
 
-    public void shutdownServer() {
+    public void shutdownServer(SsOutputBoundary presenter) {
         threadRegister.stopThreads();
         presenter.outputShutdownServer();
     }

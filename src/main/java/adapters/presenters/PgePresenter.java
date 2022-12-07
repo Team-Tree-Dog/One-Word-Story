@@ -1,17 +1,17 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
+import adapters.view_models.PgeViewModel;
 import usecases.pull_game_ended.PgeOutputBoundary;
 import usecases.pull_game_ended.PgeOutputData;
 
 public class PgePresenter implements PgeOutputBoundary {
 
-    private final ViewModel viewM;
+    private final PgeViewModel viewM;
 
     /**
      * @param viewM Instance of the view model to write to
      */
-    public PgePresenter (ViewModel viewM) { this.viewM = viewM; }
+    public PgePresenter (PgeViewModel viewM) { this.viewM = viewM; }
 
     /**
      * Notify the view model that the current game has ended along with a list

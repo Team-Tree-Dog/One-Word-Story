@@ -101,10 +101,10 @@ public class GlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGlsOutputBoundary();
-        GlsInteractor gls = new GlsInteractor(pres, repo, register);
+        GlsInteractor gls = new GlsInteractor(repo, register);
 
         GlsInputData d = new GlsInputData(2);
-        GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d);
+        GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d, pres);
         innerThreadInstance.run();
 
         // Check presenter receives non-null data
@@ -128,10 +128,10 @@ public class GlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGlsOutputBoundary();
-        GlsInteractor gls = new GlsInteractor(pres, repo, register);
+        GlsInteractor gls = new GlsInteractor(repo, register);
 
         GlsInputData d = new GlsInputData(0);
-        GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d);
+        GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d, pres);
         innerThreadInstance.run();
 
         // Check presenter receives non-null data
@@ -153,11 +153,11 @@ public class GlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGlsOutputBoundary();
-        GlsInteractor gls = new GlsInteractor(pres, repo, register);
+        GlsInteractor gls = new GlsInteractor(repo, register);
 
         // Running inner thread
         GlsInputData d = new GlsInputData(null);
-        GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d);
+        GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d, pres);
         innerThreadInstance.run();
 
         // Check presenter receives non-null data
@@ -182,11 +182,11 @@ public class GlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGlsOutputBoundary();
-        GlsInteractor gls = new GlsInteractor(pres, repo, register);
+        GlsInteractor gls = new GlsInteractor(repo, register);
 
         // Running inner thread
         GlsInputData d = new GlsInputData(10);
-        GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d);
+        GlsInteractor.GlsThread innerThreadInstance = gls.new GlsThread(d, pres);
         innerThreadInstance.run();
 
         // Check presenter receives non-null data

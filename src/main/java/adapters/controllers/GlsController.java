@@ -21,9 +21,10 @@ public class GlsController {
     /**
      * Provide the number(otherwise null) the latest stories one wants to get from the repo
      * @param numToget number of the latest stories to get
+     * @return View model for this use case
      */
 
-    public ViewModel getLatestStories(Integer numToget) {
+    public GlsViewModel getLatestStories(Integer numToget) {
         GlsInputData data = new GlsInputData(numToget);
         GlsViewModel viewM = new GlsViewModel();
         GlsPresenter pres = new GlsPresenter(viewM);

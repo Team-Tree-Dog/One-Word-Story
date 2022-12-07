@@ -1,5 +1,7 @@
 package adapters.controllers;
 
+import adapters.presenters.JplPresenter;
+import adapters.view_models.JplViewModel;
 import usecases.join_public_lobby.JplInputBoundary;
 import usecases.join_public_lobby.JplInputData;
 
@@ -18,10 +20,12 @@ public class JplController {
      * Provide a unique ID and a display name for a player who wishes to join a public lobby
      * @param playerId Unique ID of player never previously used
      * @param displayName Desired display name, may be duplicated
+     * @return View model for this use case
      */
-    public void joinPublicLobby (String playerId, String displayName) {
-        jpl.joinPublicLobby(
-                new JplInputData(displayName, playerId)
-        );
+    public JplViewModel joinPublicLobby (String playerId, String displayName) {
+        JplViewModel viewM = new JplViewModel();
+        JplPresenter pres = new JplPresenter(viewM);
+        jpl.joinPublicLobby(new JplInputData(displayName, playerId), pres);
+        return viewM;
     }
 }

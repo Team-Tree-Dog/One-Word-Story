@@ -1,17 +1,17 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
+import adapters.view_models.PdViewModel;
 import usecases.pull_data.PdOutputBoundary;
 import usecases.pull_data.PdOutputData;
 
 public class PdPresenter implements PdOutputBoundary {
 
-    private final ViewModel viewM;
+    private final PdViewModel viewM;
 
     /**
      * @param viewM Instance of the view model to write to
      */
-    public PdPresenter (ViewModel viewM) { this.viewM = viewM; }
+    public PdPresenter (PdViewModel viewM) { this.viewM = viewM; }
 
     /**
      * Update the view model's state of the current game

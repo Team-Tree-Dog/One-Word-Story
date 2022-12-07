@@ -1,6 +1,7 @@
-import adapters.ViewModel;
 import adapters.controllers.*;
 import adapters.presenters.*;
+import adapters.view_models.PdViewModel;
+import adapters.view_models.PgeViewModel;
 import entities.LobbyManager;
 import entities.PlayerFactory;
 import entities.comment_checkers.CommentChecker;
@@ -44,31 +45,19 @@ public class Main {
      * @param args Command line arguments (currently none necessary)
      */
     public static void main (String[] args) {
-        ViewModel viewM = new ViewModel();
+        PdViewModel pdViewM = new PdViewModel();
+        PgeViewModel pgeViewM = new PgeViewModel();
 
         ThreadRegister register = new ThreadRegister();
 
-        // Create all presenters
-        CagPresenter cagPresenter = new CagPresenter(viewM);
-        DcPresenter dcPresenter = new DcPresenter(viewM);
-        GatPresenter gatPresenter = new GatPresenter(viewM);
-        GlsPresenter glsPresenter = new GlsPresenter(viewM);
-        GmlsPresenter gmlsPresenter = new GmlsPresenter(viewM);
-        GscPresenter gscPresenter = new GscPresenter(viewM);
-        JplPresenter jplPresenter = new JplPresenter(viewM);
-        LsPresenter lsPresenter = new LsPresenter(viewM);
-        PdPresenter pdPresenter = new PdPresenter(viewM);
-        PgePresenter pgePresenter = new PgePresenter(viewM);
-        SsPresenter ssPresenter = new SsPresenter(viewM);
-        SwPresenter swPresenter = new SwPresenter(viewM);
-        StPresenter stPresenter = new StPresenter(viewM);
-        UtPresenter utPresenter = new UtPresenter(viewM);
-
-        // Create desired comment checker for injection
-        CommentChecker commentChecker = new CommentCheckerBasic();
+        PdPresenter pdPresenter = new PdPresenter(pdViewM);
+        PgePresenter pgePresenter = new PgePresenter(pgeViewM);
 
         // Create desired display name checker for injection
         DisplayNameChecker displayChecker = new DisplayNameCheckerBasic();
+
+        // Create desired comment checker for injection
+        CommentChecker commentChecker = new CommentCheckerBasic();
 
         // Create desired story title checker for injection
         SuggestedTitleChecker titleChecker = new SuggestedTitleCheckerBasic();
@@ -87,21 +76,26 @@ public class Main {
         sp.startTimer();
 
         // Use cases called by users
-
         CagInteractor cag = new CagInteractor(cagPresenter, (storyId, displayName, comment) -> null,
                 commentChecker, displayChecker, register); // TODO: Inject repo
-        DcInteractor dc = new DcInteractor(manager, dcPresenter, register);
         GatInteractor gat = new GatInteractor(gatPresenter,
                 storyId -> new RepoRes<TitleRepoData>(Response.getFailure("Dummy Lambda, Always failure"))
                 ,register);
-        GlsInteractor gls = new GlsInteractor(glsPresenter, () -> null, register); // TODO: Inject repo
-        GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, () -> null, register); // TODO: Inject repo
         GscInteractor gsc = new GscInteractor(gscPresenter, storyId -> null, register); // TODO: Inject repo
-        JplInteractor jpl = new JplInteractor(manager, jplPresenter, register);
-        LsInteractor ls = new LsInteractor(lsPresenter, (e) -> null, register); // TODO: Inject repo
-        SsInteractor ss = new SsInteractor(register, ssPresenter);
-        SwInteractor sw = new SwInteractor(swPresenter, manager, register);
-        StInteractor st = new StInteractor(stPresenter, new StGateway() {
+        DcInteractor dc = new DcInteractor(manager, register);
+        GlsInteractor gls = new GlsInteractor(
+                () -> new RepoRes<StoryRepoData>(Response.getFailure("Dummy Lambda, Always failure")),
+                register); // TODO: Inject repo
+        GmlsInteractor gmls = new GmlsInteractor(
+                () -> new RepoRes<StoryRepoData>(Response.getFailure("Dummy Lambda, Always failure")),
+                register); // TODO: Inject repo
+        JplInteractor jpl = new JplInteractor(manager, register);
+        LsInteractor ls = new LsInteractor(
+                storyId -> Response.getSuccessful("Dummy Lambda, Always successful"),
+                register); // TODO: Inject repo
+        SsInteractor ss = new SsInteractor(register);
+        SwInteractor sw = new SwInteractor(manager, register);
+        StInteractor st = new StInteractor(new StGateway() {
             @Override
             public @NotNull Response suggestTitle(int storyId, @Nullable String titleSuggestion) {
                 return null;
