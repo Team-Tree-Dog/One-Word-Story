@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import usecases.*;
 import usecases.disconnecting.DcInteractor;
+import usecases.get_all_titles.GatInteractor;
 import usecases.get_latest_stories.GlsInteractor;
 import usecases.get_most_liked_stories.GmlsInteractor;
 import usecases.get_story_comments.GscInteractor;
@@ -30,6 +31,7 @@ import usecases.sort_players.SpInteractor;
 import usecases.submit_word.SwInteractor;
 import usecases.suggest_title.StGateway;
 import usecases.suggest_title.StInteractor;
+import usecases.upvote_title.UtInteractor;
 
 /**
  * Orchestrator. Contains only a main method which boots up
@@ -49,6 +51,7 @@ public class Main {
         // Create all presenters
         CagPresenter cagPresenter = new CagPresenter(viewM);
         DcPresenter dcPresenter = new DcPresenter(viewM);
+        GatPresenter gatPresenter = new GatPresenter(viewM);
         GlsPresenter glsPresenter = new GlsPresenter(viewM);
         GmlsPresenter gmlsPresenter = new GmlsPresenter(viewM);
         GscPresenter gscPresenter = new GscPresenter(viewM);
@@ -59,6 +62,7 @@ public class Main {
         SsPresenter ssPresenter = new SsPresenter(viewM);
         SwPresenter swPresenter = new SwPresenter(viewM);
         StPresenter stPresenter = new StPresenter(viewM);
+        UtPresenter utPresenter = new UtPresenter(viewM);
 
         // Create desired comment checker for injection
         CommentChecker commentChecker = new CommentCheckerBasic();
@@ -87,6 +91,9 @@ public class Main {
         CagInteractor cag = new CagInteractor(cagPresenter, (storyId, displayName, comment) -> null,
                 commentChecker, displayChecker, register); // TODO: Inject repo
         DcInteractor dc = new DcInteractor(manager, dcPresenter, register);
+        GatInteractor gat = new GatInteractor(gatPresenter,
+                storyId -> new RepoRes<TitleRepoData>(Response.getFailure("Dummy Lambda, Always failure"))
+                ,register);
         GlsInteractor gls = new GlsInteractor(glsPresenter, () -> null, register); // TODO: Inject repo
         GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, () -> null, register); // TODO: Inject repo
         GscInteractor gsc = new GscInteractor(gscPresenter, storyId -> null, register); // TODO: Inject repo
@@ -105,11 +112,15 @@ public class Main {
                 return null;
             }
         }, titleChecker, register);
+        UtInteractor ut = new UtInteractor(utPresenter,
+                ((storyId, titleToUpvote) -> Response.getSuccessful("Dummy Lambda, Always successful")),
+                register);
 
 
         // Controllers
         CagController cagController = new CagController(cag);
         DcController dcController = new DcController(dc);
+        GatController gatController = new GatController(gat);
         GlsController glsController = new GlsController(gls);
         GmlsController gmlsController = new GmlsController(gmls);
         GscController gscController = new GscController(gsc);
@@ -118,6 +129,7 @@ public class Main {
         SsController ssController = new SsController(ss);
         SwController swController = new SwController(sw);
         StController stController = new StController(st);
+        UtController utController = new UtController(ut);
 
         // TODO: Setup and run the view
     }
