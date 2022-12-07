@@ -1,6 +1,7 @@
 import adapters.ViewModel;
 import adapters.controllers.*;
 import adapters.presenters.*;
+import com.example.springapp.SpringappApplication;
 import entities.LobbyManager;
 import entities.PlayerFactory;
 import entities.suggested_title_checkers.SuggestedTitleChecker;
@@ -111,5 +112,6 @@ public class Main {
         StController stController = new StController(st);
 
         // TODO: Setup and run the view
+        SpringappApplication.main(new String[0]);
     }
 }
