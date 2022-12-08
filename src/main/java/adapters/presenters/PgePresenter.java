@@ -1,5 +1,6 @@
 package adapters.presenters;
 
+import adapters.display_data.GameEndPlayerDisplayData;
 import adapters.view_models.PgeViewModel;
 import usecases.pull_game_ended.PgeOutputBoundary;
 import usecases.pull_game_ended.PgeOutputData;
@@ -21,6 +22,6 @@ public class PgePresenter implements PgeOutputBoundary {
      */
     @Override
     public void notifyGameEnded(PgeOutputData data) {
-
+        viewM.setCurrentGameState();
     }
 }

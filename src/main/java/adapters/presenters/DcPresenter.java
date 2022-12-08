@@ -1,8 +1,11 @@
 package adapters.presenters;
 
 import adapters.view_models.DcViewModel;
+import usecases.Response;
 import usecases.disconnecting.DcOutputBoundary;
 import usecases.disconnecting.DcOutputData;
+
+import static usecases.Response.ResCode.SHUTTING_DOWN;
 
 public class DcPresenter implements DcOutputBoundary {
 
@@ -23,11 +26,11 @@ public class DcPresenter implements DcOutputBoundary {
      */
     @Override
     public void hasDisconnected(DcOutputData data) {
-
+        viewM.setResponse(data.getResponse());
     }
 
     @Override
     public void outputShutdownServer() {
-
+        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

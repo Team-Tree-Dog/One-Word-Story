@@ -43,7 +43,8 @@ public class Response {
         INVALID_COMMENT,
         INVALID_TITLE,
         TITLE_ALREADY_SUGGESTED,
-        STORY_NOT_FOUND
+        STORY_NOT_FOUND,
+        SHUTTING_DOWN
     }
 
     private final String message;

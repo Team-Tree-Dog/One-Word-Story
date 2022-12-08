@@ -1,8 +1,11 @@
 package adapters.presenters;
 
 import adapters.view_models.LsViewModel;
+import usecases.Response;
 import usecases.like_story.LsOutputBoundary;
 import usecases.like_story.LsOutputData;
+
+import static usecases.Response.ResCode.SHUTTING_DOWN;
 
 /**
  * The presented for the "like-story" use case
@@ -23,11 +26,11 @@ public class LsPresenter implements LsOutputBoundary {
      * @param data The output data that should be presented to the user
      * */
     public void likeOutput(LsOutputData data) {
-
+        viewModel.setResponse(data.getResponse());
     }
 
     @Override
     public void outputShutdownServer() {
-
+        viewModel.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

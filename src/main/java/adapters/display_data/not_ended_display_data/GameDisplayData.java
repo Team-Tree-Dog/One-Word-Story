@@ -1,4 +1,4 @@
-package adapters.display_data;
+package adapters.display_data.not_ended_display_data;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +16,7 @@ public class GameDisplayData {
      * Constructor for GameDisplayData
      * @param players the players in the "game"
      * @param currentPlayerTurn the player whose turn it currently is
-     * @param storyString
+     * @param storyString the story
      * @param secondsLeftInTurn the seconds left in the current turn
      */
     protected GameDisplayData(@NotNull PlayerDisplayData[] players,
