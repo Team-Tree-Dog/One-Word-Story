@@ -51,13 +51,8 @@ public class SpInteractor {
         @Override
         public void run() {
             // We need to lock all the accesses to the pool and the game to avoid race conditions
-            System.out.println("SP wants to lock PlayerPool.");
             playerPoolLock.lock();
-            System.out.println("SP locked PlayerPool!");
-
-            System.out.println("SP wants to lock Game.");
             gameLock.lock();
-            System.out.println("SP locked Game!");
 
             // If game has ended, set it to null.
             if (!lobbyManager.isGameNull()) {
@@ -69,9 +64,7 @@ public class SpInteractor {
                         lobbyManager.setGameNull();
                     } catch (GameRunningException e) {
                         gameLock.unlock();
-                        System.out.println("SP unlocked Game!");
                         playerPoolLock.unlock();
-                        System.out.println("SP unlocked PlayerPool!");
                         throw new RuntimeException(e);
                     }
 
@@ -82,7 +75,6 @@ public class SpInteractor {
                         Lock lock = playerObserverLink.getPlayerPoolListener().getLock();
                         lock.lock();
                         try {
-                            System.out.println("Attempting to add player to game and removing from pool...");
                             lobbyManager.addPlayerToGameRemoveFromPool(player);
                         } catch (PlayerNotFoundException | GameDoesntExistException e) {
                             // GameDoesntExist is an IMPOSSIBLE Error. In this if block, game is not null and
@@ -90,9 +82,7 @@ public class SpInteractor {
                             // PlayerNotFoundException occurs if player is removed from the pool from another
                             // thread. Proper lock architecture will prevent this
                             gameLock.unlock();
-                            System.out.println("SP unlocked Game!");
                             playerPoolLock.unlock();
-                            System.out.println("SP unlocked PlayerPool!");
                             throw new RuntimeException(e);
                         } finally {
                             lock.unlock();
@@ -110,24 +100,17 @@ public class SpInteractor {
                     lobbyManager.setGame(game);
                 } catch (GameRunningException e) {
                     gameLock.unlock();
-                    System.out.println("SP unlocked Game!");
                     playerPoolLock.unlock();
-                    System.out.println("SP unlocked PlayerPool!");
                     throw new RuntimeException(e);
                 }
 
                 // This method has built in thread safety which ensures that each
                 // PlayerPoolListener lock is engaged during callback execution
                 lobbyManager.removeAllFromPoolJoin();
-                System.out.println("RG has started via SP");
                 new RgInteractor(game, pge, pd, gameLock).startTimer();
-                System.out.println("RG has ended via SP");
             }
             gameLock.unlock();
-            System.out.println("SP unlocked Game!");
             playerPoolLock.unlock();
-            System.out.println("SP unlocked PlayerPool!");
-            System.out.println("SP has ended.");
         }
     }
 

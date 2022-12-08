@@ -7,6 +7,7 @@ import usecases.pull_game_ended.PgeInputBoundary;
 import usecases.pull_game_ended.PgeInputData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.TimerTask;
 import java.util.concurrent.locks.Lock;
 
@@ -42,9 +43,7 @@ public class RgInteractor {
          */
         @Override
         public void run () {
-            System.out.println("RgInteractor wants to lock Game.");
             gameLock.lock();
-            System.out.println("RgInteractor locked Game!");
             if (RgInteractor.this.g.isGameOver()) {
                 // Game ending procedure:
 
@@ -52,9 +51,13 @@ public class RgInteractor {
                 RgInteractor.this.g.getGameTimer().cancel();
 
                 // Perform "Game Ended" use-case via PgeInteractor
-                System.out.println("PGE has started via RG");
-                RgInteractor.this.pge.onGameEnded(new PgeInputData(new ArrayList<>(RgInteractor.this.g.getPlayers())));
-                System.out.println("PGE has ended via RG");
+                RgInteractor.this.pge.onGameEnded(
+                        new PgeInputData(
+                                new ArrayList<>(RgInteractor.this.g.getPlayers()),
+                                g.getStoryString(), Arrays.asList(g.getPlayerStatistics()),
+                                g.getAuthorNamesStatistic()
+                        )
+                );
 
                 // Notify the game, after timer cancellation, when the
                 // last execution of the run method has finished, meaning,
@@ -76,8 +79,6 @@ public class RgInteractor {
 
             }
             gameLock.unlock();
-            System.out.println("RgInteractor unlocked Game!");
-            System.out.println("RG has ended.");
         }
     }
 

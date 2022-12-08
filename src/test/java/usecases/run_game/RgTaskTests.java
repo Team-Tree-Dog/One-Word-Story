@@ -2,6 +2,8 @@ package usecases.run_game;
 
 import entities.Player;
 import entities.games.Game;
+import entities.validity_checkers.ValidityCheckerFacade;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,21 +32,23 @@ public class RgTaskTests {
         private final Queue<Player> players;
         private final boolean gameOverValue;
 
+        public static final ValidityCheckerFacade v = new ValidityCheckerFacade(
+                puncValidityChecker -> "",
+                wordValidityChecker -> ""
+        );
+
         /**
          * Constructor of CustomizableTestGame for our tests
          * @param gameOverValue fixed isGameOver return value
          */
         public CustomizableTestGame(boolean gameOverValue) {
-            super(REGULAR_GAME_SECONDS_PER_TURN, word -> {
-                // Currently accepting all the words
-                return true;
-            });
+            super(REGULAR_GAME_SECONDS_PER_TURN, v);
             players = new LinkedList<>();
             this.gameOverValue = gameOverValue;
         }
 
         @Override
-        public Collection<Player> getPlayers() {
+        public @NotNull Collection<Player> getPlayers() {
             return players;
         }
 
@@ -53,7 +57,7 @@ public class RgTaskTests {
          * Currently implemented as no-operation
          */
         @Override
-        public void onTimerUpdate() {}
+        public void onTimerUpdateLogic() {}
 
         /**
          * Unused custom getPlayerById
@@ -87,7 +91,7 @@ public class RgTaskTests {
          * @return if the turn switch was successful
          */
         @Override
-        public boolean switchTurn() {
+        public boolean switchTurnLogic() {
             setSecondsLeftInCurrentTurn(getSecondsPerTurn());
             return players.add(players.remove());
         }
@@ -97,7 +101,7 @@ public class RgTaskTests {
          * @return the first player in the player list, whose turn is currently taking place
          */
         @Override
-        public Player getCurrentTurnPlayer() { return players.peek(); }
+        public @NotNull Player getCurrentTurnPlayer() { return players.peek(); }
 
         /**
          * Custom isGameOver, returns fixed value
@@ -185,7 +189,7 @@ public class RgTaskTests {
      * and Pull-Game-Ended use-case is called
      */
     @Test
-@Timeout(1)
+    @Timeout(1000)
     public void testGameOverScenario() {
 
         g = new CustomizableTestGame(true);
@@ -217,7 +221,7 @@ public class RgTaskTests {
      * without change of turn
      */
     @Test
-    @Timeout(1)
+    @Timeout(1000)
     public void testTimerDecrementScenario() {
 
         g = new CustomizableTestGame(false);
@@ -263,7 +267,7 @@ public class RgTaskTests {
      * with a valid switch of turn performed
      */
     @Test
-    @Timeout(1)
+    @Timeout(1000)
     public void testTimerSwitchTurnScenario() {
 
         g = new CustomizableTestGame(false);

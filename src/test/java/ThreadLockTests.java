@@ -1,12 +1,19 @@
 import entities.*;
+import entities.display_name_checkers.DisplayNameChecker;
 import entities.games.Game;
 import entities.games.GameFactory;
 
+import entities.games.GameReadOnly;
+import entities.statistics.PerPlayerIntStatistic;
+import entities.validity_checkers.*;
 import exceptions.*;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.*;
 
 import usecases.Response;
+import usecases.ThreadRegister;
 import usecases.disconnecting.*;
 import usecases.join_public_lobby.*;
 import usecases.pull_data.PdInputBoundary;
@@ -14,6 +21,8 @@ import usecases.pull_game_ended.*;
 import usecases.run_game.RgInteractor;
 import usecases.sort_players.SpInteractor;
 import usecases.submit_word.*;
+import util.RecursiveSymboledIntegerHashMap;
+import util.SymboledInteger;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,47 +39,50 @@ public class ThreadLockTests {
     private static final int REPEAT_TIMES = 100;
 
     private static class GameTest extends Game {
-        public static final int REGULAR_GAME_SECONDS_PER_TURN = 15;
+
+        private final Story story;
+
+        public static int REGULAR_GAME_SECONDS_PER_TURN = 15;
+
         private final Queue<Player> players;
+        private static final PunctuationValidityChecker puncValidityCheckerRegular =
+                new TestPunctuationChecker();
+        private static final WordValidityChecker wordValidityCheckerRegular =
+                new TestWordValidityChecker();
+        public static final ValidityCheckerFacade v = new ValidityCheckerFacade(
+                puncValidityCheckerRegular, wordValidityCheckerRegular);
 
         /**
-         * Constructor for a Game
-         * @param initialPlayers The players that will be included into the new GameTest
-         * @param v              The validity checker (to check if a word is valid)
+         * Constructor for GameRegular
+         * @param initialPlayers The initial players in this GameRegular
          */
-        public GameTest(Queue<Player> initialPlayers, ValidityChecker v) {
-            super(REGULAR_GAME_SECONDS_PER_TURN, v);
+        public GameTest(Queue<Player> initialPlayers, PerPlayerIntStatistic[] playerStats) {
+            super(REGULAR_GAME_SECONDS_PER_TURN, v, playerStats);
+            this.story = new Story(new WordFactory(v));
             players = new LinkedList<>(initialPlayers);
         }
 
-        public GameTest(List<Player> initialPlayers, ValidityChecker v) {
-            super(REGULAR_GAME_SECONDS_PER_TURN, v);
+        public GameTest(List<Player> initialPlayers, PerPlayerIntStatistic[] playerStats) {
+            super(REGULAR_GAME_SECONDS_PER_TURN, v, playerStats);
+            this.story = new Story(new WordFactory(v));
             players = new LinkedList<>(initialPlayers);
         }
 
-        /**
-         * @return Returns all the present players in the game
-         */
         @Override
-        public Collection<Player> getPlayers() {return this.players;}
-
-        /**
-         * @return Returns whether the game is over
-         */
-        @Override
-        public boolean isGameOver() {return players.size() < 2;}
-
-        /**
-         * Additional actions that can be done by the game every time the timer is updated
-         */
-        @Override
-        public void onTimerUpdate() {
-
+        public @NotNull Collection<Player> getPlayers() {
+            return new ArrayList<>(players);
         }
 
         /**
-         * Returns the player by its id
-         * @param playerId The player's ID
+         * Currently implemented as no-operation
+         */
+        @Override
+        protected void onTimerUpdateLogic() {}
+
+        /**
+         * Gets Player from this game by its id
+         * @param playerId ID of searched player
+         * @return searched Player
          */
         @Override
         public Player getPlayerById(String playerId) {
@@ -78,34 +90,53 @@ public class ThreadLockTests {
         }
 
         /**
-         * Removes the player specified from this GameRegular instance
+         * Removes requested player from this game
          * @param playerToRemove The Player to be removed
-         * @return if the player was successfully removed
+         * @return success of failure as boolean
          */
         @Override
-        public boolean removePlayer(Player playerToRemove)  {return players.remove(playerToRemove);}
+        public boolean removePlayer(Player playerToRemove) {
+            return players.remove(playerToRemove);
+        }
 
         /**
-         * Adds new player to the game
-         * @param playerToAdd The new player.
+         * Adds the player specified to this GameRegular instance
+         * @param playerToAdd The Player to be added
+         * @return if the player was successfully added
          */
         @Override
-        public boolean addPlayer(Player playerToAdd) {return players.add(playerToAdd);}
+        public boolean addPlayer(Player playerToAdd) {
+            return players.add(playerToAdd);
+        }
 
         /**
-         * Switches this game's turn and resets the timer
+         * Moves the player whose turn it currently is from the front of the list of players to the back
+         * It is now the new player in the front's turn
+         * @return if the turn switch was successful
          */
         @Override
-        public boolean switchTurn() {
+        protected boolean switchTurnLogic() {
             setSecondsLeftInCurrentTurn(getSecondsPerTurn());
             return players.add(players.remove());
         }
 
         /**
-         * Returns the player whose turn it is
+         * @return the first player in the player list
          */
         @Override
-        public Player getCurrentTurnPlayer() {return players.peek();}
+        @Nullable
+        public Player getCurrentTurnPlayer() {
+            return players.peek();
+        }
+
+        /**
+         * Checks if the amount of players in the game is less than 2, which means the game is over
+         * @return if the game is over
+         */
+        @Override
+        public boolean isGameOver() {
+            return players.size() < 2;
+        }
     }
 
     private static class LocalDisplayName implements DisplayNameChecker {
@@ -115,26 +146,70 @@ public class ThreadLockTests {
         }
     }
 
-    private static class LocalValidityChecker implements ValidityChecker{
+    private static class TestPunctuationChecker implements PunctuationValidityChecker {
 
-        /**
-         * Checks whether the word is valid
-         * @param word the word we need to check
-         * @return true, since the valid presenter code block will be triggered if the test doesn't go as planned.
-         */
         @Override
-        public boolean isValid(String word) {
-            return true;
+        public String isPunctuationValid(String punctuation) {
+            return punctuation;
         }
     }
 
-    private static class GameFactoryTest implements GameFactory {
+    private static class TestWordValidityChecker implements WordValidityChecker {
+
+        @Override
+        public String isWordValid(String word) {
+            return word;
+        }
+    }
+
+    private static class GameFactoryTest extends GameFactory {
         /**
          * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
          */
         public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
             Queue<Player> queueOfInitialPlayers = new LinkedList<>(initialPlayers);
-            return new ThreadLockTests.GameTest(queueOfInitialPlayers, new LocalValidityChecker());
+            return new ThreadLockTests.GameTest(queueOfInitialPlayers,
+                    new PerPlayerIntStatistic[]{new TestPerPlayerIntStatistic(queueOfInitialPlayers)});
+        }
+    }
+
+    private static class TestPerPlayerIntStatistic implements PerPlayerIntStatistic {
+
+        private final ArrayList<Player> players;
+
+        public TestPerPlayerIntStatistic(List<Player> initialPlayers) {
+            players = new ArrayList<Player>();
+            players.addAll(initialPlayers);
+        }
+
+        public TestPerPlayerIntStatistic(Queue<Player> initialPlayers) {
+            players = new ArrayList<Player>();
+            players.addAll(initialPlayers);
+        }
+
+        @Override
+        public void onSubmitWord(String word, Player author) {
+
+        }
+
+        @Override
+        public void onTimerUpdate(GameReadOnly gameInfo) {
+
+        }
+
+        @Override
+        public void onSuccessfulSwitchTurn(@Nullable Player newCurrentTurnPlayer, int newSecondsLeftInCurrentTurn) {
+
+        }
+
+        @Override
+        public Map<Player, RecursiveSymboledIntegerHashMap> getStatData() {
+
+            HashMap<Player, RecursiveSymboledIntegerHashMap> retMap = new HashMap<>();
+            for (Player player : players) {
+                retMap.put(player, new RecursiveSymboledIntegerHashMap());
+            }
+            return retMap;
         }
     }
 
@@ -183,11 +258,18 @@ public class ThreadLockTests {
         // Everything above is already a given.
         // For adding player 2 to the pool, we use the JoinPublicLobby use case.
 
+        ThreadRegister threadRegister = new ThreadRegister();
+
         AtomicBoolean jplFlagPool = new AtomicBoolean(false);
         AtomicBoolean jplFlagJoined = new AtomicBoolean(false);
         AtomicBoolean jplCancel = new AtomicBoolean(false);
         JplInputData jplInputData = new JplInputData("player2", "2");
         JplOutputBoundary jplPres = new JplOutputBoundary() {
+            @Override
+            public void outputShutdownServer() {
+
+            }
+
             @Override
             public void inPool(JplOutputDataResponse dataJoinedPool) {
                 jplFlagPool.set(true);
@@ -203,12 +285,22 @@ public class ThreadLockTests {
                 jplCancel.set(true);
             }
         };
-        JplInteractor jplInteractor = new JplInteractor(lobman, jplPres);
+        JplInteractor jplInteractor = new JplInteractor(lobman, jplPres, threadRegister);
 
         AtomicBoolean dcFlag = new AtomicBoolean(false);
         DcInputData dcInputData = new DcInputData(player1.getPlayerId());
-        DcOutputBoundary dcPres = data -> dcFlag.set(true);
-        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres);
+        DcOutputBoundary dcPres = new DcOutputBoundary() {
+            @Override
+            public void hasDisconnected(DcOutputData data) {
+                dcFlag.set(true);
+            }
+
+            @Override
+            public void outputShutdownServer() {
+
+            }
+        };
+        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres, threadRegister);
 
         PgeInputBoundary pgeInputBoundary = data -> {};
         PdInputBoundary pdInputBoundary = d -> {};
@@ -345,7 +437,7 @@ public class ThreadLockTests {
         players.add(player2);
         players.add(player3);
 
-        Game currGame = new GameTest(players, new LocalValidityChecker());
+        Game currGame = gameFac.createGame(new HashMap<>(), players);
         lobman.setGame(currGame);
 
         assertTrue(lobman.getPlayersFromGame().contains(player1), "Player 1 is not in the Game");
@@ -360,6 +452,9 @@ public class ThreadLockTests {
 
         // At this point, setup and sanity asssertions finish.
         // We now build the interactors:
+
+        ThreadRegister threadRegister = new ThreadRegister();
+
         SwInputData swInputData = new SwInputData("bloop", player1.getPlayerId());
         AtomicBoolean swFlag = new AtomicBoolean(false);
         SwOutputBoundary swPres = new SwOutputBoundary() {
@@ -380,13 +475,28 @@ public class ThreadLockTests {
                         "The response message is not correct.");
                 swFlag.set(true);
             }
+
+            @Override
+            public void outputShutdownServer() {
+
+            }
         };
-        SwInteractor swInteractor = new SwInteractor(swPres, lobman);
+        SwInteractor swInteractor = new SwInteractor(swPres, lobman, threadRegister);
 
         AtomicBoolean dcFlag = new AtomicBoolean(false);
         DcInputData dcInputData = new DcInputData(player1.getPlayerId());
-        DcOutputBoundary dcPres = data -> dcFlag.set(true);
-        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres);
+        DcOutputBoundary dcPres = new DcOutputBoundary() {
+            @Override
+            public void hasDisconnected(DcOutputData data) {
+                dcFlag.set(true);
+            }
+
+            @Override
+            public void outputShutdownServer() {
+
+            }
+        };
+        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres, threadRegister);
 
         PgeInputBoundary pgeInputBoundary = data -> {};
         PdInputBoundary pdInputBoundary = d -> {};
@@ -431,7 +541,7 @@ public class ThreadLockTests {
 
         // We can distinguish between both cases if the word (bloop) is in the story or not.
         // This, however, is the only difference between the two cases.
-        assertTrue("bloop ".equals(currGame.getStory().toString()) | "".equals(currGame.getStory().toString()),
+        assertTrue("bloop ".equals(currGame.getStoryString()) | "".equals(currGame.getStoryString()),
                 "The story should either be bloop or nothing, but it is somehow neither");
 
         // We can now test using the elements the two cases have in common (which is everything except the above assert).
@@ -471,12 +581,19 @@ public class ThreadLockTests {
         // Setup is above.
         // We now introduce all flags and use-case objects:
 
+        ThreadRegister threadRegister = new ThreadRegister();
+
         AtomicBoolean jplFlagPool = new AtomicBoolean(false);
         AtomicBoolean jplFlagJoined = new AtomicBoolean(false);
         AtomicReference<Response.ResCode> codeJpl = new AtomicReference<>();
         AtomicBoolean jplCancel = new AtomicBoolean(false);
         JplInputData jplInputData = new JplInputData("player1", "1");
         JplOutputBoundary jplPres = new JplOutputBoundary() {
+            @Override
+            public void outputShutdownServer() {
+
+            }
+
             @Override
             public void inPool(JplOutputDataResponse dataJoinedPool) {
                 jplFlagPool.set(true);
@@ -495,16 +612,24 @@ public class ThreadLockTests {
                 codeJpl.set(dataCancelled.getRes().getCode());
             }
         };
-        JplInteractor jplInteractor = new JplInteractor(lobman, jplPres);
+        JplInteractor jplInteractor = new JplInteractor(lobman, jplPres, threadRegister);
 
         AtomicBoolean dcFlag = new AtomicBoolean(false);
         AtomicReference<Response.ResCode> codeDc = new AtomicReference<>();
         DcInputData dcInputData = new DcInputData("1");
-        DcOutputBoundary dcPres = data -> {
-            codeDc.set(data.getResponse().getCode());
-            dcFlag.set(true);
+        DcOutputBoundary dcPres = new DcOutputBoundary() {
+            @Override
+            public void hasDisconnected(DcOutputData data) {
+                codeDc.set(data.getResponse().getCode());
+                dcFlag.set(true);
+            }
+
+            @Override
+            public void outputShutdownServer() {
+
+            }
         };
-        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres);
+        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres, threadRegister);
 
         PgeInputBoundary pgeInputBoundary = data -> {};
         PdInputBoundary pdInputBoundary = d -> {};
@@ -627,7 +752,7 @@ public class ThreadLockTests {
         List<Player> players = new ArrayList<>();
         players.add(player1);
 
-        Game currGame = new GameTest(players, new LocalValidityChecker());
+        Game currGame = gameFac.createGame(new HashMap<>(), players);
         lobman.setGame(currGame);
 
         assertEquals(0, lobman.getPlayersFromPool().size(),
@@ -639,19 +764,23 @@ public class ThreadLockTests {
         // At this point, setup and sanity asssertions finish.
         // We now build the interactors:
 
+        ThreadRegister threadRegister = new ThreadRegister();
+
         // RG:
-        AtomicReference<String[]> playersPge = new AtomicReference<>();
+        AtomicReference<ArrayList<String>> playersPge = new AtomicReference<>();
         AtomicBoolean pgeFlag = new AtomicBoolean(false);
+        PgeGatewayStory pgeGatewayStory = (storyString, publishUnixTimeStamp,
+                                           authorDisplayNames) -> new Response(SUCCESS, "Pge Passed");
         PgeOutputBoundary pgePres = data -> {
-            playersPge.set(data.getPlayerIds());
+            ArrayList<String> ids = new ArrayList<String>(){};
+            for (PlayerStatisticDTO pstat: data.getPlayerStatDTOs()) {
+                ids.add(pstat.getPlayerId());
+            }
+            playersPge.set(ids);
             pgeFlag.set(true);
-            //if (!pgeFlag.get()) { // So that playersPge only changes if RG never ended.
-              //  playersPge.set(data.getPlayerIds());
-              //  pgeFlag.set(true);
-            System.out.println("players PGE:" + Arrays.toString(playersPge.get()));
-            // }
+            System.out.println("players PGE:" + playersPge.get());
         };
-        PgeInteractor pgeInteractor = new PgeInteractor(pgePres);
+        PgeInteractor pgeInteractor = new PgeInteractor(pgePres, pgeGatewayStory);
         PdInputBoundary pdInputBoundary = d -> {};
         RgInteractor rgInteractor = new RgInteractor(currGame, pgeInteractor, pdInputBoundary, lobman.getGameLock());
         RgInteractor.RgTask rgTimerTask = rgInteractor.new RgTask();
@@ -666,12 +795,20 @@ public class ThreadLockTests {
         AtomicBoolean dcFlag = new AtomicBoolean(false);
         AtomicReference<String> messageDc = new AtomicReference<>();
         DcInputData dcInputData = new DcInputData(player1.getPlayerId());
-        DcOutputBoundary dcPres = data -> {
-            messageDc.set(data.getResponse().getMessage());
-            dcFlag.set(true);
-            System.out.println("DC Message: " + messageDc.get());
+        DcOutputBoundary dcPres = new DcOutputBoundary() {
+            @Override
+            public void hasDisconnected(DcOutputData data) {
+                messageDc.set(data.getResponse().getMessage());
+                dcFlag.set(true);
+                System.out.println("DC Message: " + messageDc.get());
+            }
+
+            @Override
+            public void outputShutdownServer() {
+
+            }
         };
-        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres);
+        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres, threadRegister);
 
         int newint = new Random().nextInt(6);
         System.out.println("Case number: " + newint);
@@ -739,7 +876,7 @@ public class ThreadLockTests {
         // Then, switch between either scenario 1 or scenario 2, based on if DC was able to disconnect.
         // If DC was not able to disconnect (scenario 2), SP should have already set the game to null.
 
-        if (playersPge.get().length == 0) {
+        if (playersPge.get().size() == 0) {
             System.out.println("Scenario 3: RG notified that no players were still in-game, " +
                     "so DC should have detected a player to disconnect (and disconnected the player).");
             // In this case, DC should have detected a player to disconnect.
@@ -751,7 +888,7 @@ public class ThreadLockTests {
             // And that DC should have disconnected the player:
             assertEquals("Disconnecting was successful.", messageDc.get(),
                     "The message is supposed to be Disconnecting was successful, but it isn't.");
-        } else if (Arrays.equals(playersPge.get(), new String[]{player1.getPlayerId()})){
+        } else if (playersPge.get().equals(new ArrayList<String>(Collections.singleton(player1.getPlayerId())))){
             if (messageDc.get().equals("Player not found")) {
                 System.out.println("Scenario 2: RG notified player 1 was still in-game, " +
                         "and DC didn't detect any players in-game, so SP should have already set the game to null.");

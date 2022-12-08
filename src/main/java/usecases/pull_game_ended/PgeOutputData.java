@@ -5,17 +5,17 @@ package usecases.pull_game_ended;
  */
 public class PgeOutputData {
 
-    private final String[] playerIds;
+    private final PlayerStatisticDTO[] playerStatDTOs;
 
     /**
      * Constructor for PgeOutputData
-     * @param playerIds the player ids of players in the game that ended
+     * @param playerStatDTOs a list of DTO objects of a players and their statistics
      */
-    public PgeOutputData(String[] playerIds) {
-        this.playerIds = playerIds;
+    public PgeOutputData(PlayerStatisticDTO[] playerStatDTOs) {
+        this.playerStatDTOs = playerStatDTOs;
     }
 
-    public String[] getPlayerIds() {
-        return playerIds;
+    public PlayerStatisticDTO[] getPlayerStatDTOs() {
+        return playerStatDTOs;
     }
 }

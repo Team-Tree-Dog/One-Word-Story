@@ -2,7 +2,10 @@ package entities;
 
 import entities.games.Game;
 import entities.games.GameFactory;
+import entities.statistics.PerPlayerIntStatistic;
+import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.*;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,26 +19,58 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LobbyManagerTests {
 
+    /**
+     * Test Validity Checker Facade which always validates and does not modify input
+     */
+    static class TestValidityCheckerFacadeTrue extends ValidityCheckerFacade {
+
+        public TestValidityCheckerFacadeTrue() {
+            super((p) -> p, (w) -> w);
+        }
+
+        @Override
+        public String isValid(String word) {
+            return word;
+        }
+    }
+
+    /**
+     * Test Validity Checker Facade which always validates and does not modify input
+     */
+    static class TestValidityCheckerFacadeFalse extends ValidityCheckerFacade {
+
+        public TestValidityCheckerFacadeFalse() {
+            super((p) -> p, (w) -> w);
+        }
+
+        @Override
+        public String isValid(String word) {
+            return null;
+        }
+    }
+
     private static class CustomizableTestGame extends Game {
 
         private final Queue<Player> players;
+
+
 
         /**
          * Constructor for CustomizableTestGame
          * @param initialPlayers The initial players in this CustomizableTestGame
          */
-        public CustomizableTestGame(Queue<Player> initialPlayers, ValidityChecker v) {
+        public CustomizableTestGame(Queue<Player> initialPlayers, ValidityCheckerFacade v) {
             super(15, v);
             players = new LinkedList<>(initialPlayers);
         }
 
         public CustomizableTestGame(Queue<Player> initialPlayers) {
-            super(15, word -> true);
+            super(15, new TestValidityCheckerFacadeTrue());
             players = new LinkedList<>(initialPlayers);
         }
 
         @Override
-        public Collection<Player> getPlayers() {
+        public @NotNull Collection<Player> getPlayers() {
             return players;
         }
 
@@ -45,7 +80,7 @@ public class LobbyManagerTests {
         }
 
         @Override
-        public void onTimerUpdate() {
+        public void onTimerUpdateLogic() {
 
         }
 
@@ -65,18 +100,22 @@ public class LobbyManagerTests {
         }
 
         @Override
-        public boolean switchTurn() {
+        public boolean switchTurnLogic() {
             setSecondsLeftInCurrentTurn(getSecondsPerTurn());
             return players.add(players.remove());
         }
 
         @Override
-        public Player getCurrentTurnPlayer() {
+        public @NotNull Player getCurrentTurnPlayer() {
             return this.players.peek();
         }
     }
 
-    private static class CustomizableTestGameFactory implements GameFactory {
+    private static class CustomizableTestGameFactory extends GameFactory {
+        public CustomizableTestGameFactory() {
+            super(new PerPlayerIntStatistic[0]);
+        }
+
         /**
          * Accepting any settings, create the appropriate game instance of the CustomizableTestGame
          * @param settings A map of strings to integer settings
@@ -549,7 +588,7 @@ public class LobbyManagerTests {
         // What we want to test:
         lobman.addWord("bloop", "1");
         // Assertions:
-        assertEquals("bloop ", testGame.getStory().toString(), "testGame should just have bloop in the string.");
+        assertEquals("bloop ", testGame.getStoryString(), "testGame should just have bloop in the string.");
     }
 
     /**
@@ -645,7 +684,8 @@ public class LobbyManagerTests {
         Player player1 = lobman.createNewPlayer("player1", "1");
         Player player2 = lobman.createNewPlayer("player2", "2");
 
-        CustomizableTestGame testGame = new CustomizableTestGame(new LinkedList<>(), word -> false);
+        CustomizableTestGame testGame = new CustomizableTestGame(new LinkedList<>(),
+                new TestValidityCheckerFacadeFalse());
         lobman.setGame(testGame);
 
         lobman.addPlayerToGame(player1);

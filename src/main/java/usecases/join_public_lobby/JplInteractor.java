@@ -6,7 +6,9 @@ import entities.PlayerPoolListener;
 import entities.games.Game;
 import exceptions.EntityException;
 import usecases.GameDTO;
+import usecases.InterruptibleThread;
 import usecases.Response;
+import usecases.ThreadRegister;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -28,9 +30,15 @@ public class JplInteractor implements JplInputBoundary {
     private final Lock gameLock;
 
     /**
+     * The ThreadRegister that keeps track of all the running use case threads
+     * for the shutdown-server use case
+     */
+    private final ThreadRegister register;
+
+    /**
      * Thread which executes the core logic of this use case
      */
-    public class JplThread implements Runnable, PlayerPoolListener {
+    public class JplThread extends InterruptibleThread implements PlayerPoolListener {
 
         private volatile Game game;
         private volatile boolean hasCancelled;
@@ -44,6 +52,7 @@ public class JplInteractor implements JplInputBoundary {
          * @param data Data passed into this use case
          */
         public JplThread (JplInputData data) {
+            super(JplInteractor.this.register, JplInteractor.this.presenter);
             this.data = data;
             hasCancelled = false;
             lock = new ReentrantLock(true);
@@ -82,20 +91,16 @@ public class JplInteractor implements JplInputBoundary {
          * Core logic of the use case
          */
         @Override
-        public void run() {
+        public void threadLogic() {
             try {
                 // It is better to always lock the whole critical section (a useful rule of thumb)
-                System.out.println("JPL wants to lock itself.");
                 lock.lock();
-                System.out.println("JPL locked itself!");
 
                 // Throws IdInUseException, code after runs if this line succeeded
                 Player player = lobbyManager.createNewPlayer(data.getDisplayName(), data.getId());
 
                 // Add player to matchmaking pool and subscribe to hear updates
-                System.out.println("JPL wants to lock PlayerPool, and then unlock.");
                 lobbyManager.addPlayerToPool(player, this);
-                System.out.println("JPL has locked/unlocked PlayerPool!");
 
                 // Notifies presenter that player was successfully added to pool
                 presenter.inPool(new JplOutputDataResponse(
@@ -108,15 +113,11 @@ public class JplInteractor implements JplInputBoundary {
                     // Makes this waiting loop less CPU expensive
                     conditionVariable.await();
                 }
-                System.out.println("JPL progressed!");
 
                 if (game != null) {
-                    System.out.println("JPL wants to lock Game.");
                     JplInteractor.this.gameLock.lock();
-                    System.out.println("JPL locked Game!");
                     GameDTO gameState = GameDTO.fromGame(game);
                     JplInteractor.this.gameLock.unlock();
-                    System.out.println("JPL unlocked Game!");
 
                     presenter.inGame(new JplOutputDataJoinedGame(
                             Response.getSuccessful("Player successfully joined a game"),
@@ -147,8 +148,6 @@ public class JplInteractor implements JplInputBoundary {
             }
             finally {
                 lock.unlock();
-                System.out.println("JPL unlocked itself!");
-                System.out.println("JPL progressed!");
             }
         }
     }
@@ -157,10 +156,11 @@ public class JplInteractor implements JplInputBoundary {
      * @param lobbyManager Shared object representing game state
      * @param presenter Object to call for output
      */
-    public JplInteractor (LobbyManager lobbyManager, JplOutputBoundary presenter) {
+    public JplInteractor (LobbyManager lobbyManager, JplOutputBoundary presenter, ThreadRegister register) {
         this.lobbyManager = lobbyManager;
         this.presenter = presenter;
         this.gameLock = lobbyManager.getGameLock();
+        this.register = register;
     }
 
     /**
@@ -169,6 +169,9 @@ public class JplInteractor implements JplInputBoundary {
      */
     @Override
     public void joinPublicLobby(JplInputData data) {
-        (new Thread(new JplThread(data))).start();
+        InterruptibleThread thread = new JplThread(data);
+        if (!register.registerThread(thread)) {
+            presenter.outputShutdownServer();
+        }
     }
 }

@@ -2,7 +2,9 @@ package usecases.pull_data;
 
 import entities.Player;
 import entities.games.Game;
+import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.InvalidWordException;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,16 +33,21 @@ public class PdInteractorTests {
         private final Queue<Player> players = new LinkedList<>();
         private final boolean allowAddingPlayers;
 
+        public static final ValidityCheckerFacade v = new ValidityCheckerFacade(
+                puncValidityChecker -> "",
+                wordValidityChecker -> ""
+        );
+
         /**
          * @param allowAddingPlayers Does addPlayer successfully add the player and return true
          */
         public CustomizableTestGame(boolean allowAddingPlayers) {
-            super(99, word -> true);
+            super(99, v);
             this.allowAddingPlayers = allowAddingPlayers;
         }
 
         @Override
-        public Collection<Player> getPlayers() {
+        public @NotNull Collection<Player> getPlayers() {
             return players;
         }
 
@@ -50,7 +57,7 @@ public class PdInteractorTests {
         }
 
         @Override
-        public void onTimerUpdate() {
+        public void onTimerUpdateLogic() {
 
         }
 
@@ -73,12 +80,12 @@ public class PdInteractorTests {
         }
 
         @Override
-        public boolean switchTurn() {
+        public boolean switchTurnLogic() {
             return false;
         }
 
         @Override
-        public Player getCurrentTurnPlayer() {
+        public @NotNull Player getCurrentTurnPlayer() {
             return this.players.peek();
         }
 
@@ -95,9 +102,9 @@ public class PdInteractorTests {
         g.addPlayer(p2);
         g.addPlayer(p3);
         try {
-            g.getStory().addWord("lol", p1);
-            g.getStory().addWord("kek", p2);
-            g.getStory().addWord("haha", p2);
+            g.addWord("lol", p1);
+            g.addWord("kek", p2);
+            g.addWord("haha", p2);
         } catch (InvalidWordException ignored) {
             // This error is completely impossible
         }
@@ -120,7 +127,7 @@ public class PdInteractorTests {
         PdOutputBoundary pob = d -> {
             GameDTO obj1 = d.getGameInfo();
 
-            assertEquals(obj1.getStory(), g.getStory().toString(), "Incorrect copy of Story");
+            assertEquals(obj1.getStory(), g.getStoryString(), "Incorrect copy of Story");
 
             List<String> IdList = new ArrayList<>();
             for (PlayerDTO p : obj1.getPlayers()) {

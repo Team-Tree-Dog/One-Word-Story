@@ -1,14 +1,20 @@
 package usecases.disconnecting;
 
 import entities.*;
+import entities.display_name_checkers.DisplayNameChecker;
 import entities.games.Game;
+import entities.games.GameFactory;
+import entities.statistics.PerPlayerIntStatistic;
+import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.GameDoesntExistException;
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
 import exceptions.InvalidDisplayNameException;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import usecases.Response;
+import usecases.ThreadRegister;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,11 +29,30 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class DcInteractorTests {
 
+    /**
+     * Test Validity Checker Facade which always validates and does not modify input
+     */
+    static class TestValidityCheckerFacadeTrue extends ValidityCheckerFacade {
+
+        public TestValidityCheckerFacadeTrue() {
+            super((p) -> p, (w) -> w);
+        }
+
+        @Override
+        public String isValid(String word) {
+            return word;
+        }
+    }
+
     private DcInteractor dcInteractor;
+
+    private static final ThreadRegister register = new ThreadRegister();
 
     private static final List<Player> players = new ArrayList<>();
     private static final DisplayNameChecker displayNameChecker = displayName -> true;
     private static final PlayerFactory playerFactory = new PlayerFactory(displayNameChecker);
+
+
 
     /**
      * Testing disconnecting player who are in the game
@@ -50,8 +75,18 @@ public class DcInteractorTests {
 
         AtomicReference<Boolean> hasFinished = new AtomicReference<>(false);
 
-        DcOutputBoundary dcOutputBoundary = data -> hasFinished.set(true);
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary);
+        DcOutputBoundary dcOutputBoundary = new DcOutputBoundary() {
+            @Override
+            public void hasDisconnected(DcOutputData data) {
+                hasFinished.set(true);
+            }
+
+            @Override
+            public void outputShutdownServer() {
+                throw new RuntimeException("This method is not implemented and should not be called");
+            }
+        };
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary, register);
 
         DcInputData data = new DcInputData(player2.getPlayerId());
         dcInteractor.disconnect(data);
@@ -86,8 +121,18 @@ public class DcInteractorTests {
 
         AtomicReference<Boolean> hasFinished = new AtomicReference<>(false);
 
-        DcOutputBoundary dcOutputBoundary = data -> hasFinished.set(true);
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary);
+        DcOutputBoundary dcOutputBoundary = new DcOutputBoundary() {
+            @Override
+            public void hasDisconnected(DcOutputData data) {
+                hasFinished.set(true);
+            }
+
+            @Override
+            public void outputShutdownServer() {
+                throw new RuntimeException("This method is not implemented and should not be called");
+            }
+        };
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary, register);
 
         DcInputData data = new DcInputData(player4.getPlayerId());
         dcInteractor.disconnect(data);
@@ -114,11 +159,31 @@ public class DcInteractorTests {
 
         AtomicBoolean hasResponded = new AtomicBoolean(false);
         AtomicReference<Response.ResCode> code = new AtomicReference<>();
-        DcOutputBoundary dcOutputBoundary = data -> {
-            code.set(data.getResponse().getCode());
-            hasResponded.set(true);
+        new DcOutputBoundary() {
+            @Override
+            public void hasDisconnected(DcOutputData data) {
+                code.set(data.getResponse().getCode());
+                hasResponded.set(true);
+            }
+
+            @Override
+            public void outputShutdownServer() {
+                throw new RuntimeException("This method is not implemented and should not be called");
+            }
         };
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary);
+        DcOutputBoundary dcOutputBoundary = new DcOutputBoundary() {
+            @Override
+            public void hasDisconnected(DcOutputData data) {
+                code.set(data.getResponse().getCode());
+                hasResponded.set(true);
+            }
+
+            @Override
+            public void outputShutdownServer() {
+                throw new RuntimeException("This method is not implemented and should not be called");
+            }
+        };
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary, register);
 
         DcInputData data = new DcInputData(player5.getPlayerId());
         dcInteractor.disconnect(data);
@@ -145,11 +210,19 @@ public class DcInteractorTests {
 
         AtomicBoolean hasResponded = new AtomicBoolean(false);
         AtomicReference<Response.ResCode> code = new AtomicReference<>();
-        DcOutputBoundary dcOutputBoundary = data -> {
-            code.set(data.getResponse().getCode());
-            hasResponded.set(true);
+        DcOutputBoundary dcOutputBoundary = new DcOutputBoundary() {
+            @Override
+            public void hasDisconnected(DcOutputData data) {
+                code.set(data.getResponse().getCode());
+                hasResponded.set(true);
+            }
+
+            @Override
+            public void outputShutdownServer() {
+                throw new RuntimeException("This method is not implemented and should not be called");
+            }
         };
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary);
+        dcInteractor = new DcInteractor(lm, dcOutputBoundary, register);
 
         DcInputData data = new DcInputData(player6.getPlayerId());
         dcInteractor.disconnect(data);
@@ -169,7 +242,12 @@ public class DcInteractorTests {
         Game game;
 
         public TestLobbyManager(Game game) throws GameRunningException {
-            super(playerFactory, (settings, initialPlayers) -> game);
+            super(playerFactory, new GameFactory(new PerPlayerIntStatistic[0]) {
+                @Override
+                public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
+                    return null;
+                }
+            });
             this.game = game;
             this.setGame(game);
         }
@@ -186,18 +264,18 @@ public class DcInteractorTests {
         private final Queue<Player> players;
 
         public TestGame(List<Player> players) {
-            super(10, word -> true);
+            super(10, new TestValidityCheckerFacadeTrue());
             this.players = new LinkedList<>(players);
         }
 
         @Override
-        public Collection<Player> getPlayers() { return players; }
+        public @NotNull Collection<Player> getPlayers() { return players; }
 
         @Override
         public boolean isGameOver() { return false; }
 
         @Override
-        public void onTimerUpdate() {}
+        public void onTimerUpdateLogic() {}
 
         @Override
         public Player getPlayerById(String playerId) {
@@ -214,13 +292,13 @@ public class DcInteractorTests {
         public boolean addPlayer(Player playerToAdd) { return players.add(playerToAdd); }
 
         @Override
-        public boolean switchTurn() {
+        public boolean switchTurnLogic() {
             setSecondsLeftInCurrentTurn(getSecondsPerTurn());
             return players.add(players.remove());
         }
 
         @Override
-        public Player getCurrentTurnPlayer() { return players.peek(); }
+        public @NotNull Player getCurrentTurnPlayer() { return players.peek(); }
 
     }
 

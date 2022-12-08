@@ -6,7 +6,7 @@ package entities;
  */
 public class Player {
 
-    private String displayName;
+    private final String displayName;
 
     private final String playerId;
 
@@ -19,12 +19,6 @@ public class Player {
         this.displayName = newDisplayName;
         this.playerId = newPlayerId;
     }
-
-    /**
-     * Sets a new display name for the Player.
-     * @param newDisplayName the new display name.
-     */
-    public void setDisplayName(String newDisplayName) {this.displayName = newDisplayName;}
 
     /**
      * Gets the display name of the Player.

@@ -25,4 +25,9 @@ public class DcPresenter implements DcOutputBoundary {
     public void hasDisconnected(DcOutputData data) {
 
     }
+
+    @Override
+    public void outputShutdownServer() {
+
+    }
 }

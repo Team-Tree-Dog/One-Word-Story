@@ -7,12 +7,27 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.jetbrains:annotations:23.0.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 }
 
 task print() {
-    print("Team TreeDog")
+    print("#############     ########     #######     #######\n" +
+            "      #           #     #      #           #\n" +
+            "      #           #   #        #           #\n" +
+            "      #           # #          #######     #######\n" +
+            "      #           #  #         #           #\n" +
+            "      #           #   #        #           #\n" +
+            "      #           #    #       #######     #######\n")
+    print('\n')
+    print("    ##               #              ##########\n" +
+            "    #  #           #  #            #\n" +
+            "    #    #        #    #           #        ###\n" +
+            "    #     #      #      #          #          ##\n" +
+            "    #    #        #    #           #           ##\n" +
+            "    #  #           #  #              #       ##\n" +
+            "    #               #                  #####\n")
 }
 
 test {

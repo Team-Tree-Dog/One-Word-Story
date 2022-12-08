@@ -5,7 +5,9 @@ import exceptions.GameDoesntExistException;
 import exceptions.InvalidWordException;
 import exceptions.OutOfTurnException;
 import exceptions.PlayerNotFoundException;
+import usecases.InterruptibleThread;
 import usecases.Response;
+import usecases.ThreadRegister;
 
 import java.util.concurrent.locks.Lock;
 
@@ -14,7 +16,7 @@ import java.util.concurrent.locks.Lock;
  * SwInteractor also tells the ViewModel, via the SwOutputBoundary presenter, if the word is valid or not.
  * SwInteractor in effect gives the frontend the command to change the output.
  */
-public class SwInteractor implements SwInputBoundary{
+public class SwInteractor implements SwInputBoundary {
 
     /**
      * The presenter used to pass outputs to the ViewModel.
@@ -26,6 +28,12 @@ public class SwInteractor implements SwInputBoundary{
      */
     private final LobbyManager lobbyManager;
 
+    /**
+     * The ThreadRegister that keeps track of all the running use case threads
+     * for the shutdown-server use case
+     */
+    private final ThreadRegister register;
+
     private final Lock gameLock;
 
     /**
@@ -34,10 +42,11 @@ public class SwInteractor implements SwInputBoundary{
      * @param presenter The output boundary which will be used to pass outputs to the ViewModel.
      * @param lobbyManager The LobbyManager, as described before.
      */
-    public SwInteractor (SwOutputBoundary presenter, LobbyManager lobbyManager) {
+    public SwInteractor (SwOutputBoundary presenter, LobbyManager lobbyManager, ThreadRegister register) {
         this.presenter = presenter;
         this.lobbyManager = lobbyManager;
         this.gameLock = lobbyManager.getGameLock();
+        this.register = register;
     }
 
     /**
@@ -50,15 +59,16 @@ public class SwInteractor implements SwInputBoundary{
      */
     @Override
     public void submitWord (SwInputData inputData) {
-        // SwInteractor.SwThread swintThread = this.new SwThread(inputData);
-        // swintThread.run();
-        new Thread(new SwThread(inputData)).start();
+        InterruptibleThread swintThread = this.new SwThread(inputData);
+        if (!register.registerThread(swintThread)) {
+            presenter.outputShutdownServer();
+        }
     }
 
     /**
      * A thread that does all the processes in the SwInteractor.
      */
-    public class SwThread implements Runnable{
+    public class SwThread extends InterruptibleThread {
 
         /**
          * The SwInputData, passed from the submitWord method.
@@ -74,7 +84,8 @@ public class SwInteractor implements SwInputBoundary{
          * Constructor.
          * @param inputData The SwInputData.
          */
-        public SwThread(SwInputData inputData){
+        public SwThread(SwInputData inputData) {
+            super(SwInteractor.this.register, SwInteractor.this.presenter);
             this.inputData = inputData;
             this.playerId = inputData.getPlayerId();
         }
@@ -83,11 +94,8 @@ public class SwInteractor implements SwInputBoundary{
          * This method includes all the processes that will happen in the thread.
          */
         @Override
-        public void run() {
-            System.out.println("SwInteractor has started.");
-            System.out.println("SwInteractor wants to lock Game");
+        public void threadLogic() {
             gameLock.lock();
-            System.out.println("SwInteractor locked Game!");
             boolean success = true;
 
             try{
@@ -121,8 +129,6 @@ public class SwInteractor implements SwInputBoundary{
                 presenter.valid(new SwOutputDataValidWord(inputData.getWord(), this.playerId, resp));
             }
             gameLock.unlock();
-            System.out.println("SwInteractor unlocked Game!");
-            System.out.println("SwInteractor has ended.");
         }
     }
 }

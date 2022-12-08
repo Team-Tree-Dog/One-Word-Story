@@ -1,5 +1,6 @@
 package entities;
 
+import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.InvalidWordException;
 
 /**
@@ -7,13 +8,13 @@ import exceptions.InvalidWordException;
  */
 public class WordFactory {
 
-    private final ValidityChecker validityChecker;
+    private final ValidityCheckerFacade validityChecker;
 
     /**
      * Constructor for the WordFactory
-     * @param v ValidityChecker which checks the word for validity
+     * @param v ValidityCheckerFacade which checks the word for validity
      */
-    public WordFactory(ValidityChecker v) {
+    public WordFactory(ValidityCheckerFacade v) {
         this.validityChecker = v;
     }
 
@@ -25,10 +26,10 @@ public class WordFactory {
      * @throws InvalidWordException if its string representation is not valid
      */
     public Word create(String word, Player author) throws InvalidWordException {
-        if(validityChecker.isValid(word))
-            return new Word(word, author);
-        else
+        String checkedWord = validityChecker.isValid(word);
+        if(checkedWord == null)
             throw new InvalidWordException("The word is not valid!");
+        return new Word(checkedWord, author);
     }
 
 }

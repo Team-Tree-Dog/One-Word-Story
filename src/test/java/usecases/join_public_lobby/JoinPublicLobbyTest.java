@@ -1,6 +1,6 @@
 package usecases.join_public_lobby;
 
-import entities.DisplayNameChecker;
+import entities.display_name_checkers.DisplayNameChecker;
 import entities.LobbyManager;
 import entities.Player;
 import entities.PlayerFactory;
@@ -8,16 +8,19 @@ import entities.games.Game;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
 import entities.games.GameRegular;
+import entities.statistics.PerPlayerIntStatistic;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import usecases.Response;
+import usecases.ThreadRegister;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 public class JoinPublicLobbyTest {
 
@@ -26,6 +29,8 @@ public class JoinPublicLobbyTest {
     private final GameFactory gameFactory = new GameFactoryRegular();
     private final PlayerFactory playerFactory = new PlayerFactory(simpleDisplayNameChecker);
     private JplInteractor interactor;
+
+    private static final ThreadRegister register = new ThreadRegister();
 
     private static class TestOutputBoundary implements JplOutputBoundary {
 
@@ -47,6 +52,11 @@ public class JoinPublicLobbyTest {
         public void cancelled(JplOutputDataResponse dataCancelled) {
             cancelledResponses.add(dataCancelled);
         }
+
+        @Override
+        public void outputShutdownServer() {
+            throw new RuntimeException("This method is not implemented and should not be called");
+        }
     }
 
     private static class SimpleDisplayNameChecker implements DisplayNameChecker {
@@ -59,7 +69,7 @@ public class JoinPublicLobbyTest {
     @BeforeEach
     public void setupJplInteractor(){
         LobbyManager lobbyManager = new LobbyManager(this.playerFactory, this.gameFactory);
-        this.interactor = new JplInteractor(lobbyManager, this.testOutputBoundary);
+        this.interactor = new JplInteractor(lobbyManager, this.testOutputBoundary, register);
     }
 
     /**
@@ -115,7 +125,7 @@ public class JoinPublicLobbyTest {
         Queue<Player> initialPlayers = new LinkedList<>();
         initialPlayers.add(firstPlayer);
         initialPlayers.add(secondPlayer);
-        Game game = new GameRegular(initialPlayers);
+        Game game = new GameRegular(initialPlayers, new PerPlayerIntStatistic[0]);
 
         // onJoinGamePlayer signals a condition variable. the signal requires the lock to be engaged, which it is not
         // The call will set the JplThread's game instance to the passed in game and the subsequent signal call will
@@ -154,7 +164,7 @@ public class JoinPublicLobbyTest {
         Queue<Player> initialPlayers = new LinkedList<>();
         initialPlayers.add(firstPlayer);
         initialPlayers.add(secondPlayer);
-        Game game = new GameRegular(initialPlayers);
+        Game game = new GameRegular(initialPlayers, new PerPlayerIntStatistic[0]);
 
         Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadFirst.onJoinGamePlayer(game));
         Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadSecond.onJoinGamePlayer(game));
@@ -180,7 +190,7 @@ public class JoinPublicLobbyTest {
         Queue<Player> initialPlayers = new LinkedList<>();
         initialPlayers.add(firstPlayer);
         initialPlayers.add(secondPlayer);
-        Game game = new GameRegular(initialPlayers);
+        Game game = new GameRegular(initialPlayers, new PerPlayerIntStatistic[0]);
 
         Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadFirst.onJoinGamePlayer(game));
         Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadSecond.onJoinGamePlayer(game));
