@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class StInteractor implements StInputBoundary {
     private final StOutputBoundary pres;
-    private final StGateway repo;
+    private final StGatewayTitles repo;
     private final SuggestedTitleChecker titleChecker;
 
     private final ThreadRegister register;
@@ -22,7 +22,7 @@ public class StInteractor implements StInputBoundary {
      * @param titleChecker
      * @param register
      */
-    public StInteractor(StOutputBoundary pres, StGateway repo, SuggestedTitleChecker titleChecker,
+    public StInteractor(StOutputBoundary pres, StGatewayTitles repo, SuggestedTitleChecker titleChecker,
                         ThreadRegister register) {
         this.pres = pres;
         this.repo = repo;

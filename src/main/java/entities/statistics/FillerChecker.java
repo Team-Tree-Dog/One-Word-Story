@@ -6,12 +6,12 @@ package entities.statistics;
 public interface FillerChecker {
 
     /**
-     * While “Filler” isn’t exactly the accurate term here, we will refer to “filler” as
-     * anything that doesn’t really affect the story. That is, sometimes players are trapped
-     * into a position where they have to write “the”, or “a”. This is obviously a waste of a
-     * turn and there aren’t many choices the player can make. Sometimes a player may fall into
-     * a loop of not having “control” of the story and is forced to add a simple connector term.
-     * The method should return true for words which generally don’t give you much control over
+     * While "Filler" isn't exactly the accurate term here, we will refer to "filler" as
+     * anything that doesn't really affect the story. That is, sometimes players are trapped
+     * into a position where they have to write "the", or "a". This is obviously a waste of a
+     * turn and there aren't many choices the player can make. Sometimes a player may fall into
+     * a loop of not having "control" of the story and is forced to add a simple connector term.
+     * The method should return true for words which generally don't give you much control over
      * the story
      * <br><br>
      * <h3>Preconditions:</h3>

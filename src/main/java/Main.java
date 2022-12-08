@@ -15,12 +15,11 @@ import entities.display_name_checkers.DisplayNameChecker;
 import entities.display_name_checkers.DisplayNameCheckerBasic;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
-import usecases.RepoRes;
-import usecases.ThreadRegister;
+import frameworks_drivers.repository.in_memory.InMemoryCommentsRepo;
+import frameworks_drivers.repository.in_memory.InMemoryStoryRepo;
+import frameworks_drivers.repository.in_memory.InMemoryTitlesRepo;
 import usecases.comment_as_guest.CagInteractor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import usecases.*;
+import usecases.ThreadRegister;
 import usecases.disconnecting.DcInteractor;
 import usecases.get_all_titles.GatInteractor;
 import usecases.get_latest_stories.GlsInteractor;
@@ -29,16 +28,12 @@ import usecases.get_story_comments.GscInteractor;
 import usecases.join_public_lobby.JplInteractor;
 import usecases.like_story.LsInteractor;
 import usecases.pull_data.PdInteractor;
-import usecases.pull_game_ended.PgeGatewayStory;
 import usecases.pull_game_ended.PgeInteractor;
 import usecases.shutdown_server.SsInteractor;
 import usecases.sort_players.SpInteractor;
 import usecases.submit_word.SwInteractor;
-import usecases.suggest_title.StGateway;
 import usecases.suggest_title.StInteractor;
 import usecases.upvote_title.UtInteractor;
-
-import java.util.Set;
 
 /**
  * Orchestrator. Contains only a main method which boots up
@@ -71,14 +66,15 @@ public class Main {
         StPresenter stPresenter = new StPresenter(viewM);
         UtPresenter utPresenter = new UtPresenter(viewM);
 
-        // Create desired comment checker for injection
+        // Create desired comment checker, display checker, and title checker for injection
         CommentChecker commentChecker = new CommentCheckerBasic();
-
-        // Create desired display name checker for injection
         DisplayNameChecker displayChecker = new DisplayNameCheckerBasic();
-
-        // Create desired story title checker for injection
         SuggestedTitleChecker titleChecker = new SuggestedTitleCheckerBasic();
+
+        // Create desired Story, Titles, and Comments repos
+        InMemoryTitlesRepo titlesRepo = new InMemoryTitlesRepo();
+        InMemoryCommentsRepo commentsRepo = new InMemoryCommentsRepo();
+        InMemoryStoryRepo storyRepo = new InMemoryStoryRepo();
 
         // Create desired per-player statistics for injection
         PerPlayerIntStatistic[] statistics = {
@@ -95,41 +91,23 @@ public class Main {
 
         // Start up sort players
         PdInteractor pd = new PdInteractor(pdPresenter);
-        // TODO: Inject Repo
-        PgeInteractor pge = new PgeInteractor(pgePresenter, (storyString, publishUnixTimeStamp, authorDisplayNames) -> null);
+        PgeInteractor pge = new PgeInteractor(pgePresenter, storyRepo);
         SpInteractor sp = new SpInteractor(manager, pge, pd);
         sp.startTimer();
 
         // Use cases called by users
-
-        CagInteractor cag = new CagInteractor(cagPresenter, (storyId, displayName, comment) -> null,
-                commentChecker, displayChecker, register); // TODO: Inject repo
+        CagInteractor cag = new CagInteractor(cagPresenter, commentsRepo, commentChecker, displayChecker, register);
         DcInteractor dc = new DcInteractor(manager, dcPresenter, register);
-        GatInteractor gat = new GatInteractor(gatPresenter,
-                storyId -> new RepoRes<TitleRepoData>(Response.getFailure("Dummy Lambda, Always failure"))
-                ,register);
-        GlsInteractor gls = new GlsInteractor(glsPresenter, () -> null, register); // TODO: Inject repo
-        GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, () -> null, register); // TODO: Inject repo
-        GscInteractor gsc = new GscInteractor(gscPresenter, storyId -> null, register); // TODO: Inject repo
+        GlsInteractor gls = new GlsInteractor(glsPresenter, storyRepo, register);
+        GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, storyRepo, register);
+        GscInteractor gsc = new GscInteractor(gscPresenter, commentsRepo, register);
+        GatInteractor gat = new GatInteractor(gatPresenter, titlesRepo, register);
         JplInteractor jpl = new JplInteractor(manager, jplPresenter, register);
-        LsInteractor ls = new LsInteractor(lsPresenter, (e) -> null, register); // TODO: Inject repo
+        LsInteractor ls = new LsInteractor(lsPresenter, storyRepo, register);
         SsInteractor ss = new SsInteractor(register, ssPresenter);
         SwInteractor sw = new SwInteractor(swPresenter, manager, register);
-        StInteractor st = new StInteractor(stPresenter, new StGateway() {
-            @Override
-            public @NotNull Response suggestTitle(int storyId, @Nullable String titleSuggestion) {
-                return null;
-            }
-
-            @Override
-            public @NotNull RepoRes<TitleRepoData> getAllTitles(int storyId) {
-                return null;
-            }
-        }, titleChecker, register);
-        UtInteractor ut = new UtInteractor(utPresenter,
-                ((storyId, titleToUpvote) -> Response.getSuccessful("Dummy Lambda, Always successful")),
-                register);
-
+        StInteractor st = new StInteractor(stPresenter, titlesRepo, titleChecker, register);
+        UtInteractor ut = new UtInteractor(utPresenter, titlesRepo, register);
 
         // Controllers
         CagController cagController = new CagController(cag);
