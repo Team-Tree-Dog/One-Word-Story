@@ -49,7 +49,7 @@ public class SymboledInteger {
      * @param suffix suffix to add to this integer, or null to remove
      */
     public void setSuffix(@Nullable String suffix) {
-        this.suffix = suffix == null ? "" : suffix;
+        this.suffix = (suffix == null ? "" : suffix);
     }
 
     /**
@@ -66,5 +66,16 @@ public class SymboledInteger {
      */
     public SymboledInteger add (Integer valueToAdd) {
         return new SymboledInteger(this.value + valueToAdd, this.suffix);
+    }
+
+    /**
+     * @param obj object to check equality with
+     * @return true if the other object is a SymboledInteger with the same value, false otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SymboledInteger) {
+            return ((SymboledInteger) obj).getValue().equals(this.getValue());
+        } return false;
     }
 }

@@ -57,7 +57,7 @@ public class PdInteractorTests {
         }
 
         @Override
-        public void onTimerUpdate() {
+        public void onTimerUpdateLogic() {
 
         }
 
@@ -80,7 +80,7 @@ public class PdInteractorTests {
         }
 
         @Override
-        public boolean switchTurn() {
+        public boolean switchTurnLogic() {
             return false;
         }
 
@@ -102,9 +102,9 @@ public class PdInteractorTests {
         g.addPlayer(p2);
         g.addPlayer(p3);
         try {
-            g.getStory().addWord("lol", p1);
-            g.getStory().addWord("kek", p2);
-            g.getStory().addWord("haha", p2);
+            g.addWord("lol", p1);
+            g.addWord("kek", p2);
+            g.addWord("haha", p2);
         } catch (InvalidWordException ignored) {
             // This error is completely impossible
         }
@@ -127,7 +127,7 @@ public class PdInteractorTests {
         PdOutputBoundary pob = d -> {
             GameDTO obj1 = d.getGameInfo();
 
-            assertEquals(obj1.getStory(), g.getStory().toString(), "Incorrect copy of Story");
+            assertEquals(obj1.getStory(), g.getStoryString(), "Incorrect copy of Story");
 
             List<String> IdList = new ArrayList<>();
             for (PlayerDTO p : obj1.getPlayers()) {

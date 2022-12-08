@@ -62,6 +62,7 @@ public class RecursiveSymboledIntegerHashMap {
      */
     public void put(String key, RecursiveSymboledIntegerHashMap value) {
         if (!isBaseCase()) {
+            // Cant produce null pointer because we aren't in the base case
             map.put(key, value);
         }
     }

@@ -38,7 +38,6 @@ public interface GameReadOnly {
      * in the game end screen
      */
     @NotNull
-    // TODO: Replace <?> with the type of PerPlayerIntStatistic
     StatisticReadOnly<Map<Player, RecursiveSymboledIntegerHashMap>>[] getPlayerStatistics ();
 
     /**

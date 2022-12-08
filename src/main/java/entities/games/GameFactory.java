@@ -22,6 +22,13 @@ public abstract class GameFactory {
     }
 
     /**
+     * Constructor if you dont want any statistics
+     */
+    public GameFactory() {
+        this(new PerPlayerIntStatistic[0]);
+    }
+
+    /**
      * Given some arguments, create the appropriate game instance
      * @param settings A map of strings to integer settings
      * @param initialPlayers A list of initial players

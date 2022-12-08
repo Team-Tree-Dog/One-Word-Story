@@ -3,6 +3,8 @@ package usecases.disconnecting;
 import entities.*;
 import entities.display_name_checkers.DisplayNameChecker;
 import entities.games.Game;
+import entities.games.GameFactory;
+import entities.statistics.PerPlayerIntStatistic;
 import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.GameDoesntExistException;
 import exceptions.GameRunningException;
@@ -240,7 +242,12 @@ public class DcInteractorTests {
         Game game;
 
         public TestLobbyManager(Game game) throws GameRunningException {
-            super(playerFactory, (settings, initialPlayers) -> game);
+            super(playerFactory, new GameFactory(new PerPlayerIntStatistic[0]) {
+                @Override
+                public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
+                    return null;
+                }
+            });
             this.game = game;
             this.setGame(game);
         }
@@ -268,7 +275,7 @@ public class DcInteractorTests {
         public boolean isGameOver() { return false; }
 
         @Override
-        public void onTimerUpdate() {}
+        public void onTimerUpdateLogic() {}
 
         @Override
         public Player getPlayerById(String playerId) {
@@ -285,7 +292,7 @@ public class DcInteractorTests {
         public boolean addPlayer(Player playerToAdd) { return players.add(playerToAdd); }
 
         @Override
-        public boolean switchTurn() {
+        public boolean switchTurnLogic() {
             setSecondsLeftInCurrentTurn(getSecondsPerTurn());
             return players.add(players.remove());
         }

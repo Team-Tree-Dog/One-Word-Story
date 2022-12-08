@@ -65,7 +65,7 @@ public class GameTests {
         }
 
         @Override
-        public void onTimerUpdate() {
+        public void onTimerUpdateLogic() {
 
         }
 
@@ -85,7 +85,7 @@ public class GameTests {
         }
 
         @Override
-        public boolean switchTurn() {
+        public boolean switchTurnLogic() {
             setSecondsLeftInCurrentTurn(getSecondsPerTurn());
             return players.add(players.remove());
         }

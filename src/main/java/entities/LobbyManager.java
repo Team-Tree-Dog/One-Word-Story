@@ -65,16 +65,25 @@ public class LobbyManager {
     }
 
     /**
+     * <h2>Thread Safety:</h2>
+     * <p> NOT Thread Safe, engages no locks </p>
+     * <p> Engage game lock surrounding use as appropriate </p>
      * @return If a game has been started and has not yet ended
      */
     public boolean isGameRunning () { return !(isGameNull() || isGameEnded()); }
 
     /**
+     * <h2>Thread Safety:</h2>
+     * <p> NOT Thread Safe, engages no locks </p>
+     * <p> Engage game lock surrounding use as appropriate </p>
      * @return If a game instance is null, meaning, no game exists
      */
     public boolean isGameNull () { return game == null; }
 
     /**
+     * <h2>Thread Safety:</h2>
+     * <p> NOT Thread Safe, engages no locks </p>
+     * <p> Engage game lock surrounding use as appropriate </p>
      * @return If a game exists but has ended, meaning, the final timer
      * iteration has finished executing
      */
@@ -82,13 +91,19 @@ public class LobbyManager {
 
     /**
      * Wrapper for switchTurn
+     * <h2>Thread Safety:</h2>
+     * <p> NOT Thread Safe, engages no locks </p>
+     * <p> Engage game lock surrounding use as appropriate </p>
      */
     public boolean switchTurn() {
         return game.switchTurn();
     }
 
     /**
-     * Set the game to null.
+     * ONLY CALLED BY SP!!!
+     * <h2>Thread Safety:</h2>
+     * <p> NOT Thread Safe, engages no locks </p>
+     * <p> Engage game lock surrounding use as appropriate </p>
      * @throws GameRunningException if the game is running and you tried to set it to null
      */
     public void setGameNull () throws GameRunningException {
@@ -99,12 +114,15 @@ public class LobbyManager {
     }
 
     /**
-     * Called from sort player timer task use case to cancel it once game ends
+     * Called to start the timer upon SP initialization
      * @return the timer which repeatedly sorts the players
      */
     public Timer getSortPlayersTimer () { return this.sortPlayersTimer; }
 
     /**
+     * <h2>Thread Safety:</h2>
+     * <p> NOT Thread Safe, engages no locks </p>
+     * <p> Engage pool lock surrounding use as appropriate </p>
      * @return a shallow copy of the player pool
      */
     public List<PlayerObserverLink> getPool () {
@@ -114,7 +132,10 @@ public class LobbyManager {
     /**
      * Remove a player from the pool and call the linked PlayerPoolListener's
      * onJoinGamePlayer method, indicating that the player has joined the game
-     * Notice that this method is not thread-safe AT ALL! It engages no locks
+     * <br><br>
+     * <h2>Thread Safety:</h2>
+     * <p> NOT Thread Safe, engages no locks </p>
+     * <p> Engage pool lock AND PlayerPoolListener lock for player p surrounding use as appropriate </p>
      * @param p Player you would like to remove
      * @throws PlayerNotFoundException if the player was not found in the pool
      * @throws GameDoesntExistException if the game isn't running, in which case, player can't join it
@@ -227,7 +248,7 @@ public class LobbyManager {
                     "Trying to submit a word out of turn");
         }
         Player author = this.game.getPlayerById(playerId);
-        this.game.getStory().addWord(word, author);
+        this.game.addWord(word, author);
     }
 
     /**
@@ -324,8 +345,8 @@ public class LobbyManager {
         this.playerPool.add(pol);
         playerPoolLock.unlock();
     }
-    /**
 
+    /**
      * Combines functionality of removing the player from pool, adding player to game, and notifying
      * the corresponding PlayerPoolListener that the player joined the game. If the player
      * was not in the pool, this method will STILL ADD THEM to the game and will subsequently

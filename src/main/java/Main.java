@@ -5,6 +5,7 @@ import entities.LobbyManager;
 import entities.PlayerFactory;
 import entities.comment_checkers.CommentChecker;
 import entities.comment_checkers.CommentCheckerBasic;
+import entities.statistics.PerPlayerIntStatistic;
 import entities.suggested_title_checkers.SuggestedTitleChecker;
 import entities.suggested_title_checkers.SuggestedTitleCheckerBasic;
 import entities.display_name_checkers.DisplayNameChecker;
@@ -75,7 +76,7 @@ public class Main {
 
         // Factory which accepts ALL display names with at least 3 characters (temporary)
         PlayerFactory playerFac = new PlayerFactory(displayChecker);
-        GameFactory gameFac = new GameFactoryRegular();
+        GameFactory gameFac = new GameFactoryRegular(new PerPlayerIntStatistic[0]); // TODO: Add stats
 
         // Inject particular factories into LobbyManager
         LobbyManager manager = new LobbyManager(playerFac, gameFac);

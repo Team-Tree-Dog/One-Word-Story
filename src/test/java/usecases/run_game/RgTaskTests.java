@@ -57,7 +57,7 @@ public class RgTaskTests {
          * Currently implemented as no-operation
          */
         @Override
-        public void onTimerUpdate() {}
+        public void onTimerUpdateLogic() {}
 
         /**
          * Unused custom getPlayerById
@@ -91,7 +91,7 @@ public class RgTaskTests {
          * @return if the turn switch was successful
          */
         @Override
-        public boolean switchTurn() {
+        public boolean switchTurnLogic() {
             setSecondsLeftInCurrentTurn(getSecondsPerTurn());
             return players.add(players.remove());
         }

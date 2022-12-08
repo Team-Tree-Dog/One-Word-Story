@@ -20,6 +20,8 @@ public class GameFactoryRegular extends GameFactory {
         super(perPlayerIntStatistics);
     }
 
+    public GameFactoryRegular() {}
+
     /**
      * Accepting any settings, create the appropriate game instance of the GameRegular
      * @param settings A map of strings to integer settings

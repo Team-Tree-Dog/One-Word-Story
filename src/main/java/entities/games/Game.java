@@ -201,7 +201,7 @@ public abstract class Game implements GameReadOnly {
      * Calls onTimerUpdateLogic and calls each statistic event handler
      */
     public void onTimerUpdate() {
-        onTimeUpdateLogic();
+        onTimerUpdateLogic();
         for (Statistic<?> s: statistics) {
             s.onTimerUpdate(this);
         }
@@ -210,7 +210,7 @@ public abstract class Game implements GameReadOnly {
     /**
      * Custom additional actions that can be done by the game every time the timer is updated
      */
-    protected abstract void onTimeUpdateLogic();
+    protected abstract void onTimerUpdateLogic();
 
     /**
      * @param playerId ID of player you'd like to retrieve

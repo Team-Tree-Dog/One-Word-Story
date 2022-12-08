@@ -43,7 +43,7 @@ public class GameRegular extends Game {
      * Currently implemented as no-operation
      */
     @Override
-    protected void onTimeUpdateLogic() {}
+    protected void onTimerUpdateLogic() {}
 
     /**
      * Gets Player from this game by its id

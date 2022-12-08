@@ -66,7 +66,7 @@ public class GameDTO {
      */
     public static GameDTO fromGame (Game game) {
         return new GameDTO(
-                game.getStory().toString(),
+                game.getStoryString(),
                 game.getPlayers(), game.getCurrentTurnPlayer().getPlayerId(),
                 game.getSecondsLeftInCurrentTurn());
     }

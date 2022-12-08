@@ -60,7 +60,7 @@ public class SwInteractorTests {
          * Additional actions that can be done by the game every time the timer is updated
          */
         @Override
-        public void onTimerUpdate() {
+        public void onTimerUpdateLogic() {
 
         }
 
@@ -92,7 +92,7 @@ public class SwInteractorTests {
          * Switches this game's turn and resets the timer
          */
         @Override
-        public boolean switchTurn() {
+        public boolean switchTurnLogic() {
             setSecondsLeftInCurrentTurn(getSecondsPerTurn());
             return players.add(players.remove());
         }
@@ -166,7 +166,7 @@ public class SwInteractorTests {
             }
         }
 
-        class GameFactoryTest implements GameFactory {
+        class GameFactoryTest extends GameFactory {
             /**
             * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
             */
@@ -259,7 +259,7 @@ public class SwInteractorTests {
             }
         }
 
-        class GameFactoryTest implements GameFactory {
+        class GameFactoryTest extends GameFactory {
             /**
              * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
              */
@@ -330,7 +330,7 @@ public class SwInteractorTests {
             }
         }
 
-        class GameFactoryTest implements GameFactory {
+        class GameFactoryTest extends GameFactory {
             /**
              * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
              */
@@ -412,7 +412,7 @@ public class SwInteractorTests {
             }
         }
 
-        class GameFactoryTest implements GameFactory {
+        class GameFactoryTest extends GameFactory {
             /**
              * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
              */
@@ -501,7 +501,7 @@ public class SwInteractorTests {
             }
         }
 
-        class GameFactoryTest implements GameFactory {
+        class GameFactoryTest extends GameFactory {
             /**
              * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
              */

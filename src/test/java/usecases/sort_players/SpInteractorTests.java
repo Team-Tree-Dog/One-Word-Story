@@ -3,6 +3,7 @@ package usecases.sort_players;
 import entities.*;
 import entities.display_name_checkers.DisplayNameChecker;
 import entities.games.Game;
+import entities.games.GameFactory;
 import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.GameRunningException;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +16,7 @@ import usecases.pull_game_ended.PgeInteractor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -68,7 +70,7 @@ public class SpInteractorTests {
         }
 
         @Override
-        public void onTimerUpdate() {
+        public void onTimerUpdateLogic() {
 
         }
 
@@ -91,7 +93,7 @@ public class SpInteractorTests {
         }
 
         @Override
-        public boolean switchTurn() {
+        public boolean switchTurnLogic() {
             return false;
         }
 
@@ -164,14 +166,17 @@ public class SpInteractorTests {
 
         // Game is null by default
         LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()),
-                (settings, initialPlayers) -> {
-            // Returns instance of game which always adds players successfully.
-                    // We return this particular instance so we can have access to this game's methods.
-                    for (Player p : initialPlayers) {
-                        customizableTestGame.addPlayer(p);
+                new GameFactory() {
+                    @Override
+                    public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
+                        // Returns instance of game which always adds players successfully.
+                        // We return this particular instance so we can have access to this game's methods.
+                        for (Player p : initialPlayers) {
+                            customizableTestGame.addPlayer(p);
+                        }
+                        return customizableTestGame;
                     }
-                    return customizableTestGame;
-        });
+                });
 
         TestPlayerPoolListener bobsListener = new TestPlayerPoolListener();
         TestPlayerPoolListener billysListener = new TestPlayerPoolListener();
@@ -216,7 +221,12 @@ public class SpInteractorTests {
         CustomizableTestGame g = new CustomizableTestGame(true, true);
 
         LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()),
-                (settings, initialPlayers) -> null);
+                new GameFactory() {
+                    @Override
+                    public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
+                        return null;
+                    }
+                });
 
         // Set a game and set isGameEnded to true via setTimerStopped
         try {
@@ -246,7 +256,12 @@ public class SpInteractorTests {
         CustomizableTestGame g = new CustomizableTestGame(false, true);
 
         LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()),
-                (settings, initialPlayers) -> null);
+                new GameFactory() {
+                    @Override
+                    public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
+                        return null;
+                    }
+                });
 
         // Add two players to game
         g.addPlayer(new Player("Lilly", "3"));
@@ -292,7 +307,12 @@ public class SpInteractorTests {
         CustomizableTestGame g = new CustomizableTestGame(false, false);
 
         LobbyManager m = new LobbyManager(new PlayerFactory(new NaiveDisplayNameChecker()),
-                (settings, initialPlayers) -> null);
+                new GameFactory() {
+                    @Override
+                    public Game createGame(Map<String, Integer> settings, Collection<Player> initialPlayers) {
+                        return null;
+                    }
+                });
 
         // Set up scenario where a game is running (not null not ended)
         try {
