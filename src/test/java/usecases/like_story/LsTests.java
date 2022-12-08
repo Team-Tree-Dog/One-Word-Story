@@ -47,7 +47,7 @@ public class LsTests {
             int numberOfLikes = random.nextInt(9) + 1;
             int currentNumberOfResponses = presenter.responses.size();
             for (int j = 0; j < numberOfLikes; j++) {
-                LsInputData inputData = new LsInputData(String.valueOf(i) + j, i);
+                LsInputData inputData = new LsInputData(i);
                 interactor.likeStory(inputData, presenter);
             }
             while (repository.getNumberOfLikesForStory(i) < numberOfLikes) {
@@ -73,7 +73,7 @@ public class LsTests {
     public void testInteractorReturnsFailForIncorrectStories() {
         int numberOfStories = random.nextInt(100);
         for (int i = 0; i < numberOfStories; i++) {
-            LsInputData inputData = new LsInputData(String.valueOf(i), i);
+            LsInputData inputData = new LsInputData(i);
             interactor.likeStory(inputData, presenter);
         }
         while (presenter.responses.size() < numberOfStories) {

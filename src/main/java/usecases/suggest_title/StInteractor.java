@@ -91,14 +91,14 @@ public class StInteractor implements StInputBoundary {
              */
 
             if (!suggestedTitles.isSuccess()) {
-                outputData = new StOutputData(data.getRequestId(), suggestedTitles.getRes());
+                outputData = new StOutputData(suggestedTitles.getRes());
             }
 
             else if (!titleChecker.checkValid(title)){
                 // check if the title is not valid and initialize output Data accordingly
                 String mess = String.format("'%1$s' is invalid", data.getTitle());
                 Response res = new Response(Response.ResCode.INVALID_TITLE,mess);
-                outputData = new StOutputData(data.getRequestId(), res);
+                outputData = new StOutputData(res);
             }
 
             else {
@@ -112,7 +112,7 @@ public class StInteractor implements StInputBoundary {
                     // check if the title was already suggested and initialize output data accordingly
                     String mess = String.format("'%1$s' was already suggested", data.getTitle());
                     Response res = new Response(Response.ResCode.TITLE_ALREADY_SUGGESTED,mess);
-                    outputData = new StOutputData(data.getRequestId(), res);
+                    outputData = new StOutputData(res);
                 } else {
                     // the body of this else block carries out the processes to suggest the title once we have ensured
                     // that the title is valid and has not been already suggested.
@@ -120,7 +120,7 @@ public class StInteractor implements StInputBoundary {
                     setBlockInterrupt(true);
                     Response res =  repo.suggestTitle(storyId, title);
                     setBlockInterrupt(false);
-                    outputData = new StOutputData(data.getRequestId(), res);
+                    outputData = new StOutputData(res);
                 }
 
             }

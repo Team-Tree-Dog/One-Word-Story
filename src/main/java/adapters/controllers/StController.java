@@ -24,15 +24,14 @@ public class StController {
      * Method for the controller to:
      * 1. Build the input data for the Suggest Title use case
      * 2. Call the method st.suggestTitle() to begin the use case
-     * @param uniqueRequestId   the unique ID corresponding to this particular request to add a title
      * @param storyId           the ID for the story for which the title is suggested
      * @param suggestedTitle    the title that is suggested for the story
      * @return View model for this use case
      */
-    public StViewModel suggestTitle(String uniqueRequestId, int storyId, String suggestedTitle){
+    public StViewModel suggestTitle(int storyId, String suggestedTitle){
         StViewModel viewM = new StViewModel();
         StPresenter pres = new StPresenter(viewM);
-        StInputData inp = new StInputData(uniqueRequestId, suggestedTitle, storyId);
+        StInputData inp = new StInputData(suggestedTitle, storyId);
         st.suggestTitle(inp, pres);
         return viewM;
     }

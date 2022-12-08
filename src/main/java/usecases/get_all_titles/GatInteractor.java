@@ -11,19 +11,16 @@ import usecases.shutdown_server.SsOutputBoundary;
  * a particular story
  */
 public class GatInteractor implements GatInputBoundary{
-    private final GatOutputBoundary pres;
     private final GatGatewayTitles repo;
     private final ThreadRegister register;
 
     /**
      * Constructor for the Interactor.
-     * @param pres      the presenter for this use case
      * @param repo      the repository for this use case: implements the Gateway interface method to get all titles
      *                  for a specified story in this repo
      * @param register  a ThreadRegister object that records all the threads that are running at a particular time.
      */
-    public GatInteractor(GatOutputBoundary pres, GatGatewayTitles repo, ThreadRegister register) {
-        this.pres = pres;
+    public GatInteractor(GatGatewayTitles repo, ThreadRegister register) {
         this.repo = repo;
         this.register = register;
     }
@@ -35,14 +32,17 @@ public class GatInteractor implements GatInputBoundary{
      */
     public class GatThread extends InterruptibleThread{
         private final GatInputData data;
+        private final GatOutputBoundary pres;
 
         /**
          * Constructor for the Get All Titles use case Thread
          * @param data  The input data containing the storyId of the story we want to get all titles for
+         * @param pres  output boundary for this use case
          */
-        public GatThread(GatInputData data) {
-            super(GatInteractor.this.register, GatInteractor.this.pres);
+        public GatThread(GatInputData data, GatOutputBoundary pres) {
+            super(GatInteractor.this.register, pres);
             this.data = data;
+            this.pres = pres;
         }
 
         /**
@@ -75,10 +75,11 @@ public class GatInteractor implements GatInputBoundary{
     /**
      * Creates the thread for the use case interactor and registers it into the thread register
      * @param data  the input data for this use case, contains the storyId of the story we want to get all titles for
+     * @param pres  output boundary for this use case
      */
     @Override
-    public void getAllTitles(GatInputData data){
-        InterruptibleThread thread = new GatThread(data);
+    public void getAllTitles(GatInputData data, GatOutputBoundary pres){
+        InterruptibleThread thread = new GatThread(data, pres);
         boolean success = register.registerThread(thread);
         if (!success){pres.outputShutdownServer();}
     }

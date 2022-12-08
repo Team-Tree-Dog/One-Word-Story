@@ -1,19 +1,18 @@
 package adapters.presenters;
 
-
-import adapters.ViewModel;
+import adapters.view_models.CagViewModel;
 import usecases.comment_as_guest.CagOutputBoundary;
 import usecases.comment_as_guest.CagOutputData;
 
 public class CagPresenter implements CagOutputBoundary {
 
-    private final ViewModel viewM;
+    private final CagViewModel viewM;
 
     /**
      * Constructor for CagPresenter
      * @param viewM Instance of the view model to write to
      */
-    public CagPresenter(ViewModel viewM) {
+    public CagPresenter(CagViewModel viewM) {
         this.viewM = viewM;
     }
 

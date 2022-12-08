@@ -87,12 +87,12 @@ public class Main {
         sp.startTimer();
 
         // Use cases called by users
-        CagInteractor cag = new CagInteractor(cagPresenter, (storyId, displayName, comment) -> null,
+        CagInteractor cag = new CagInteractor((storyId, displayName, comment) -> null,
                 commentChecker, displayChecker, register); // TODO: Inject repo
-        GatInteractor gat = new GatInteractor(gatPresenter,
+        GatInteractor gat = new GatInteractor(
                 storyId -> new RepoRes<TitleRepoData>(Response.getFailure("Dummy Lambda, Always failure"))
                 ,register);
-        GscInteractor gsc = new GscInteractor(gscPresenter, storyId -> null, register); // TODO: Inject repo
+        GscInteractor gsc = new GscInteractor(storyId -> null, register); // TODO: Inject repo
         DcInteractor dc = new DcInteractor(manager, register);
         GlsInteractor gls = new GlsInteractor(
                 () -> new RepoRes<StoryRepoData>(Response.getFailure("Dummy Lambda, Always failure")),
@@ -117,7 +117,7 @@ public class Main {
                 return null;
             }
         }, titleChecker, register);
-        UtInteractor ut = new UtInteractor(utPresenter,
+        UtInteractor ut = new UtInteractor(
                 ((storyId, titleToUpvote) -> Response.getSuccessful("Dummy Lambda, Always successful")),
                 register);
 

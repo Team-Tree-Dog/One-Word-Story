@@ -107,11 +107,11 @@ public class GscInteractorTests {
         // Instantiating interactor
         repo = new CustomizableGscGatewayComments(false);
         pres = new CustomizableGscOutputBoundary();
-        GscInteractor gsc = new GscInteractor(pres, repo, register);
+        GscInteractor gsc = new GscInteractor(repo, register);
 
         // Running thread
         GscInputData d = new GscInputData(1);
-        GscInteractor.GscThread innerThreadInstance = gsc.new GscThread(d);
+        GscInteractor.GscThread innerThreadInstance = gsc.new GscThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
@@ -132,11 +132,11 @@ public class GscInteractorTests {
         // Instantiating interactor
         repo = new CustomizableGscGatewayComments(true);
         pres = new CustomizableGscOutputBoundary();
-        GscInteractor gsc = new GscInteractor(pres, repo, register);
+        GscInteractor gsc = new GscInteractor(repo, register);
 
         // Running thread
         GscInputData d = new GscInputData(1);
-        GscInteractor.GscThread innerThreadInstance = gsc.new GscThread(d);
+        GscInteractor.GscThread innerThreadInstance = gsc.new GscThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
