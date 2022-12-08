@@ -1,8 +1,13 @@
 package adapters.presenters;
 
 import adapters.view_models.GmlsViewModel;
+import usecases.Response;
 import usecases.get_most_liked_stories.GmlsOutputBoundary;
 import usecases.get_most_liked_stories.GmlsOutputData;
+
+import java.util.List;
+
+import static usecases.Response.ResCode.SHUTTING_DOWN;
 
 public class GmlsPresenter implements GmlsOutputBoundary {
 
@@ -19,11 +24,16 @@ public class GmlsPresenter implements GmlsOutputBoundary {
      */
     @Override
     public void putStories(GmlsOutputData data) {
-
+        if (data.getStories() == null) {
+            viewM.setResponse(data.getRes());
+        } else {
+            viewM.setLatestStories(data.getStories());
+            viewM.setResponse(data.getRes());
+        }
     }
 
     @Override
     public void outputShutdownServer() {
-
+        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

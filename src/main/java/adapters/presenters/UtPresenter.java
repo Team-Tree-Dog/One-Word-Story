@@ -1,8 +1,11 @@
 package adapters.presenters;
 
 import adapters.view_models.UtViewModel;
+import usecases.Response;
 import usecases.upvote_title.UtOutputBoundary;
 import usecases.upvote_title.UtOutputData;
+
+import static usecases.Response.ResCode.SHUTTING_DOWN;
 
 public class UtPresenter implements UtOutputBoundary {
     private UtViewModel viewM;
@@ -20,11 +23,11 @@ public class UtPresenter implements UtOutputBoundary {
      */
     @Override
     public void upvoteOutput(UtOutputData data){
-
+        viewM.setResponse(data.getRes());
     }
 
     @Override
     public void outputShutdownServer(){
-
+        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

@@ -76,9 +76,9 @@ public class GmlsInteractorTests {
     public void setup () {
 
         // Adding three stories for testing purposes
-        StoryRepoData sd1 = new StoryRepoData("text 1", authors, dt, "title 1", 1);
-        StoryRepoData sd2 = new StoryRepoData("text 2", authors, dt, "title 2", 2);
-        StoryRepoData sd3 = new StoryRepoData("text 3", authors, dt, "title 3", 3);
+        StoryRepoData sd1 = new StoryRepoData(0, "text 1", authors, dt, 1);
+        StoryRepoData sd2 = new StoryRepoData(1, "text 2", authors, dt, 2);
+        StoryRepoData sd3 = new StoryRepoData(2,"text 3", authors, dt, 3);
 
         StoryRepoData[] stories = {sd1, sd2, sd3};
         repo = new CustomizableGmlsGateway(Arrays.asList(stories));

@@ -1,8 +1,13 @@
 package adapters.presenters;
 
 import adapters.view_models.GscViewModel;
+import usecases.Response;
 import usecases.get_story_comments.GscOutputBoundary;
 import usecases.get_story_comments.GscOutputData;
+
+import java.util.List;
+
+import static usecases.Response.ResCode.SHUTTING_DOWN;
 
 public class GscPresenter implements GscOutputBoundary {
 
@@ -21,11 +26,16 @@ public class GscPresenter implements GscOutputBoundary {
      */
     @Override
     public void putStoryComments(GscOutputData data) {
-
+        if (data.getComments() == null) {
+            viewM.setResponse(data.getRes());
+        } else {
+            viewM.setStoryComments(data.getComments());
+            viewM.setResponse(data.getRes());
+        }
     }
 
     @Override
     public void outputShutdownServer() {
-
+        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

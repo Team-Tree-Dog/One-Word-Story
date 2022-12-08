@@ -66,6 +66,7 @@ public class GlsInteractor implements GlsInputBoundary{
 
             // DB Successfully retrieved stories
             else {
+                // toArray can't produce a null pointer if res code is success
                 StoryRepoData[] stories = res.getRows().toArray(new StoryRepoData[0]);
 
                 Arrays.sort(stories);
@@ -74,12 +75,12 @@ public class GlsInteractor implements GlsInputBoundary{
 
                     StoryRepoData[] stories2 = new StoryRepoData[data.getNumToGet()];
                     if (data.getNumToGet() >= 0) System.arraycopy(stories, 0, stories2, 0, data.getNumToGet());
-                    GlsOutputData outputData2 = new GlsOutputData(stories2,
+                    GlsOutputData outputData2 = new GlsOutputData(Arrays.asList(stories2),
                             Response.getSuccessful("Succesfully got stories"));
                     pres.putStories(outputData2);
                 }
                 else{
-                    GlsOutputData outputData1 = new GlsOutputData(stories,
+                    GlsOutputData outputData1 = new GlsOutputData(Arrays.asList(stories),
                             Response.getSuccessful("Successfully got stories"));
                     pres.putStories(outputData1);
                 }

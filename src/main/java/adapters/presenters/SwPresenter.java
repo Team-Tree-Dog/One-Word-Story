@@ -1,9 +1,12 @@
 package adapters.presenters;
 
 import adapters.view_models.SwViewModel;
+import usecases.Response;
 import usecases.submit_word.SwOutputBoundary;
 import usecases.submit_word.SwOutputDataFailure;
 import usecases.submit_word.SwOutputDataValidWord;
+
+import static usecases.Response.ResCode.SHUTTING_DOWN;
 
 public class SwPresenter implements SwOutputBoundary {
 
@@ -21,7 +24,7 @@ public class SwPresenter implements SwOutputBoundary {
      */
     @Override
     public void valid(SwOutputDataValidWord outputDataValidWord) {
-
+        viewM.setResponse(outputDataValidWord.getResponse());
     }
 
     /**
@@ -31,11 +34,11 @@ public class SwPresenter implements SwOutputBoundary {
      */
     @Override
     public void invalid(SwOutputDataFailure outputDataFailure) {
-
+        viewM.setResponse(outputDataFailure.getResponse());
     }
 
     @Override
     public void outputShutdownServer() {
-
+        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

@@ -1,4 +1,4 @@
-package adapters.display_data;
+package adapters.display_data.not_ended_display_data;
 
 import org.jetbrains.annotations.NotNull;
 

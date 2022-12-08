@@ -1,7 +1,10 @@
 package adapters.presenters;
 
 import adapters.view_models.SsViewModel;
+import usecases.Response;
 import usecases.shutdown_server.SsOutputBoundary;
+
+import static usecases.Response.ResCode.SHUTTING_DOWN;
 
 /**
  * The presenter for the "shutdown-server" use case
@@ -21,7 +24,7 @@ public class SsPresenter implements SsOutputBoundary {
      * Notifies the view model that all threads are terminated, and the server is ready to shut down
      */
     public void outputShutdownServer() {
-
+        viewModel.setShutdown();
     }
 
 }

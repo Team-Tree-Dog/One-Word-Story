@@ -13,7 +13,7 @@ import usecases.TitleRepoData;
  * This interface also contains an abstract method to retrieve all previously suggested story titles from the repo,
  * which is utilized in this use case to check whether the suggested title has not been previously suggested.
  */
-public interface StGateway {
+public interface StGatewayTitles {
     /**
      * Abstract method for the repository to suggest a title for the story, and to return an Output Data object
      * that records the success or failure of adding this title to the database.
@@ -23,7 +23,7 @@ public interface StGateway {
      *          title was successful or not
      */
     @NotNull
-    Response suggestTitle(int storyId, @Nullable String titleSuggestion);
+    Response suggestTitle(int storyId, @NotNull String titleSuggestion);
 
     /**
      * Abstract method to retrieve all previously suggested story titles from the repository
