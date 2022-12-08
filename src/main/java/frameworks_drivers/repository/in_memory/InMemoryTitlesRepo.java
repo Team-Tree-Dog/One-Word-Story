@@ -68,7 +68,8 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles, Ut
          */
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof TitlesTableRow row) {
+            if (obj instanceof TitlesTableRow) {
+                TitlesTableRow row = (TitlesTableRow) obj;
                 return row.titleSuggestion.equals(this.titleSuggestion) &&
                         row.storyId == this.storyId;
             } return false;
