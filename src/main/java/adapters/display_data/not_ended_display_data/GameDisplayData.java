@@ -28,11 +28,11 @@ public class GameDisplayData {
         this.secondsLeftInTurn = secondsLeftInTurn;
     }
 
-    private @NotNull PlayerDisplayData[] getPlayers() { return players; }
+    public @NotNull PlayerDisplayData[] getPlayers() { return players; }
 
-    private @NotNull PlayerDisplayData getCurrentPlayerTurn() { return currentPlayerTurn; }
+    public @NotNull PlayerDisplayData getCurrentPlayerTurn() { return currentPlayerTurn; }
 
-    private @NotNull String getStoryString() { return storyString; }
+    public @NotNull String getStoryString() { return storyString; }
 
-    private int getSecondsLeftInTurn() {return  secondsLeftInTurn; }
+    public int getSecondsLeftInTurn() {return  secondsLeftInTurn; }
 }

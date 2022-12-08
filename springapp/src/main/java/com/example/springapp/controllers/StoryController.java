@@ -1,10 +1,8 @@
 package com.example.springapp.controllers;
 
-
 import adapters.view_models.*;
 import com.example.springapp.SpringApp;
 import frameworks_drivers.views.View;
-import org.springframework.boot.autoconfigure.web.format.DateTimeFormatters;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -347,7 +345,7 @@ public class StoryController {
 
         Thread.sleep(500);
 
-        utViewM.getResponseCode()
+        // We will ignore the response. If upvoting fails, we wont display anything
 
         System.out.println("Received upvote suggested title : " + title + '\n');
 

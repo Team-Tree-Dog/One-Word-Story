@@ -1,6 +1,9 @@
 import adapters.controllers.*;
+import adapters.view_models.PdViewModel;
+import adapters.view_models.PgeViewModel;
 import adapters.view_models.SsViewModel;
 import com.example.springapp.SpringApp;
+import entities.LobbyManager;
 import frameworks_drivers.views.View;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -18,9 +21,10 @@ public class SpringBootView extends View {
     public static void init(CagController cagController, DcController dcController, GatController gatController,
                        GlsController glsController, GmlsController gmlsController, GscController gscController,
                        JplController jplController, LsController lsController, SsController ssController,
-                       StController stController, SwController swController, UtController utController) {
+                       StController stController, SwController swController, UtController utController,
+                            PgeViewModel pgeViewM, PdViewModel pdViewM) {
         SpringBootView.singeltonInstance = new SpringBootView(cagController, dcController, gatController, glsController, gmlsController, gscController,
-                jplController, lsController, ssController, stController, swController, utController);
+                jplController, lsController, ssController, stController, swController, utController, pgeViewM, pdViewM);
     }
 
     /**
@@ -41,11 +45,13 @@ public class SpringBootView extends View {
      * SMELLY CODE
      */
     private SpringBootView(CagController cagController, DcController dcController, GatController gatController,
-                          GlsController glsController, GmlsController gmlsController, GscController gscController,
-                          JplController jplController, LsController lsController, SsController ssController,
-                          StController stController, SwController swController, UtController utController) {
+                           GlsController glsController, GmlsController gmlsController, GscController gscController,
+                           JplController jplController, LsController lsController, SsController ssController,
+                           StController stController, SwController swController, UtController utController,
+                           PgeViewModel pgeViewM, PdViewModel pdViewM) {
         super(cagController, dcController, gatController, glsController, gmlsController, gscController,
-                jplController, lsController, ssController, stController, swController, utController);
+                jplController, lsController, ssController, stController, swController, utController,
+                pgeViewM, pdViewM);
     }
 
     @Override
@@ -55,10 +61,14 @@ public class SpringBootView extends View {
     }
 
     @Override
-    public void run() {
+    public void run(LobbyManager lm) {
         while (true) {
             try {
                 String inp = reader.readLine();
+
+                if (inp.equals("debug")) {
+                    System.out.println("Hi");
+                }
 
                 if (inp.equals("shutdown")) {
                     break;

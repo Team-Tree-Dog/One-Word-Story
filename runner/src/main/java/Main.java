@@ -166,9 +166,9 @@ public class Main {
         SpringBootView.init(
           cagController, dcController, gatController, glsController, gmlsController,
           gscController, jplController, lsController, ssController, stController,
-          swController, utController
+          swController, utController, pgeViewM, pdViewM
         );
 
-        SpringBootView.getInstance().runApplicationLoop();
+        SpringBootView.getInstance().runApplicationLoop(manager);
     }
 }

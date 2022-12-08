@@ -1,6 +1,9 @@
 package frameworks_drivers.views;
 
 import adapters.controllers.*;
+import adapters.view_models.PdViewModel;
+import adapters.view_models.PgeViewModel;
+import entities.LobbyManager;
 
 import java.io.IOException;
 
@@ -21,6 +24,8 @@ public abstract class View {
     public final UtController utController;
     public final SwController swController;
     public final StController stController;
+    public final PgeViewModel pgeViewM;
+    public final PdViewModel pdViewM;
 
     /**
      * SMELLY CODE
@@ -37,7 +42,9 @@ public abstract class View {
             SsController ssController,
             StController stController,
             SwController swController,
-            UtController utController
+            UtController utController,
+            PgeViewModel pgeViewM,
+            PdViewModel pdViewM
     ) {
         this.cagController = cagController;
         this.dcController = dcController;
@@ -51,6 +58,8 @@ public abstract class View {
         this.utController = utController;
         this.swController = swController;
         this.stController = stController;
+        this.pgeViewM = pgeViewM;
+        this.pdViewM = pdViewM;
     }
 
     /**
@@ -61,7 +70,7 @@ public abstract class View {
     /**
      * TODO: ADD DOC
      */
-    public abstract void run ();
+    public abstract void run (LobbyManager lm);
 
     /**
      * TODO: ADD DOC
@@ -71,9 +80,9 @@ public abstract class View {
     /**
      * TODO: ADD DOC
      */
-    public void runApplicationLoop() {
+    public void runApplicationLoop(LobbyManager lm) {
         start();
-        run();
+        run(lm);
         end();
     };
 }
