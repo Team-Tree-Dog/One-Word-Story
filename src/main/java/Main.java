@@ -13,6 +13,7 @@ import entities.display_name_checkers.DisplayNameChecker;
 import entities.display_name_checkers.DisplayNameCheckerBasic;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
+import frameworks_drivers.views.SpringBootView;
 import usecases.RepoRes;
 import usecases.ThreadRegister;
 import usecases.comment_as_guest.CagInteractor;
@@ -134,23 +135,12 @@ public class Main {
         System.out.println("Main: Before Spring Init");
 
         // TODO: Setup and run the view
-        ConfigurableApplicationContext app = SpringappApplication.startServer(new String[0]);
+        SpringBootView.init(
+          cagController, dcController, gatController, glsController, gmlsController,
+          gscController, jplController, lsController, ssController, stController,
+          swController, utController
+        );
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
-        while (true) {
-            try {
-                String inp = reader.readLine();
-                if (inp.equals("shutdown")) {
-                    app.close();
-                    reader.close();
-                    break;
-                } else {
-                    System.out.println("\"" + inp + "\" is not a valid command");
-                }
-            } catch (IOException e) {
-                break;
-            }
-        }
+        SpringBootView.getInstance().runApplicationLoop();
     }
 }
