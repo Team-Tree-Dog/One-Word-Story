@@ -43,10 +43,6 @@ public class WordCountPlayerStatisticTests {
 
         Map<Player, RecursiveSymboledIntegerHashMap> out = stat.getStatData();
 
-        System.out.println("------");
-        System.out.println(out.get(p1));
-        System.out.println("------");
-
         assertEquals(out.get(p1).get("Total Words").get(), new SymboledInteger(10));
         assertEquals(out.get(p1).get("< 4 Letter words").get(), new SymboledInteger(6));
         assertEquals(out.get(p1).get("< 3 Letter words").get(), new SymboledInteger(4));
