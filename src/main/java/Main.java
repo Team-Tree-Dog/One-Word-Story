@@ -1,8 +1,12 @@
 import adapters.controllers.*;
 import adapters.presenters.*;
+<<<<<<< HEAD
 import com.example.springapp.SpringappApplication;
 import adapters.view_models.PdViewModel;
 import adapters.view_models.PgeViewModel;
+=======
+import com.example.springapp.SpringApplication;
+>>>>>>> 131-view-spring-thymeleaf
 import entities.LobbyManager;
 import entities.PlayerFactory;
 import entities.comment_checkers.CommentChecker;
