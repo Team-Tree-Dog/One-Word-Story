@@ -22,6 +22,9 @@ public class WordCountPlayerStatistic implements PerPlayerIntStatistic {
 
     @Override
     public void onSubmitWord(String word, Player author) {
+        // Trim and remove anything non-letter
+        word = word.trim().replaceAll("[^a-zA-Z]","");
+
         // Add new data object if missing, then get the player's data
         perPlayerData.computeIfAbsent(author, k -> new WordCountPlayerStatisticData());
         WordCountPlayerStatisticData dat = perPlayerData.get(author);
@@ -77,11 +80,23 @@ public class WordCountPlayerStatistic implements PerPlayerIntStatistic {
             newDat.put("Percent < 3 Letter words",
                     new RecursiveSymboledIntegerHashMap(
                             new SymboledInteger(
-                                    Math.round(((float) oldDat.lessThanFourLetterWords /
+                                    Math.round(((float) oldDat.lessThanThreeLetterWords /
                                             ((float) oldDat.totalWords)) * 100)
                             )));
             newDat.put("Percent > 5 Letter words",
-                    new RecursiveSymboledIntegerHashMap(new SymboledInteger(oldDat.moreThanFiveLetterWords)));
+                    new RecursiveSymboledIntegerHashMap(
+                            new SymboledInteger(
+                                    Math.round(((float) oldDat.moreThanFiveLetterWords /
+                                            ((float) oldDat.totalWords)) * 100)
+                            )));
+            newDat.put("Percent Filler Words",
+                    new RecursiveSymboledIntegerHashMap(
+                            new SymboledInteger(
+                                    Math.round(((float) oldDat.fillerWords /
+                                            ((float) oldDat.totalWords)) * 100)
+                            )));
+
+            output.put(p, newDat);
         }
 
         return output;

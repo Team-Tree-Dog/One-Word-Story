@@ -20,7 +20,8 @@ public class AverageTurnDurationPlayerStatistic implements PerPlayerIntStatistic
     private Player prevPlayer;
 
     public AverageTurnDurationPlayerStatistic() {
-        playerTurnTimes = new HashMap<>();}
+        playerTurnTimes = new HashMap<>();
+    }
 
     @Override
     public void onSubmitWord(String word, Player author) {}
@@ -36,8 +37,9 @@ public class AverageTurnDurationPlayerStatistic implements PerPlayerIntStatistic
         List<Integer> curTurnTimes = playerTurnTimes.get(curPlayer);
 
         // If the player is different, it means the turn switched somewhere so we start a new count
-        if (curPlayer != prevPlayer) {
+        if (!curPlayer.equals(prevPlayer)) {
             curTurnTimes.add(1);
+            prevPlayer = curPlayer;
         }
 
         else {

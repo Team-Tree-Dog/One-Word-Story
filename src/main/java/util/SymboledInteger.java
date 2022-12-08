@@ -78,4 +78,9 @@ public class SymboledInteger {
             return ((SymboledInteger) obj).getValue().equals(this.getValue());
         } return false;
     }
+
+    @Override
+    public String toString() {
+        return suffix == null ? value.toString() : value + suffix;
+    }
 }
