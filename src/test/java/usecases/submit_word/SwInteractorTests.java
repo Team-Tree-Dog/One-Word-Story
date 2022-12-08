@@ -237,8 +237,8 @@ public class SwInteractorTests {
         };
 
         SwInputData swinput = new SwInputData(word, player2.getPlayerId());
-        SwInteractor swint = new SwInteractor(pres, lobman, register);
-        swint.submitWord(swinput);
+        SwInteractor swint = new SwInteractor(lobman, register);
+        swint.submitWord(swinput, pres);
 
         System.out.println("bloop");
 
@@ -309,8 +309,8 @@ public class SwInteractorTests {
 
         SwInputData swinput = new SwInputData(word, player1.getPlayerId());
 
-        SwInteractor swint = new SwInteractor(pres, lobman, register);
-        swint.submitWord(swinput);
+        SwInteractor swint = new SwInteractor(lobman, register);
+        swint.submitWord(swinput, pres);
 
         System.out.println("Test ran to end successfully! :)");
     }
@@ -392,8 +392,8 @@ public class SwInteractorTests {
 
         SwInputData swinput = new SwInputData(word, player1.getPlayerId());
 
-        SwInteractor swint = new SwInteractor(pres, lobman, register);
-        swint.submitWord(swinput);
+        SwInteractor swint = new SwInteractor(lobman, register);
+        swint.submitWord(swinput, pres);
 
         System.out.println("Test ran to end successfully! :)");
     }
@@ -479,8 +479,8 @@ public class SwInteractorTests {
         };
 
         SwInputData swinput = new SwInputData(word, player1.getPlayerId());
-        SwInteractor swint = new SwInteractor(pres, lobman, register);
-        swint.submitWord(swinput);
+        SwInteractor swint = new SwInteractor(lobman, register);
+        swint.submitWord(swinput, pres);
 
         System.out.println("Test ran to end successfully! :)");
 
@@ -569,8 +569,8 @@ public class SwInteractorTests {
         };
 
         SwInputData swinput = new SwInputData(word, player1.getPlayerId());
-        SwInteractor swint = new SwInteractor(pres, lobman, register);
-        swint.submitWord(swinput);
+        SwInteractor swint = new SwInteractor(lobman, register);
+        swint.submitWord(swinput, pres);
 
         System.out.println("Test ran to end successfully! :)");
     }

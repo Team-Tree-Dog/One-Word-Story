@@ -83,10 +83,10 @@ public class DcInteractorTests {
                 throw new RuntimeException("This method is not implemented and should not be called");
             }
         };
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary, register);
+        dcInteractor = new DcInteractor(lm, register);
 
         DcInputData data = new DcInputData(player2.getPlayerId());
-        dcInteractor.disconnect(data);
+        dcInteractor.disconnect(data, dcOutputBoundary);
 
         while(!hasFinished.get()) {
             Thread.onSpinWait();
@@ -129,10 +129,10 @@ public class DcInteractorTests {
                 throw new RuntimeException("This method is not implemented and should not be called");
             }
         };
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary, register);
+        dcInteractor = new DcInteractor(lm, register);
 
         DcInputData data = new DcInputData(player4.getPlayerId());
-        dcInteractor.disconnect(data);
+        dcInteractor.disconnect(data, dcOutputBoundary);
 
         while (!hasFinished.get()) {
             Thread.onSpinWait();
@@ -180,10 +180,10 @@ public class DcInteractorTests {
                 throw new RuntimeException("This method is not implemented and should not be called");
             }
         };
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary, register);
+        dcInteractor = new DcInteractor(lm, register);
 
         DcInputData data = new DcInputData(player5.getPlayerId());
-        dcInteractor.disconnect(data);
+        dcInteractor.disconnect(data, dcOutputBoundary);
 
         while (!hasResponded.get()) {
             Thread.onSpinWait();
@@ -219,10 +219,10 @@ public class DcInteractorTests {
                 throw new RuntimeException("This method is not implemented and should not be called");
             }
         };
-        dcInteractor = new DcInteractor(lm, dcOutputBoundary, register);
+        dcInteractor = new DcInteractor(lm, register);
 
         DcInputData data = new DcInputData(player6.getPlayerId());
-        dcInteractor.disconnect(data);
+        dcInteractor.disconnect(data, dcOutputBoundary);
 
         while (!hasResponded.get()) {
             Thread.onSpinWait();

@@ -25,7 +25,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class JplInteractor implements JplInputBoundary {
 
     private final LobbyManager lobbyManager;
-    private final JplOutputBoundary presenter;
 
     private final Lock gameLock;
 
@@ -43,17 +42,19 @@ public class JplInteractor implements JplInputBoundary {
         private volatile Game game;
         private volatile boolean hasCancelled;
         private final JplInputData data;
-
+        private final JplOutputBoundary pres;
         private final Lock lock;
 
         private final Condition conditionVariable;
 
         /**
          * @param data Data passed into this use case
+         * @param pres output boundary for this use case
          */
-        public JplThread (JplInputData data) {
-            super(JplInteractor.this.register, JplInteractor.this.presenter);
+        public JplThread (JplInputData data, JplOutputBoundary pres) {
+            super(JplInteractor.this.register, pres);
             this.data = data;
+            this.pres = pres;
             hasCancelled = false;
             lock = new ReentrantLock();
             conditionVariable = lock.newCondition();
@@ -103,7 +104,7 @@ public class JplInteractor implements JplInputBoundary {
                 lobbyManager.addPlayerToPool(player, this);
 
                 // Notifies presenter that player was successfully added to pool
-                presenter.inPool(new JplOutputDataResponse(
+                pres.inPool(new JplOutputDataResponse(
                         Response.getSuccessful("Player with ID " + player.getPlayerId() + " added to pool."),
                         player.getPlayerId()
                 ));
@@ -119,28 +120,28 @@ public class JplInteractor implements JplInputBoundary {
                     GameDTO gameState = GameDTO.fromGame(game);
                     JplInteractor.this.gameLock.lock();
 
-                    presenter.inGame(new JplOutputDataJoinedGame(
+                    pres.inGame(new JplOutputDataJoinedGame(
                             Response.getSuccessful("Player successfully joined a game"),
                             player.getPlayerId(), gameState));
                 }
 
                 // Player has cancelled waiting
                 else {
-                    presenter.cancelled(new JplOutputDataResponse(
+                    pres.cancelled(new JplOutputDataResponse(
                             Response.getSuccessful("Player successfully cancelled their pool waiting"),
                             player.getPlayerId()));
                 }
 
             } catch (EntityException e) {
                 // Notifies that adding player with given ID to pool has failed
-                presenter.inPool(
+                pres.inPool(
                         new JplOutputDataResponse(
                                 // Response object with IdInUseException response code
                                 Response.fromException(e, e.getMessage()),
                                 data.getId()));
             } catch (InterruptedException e) {
                 EntityException emptyException = new EntityException("");
-                presenter.inPool(
+                pres.inPool(
                         new JplOutputDataResponse(
                                 // Response object with IdInUseException response code
                                 Response.fromException(emptyException, e.getMessage()),
@@ -154,11 +155,9 @@ public class JplInteractor implements JplInputBoundary {
 
     /**
      * @param lobbyManager Shared object representing game state
-     * @param presenter Object to call for output
      */
-    public JplInteractor (LobbyManager lobbyManager, JplOutputBoundary presenter, ThreadRegister register) {
+    public JplInteractor (LobbyManager lobbyManager, ThreadRegister register) {
         this.lobbyManager = lobbyManager;
-        this.presenter = presenter;
         this.gameLock = lobbyManager.getGameLock();
         this.register = register;
     }
@@ -166,12 +165,13 @@ public class JplInteractor implements JplInputBoundary {
     /**
      * Thin wrapper to start a thread which performs this use case
      * @param data Describes player who wishes to join a public lobby
+     * @param pres output boundary for this use case
      */
     @Override
-    public void joinPublicLobby(JplInputData data) {
-        InterruptibleThread thread = new JplThread(data);
+    public void joinPublicLobby(JplInputData data, JplOutputBoundary pres) {
+        InterruptibleThread thread = new JplThread(data, pres);
         if (!register.registerThread(thread)) {
-            presenter.outputShutdownServer();
+            pres.outputShutdownServer();
         }
     }
 }

@@ -1,5 +1,7 @@
 package adapters.controllers;
 
+import adapters.presenters.SwPresenter;
+import adapters.view_models.SwViewModel;
 import usecases.submit_word.SwInputBoundary;
 import usecases.submit_word.SwInputData;
 
@@ -20,10 +22,12 @@ public class SwController {
      * of turn which will result in an error
      * @param playerId Unique ID of player never previously used
      * @param word Word that the player is submitting
+     * @return View model for this use case
      */
-    public void submitWord (String playerId, String word) {
-        sw.submitWord(
-                new SwInputData(word, playerId)
-        );
+    public SwViewModel submitWord (String playerId, String word) {
+        SwViewModel viewM = new SwViewModel();
+        SwPresenter presenter = new SwPresenter(viewM);
+        sw.submitWord(new SwInputData(word, playerId), presenter);
+        return viewM;
     }
 }

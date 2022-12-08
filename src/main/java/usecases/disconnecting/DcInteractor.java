@@ -16,7 +16,6 @@ import java.util.concurrent.locks.Lock;
  */
 public class DcInteractor implements DcInputBoundary {
     private final LobbyManager lm;
-    private final DcOutputBoundary dcOutputBoundary;
     private final Lock playerPoolLock;
     private final Lock gameLock;
 
@@ -29,11 +28,9 @@ public class DcInteractor implements DcInputBoundary {
     /**
      * Constructor for DcInteractor
      * @param lm Lobby Manager
-     * @param dcOutputBoundary DcOutputBoundary
      */
-    public DcInteractor(LobbyManager lm, DcOutputBoundary dcOutputBoundary, ThreadRegister register) {
+    public DcInteractor(LobbyManager lm, ThreadRegister register) {
         this.lm = lm;
-        this.dcOutputBoundary = dcOutputBoundary;
         this.playerPoolLock = lm.getPlayerPoolLock();
         this.gameLock = lm.getGameLock();
         this.register = register;
@@ -42,12 +39,13 @@ public class DcInteractor implements DcInputBoundary {
     /**
      * Disconnects the user
      * @param data input data which contains playerId
+     * @param pres output boundary for this use case
      */
     @Override
-    public void disconnect(DcInputData data) {
-        InterruptibleThread dcThread = this.new DcThread(data.getPlayerId());
+    public void disconnect(DcInputData data, DcOutputBoundary pres) {
+        InterruptibleThread dcThread = this.new DcThread(data.getPlayerId(), pres);
         if (!register.registerThread(dcThread)) {
-            dcOutputBoundary.outputShutdownServer();
+            pres.outputShutdownServer();
         }
     }
 
@@ -57,13 +55,17 @@ public class DcInteractor implements DcInputBoundary {
     public class DcThread extends InterruptibleThread {
         private final String playerId;
 
+        private final DcOutputBoundary pres;
+
         /**
          * Constructor for Disconnecting Thread
          * @param playerId ID of the player we need to disconnect
+         * @param pres output boundary for this use case
          */
-        public DcThread(String playerId) {
-            super(DcInteractor.this.register, DcInteractor.this.dcOutputBoundary);
+        public DcThread(String playerId, DcOutputBoundary pres) {
+            super(DcInteractor.this.register, pres);
             this.playerId = playerId;
+            this.pres = pres;
         }
 
         @Override
@@ -133,7 +135,7 @@ public class DcInteractor implements DcInputBoundary {
             }
 
             DcOutputData outputData = new DcOutputData(response, playerId);
-            dcOutputBoundary.hasDisconnected(outputData);
+            pres.hasDisconnected(outputData);
         }
     }
 }

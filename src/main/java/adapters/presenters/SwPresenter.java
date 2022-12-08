@@ -1,18 +1,18 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
+import adapters.view_models.SwViewModel;
 import usecases.submit_word.SwOutputBoundary;
 import usecases.submit_word.SwOutputDataFailure;
 import usecases.submit_word.SwOutputDataValidWord;
 
 public class SwPresenter implements SwOutputBoundary {
 
-    private final ViewModel viewM;
+    private final SwViewModel viewM;
 
     /**
      * @param viewM Instance of the view model to write to
      */
-    public SwPresenter (ViewModel viewM) { this.viewM = viewM; }
+    public SwPresenter (SwViewModel viewM) { this.viewM = viewM; }
 
     /**
      * Notify that a player with a particular ID has submitted a valid word

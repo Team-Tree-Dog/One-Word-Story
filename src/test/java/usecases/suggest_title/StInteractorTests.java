@@ -10,6 +10,7 @@ import usecases.RepoRes;
 import usecases.Response;
 import usecases.ThreadRegister;
 import usecases.TitleRepoData;
+import usecases.submit_word.suggest_title.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -154,11 +155,11 @@ public class StInteractorTests {
         repo = new CustomizableStGateway(true, true);
         pres = new CustomizableStOutputBoundary();
         titleChecker = new CustomizableTitleChecker(true);
-        StInteractor st = new StInteractor(pres, repo, titleChecker, register);
+        StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
         StInputData d = new StInputData("request1", "Non-Duplicate", 1);
-        StInteractor.StThread innerThreadInstance = st.new StThread(d);
+        StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
@@ -180,11 +181,11 @@ public class StInteractorTests {
         repo = new CustomizableStGateway(true, false);
         pres = new CustomizableStOutputBoundary();
         titleChecker = new CustomizableTitleChecker(false);
-        StInteractor st = new StInteractor(pres, repo, titleChecker, register);
+        StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
         StInputData d = new StInputData("request1", "Non-Duplicate", 1);
-        StInteractor.StThread innerThreadInstance = st.new StThread(d);
+        StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
@@ -206,11 +207,11 @@ public class StInteractorTests {
         repo = new CustomizableStGateway(true, false);
         pres = new CustomizableStOutputBoundary();
         titleChecker = new CustomizableTitleChecker(true);
-        StInteractor st = new StInteractor(pres, repo, titleChecker, register);
+        StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
         StInputData d = new StInputData("request1", " d    d ", 1);
-        StInteractor.StThread innerThreadInstance = st.new StThread(d);
+        StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
@@ -232,11 +233,11 @@ public class StInteractorTests {
         repo = new CustomizableStGateway(true, false);
         pres = new CustomizableStOutputBoundary();
         titleChecker = new CustomizableTitleChecker(true);
-        StInteractor st = new StInteractor(pres, repo, titleChecker, register);
+        StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
         StInputData d = new StInputData("request1", "Duplicate", 1);
-        StInteractor.StThread innerThreadInstance = st.new StThread(d);
+        StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
@@ -258,11 +259,11 @@ public class StInteractorTests {
         repo = new CustomizableStGateway(false, false);
         pres = new CustomizableStOutputBoundary();
         titleChecker = new CustomizableTitleChecker(true);
-        StInteractor st = new StInteractor(pres, repo, titleChecker, register);
+        StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
         StInputData d = new StInputData("request1", "Non-Duplicate", 1);
-        StInteractor.StThread innerThreadInstance = st.new StThread(d);
+        StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
@@ -284,11 +285,11 @@ public class StInteractorTests {
         repo = new CustomizableStGateway(true, false);
         pres = new CustomizableStOutputBoundary();
         titleChecker = new CustomizableTitleChecker(true);
-        StInteractor st = new StInteractor(pres, repo, titleChecker, register);
+        StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
         StInputData d = new StInputData("request1", "Non-Duplicate", 1);
-        StInteractor.StThread innerThreadInstance = st.new StThread(d);
+        StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results for presenter

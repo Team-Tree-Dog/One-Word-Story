@@ -1,6 +1,6 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
+import adapters.view_models.LsViewModel;
 import usecases.like_story.LsOutputBoundary;
 import usecases.like_story.LsOutputData;
 
@@ -9,13 +9,13 @@ import usecases.like_story.LsOutputData;
  * */
 public class LsPresenter implements LsOutputBoundary {
 
-    private final ViewModel viewModel;
+    private final LsViewModel viewModel;
 
     /**
      * This constructor takes and assigns the view-model
      * @param viewModel The view-model
      * */
-    public LsPresenter(ViewModel viewModel) {
+    public LsPresenter(LsViewModel viewModel) {
         this.viewModel = viewModel;
     }
 

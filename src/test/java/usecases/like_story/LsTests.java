@@ -31,7 +31,7 @@ public class LsTests {
         presenter = new TestLsPresenter();
         repository = new TestLsGateway();
         register = new ThreadRegister();
-        interactor = new LsInteractor(presenter, repository, register);
+        interactor = new LsInteractor(repository, register);
         random = new Random();
     }
 
@@ -48,7 +48,7 @@ public class LsTests {
             int currentNumberOfResponses = presenter.responses.size();
             for (int j = 0; j < numberOfLikes; j++) {
                 LsInputData inputData = new LsInputData(String.valueOf(i) + j, i);
-                interactor.likeStory(inputData);
+                interactor.likeStory(inputData, presenter);
             }
             while (repository.getNumberOfLikesForStory(i) < numberOfLikes) {
                 Thread.onSpinWait();
@@ -74,7 +74,7 @@ public class LsTests {
         int numberOfStories = random.nextInt(100);
         for (int i = 0; i < numberOfStories; i++) {
             LsInputData inputData = new LsInputData(String.valueOf(i), i);
-            interactor.likeStory(inputData);
+            interactor.likeStory(inputData, presenter);
         }
         while (presenter.responses.size() < numberOfStories) {
             Thread.onSpinWait();

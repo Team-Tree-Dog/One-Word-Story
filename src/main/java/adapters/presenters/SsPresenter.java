@@ -1,6 +1,6 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
+import adapters.view_models.SsViewModel;
 import usecases.shutdown_server.SsOutputBoundary;
 
 /**
@@ -8,12 +8,12 @@ import usecases.shutdown_server.SsOutputBoundary;
  */
 public class SsPresenter implements SsOutputBoundary {
 
-    private final ViewModel viewModel;
+    private final SsViewModel viewModel;
 
     /**
      * @param viewModel The view model that will be used by this presenter
      */
-    public SsPresenter(ViewModel viewModel) {
+    public SsPresenter(SsViewModel viewModel) {
         this.viewModel = viewModel;
     }
 

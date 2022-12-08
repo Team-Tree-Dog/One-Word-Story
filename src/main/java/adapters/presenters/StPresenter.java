@@ -1,19 +1,20 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
-import usecases.suggest_title.*;
+import adapters.view_models.StViewModel;
+import usecases.suggest_title.StOutputBoundary;
+import usecases.suggest_title.StOutputData;
 
 /**
  * The presenter for this use case. Updates the view model once the processes for these use case are completed.
  */
-public class StPresenter implements StOutputBoundary{
-    private final ViewModel viewM;
+public class StPresenter implements StOutputBoundary {
+    private final StViewModel viewM;
 
     /**
      * The constructor for this presenter. Takes in the ViewModel and sets it as an attribute for this use case.
      * @param viewM the view model for this use case.
      */
-    public StPresenter(ViewModel viewM) {
+    public StPresenter(StViewModel viewM) {
         this.viewM = viewM;
     }
 
