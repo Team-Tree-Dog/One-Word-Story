@@ -47,7 +47,7 @@ public class LsInteractor implements LsInputBoundary {
             Response response = repository.likeStory(data.getStoryId());
             setBlockInterrupt(false);
 
-            LsOutputData outputData = new LsOutputData(data.getRequestId(), response);
+            LsOutputData outputData = new LsOutputData(response);
             presenter.likeOutput(outputData);
         }
     }

@@ -1,13 +1,13 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
+import adapters.view_models.GatViewModel;
 import usecases.get_all_titles.GatOutputBoundary;
 import usecases.get_all_titles.GatOutputData;
 
 public class GatPresenter implements GatOutputBoundary {
-    private ViewModel viewM;
+    private GatViewModel viewM;
 
-    public GatPresenter(ViewModel viewM) {this.viewM = viewM;}
+    public GatPresenter(GatViewModel viewM) {this.viewM = viewM;}
 
     @Override
     public void putSuggestedTitles(GatOutputData data){

@@ -1,17 +1,17 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
+import adapters.view_models.UtViewModel;
 import usecases.upvote_title.UtOutputBoundary;
 import usecases.upvote_title.UtOutputData;
 
 public class UtPresenter implements UtOutputBoundary {
-    private ViewModel viewM;
+    private UtViewModel viewM;
 
     /**
      * Constructor for the upvote title use case presenter. Takes in and sets the view model for this use case.
      * @param viewM instance of the view model for this use case.
      */
-    public UtPresenter(ViewModel viewM) {this.viewM = viewM;}
+    public UtPresenter(UtViewModel viewM) {this.viewM = viewM;}
 
     /**
      * Notify the view model of the success of upvoting a title

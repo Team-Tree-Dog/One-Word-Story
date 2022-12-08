@@ -13,7 +13,6 @@ import static usecases.Response.ResCode.*;
  */
 public class CagInteractor implements CagInputBoundary {
 
-    private final CagOutputBoundary pres;
     private final CagGatewayComments repo;
     private final CommentChecker commentChecker;
     private final DisplayNameChecker displayChecker;
@@ -21,16 +20,14 @@ public class CagInteractor implements CagInputBoundary {
 
     /**
      * Constructor for CagInteractor
-     * @param pres a presenter, or output boundary
      * @param repo a repository, or gateway
      * @param commentChecker determines if comments are valid based on criteria of checker
      * @param displayChecker determines if names are valid based on criteria of checker
      * @param register register for the thread
      */
-    public CagInteractor(CagOutputBoundary pres, CagGatewayComments repo, CommentChecker commentChecker,
+    public CagInteractor(CagGatewayComments repo, CommentChecker commentChecker,
                          DisplayNameChecker displayChecker, ThreadRegister register) {
 
-        this.pres = pres;
         this.repo = repo;
         this.commentChecker = commentChecker;
         this.displayChecker = displayChecker;
@@ -43,15 +40,18 @@ public class CagInteractor implements CagInputBoundary {
     public class CagThread extends InterruptibleThread {
 
         private final CagInputData data;
+        private final CagOutputBoundary pres;
 
         /**
          * Constructor for CagThread
          * @param data CagInputData
+         * @param pres output boundary for this use case
          */
-        public CagThread(CagInputData data) {
+        public CagThread(CagInputData data, CagOutputBoundary pres) {
 
             super(CagInteractor.this.register, pres);
             this.data = data;
+            this.pres = pres;
         }
 
         /**
@@ -61,7 +61,7 @@ public class CagInteractor implements CagInputBoundary {
          * @return the built CagOutputData
          */
         private CagOutputData outputHelper(Response.ResCode resCode, String message) {
-            return new CagOutputData(data.getRequestId(), new Response(resCode, message));
+            return new CagOutputData(new Response(resCode, message));
         }
 
         @Override
@@ -99,8 +99,8 @@ public class CagInteractor implements CagInputBoundary {
      * Comments as guest
      * @param data required data for comment
      */
-    public void commentAsGuest(CagInputData data) {
-        InterruptibleThread thread = new CagThread(data);
+    public void commentAsGuest(CagInputData data, CagOutputBoundary pres) {
+        InterruptibleThread thread = new CagThread(data, pres);
         boolean success = register.registerThread(thread);
         if (!success) {
             pres.outputShutdownServer();

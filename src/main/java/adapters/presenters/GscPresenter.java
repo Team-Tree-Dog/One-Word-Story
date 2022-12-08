@@ -1,18 +1,18 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
+import adapters.view_models.GscViewModel;
 import usecases.get_story_comments.GscOutputBoundary;
 import usecases.get_story_comments.GscOutputData;
 
 public class GscPresenter implements GscOutputBoundary {
 
-    private final ViewModel viewM;
+    private final GscViewModel viewM;
 
     /**
      * Constructor for GscPresenter
      * @param viewM Instance of the view model to write to
      */
-    public GscPresenter(ViewModel viewM) { this.viewM = viewM; }
+    public GscPresenter(GscViewModel viewM) { this.viewM = viewM; }
 
     /**
      * Notify the view model that getting comments from a story was successful/failed

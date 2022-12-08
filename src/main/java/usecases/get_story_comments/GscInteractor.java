@@ -7,19 +7,16 @@ import usecases.*;
  */
 public class GscInteractor implements GscInputBoundary {
 
-    private final GscOutputBoundary pres;
     private final GscGatewayComments repo;
     private final ThreadRegister register;
 
     /**
      * Constructor for GscInteractor
-     * @param pres a presenter, or output boundary
      * @param repo a repository, or gateway
      * @param register register for the thread
      */
-    public GscInteractor(GscOutputBoundary pres, GscGatewayComments repo, ThreadRegister register) {
+    public GscInteractor(GscGatewayComments repo, ThreadRegister register) {
 
-        this.pres = pres;
         this.repo = repo;
         this.register = register;
     }
@@ -30,14 +27,17 @@ public class GscInteractor implements GscInputBoundary {
     public class GscThread extends InterruptibleThread {
 
         private final GscInputData data;
+        private final GscOutputBoundary pres;
 
         /**
          * Constructor for GscThread
          * @param data GscInputData
+         * @param pres output boundary for this use case
          */
-        public GscThread(GscInputData data) {
+        public GscThread(GscInputData data, GscOutputBoundary pres) {
             super(GscInteractor.this.register, pres);
             this.data = data;
+            this.pres = pres;
         }
 
         @Override
@@ -66,8 +66,8 @@ public class GscInteractor implements GscInputBoundary {
      * Gets story comments
      * @param data required data for getting story comments
      */
-    public void getStoryComments(GscInputData data) {
-        InterruptibleThread thread = new GscThread(data);
+    public void getStoryComments(GscInputData data, GscOutputBoundary pres) {
+        InterruptibleThread thread = new GscThread(data, pres);
         boolean success = register.registerThread(thread);
         if (!success) {
             pres.outputShutdownServer();

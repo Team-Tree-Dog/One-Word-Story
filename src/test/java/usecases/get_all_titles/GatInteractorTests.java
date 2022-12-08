@@ -109,11 +109,11 @@ public class GatInteractorTests {
         // Instantiating interactor
         repo = new CustomizableGatGatewayTitles(false);
         pres = new CustomizableGatOutputBoundary();
-        GatInteractor gat = new GatInteractor(pres, repo, register);
+        GatInteractor gat = new GatInteractor(repo, register);
 
         // Running thread
         GatInputData d = new GatInputData(1);
-        GatInteractor.GatThread innerThreadInstance = gat.new GatThread(d);
+        GatInteractor.GatThread innerThreadInstance = gat.new GatThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
@@ -134,11 +134,11 @@ public class GatInteractorTests {
         // Instantiating interactor
         repo = new CustomizableGatGatewayTitles(true);
         pres = new CustomizableGatOutputBoundary();
-        GatInteractor gat = new GatInteractor(pres, repo, register);
+        GatInteractor gat = new GatInteractor(repo, register);
 
         // Running thread
         GatInputData d = new GatInputData(1);
-        GatInteractor.GatThread innerThreadInstance = gat.new GatThread(d);
+        GatInteractor.GatThread innerThreadInstance = gat.new GatThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results

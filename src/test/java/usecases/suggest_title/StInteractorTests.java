@@ -10,7 +10,6 @@ import usecases.RepoRes;
 import usecases.Response;
 import usecases.ThreadRegister;
 import usecases.TitleRepoData;
-import usecases.submit_word.suggest_title.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -158,14 +157,13 @@ public class StInteractorTests {
         StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
-        StInputData d = new StInputData("request1", "Non-Duplicate", 1);
+        StInputData d = new StInputData("Non-Duplicate", 1);
         StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
         assertEquals(Response.ResCode.FAIL, receivedData.getRes().getCode(), "Wrong code");
     }
 
@@ -184,14 +182,13 @@ public class StInteractorTests {
         StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
-        StInputData d = new StInputData("request1", "Non-Duplicate", 1);
+        StInputData d = new StInputData("Non-Duplicate", 1);
         StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
         assertEquals(Response.ResCode.INVALID_TITLE, receivedData.getRes().getCode(), "Wrong code");
     }
 
@@ -210,7 +207,7 @@ public class StInteractorTests {
         StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
-        StInputData d = new StInputData("request1", " d    d ", 1);
+        StInputData d = new StInputData(" d    d ", 1);
         StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
@@ -236,14 +233,13 @@ public class StInteractorTests {
         StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
-        StInputData d = new StInputData("request1", "Duplicate", 1);
+        StInputData d = new StInputData("Duplicate", 1);
         StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
         assertEquals(Response.ResCode.TITLE_ALREADY_SUGGESTED, receivedData.getRes().getCode(), "Wrong code");
     }
 
@@ -262,14 +258,13 @@ public class StInteractorTests {
         StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
-        StInputData d = new StInputData("request1", "Non-Duplicate", 1);
+        StInputData d = new StInputData("Non-Duplicate", 1);
         StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
         assertEquals(Response.ResCode.FAIL, receivedData.getRes().getCode(), "Wrong code");
     }
 
@@ -288,14 +283,13 @@ public class StInteractorTests {
         StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
-        StInputData d = new StInputData("request1", "Non-Duplicate", 1);
+        StInputData d = new StInputData("Non-Duplicate", 1);
         StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results for presenter
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestID());
         assertEquals(Response.ResCode.SUCCESS, receivedData.getRes().getCode(), "Wrong code");
     }
 
