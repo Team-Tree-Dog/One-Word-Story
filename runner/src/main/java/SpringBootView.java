@@ -61,14 +61,14 @@ public class SpringBootView extends View {
     }
 
     @Override
-    public void run(LobbyManager lm) {
+    public void run(/*LobbyManager lm*/) {
         while (true) {
             try {
                 String inp = reader.readLine();
 
-                if (inp.equals("debug")) {
-                    System.out.println("Hi");
-                }
+//                if (inp.equals("debug")) {
+//                    System.out.println("Hi");
+//                }
 
                 if (inp.equals("shutdown")) {
                     break;

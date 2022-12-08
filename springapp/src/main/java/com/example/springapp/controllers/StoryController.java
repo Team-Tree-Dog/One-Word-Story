@@ -351,6 +351,20 @@ public class StoryController {
 
         return "redirect:/story-" + storyId;
     }
+
+
+    @PostMapping("like/story/{id}")
+    public String like(@RequestParam("id") String id) throws InterruptedException {
+        System.out.println("Received like request for story " + id);
+
+        View v = SpringApp.viewRef;
+
+        LsViewModel viewM = v.lsController.likeStory(Integer.parseInt(id));
+
+        Thread.sleep(500);
+
+        return "redirect:/story-" + id;
+    }
         /*
     ----------------
      */
@@ -381,11 +395,7 @@ public class StoryController {
 //    }
 //
 ////    // There is a strange bug. If you replace story-{id} with story/{id}, the css will not be loaded
-//    @PostMapping("like/story/{id}")
-//    public String like(@RequestParam("id") String id) {
-//        System.out.println("Received like request for story " + id);
-//        return "redirect:/story-" + id;
-//    }
+//
 //
 //    @PostMapping("suggest-title/story/{id}")
 //    public String suggestTitle(@RequestParam("id") String id, @RequestBody String suggestedTitle) {

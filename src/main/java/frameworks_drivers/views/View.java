@@ -70,7 +70,7 @@ public abstract class View {
     /**
      * TODO: ADD DOC
      */
-    public abstract void run (LobbyManager lm);
+    public abstract void run (/*LobbyManager lm*/);
 
     /**
      * TODO: ADD DOC
@@ -80,9 +80,9 @@ public abstract class View {
     /**
      * TODO: ADD DOC
      */
-    public void runApplicationLoop(LobbyManager lm) {
+    public void runApplicationLoop(/*LobbyManager lm*/) {
         start();
-        run(lm);
+        run();
         end();
     };
 }

@@ -169,6 +169,6 @@ public class Main {
           swController, utController, pgeViewM, pdViewM
         );
 
-        SpringBootView.getInstance().runApplicationLoop(manager);
+        SpringBootView.getInstance().runApplicationLoop(/*manager*/);
     }
 }
