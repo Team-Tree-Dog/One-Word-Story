@@ -1,8 +1,7 @@
-package frameworks_drivers.views;
-
 import adapters.controllers.*;
 import adapters.view_models.SsViewModel;
-import com.example.springapp.SpringappApplication;
+import com.example.springapp.SpringApp;
+import frameworks_drivers.views.View;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.BufferedReader;
@@ -52,7 +51,7 @@ public class SpringBootView extends View {
     @Override
     public void start() {
         reader = new BufferedReader(new InputStreamReader(System.in));
-        app = SpringappApplication.startServer(new String[0]);
+        app = SpringApp.startServer(this, new String[0]);
     }
 
     @Override
@@ -76,7 +75,7 @@ public class SpringBootView extends View {
     public void end() {
         // Calls shutdown
         SsViewModel ssViewM = ssController.shutdownServer();
-        System.out.println("Success of Shutdown: " + ssViewM.getShutdown());
+        //System.out.println("Success of Shutdown: " + ssViewM.getShutdown());
 
         app.close();
         try {

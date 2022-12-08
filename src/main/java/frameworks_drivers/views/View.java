@@ -9,18 +9,18 @@ import java.io.IOException;
  */
 public abstract class View {
 
-    protected final CagController cagController;
-    protected final DcController dcController;
-    protected final GatController gatController;
-    protected final GlsController glsController;
-    protected final GmlsController gmlsController;
-    protected final GscController gscController;
-    protected final JplController jplController;
-    protected final LsController lsController;
-    protected final SsController ssController;
-    protected final UtController utController;
-    protected final SwController swController;
-    protected final StController stController;
+    public final CagController cagController;
+    public final DcController dcController;
+    public final GatController gatController;
+    public final GlsController glsController;
+    public final GmlsController gmlsController;
+    public final GscController gscController;
+    public final JplController jplController;
+    public final LsController lsController;
+    public final SsController ssController;
+    public final UtController utController;
+    public final SwController swController;
+    public final StController stController;
 
     /**
      * SMELLY CODE

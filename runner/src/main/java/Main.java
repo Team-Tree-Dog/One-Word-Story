@@ -2,7 +2,6 @@ import adapters.controllers.*;
 import adapters.presenters.*;
 import adapters.view_models.PdViewModel;
 import adapters.view_models.PgeViewModel;
-import com.example.springapp.SpringApplication;
 import entities.LobbyManager;
 import entities.PlayerFactory;
 import entities.comment_checkers.CommentChecker;
@@ -13,13 +12,11 @@ import entities.display_name_checkers.DisplayNameChecker;
 import entities.display_name_checkers.DisplayNameCheckerBasic;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
-import frameworks_drivers.views.SpringBootView;
 import usecases.RepoRes;
 import usecases.ThreadRegister;
 import usecases.comment_as_guest.CagInteractor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.context.ConfigurableApplicationContext;
 import usecases.*;
 import usecases.disconnecting.DcInteractor;
 import usecases.get_all_titles.GatInteractor;
@@ -36,10 +33,6 @@ import usecases.submit_word.SwInteractor;
 import usecases.suggest_title.StGateway;
 import usecases.suggest_title.StInteractor;
 import usecases.upvote_title.UtInteractor;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
  * Orchestrator. Contains only a main method which boots up
