@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
  * callbacks which can be used to track statistics
  * @param <T> Type of data this statistic returns
  */
-public interface Statistic<T> extends StatisticReadOnly<T> {
+public interface Statistic<T> {
 
     /**
      * Called by Game right as soon as a player's word has been successfully
@@ -35,6 +35,5 @@ public interface Statistic<T> extends StatisticReadOnly<T> {
     /**
      * @return the data this statistic is tracking
      */
-    @Override
     T getStatData();
 }

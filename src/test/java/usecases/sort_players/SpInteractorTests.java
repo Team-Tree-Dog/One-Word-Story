@@ -11,12 +11,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import usecases.Response;
 import usecases.pull_data.PdInteractor;
+import usecases.pull_game_ended.PgeGatewayStory;
 import usecases.pull_game_ended.PgeInteractor;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -112,7 +115,8 @@ public class SpInteractorTests {
 
     private static class BlankOutputPgeInteractor extends PgeInteractor {
         public BlankOutputPgeInteractor () {
-            super(d -> {});
+            super(d -> {
+            }, (storyString, publishUnixTimeStamp, authorDisplayNames) -> null);
         }
     }
 
