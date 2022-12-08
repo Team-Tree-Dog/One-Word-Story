@@ -38,12 +38,12 @@ public class AverageTurnDurationPlayerStatisticTests {
         }
 
         @Override
-        public @NotNull StatisticReadOnly<Map<Player, RecursiveSymboledIntegerHashMap>>[] getPlayerStatistics() {
-            return new StatisticReadOnly[0];
+        public @NotNull PerPlayerIntStatistic[] getPlayerStatistics() {
+            return new PerPlayerIntStatistic[0];
         }
 
         @Override
-        public @NotNull StatisticReadOnly<Set<String>> getAuthorNamesStatistic() {
+        public @NotNull AllPlayerNamesStatistic getAuthorNamesStatistic() {
             return null;
         }
 

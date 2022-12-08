@@ -2,16 +2,11 @@ package entities.games;
 
 import entities.Player;
 import entities.statistics.AllPlayerNamesStatistic;
-import entities.statistics.Statistic;
-import entities.statistics.StatisticReadOnly;
+import entities.statistics.PerPlayerIntStatistic;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import util.RecursiveSymboledIntegerHashMap;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * An "upcasted" version of the Game abstract class which only
@@ -38,14 +33,14 @@ public interface GameReadOnly {
      * in the game end screen
      */
     @NotNull
-    StatisticReadOnly<Map<Player, RecursiveSymboledIntegerHashMap>>[] getPlayerStatistics ();
+    PerPlayerIntStatistic[] getPlayerStatistics ();
 
     /**
      * @return Special statistic which keeps track of the display names of all contributing
      * players
      */
     @NotNull
-    StatisticReadOnly<Set<String>> getAuthorNamesStatistic ();
+    AllPlayerNamesStatistic getAuthorNamesStatistic ();
 
     /**
      * @param playerId ID of player you'd like to retrieve

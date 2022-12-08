@@ -6,7 +6,6 @@ import entities.WordFactory;
 import entities.statistics.AllPlayerNamesStatistic;
 import entities.statistics.PerPlayerIntStatistic;
 import entities.statistics.Statistic;
-import entities.statistics.StatisticReadOnly;
 import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.InvalidWordException;
 import org.jetbrains.annotations.NotNull;
@@ -111,7 +110,7 @@ public abstract class Game implements GameReadOnly {
      */
     @Override
     @NotNull
-    public StatisticReadOnly<Map<Player, RecursiveSymboledIntegerHashMap>>[] getPlayerStatistics() {
+    public PerPlayerIntStatistic[] getPlayerStatistics() {
         return playerStatistics;
     }
 
@@ -121,7 +120,7 @@ public abstract class Game implements GameReadOnly {
      */
     @Override
     @NotNull
-    public StatisticReadOnly<Set<String>> getAuthorNamesStatistic() {
+    public AllPlayerNamesStatistic getAuthorNamesStatistic() {
         return authorNames;
     }
 

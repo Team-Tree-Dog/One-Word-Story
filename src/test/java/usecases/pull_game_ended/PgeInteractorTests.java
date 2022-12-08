@@ -5,9 +5,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import usecases.Response;
 
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,8 +27,8 @@ public class PgeInteractorTests {
 
         @Override
         public void notifyGameEnded(PgeOutputData data) {
-            builtData.add(data.getPlayerIds()[0]);
-            builtData.add(data.getPlayerIds()[1]);
+            builtData.add(data.getPlayerStatDTOs()[0]);
+            builtData.add(data.getPlayerStatDTOs()[1]);
         }
     }
 
@@ -37,7 +39,8 @@ public class PgeInteractorTests {
         Player p2 = new Player("p2", "2");
 
         // Instantiate pgeInputBoundary
-        pgeib = new PgeInteractor(testOutputBoundary);
+        pgeib = new PgeInteractor(testOutputBoundary,
+                (storyString, publishUnixTimeStamp, authorDisplayNames) -> null);
 
         // Instantiate pgeInputData with list of players
         pgeid = new PgeInputData(new ArrayList<>(2));
