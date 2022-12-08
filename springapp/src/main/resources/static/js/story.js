@@ -6,12 +6,6 @@ function myFunction(){
     return comment+guest_name
 }
 
-function addTitle(){
-    let data = "";
-    data = document.getElementById("title1").innerText
-    document.getElementById("heading").innerHTML = data
-}
-
 function addVote(e){
     let count = Number(e.nextElementSibling.innerText) + 1;
     e.nextElementSibling.innerText = count;

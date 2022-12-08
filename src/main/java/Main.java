@@ -1,7 +1,7 @@
 import adapters.ViewModel;
 import adapters.controllers.*;
 import adapters.presenters.*;
-import com.example.springapp.SpringappApplication;
+import com.example.springapp.SpringApplication;
 import entities.LobbyManager;
 import entities.PlayerFactory;
 import entities.comment_checkers.CommentChecker;
@@ -140,7 +140,7 @@ public class Main {
         System.out.println("Main: Before Spring Init");
 
         // TODO: Setup and run the view
-        ConfigurableApplicationContext app = SpringappApplication.startServer(new String[0]);
+        ConfigurableApplicationContext app = SpringApplication.startServer(new String[0]);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
