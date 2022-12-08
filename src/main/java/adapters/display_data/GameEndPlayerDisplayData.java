@@ -1,5 +1,7 @@
 package adapters.display_data;
 
+import util.RecursiveSymboledIntegerHashMap;
+
 /**
  * Data that needs to be sent to players who were still in the game when it ended
  */
@@ -7,7 +9,7 @@ public class GameEndPlayerDisplayData {
 
     public String id;
     public String displayName;
-    public RecursiveSymboledIntegerHashmap[] stats;
+    public RecursiveSymboledIntegerHashMap[] stats;
 
     /**
      * Constructor for GameEndPlayerDisplayData
@@ -16,7 +18,7 @@ public class GameEndPlayerDisplayData {
      * @param stats stats to display to player
      */
     public GameEndPlayerDisplayData(String id, String displayName,
-                                    RecursiveSymboledIntegerHashmap[] stats) {
+                                    RecursiveSymboledIntegerHashMap[] stats) {
         this.id = id;
         this.displayName = displayName;
         this.stats = stats;
@@ -26,5 +28,5 @@ public class GameEndPlayerDisplayData {
 
     public String getDisplayName() { return displayName; }
 
-    public RecursiveSymboledIntegerHashmap[] getStats() { return stats; }
+    public RecursiveSymboledIntegerHashMap[] getStats() { return stats; }
 }

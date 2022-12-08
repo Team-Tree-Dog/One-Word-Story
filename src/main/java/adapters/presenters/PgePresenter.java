@@ -4,6 +4,7 @@ import adapters.display_data.GameEndPlayerDisplayData;
 import adapters.view_models.PgeViewModel;
 import usecases.pull_game_ended.PgeOutputBoundary;
 import usecases.pull_game_ended.PgeOutputData;
+import usecases.pull_game_ended.PlayerStatisticDTO;
 
 public class PgePresenter implements PgeOutputBoundary {
 
@@ -18,10 +19,18 @@ public class PgePresenter implements PgeOutputBoundary {
      * Notify the view model that the current game has ended along with a list
      * of player IDs who were in that game and now have been removed since the game
      * ended. Also notify of any end-of-game data to display
-     * @param data contains data to pass to this output boundary (relevant player ids)
+     * @param data contains relevant data to pass to this output boundary
      */
     @Override
     public void notifyGameEnded(PgeOutputData data) {
-        viewM.setCurrentGameState();
+        int playerCount = data.getPlayerStatDTOs().length;
+        GameEndPlayerDisplayData[] output = new GameEndPlayerDisplayData[playerCount];
+        for (int i = 0; i < playerCount; i++) {
+            PlayerStatisticDTO outputData = data.getPlayerStatDTOs()[i];
+            GameEndPlayerDisplayData d = new GameEndPlayerDisplayData(outputData.getPlayerId(),
+                    outputData.getDisplayName(), outputData.getStatData());
+            output[i] = d;
+        }
+        viewM.setCurrentGameState(output);
     }
 }
