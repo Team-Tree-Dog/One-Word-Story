@@ -96,7 +96,7 @@ public class GlsInteractorTests {
      * Expect to receive numToGet stories starting from the latest one
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testSimpleTest() {
 
         // Instantiating interactor
@@ -123,7 +123,7 @@ public class GlsInteractorTests {
      * Expect to receive empty DataStory[], but not null
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testZeroTest() {
 
         // Instantiating interactor
@@ -148,7 +148,7 @@ public class GlsInteractorTests {
      * Expect to receive all available stories from latest to earliest
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testNull() {
 
         // Instantiating interactor
@@ -177,7 +177,7 @@ public class GlsInteractorTests {
      * Expect to receive all available stories from latest to earliest
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testOutOfBound() {
 
         // Instantiating interactor

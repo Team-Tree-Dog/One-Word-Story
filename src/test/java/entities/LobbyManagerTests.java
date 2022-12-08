@@ -141,7 +141,7 @@ public class LobbyManagerTests {
      * Test that isGameRunning returns true when the game is running.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void isGameRunningTrue() throws GameRunningException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -155,7 +155,7 @@ public class LobbyManagerTests {
      * Test that isGameRunning returns false when the game is not running.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void isGameRunningFalse() {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -168,7 +168,7 @@ public class LobbyManagerTests {
      * Test that isGameNull returns true when the game is null.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void isGameNullTrue() {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -181,7 +181,7 @@ public class LobbyManagerTests {
      * Test that isGameNull returns false when the game is not null.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void isGameNullFalse() throws GameRunningException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -195,7 +195,7 @@ public class LobbyManagerTests {
      * Test that isGameEnded returns true when the game has ended.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void isGameEndedTrue() throws GameRunningException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -213,7 +213,7 @@ public class LobbyManagerTests {
      * Test that isGameEnded returns false when the game has not ended.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void isGameEndedFalse() throws GameRunningException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -227,7 +227,7 @@ public class LobbyManagerTests {
      * Test that turns are switched appropriately and successfully.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void switchTurn() throws IdInUseException, InvalidDisplayNameException, GameRunningException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -272,7 +272,7 @@ public class LobbyManagerTests {
      * Test that setGameNull sets a Game as null successfully.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void setGameNullTrue() throws GameRunningException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -294,7 +294,7 @@ public class LobbyManagerTests {
      * Test that setGameNull refuses to set a Game as null when the game is running, and throws GameRunningException.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void setGameNullFalse() {
 
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
@@ -317,7 +317,7 @@ public class LobbyManagerTests {
      * Test that removeFromPoolJoin removes a player from the pool and calls onJoinGamePlayer
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void removeFromPoolJoinValid() throws IdInUseException, InvalidDisplayNameException, GameRunningException,
             GameDoesntExistException, PlayerNotFoundException {
 
@@ -363,7 +363,7 @@ public class LobbyManagerTests {
      * Test that removeFromPoolJoin throws GameDoesntExistException when the game doesn't exist.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void removeFromPoolJoinGameDoesntExist() throws IdInUseException, InvalidDisplayNameException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -397,7 +397,7 @@ public class LobbyManagerTests {
      * Test that removeFromPoolJoin throws PlayerNotFoundException when the player is not in the pool.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void removeFromPoolJoinPlayerNotFound() throws IdInUseException, InvalidDisplayNameException,
             GameRunningException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
@@ -422,7 +422,7 @@ public class LobbyManagerTests {
      * Test that removeAllFromPoolJoin works as expected, removing all players from the pool and adding them to the Game.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void removeAllFromPoolJoin() throws IdInUseException, InvalidDisplayNameException, GameRunningException {
         System.out.println("onJoinGamePlayer should be called.");
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
@@ -468,7 +468,7 @@ public class LobbyManagerTests {
      * Test that removeAllFromPoolCancel works as expected.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void removeAllFromPoolCancel() throws IdInUseException, InvalidDisplayNameException {
         System.out.println("This test requires onCancelPlayer to be called twice, once for each player.");
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
@@ -516,7 +516,7 @@ public class LobbyManagerTests {
      * Test that getPlayersFromPool returns all players as expected.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void getPlayersFromPool() throws IdInUseException, InvalidDisplayNameException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -554,7 +554,7 @@ public class LobbyManagerTests {
      * Test that addWord successfully adds a valid word.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void addWordValid() throws IdInUseException, InvalidDisplayNameException, GameDoesntExistException,
             GameRunningException, InvalidWordException, OutOfTurnException, PlayerNotFoundException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
@@ -595,7 +595,7 @@ public class LobbyManagerTests {
      * Test that addWord throws GameDoesntExist when the game doesn't exist.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void addWordGameDoesntExist() throws
             IdInUseException, InvalidDisplayNameException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
@@ -630,7 +630,7 @@ public class LobbyManagerTests {
      * Test that addWord throws PlayerNotFound when the player is not found.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void addWordPlayerNotFound() throws GameRunningException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -646,7 +646,7 @@ public class LobbyManagerTests {
      * Test that addWord throws OutOfTurn when the player is out of turn.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void addWordOutOfTurn() throws GameDoesntExistException, IdInUseException, InvalidDisplayNameException, GameRunningException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -674,7 +674,7 @@ public class LobbyManagerTests {
      * Test that addWord refuses an invalid word.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void addWordInValid() throws IdInUseException, InvalidDisplayNameException, GameDoesntExistException,
             GameRunningException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
@@ -701,7 +701,7 @@ public class LobbyManagerTests {
      * Test that newGameFromPool works as intended.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testNewGameFromPool() throws IdInUseException, InvalidDisplayNameException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -738,7 +738,7 @@ public class LobbyManagerTests {
     }
 
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void removeFromPoolCancel() throws IdInUseException, InvalidDisplayNameException, PlayerNotFoundException {
         System.out.println("onCancelPlayer should be called in this test.");
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
@@ -776,7 +776,7 @@ public class LobbyManagerTests {
     }
 
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void removePlayerFromGame() throws GameDoesntExistException, PlayerNotFoundException, GameRunningException, IdInUseException, InvalidDisplayNameException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -798,7 +798,7 @@ public class LobbyManagerTests {
     }
 
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void addPlayerToGame() throws GameDoesntExistException, GameRunningException,
             IdInUseException, InvalidDisplayNameException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
@@ -817,7 +817,7 @@ public class LobbyManagerTests {
     }
 
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void createNewPlayer() throws IdInUseException, InvalidDisplayNameException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();
@@ -831,7 +831,7 @@ public class LobbyManagerTests {
     }
 
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void addPlayerToPool() throws IdInUseException, InvalidDisplayNameException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         GameFactory gamefac = new CustomizableTestGameFactory();

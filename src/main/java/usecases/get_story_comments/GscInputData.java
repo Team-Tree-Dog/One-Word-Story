@@ -5,7 +5,7 @@ package usecases.get_story_comments;
  */
 public class GscInputData {
 
-    private int storyId;
+    private final int storyId;
 
     /**
      * Constructor for GscInputData

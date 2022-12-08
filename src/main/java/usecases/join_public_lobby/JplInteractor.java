@@ -56,7 +56,7 @@ public class JplInteractor implements JplInputBoundary {
             this.data = data;
             this.pres = pres;
             hasCancelled = false;
-            lock = new ReentrantLock();
+            lock = new ReentrantLock(true);
             conditionVariable = lock.newCondition();
         }
 
@@ -118,7 +118,7 @@ public class JplInteractor implements JplInputBoundary {
                 if (game != null) {
                     JplInteractor.this.gameLock.lock();
                     GameDTO gameState = GameDTO.fromGame(game);
-                    JplInteractor.this.gameLock.lock();
+                    JplInteractor.this.gameLock.unlock();
 
                     pres.inGame(new JplOutputDataJoinedGame(
                             Response.getSuccessful("Player successfully joined a game"),

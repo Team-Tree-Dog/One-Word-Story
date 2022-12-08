@@ -58,7 +58,7 @@ public class DcInteractorTests {
      * Testing disconnecting player who are in the game
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testDisconnectPlayerFromGame() throws
             IdInUseException, GameRunningException,
             InvalidDisplayNameException, GameDoesntExistException {
@@ -103,7 +103,7 @@ public class DcInteractorTests {
      * Testing disconnecting player who are in the pool
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testDisconnectPlayerFromPool() throws
             IdInUseException, GameRunningException,
             InvalidDisplayNameException {
@@ -150,7 +150,7 @@ public class DcInteractorTests {
      * is NOT in the pool, and game is null. A fail code should be returned
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testGameNullPlayerNotInPool () throws
             IdInUseException, InvalidDisplayNameException, GameRunningException {
         Player player5 = playerFactory.createPlayer("Alby", "5");
@@ -200,7 +200,7 @@ public class DcInteractorTests {
      * pool. PLAYER_NOT_FOUND code should be returned.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testPlayerNowhere () throws
             GameRunningException, IdInUseException, InvalidDisplayNameException {
         Player player6 = playerFactory.createPlayer("Sam", "6");
