@@ -8,6 +8,7 @@ import entities.games.Game;
 import entities.games.GameFactory;
 import entities.games.GameFactoryRegular;
 import entities.games.GameRegular;
+import entities.statistics.PerPlayerIntStatistic;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -124,7 +125,7 @@ public class JoinPublicLobbyTest {
         Queue<Player> initialPlayers = new LinkedList<>();
         initialPlayers.add(firstPlayer);
         initialPlayers.add(secondPlayer);
-        Game game = new GameRegular(initialPlayers);
+        Game game = new GameRegular(initialPlayers, new PerPlayerIntStatistic[0]);
 
         // onJoinGamePlayer signals a condition variable. the signal requires the lock to be engaged, which it is not
         // The call will set the JplThread's game instance to the passed in game and the subsequent signal call will
@@ -163,7 +164,7 @@ public class JoinPublicLobbyTest {
         Queue<Player> initialPlayers = new LinkedList<>();
         initialPlayers.add(firstPlayer);
         initialPlayers.add(secondPlayer);
-        Game game = new GameRegular(initialPlayers);
+        Game game = new GameRegular(initialPlayers, new PerPlayerIntStatistic[0]);
 
         Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadFirst.onJoinGamePlayer(game));
         Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadSecond.onJoinGamePlayer(game));
@@ -189,7 +190,7 @@ public class JoinPublicLobbyTest {
         Queue<Player> initialPlayers = new LinkedList<>();
         initialPlayers.add(firstPlayer);
         initialPlayers.add(secondPlayer);
-        Game game = new GameRegular(initialPlayers);
+        Game game = new GameRegular(initialPlayers, new PerPlayerIntStatistic[0]);
 
         Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadFirst.onJoinGamePlayer(game));
         Assertions.assertThrows(IllegalMonitorStateException.class, () -> threadSecond.onJoinGamePlayer(game));

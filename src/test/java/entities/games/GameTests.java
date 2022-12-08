@@ -2,6 +2,7 @@ package entities.games;
 
 import entities.Player;
 import entities.validity_checkers.ValidityCheckerFacade;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ public class GameTests {
         }
 
         @Override
-        public Collection<Player> getPlayers() {
+        public @NotNull Collection<Player> getPlayers() {
             return players;
         }
 
@@ -64,7 +65,7 @@ public class GameTests {
         }
 
         @Override
-        public void onTimerUpdate() {
+        public void onTimerUpdateLogic() {
 
         }
 
@@ -84,13 +85,13 @@ public class GameTests {
         }
 
         @Override
-        public boolean switchTurn() {
+        public boolean switchTurnLogic() {
             setSecondsLeftInCurrentTurn(getSecondsPerTurn());
             return players.add(players.remove());
         }
 
         @Override
-        public Player getCurrentTurnPlayer() {
+        public @NotNull Player getCurrentTurnPlayer() {
             return this.players.peek();
         }
     }

@@ -21,12 +21,6 @@ public class Player {
     }
 
     /**
-     * Sets a new display name for the Player.
-     * @param newDisplayName the new display name.
-     */
-    public void setDisplayName(String newDisplayName) {this.displayName = newDisplayName;}
-
-    /**
      * Gets the display name of the Player.
      * @return display name.
      */
