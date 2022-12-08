@@ -27,7 +27,7 @@ public class GlsPresenter implements GlsOutputBoundary {
         if (data.getStories() == null) {
             viewM.setResponse(data.getRes());
         } else {
-            viewM.setLatestStories(List.of(data.getStories()));
+            viewM.setLatestStories(data.getStories());
             viewM.setResponse(data.getRes());
         }
     }

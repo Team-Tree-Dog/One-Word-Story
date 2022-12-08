@@ -1,5 +1,7 @@
 package usecases.pull_game_ended;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import usecases.Response;
 
 import java.util.Set;
@@ -15,5 +17,7 @@ public interface PgeGatewayStory {
      * @param authorDisplayNames Set of author display names
      * @return Response of saving the story
      */
-    Response saveStory(String storyString, double publishUnixTimeStamp, Set<String> authorDisplayNames);
+    @NotNull
+    Response saveStory(String storyString, double publishUnixTimeStamp,
+                       @Nullable Set<String> authorDisplayNames);
 }

@@ -11,7 +11,6 @@ import java.util.Map;
  */
 public class Response {
 
-
     private static final Map<Class<? extends EntityException>, Response.ResCode>
             mapExceptionToResultCode = new HashMap<>();
 
@@ -44,7 +43,8 @@ public class Response {
         INVALID_TITLE,
         TITLE_ALREADY_SUGGESTED,
         STORY_NOT_FOUND,
-        SHUTTING_DOWN
+        SHUTTING_DOWN,
+        TITLE_NOT_FOUND
     }
 
     private final String message;
