@@ -1,17 +1,20 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
+import adapters.view_models.DcViewModel;
+import usecases.Response;
 import usecases.disconnecting.DcOutputBoundary;
 import usecases.disconnecting.DcOutputData;
 
+import static usecases.Response.ResCode.SHUTTING_DOWN;
+
 public class DcPresenter implements DcOutputBoundary {
 
-    private final ViewModel viewM;
+    private final DcViewModel viewM;
 
     /**
      * @param viewM Instance of the view model to write to
      */
-    public DcPresenter (ViewModel viewM) { this.viewM = viewM; }
+    public DcPresenter (DcViewModel viewM) { this.viewM = viewM; }
 
     /**
      * Notify the view model whether or not the player was found in
@@ -23,11 +26,11 @@ public class DcPresenter implements DcOutputBoundary {
      */
     @Override
     public void hasDisconnected(DcOutputData data) {
-
+        viewM.setResponse(data.getResponse());
     }
 
     @Override
     public void outputShutdownServer() {
-
+        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

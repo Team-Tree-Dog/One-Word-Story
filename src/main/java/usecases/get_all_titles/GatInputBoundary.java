@@ -9,5 +9,5 @@ public interface GatInputBoundary {
      * Abstract method to begin the get all titles use case
      * @param data  the input data for this use case
      */
-    void getAllTitles(GatInputData data);
+    void getAllTitles(GatInputData data, GatOutputBoundary pres);
 }

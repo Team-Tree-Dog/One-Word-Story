@@ -9,22 +9,20 @@ import java.util.ArrayList;
  * title.
  */
 public class StInteractor implements StInputBoundary {
-    private final StOutputBoundary pres;
+
     private final StGatewayTitles repo;
+
     private final SuggestedTitleChecker titleChecker;
 
     private final ThreadRegister register;
 
     /**
      * Constructor for the Interactor
-     * @param pres
      * @param repo
      * @param titleChecker
      * @param register
      */
-    public StInteractor(StOutputBoundary pres, StGatewayTitles repo, SuggestedTitleChecker titleChecker,
-                        ThreadRegister register) {
-        this.pres = pres;
+    public StInteractor(StGatewayTitles repo, SuggestedTitleChecker titleChecker, ThreadRegister register) {
         this.repo = repo;
         this.titleChecker = titleChecker;
         this.register = register;
@@ -46,15 +44,18 @@ public class StInteractor implements StInputBoundary {
      */
     public class StThread extends InterruptibleThread {
         private StInputData data;
+        private StOutputBoundary pres;
 
         /**
          * Constructor for the thread.
          * @param data      the input data for the thread. Contains the ID of the story, the request to change title,
          *                  and the user-suggested title.
+         * @param pres      output boundary for this use case
          */
-        public StThread(StInputData data) {
-            super(StInteractor.this.register, StInteractor.this.pres);
+        public StThread(StInputData data, StOutputBoundary pres) {
+            super(StInteractor.this.register, pres);
             this.data = data;
+            this.pres = pres;
         }
 
         /**
@@ -91,14 +92,14 @@ public class StInteractor implements StInputBoundary {
              */
 
             if (!suggestedTitles.isSuccess()) {
-                outputData = new StOutputData(data.getRequestId(), suggestedTitles.getRes());
+                outputData = new StOutputData(suggestedTitles.getRes());
             }
 
             else if (!titleChecker.checkValid(title)){
                 // check if the title is not valid and initialize output Data accordingly
                 String mess = String.format("'%1$s' is invalid", data.getTitle());
                 Response res = new Response(Response.ResCode.INVALID_TITLE,mess);
-                outputData = new StOutputData(data.getRequestId(), res);
+                outputData = new StOutputData(res);
             }
 
             else {
@@ -112,7 +113,7 @@ public class StInteractor implements StInputBoundary {
                     // check if the title was already suggested and initialize output data accordingly
                     String mess = String.format("'%1$s' was already suggested", data.getTitle());
                     Response res = new Response(Response.ResCode.TITLE_ALREADY_SUGGESTED,mess);
-                    outputData = new StOutputData(data.getRequestId(), res);
+                    outputData = new StOutputData(res);
                 } else {
                     // the body of this else block carries out the processes to suggest the title once we have ensured
                     // that the title is valid and has not been already suggested.
@@ -120,7 +121,7 @@ public class StInteractor implements StInputBoundary {
                     setBlockInterrupt(true);
                     Response res =  repo.suggestTitle(storyId, title);
                     setBlockInterrupt(false);
-                    outputData = new StOutputData(data.getRequestId(), res);
+                    outputData = new StOutputData(res);
                 }
 
             }
@@ -137,10 +138,11 @@ public class StInteractor implements StInputBoundary {
      * The method that begins the thread for the use case interactor.
      * @param data  the input data for this use case. Contains the user-suggested title as well as the IDs to
      *              track the Story and this particular request to suggest a title for this story
+     * @param pres  output boundary for this use case
      */
     @Override
-    public void suggestTitle(StInputData data){
-        InterruptibleThread thread = new StThread(data);
+    public void suggestTitle(StInputData data, StOutputBoundary pres){
+        InterruptibleThread thread = new StThread(data, pres);
         boolean success = register.registerThread(thread);
         if (!success){
             pres.outputShutdownServer();

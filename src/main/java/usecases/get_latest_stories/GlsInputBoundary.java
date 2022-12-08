@@ -9,6 +9,7 @@ public interface GlsInputBoundary {
     /**
      * Performs a timely update.
      * @param data GlsInputData corresponding to the current game state
+     * @param pres output boundary for this use case
      */
-    void getLatestStories(GlsInputData data);
+    void getLatestStories(GlsInputData data, GlsOutputBoundary pres);
 }

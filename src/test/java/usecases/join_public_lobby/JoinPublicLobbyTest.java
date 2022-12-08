@@ -69,7 +69,7 @@ public class JoinPublicLobbyTest {
     @BeforeEach
     public void setupJplInteractor(){
         LobbyManager lobbyManager = new LobbyManager(this.playerFactory, this.gameFactory);
-        this.interactor = new JplInteractor(lobbyManager, this.testOutputBoundary, register);
+        this.interactor = new JplInteractor(lobbyManager, register);
     }
 
     /**
@@ -88,8 +88,8 @@ public class JoinPublicLobbyTest {
         JplInputData secondInputData = new JplInputData(secondPlayer.getDisplayName(), secondPlayer.getPlayerId());
 
         // Start threads which will add the players to the pool and call the output
-        this.interactor.joinPublicLobby(firstInputData);
-        this.interactor.joinPublicLobby(secondInputData);
+        this.interactor.joinPublicLobby(firstInputData, testOutputBoundary);
+        this.interactor.joinPublicLobby(secondInputData, testOutputBoundary);
 
         // Waits for the above threads to provide output for both players
         // Will timeout if this never occurs, so test will properly fail
@@ -119,8 +119,8 @@ public class JoinPublicLobbyTest {
         Player secondPlayer = new Player("Name", "2");
         JplInputData inputDataFirst = new JplInputData(firstPlayer.getDisplayName(), firstPlayer.getPlayerId());
         JplInputData inputDataSecond = new JplInputData(secondPlayer.getDisplayName(), secondPlayer.getPlayerId());
-        JplInteractor.JplThread threadFirst = this.interactor.new JplThread(inputDataFirst);
-        JplInteractor.JplThread threadSecond = this.interactor.new JplThread(inputDataSecond);
+        JplInteractor.JplThread threadFirst = this.interactor.new JplThread(inputDataFirst, testOutputBoundary);
+        JplInteractor.JplThread threadSecond = this.interactor.new JplThread(inputDataSecond, testOutputBoundary);
 
         Queue<Player> initialPlayers = new LinkedList<>();
         initialPlayers.add(firstPlayer);
@@ -154,9 +154,9 @@ public class JoinPublicLobbyTest {
         JplInputData inputDataFirst = new JplInputData(firstPlayer.getDisplayName(), firstPlayer.getPlayerId());
         JplInputData inputDataSecond = new JplInputData(secondPlayer.getDisplayName(), secondPlayer.getPlayerId());
         JplInputData inputDataThird = new JplInputData(thirdPlayer.getDisplayName(), thirdPlayer.getPlayerId());
-        JplInteractor.JplThread threadFirst = this.interactor.new JplThread(inputDataFirst);
-        JplInteractor.JplThread threadSecond = this.interactor.new JplThread(inputDataSecond);
-        JplInteractor.JplThread threadThird = this.interactor.new JplThread(inputDataThird);
+        JplInteractor.JplThread threadFirst = this.interactor.new JplThread(inputDataFirst, testOutputBoundary);
+        JplInteractor.JplThread threadSecond = this.interactor.new JplThread(inputDataSecond, testOutputBoundary);
+        JplInteractor.JplThread threadThird = this.interactor.new JplThread(inputDataThird, testOutputBoundary);
 
         Assertions.assertThrows(IllegalMonitorStateException.class, threadThird::onCancelPlayer);
         threadThird.run();
@@ -185,8 +185,8 @@ public class JoinPublicLobbyTest {
         Player secondPlayer = new Player("player", "1");
         JplInputData inputDataFirst = new JplInputData(firstPlayer.getDisplayName(), firstPlayer.getPlayerId());
         JplInputData inputDataSecond = new JplInputData(secondPlayer.getDisplayName(), secondPlayer.getPlayerId());
-        JplInteractor.JplThread threadFirst = this.interactor.new JplThread(inputDataFirst);
-        JplInteractor.JplThread threadSecond = this.interactor.new JplThread(inputDataSecond);
+        JplInteractor.JplThread threadFirst = this.interactor.new JplThread(inputDataFirst, testOutputBoundary);
+        JplInteractor.JplThread threadSecond = this.interactor.new JplThread(inputDataSecond, testOutputBoundary);
         Queue<Player> initialPlayers = new LinkedList<>();
         initialPlayers.add(firstPlayer);
         initialPlayers.add(secondPlayer);

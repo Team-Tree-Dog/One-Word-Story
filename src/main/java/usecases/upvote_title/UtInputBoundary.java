@@ -10,5 +10,5 @@ public interface UtInputBoundary {
      * @param data  Input data for the use case, contains the title to be upvoted and storyId of the story
      *              hose title is to be upvoted
      */
-    void upvoteTitle(UtInputData data);
+    void upvoteTitle(UtInputData data, UtOutputBoundary pres);
 }

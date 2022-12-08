@@ -100,11 +100,11 @@ public class GmlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGmlsOutputBoundary();
-        GmlsInteractor gmls = new GmlsInteractor(pres, repo, register);
+        GmlsInteractor gmls = new GmlsInteractor(repo, register);
 
         // Running inner thread
         GmlsInputData d = new GmlsInputData(0, 2);
-        GmlsInteractor.GmlsThread innerThreadInstance = gmls.new GmlsThread(d);
+        GmlsInteractor.GmlsThread innerThreadInstance = gmls.new GmlsThread(d, pres);
         innerThreadInstance.run();
 
         // Check presenter receives non-null data
@@ -129,11 +129,11 @@ public class GmlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGmlsOutputBoundary();
-        GmlsInteractor gmls = new GmlsInteractor(pres, repo, register);
+        GmlsInteractor gmls = new GmlsInteractor(repo, register);
 
         // Running inner thread
         GmlsInputData d = new GmlsInputData(null, 2);
-        GmlsInteractor.GmlsThread innerThreadInstance = gmls.new GmlsThread(d);
+        GmlsInteractor.GmlsThread innerThreadInstance = gmls.new GmlsThread(d, pres);
         innerThreadInstance.run();
 
         // Check presenter receives non-null data
@@ -158,11 +158,11 @@ public class GmlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGmlsOutputBoundary();
-        GmlsInteractor gmls = new GmlsInteractor(pres, repo, register);
+        GmlsInteractor gmls = new GmlsInteractor(repo, register);
 
         // Running inner thread
         GmlsInputData d = new GmlsInputData(1, null);
-        GmlsInteractor.GmlsThread innerThreadInstance = gmls.new GmlsThread(d);
+        GmlsInteractor.GmlsThread innerThreadInstance = gmls.new GmlsThread(d, pres);
         innerThreadInstance.run();
 
         // Check presenter receives non-null data
@@ -187,11 +187,11 @@ public class GmlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGmlsOutputBoundary();
-        GmlsInteractor gmls = new GmlsInteractor(pres, repo, register);
+        GmlsInteractor gmls = new GmlsInteractor(repo, register);
 
         // Running inner thread
         GmlsInputData d = new GmlsInputData(null, null);
-        GmlsInteractor.GmlsThread innerThreadInstance = gmls.new GmlsThread(d);
+        GmlsInteractor.GmlsThread innerThreadInstance = gmls.new GmlsThread(d, pres);
         innerThreadInstance.run();
 
         // Check presenter receives non-null data
@@ -216,11 +216,11 @@ public class GmlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGmlsOutputBoundary();
-        GmlsInteractor gmls = new GmlsInteractor(pres, repo, register);
+        GmlsInteractor gmls = new GmlsInteractor(repo, register);
 
         // Running inner thread
         GmlsInputData d = new GmlsInputData(2, 1);
-        GmlsInteractor.GmlsThread innerThreadInstance = gmls.new GmlsThread(d);
+        GmlsInteractor.GmlsThread innerThreadInstance = gmls.new GmlsThread(d, pres);
         innerThreadInstance.run();
 
         // Check presenter receives non-null data
@@ -243,11 +243,11 @@ public class GmlsInteractorTests {
 
         // Instantiating interactor
         pres = new CustomizableGmlsOutputBoundary();
-        GmlsInteractor gmls = new GmlsInteractor(pres, repo, register);
+        GmlsInteractor gmls = new GmlsInteractor(repo, register);
 
         // Running inner thread
         GmlsInputData d = new GmlsInputData(-10, 10);
-        GmlsInteractor.GmlsThread innerThreadInstance = gmls.new GmlsThread(d);
+        GmlsInteractor.GmlsThread innerThreadInstance = gmls.new GmlsThread(d ,pres);
         innerThreadInstance.run();
 
         // Check presenter receives non-null data

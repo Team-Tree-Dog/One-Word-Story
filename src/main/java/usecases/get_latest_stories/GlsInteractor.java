@@ -11,7 +11,6 @@ import java.util.List;
  */
 public class GlsInteractor implements GlsInputBoundary{
 
-    private final GlsOutputBoundary pres;
     private final GlsGatewayStory repo;
 
     /**
@@ -22,18 +21,16 @@ public class GlsInteractor implements GlsInputBoundary{
 
     /**
      * Constructor for GlsInteractor
-     * @param pres GlsOutputBoundary
      * @param repo GlsGateway used by this interactor
      */
-    public GlsInteractor(GlsOutputBoundary pres, GlsGatewayStory repo, ThreadRegister register) {
-        this.pres = pres;
+    public GlsInteractor(GlsGatewayStory repo, ThreadRegister register) {
         this.repo = repo;
         this.register = register;
     }
 
     @Override
-    public void getLatestStories(GlsInputData data) {
-        InterruptibleThread thread = new GlsThread(data);
+    public void getLatestStories(GlsInputData data, GlsOutputBoundary pres) {
+        InterruptibleThread thread = new GlsThread(data, pres);
         if (!register.registerThread(thread)) {
             pres.outputShutdownServer();
         }
@@ -42,17 +39,19 @@ public class GlsInteractor implements GlsInputBoundary{
     /**
      * Thread for getting the latest stories
      */
-
     public class GlsThread extends InterruptibleThread {
         private final GlsInputData data;
+        private final GlsOutputBoundary pres;
 
         /**
          * Constructor for Get Latest Stories Thread
          * @param data GlsInputData
+         * @param pres Output boundary for use case
          */
-        public GlsThread(GlsInputData data) {
-            super(GlsInteractor.this.register, GlsInteractor.this.pres);
+        public GlsThread(GlsInputData data, GlsOutputBoundary pres) {
+            super(GlsInteractor.this.register, pres);
             this.data = data;
+            this.pres = pres;
         }
 
         @Override

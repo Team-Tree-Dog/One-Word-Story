@@ -1,5 +1,7 @@
 package adapters.controllers;
 
+import adapters.presenters.SsPresenter;
+import adapters.view_models.SsViewModel;
 import usecases.shutdown_server.SsInputBoundary;
 
 /**
@@ -18,9 +20,13 @@ public class SsController {
 
     /**
      * This method initiates the process of shutting down the server
+     * @return View model for this use case
      */
-    public void shutdownServer() {
-        inputBoundary.shutdownServer();
+    public SsViewModel shutdownServer() {
+        SsViewModel viewM = new SsViewModel();
+        SsPresenter pres = new SsPresenter(viewM);
+        inputBoundary.shutdownServer(pres);
+        return viewM;
     }
 
 }

@@ -1,5 +1,8 @@
 package adapters.controllers;
 
+import adapters.presenters.GlsPresenter;
+import adapters.view_models.GlsViewModel;
+import adapters.view_models.ViewModel;
 import usecases.get_latest_stories.GlsInputBoundary;
 import usecases.get_latest_stories.GlsInputData;
 
@@ -18,9 +21,16 @@ public class GlsController {
     /**
      * Provide the number(otherwise null) the latest stories one wants to get from the repo
      * @param numToget number of the latest stories to get
+     * @return View model for this use case
      */
 
-    public void getLatestStories(Integer numToget) {
-        gls.getLatestStories( new GlsInputData(numToget));
+    public GlsViewModel getLatestStories(Integer numToget) {
+        GlsInputData data = new GlsInputData(numToget);
+        GlsViewModel viewM = new GlsViewModel();
+        GlsPresenter pres = new GlsPresenter(viewM);
+
+        gls.getLatestStories(data, pres);
+
+        return viewM;
     }
 }

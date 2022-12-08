@@ -43,6 +43,7 @@ public class Response {
         INVALID_TITLE,
         TITLE_ALREADY_SUGGESTED,
         STORY_NOT_FOUND,
+        SHUTTING_DOWN,
         TITLE_NOT_FOUND
     }
 

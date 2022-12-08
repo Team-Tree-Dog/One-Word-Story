@@ -1,5 +1,7 @@
 package adapters.controllers;
 
+import adapters.presenters.LsPresenter;
+import adapters.view_models.LsViewModel;
 import usecases.like_story.LsInputBoundary;
 import usecases.like_story.LsInputData;
 
@@ -20,12 +22,15 @@ public class LsController {
 
     /**
      * This method takes in the information about the story and adds like to it
-     * @param requestId The request's id
      * @param storyId The story's id
+     * @return View model for this use case
      * */
-    public void likeStory(String requestId, int storyId) {
-        LsInputData inputData = new LsInputData(requestId, storyId);
-        inputBoundary.likeStory(inputData);
+    public LsViewModel likeStory(int storyId) {
+        LsInputData inputData = new LsInputData(storyId);
+        LsViewModel viewM = new LsViewModel();
+        LsPresenter pres = new LsPresenter(viewM);
+        inputBoundary.likeStory(inputData, pres);
+        return viewM;
     }
 
 }

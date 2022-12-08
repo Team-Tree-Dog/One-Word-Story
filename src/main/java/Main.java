@@ -1,6 +1,7 @@
-import adapters.ViewModel;
 import adapters.controllers.*;
 import adapters.presenters.*;
+import adapters.view_models.PdViewModel;
+import adapters.view_models.PgeViewModel;
 import entities.LobbyManager;
 import entities.PlayerFactory;
 import entities.comment_checkers.CommentChecker;
@@ -46,27 +47,15 @@ public class Main {
      * @param args Command line arguments (currently none necessary)
      */
     public static void main (String[] args) {
-        ViewModel viewM = new ViewModel();
+        PdViewModel pdViewM = new PdViewModel();
+        PgeViewModel pgeViewM = new PgeViewModel();
 
         ThreadRegister register = new ThreadRegister();
 
-        // Create all presenters
-        CagPresenter cagPresenter = new CagPresenter(viewM);
-        DcPresenter dcPresenter = new DcPresenter(viewM);
-        GatPresenter gatPresenter = new GatPresenter(viewM);
-        GlsPresenter glsPresenter = new GlsPresenter(viewM);
-        GmlsPresenter gmlsPresenter = new GmlsPresenter(viewM);
-        GscPresenter gscPresenter = new GscPresenter(viewM);
-        JplPresenter jplPresenter = new JplPresenter(viewM);
-        LsPresenter lsPresenter = new LsPresenter(viewM);
-        PdPresenter pdPresenter = new PdPresenter(viewM);
-        PgePresenter pgePresenter = new PgePresenter(viewM);
-        SsPresenter ssPresenter = new SsPresenter(viewM);
-        SwPresenter swPresenter = new SwPresenter(viewM);
-        StPresenter stPresenter = new StPresenter(viewM);
-        UtPresenter utPresenter = new UtPresenter(viewM);
+        PdPresenter pdPresenter = new PdPresenter(pdViewM);
+        PgePresenter pgePresenter = new PgePresenter(pgeViewM);
 
-        // Create desired comment checker, display checker, and title checker for injection
+        // Create desired checkers for injection
         CommentChecker commentChecker = new CommentCheckerBasic();
         DisplayNameChecker displayChecker = new DisplayNameCheckerBasic();
         SuggestedTitleChecker titleChecker = new SuggestedTitleCheckerBasic();
@@ -96,18 +85,19 @@ public class Main {
         sp.startTimer();
 
         // Use cases called by users
-        CagInteractor cag = new CagInteractor(cagPresenter, commentsRepo, commentChecker, displayChecker, register);
-        DcInteractor dc = new DcInteractor(manager, dcPresenter, register);
-        GlsInteractor gls = new GlsInteractor(glsPresenter, storyRepo, register);
-        GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, storyRepo, register);
-        GscInteractor gsc = new GscInteractor(gscPresenter, commentsRepo, register);
-        GatInteractor gat = new GatInteractor(gatPresenter, titlesRepo, register);
-        JplInteractor jpl = new JplInteractor(manager, jplPresenter, register);
-        LsInteractor ls = new LsInteractor(lsPresenter, storyRepo, register);
-        SsInteractor ss = new SsInteractor(register, ssPresenter);
-        SwInteractor sw = new SwInteractor(swPresenter, manager, register);
-        StInteractor st = new StInteractor(stPresenter, titlesRepo, titleChecker, register);
-        UtInteractor ut = new UtInteractor(utPresenter, titlesRepo, register);
+
+        CagInteractor cag = new CagInteractor(commentsRepo, commentChecker, displayChecker, register);
+        DcInteractor dc = new DcInteractor(manager, register);
+        GlsInteractor gls = new GlsInteractor(storyRepo, register);
+        GmlsInteractor gmls = new GmlsInteractor(storyRepo, register);
+        GscInteractor gsc = new GscInteractor(commentsRepo, register);
+        GatInteractor gat = new GatInteractor(titlesRepo, register);
+        JplInteractor jpl = new JplInteractor(manager, register);
+        LsInteractor ls = new LsInteractor(storyRepo, register);
+        SsInteractor ss = new SsInteractor(register);
+        SwInteractor sw = new SwInteractor(manager, register);
+        StInteractor st = new StInteractor(titlesRepo, titleChecker, register);
+        UtInteractor ut = new UtInteractor(titlesRepo, register);
 
         // Controllers
         CagController cagController = new CagController(cag);

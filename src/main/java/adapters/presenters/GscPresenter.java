@@ -1,18 +1,23 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
+import adapters.view_models.GscViewModel;
+import usecases.Response;
 import usecases.get_story_comments.GscOutputBoundary;
 import usecases.get_story_comments.GscOutputData;
 
+import java.util.List;
+
+import static usecases.Response.ResCode.SHUTTING_DOWN;
+
 public class GscPresenter implements GscOutputBoundary {
 
-    private final ViewModel viewM;
+    private final GscViewModel viewM;
 
     /**
      * Constructor for GscPresenter
      * @param viewM Instance of the view model to write to
      */
-    public GscPresenter(ViewModel viewM) { this.viewM = viewM; }
+    public GscPresenter(GscViewModel viewM) { this.viewM = viewM; }
 
     /**
      * Notify the view model that getting comments from a story was successful/failed
@@ -21,11 +26,16 @@ public class GscPresenter implements GscOutputBoundary {
      */
     @Override
     public void putStoryComments(GscOutputData data) {
-
+        if (data.getComments() == null) {
+            viewM.setResponse(data.getRes());
+        } else {
+            viewM.setStoryComments(data.getComments());
+            viewM.setResponse(data.getRes());
+        }
     }
 
     @Override
     public void outputShutdownServer() {
-
+        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

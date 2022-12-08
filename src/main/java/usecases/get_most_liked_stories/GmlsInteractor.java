@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.*;
 
 public class GmlsInteractor implements GmlsInputBoundary {
-    private final GmlsOutputBoundary pres;
     private final GmlsGatewayStory repo;
 
     /**
@@ -18,11 +17,9 @@ public class GmlsInteractor implements GmlsInputBoundary {
     /**
      * Constructor for use case interactor
      *
-     * @param pres the output boundary to update the view model
      * @param repo the repository from which the stories will be extracted
      */
-    public GmlsInteractor(GmlsOutputBoundary pres, GmlsGatewayStory repo, ThreadRegister register) {
-        this.pres = pres;
+    public GmlsInteractor(GmlsGatewayStory repo, ThreadRegister register) {
         this.repo = repo;
         this.register = register;
     }
@@ -32,15 +29,18 @@ public class GmlsInteractor implements GmlsInputBoundary {
      */
     public class GmlsThread extends InterruptibleThread {
         GmlsInputData data;
+        GmlsOutputBoundary pres;
 
         /**
          * Constructor for GmlsThread class
          *
          * @param data Input data for the use case
+         * @param pres Output boundary for the use case
          */
-        public GmlsThread(GmlsInputData data) {
-            super(GmlsInteractor.this.register, GmlsInteractor.this.pres);
+        public GmlsThread(GmlsInputData data, GmlsOutputBoundary pres) {
+            super(GmlsInteractor.this.register, pres);
             this.data = data;
+            this.pres = pres;
         }
 
         /**
@@ -180,9 +180,8 @@ public class GmlsInteractor implements GmlsInputBoundary {
     /**
      * Starts thread for use case interactor
      */
-
-    public void getMostLikedStories(GmlsInputData data) {
-        InterruptibleThread thread = new GmlsThread(data);
+    public void getMostLikedStories(GmlsInputData data, GmlsOutputBoundary pres) {
+        InterruptibleThread thread = new GmlsThread(data, pres);
         if (!register.registerThread(thread)) {
             pres.outputShutdownServer();
         }
