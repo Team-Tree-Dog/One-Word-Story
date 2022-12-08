@@ -5,6 +5,10 @@ import entities.LobbyManager;
 import entities.PlayerFactory;
 import entities.comment_checkers.CommentChecker;
 import entities.comment_checkers.CommentCheckerBasic;
+import entities.statistics.AverageTurnDurationPlayerStatistic;
+import entities.statistics.LettersUsedByPlayerStatistic;
+import entities.statistics.PerPlayerIntStatistic;
+import entities.statistics.WordCountPlayerStatistic;
 import entities.suggested_title_checkers.SuggestedTitleChecker;
 import entities.suggested_title_checkers.SuggestedTitleCheckerBasic;
 import entities.display_name_checkers.DisplayNameChecker;
@@ -25,6 +29,7 @@ import usecases.get_story_comments.GscInteractor;
 import usecases.join_public_lobby.JplInteractor;
 import usecases.like_story.LsInteractor;
 import usecases.pull_data.PdInteractor;
+import usecases.pull_game_ended.PgeGatewayStory;
 import usecases.pull_game_ended.PgeInteractor;
 import usecases.shutdown_server.SsInteractor;
 import usecases.sort_players.SpInteractor;
@@ -32,6 +37,8 @@ import usecases.submit_word.SwInteractor;
 import usecases.suggest_title.StGateway;
 import usecases.suggest_title.StInteractor;
 import usecases.upvote_title.UtInteractor;
+
+import java.util.Set;
 
 /**
  * Orchestrator. Contains only a main method which boots up
@@ -73,16 +80,23 @@ public class Main {
         // Create desired story title checker for injection
         SuggestedTitleChecker titleChecker = new SuggestedTitleCheckerBasic();
 
+        // Create desired per-player statistics for injection
+        PerPlayerIntStatistic[] statistics = {
+                new AverageTurnDurationPlayerStatistic(), new WordCountPlayerStatistic(),
+                new LettersUsedByPlayerStatistic()
+        };
+
         // Factory which accepts ALL display names with at least 3 characters (temporary)
         PlayerFactory playerFac = new PlayerFactory(displayChecker);
-        GameFactory gameFac = new GameFactoryRegular();
+        GameFactory gameFac = new GameFactoryRegular(statistics);
 
         // Inject particular factories into LobbyManager
         LobbyManager manager = new LobbyManager(playerFac, gameFac);
 
         // Start up sort players
         PdInteractor pd = new PdInteractor(pdPresenter);
-        PgeInteractor pge = new PgeInteractor(pgePresenter);
+        // TODO: Inject Repo
+        PgeInteractor pge = new PgeInteractor(pgePresenter, (storyString, publishUnixTimeStamp, authorDisplayNames) -> null);
         SpInteractor sp = new SpInteractor(manager, pge, pd);
         sp.startTimer();
 
