@@ -1,5 +1,6 @@
 package usecases.upvote_title;
 
+import org.jetbrains.annotations.NotNull;
 import usecases.Response;
 
 /**
@@ -13,5 +14,6 @@ public interface UtGatewayTitles {
      * @param titleToUpvote the title to be upvoted
      * @return              a Response object that records whether upvoting the title was successful
      */
+    @NotNull
     Response upvoteTitle(int storyId, String titleToUpvote);
 }

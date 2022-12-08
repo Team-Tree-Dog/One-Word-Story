@@ -18,9 +18,7 @@ import entities.games.GameFactoryRegular;
 import frameworks_drivers.repository.in_memory.InMemoryCommentsRepo;
 import frameworks_drivers.repository.in_memory.InMemoryStoryRepo;
 import frameworks_drivers.repository.in_memory.InMemoryTitlesRepo;
-import usecases.*;
 import usecases.comment_as_guest.CagInteractor;
-import usecases.RepoRes;
 import usecases.ThreadRegister;
 import usecases.disconnecting.DcInteractor;
 import usecases.get_all_titles.GatInteractor;
@@ -93,8 +91,7 @@ public class Main {
 
         // Start up sort players
         PdInteractor pd = new PdInteractor(pdPresenter);
-        // TODO: Inject Repo
-        PgeInteractor pge = new PgeInteractor(pgePresenter, (storyString, publishUnixTimeStamp, authorDisplayNames) -> null);
+        PgeInteractor pge = new PgeInteractor(pgePresenter, storyRepo);
         SpInteractor sp = new SpInteractor(manager, pge, pd);
         sp.startTimer();
 
@@ -104,19 +101,13 @@ public class Main {
         GlsInteractor gls = new GlsInteractor(glsPresenter, storyRepo, register);
         GmlsInteractor gmls = new GmlsInteractor(gmlsPresenter, storyRepo, register);
         GscInteractor gsc = new GscInteractor(gscPresenter, commentsRepo, register);
-        GatInteractor gat = new GatInteractor(gatPresenter,
-                // TODO: INJECT REPO
-                storyId -> new RepoRes<TitleRepoData>(Response.getFailure("Dummy Lambda, Always failure"))
-                ,register);
+        GatInteractor gat = new GatInteractor(gatPresenter, titlesRepo, register);
         JplInteractor jpl = new JplInteractor(manager, jplPresenter, register);
         LsInteractor ls = new LsInteractor(lsPresenter, storyRepo, register);
         SsInteractor ss = new SsInteractor(register, ssPresenter);
         SwInteractor sw = new SwInteractor(swPresenter, manager, register);
         StInteractor st = new StInteractor(stPresenter, titlesRepo, titleChecker, register);
-        // TODO: INJECT REPO
-        UtInteractor ut = new UtInteractor(utPresenter,
-                ((storyId, titleToUpvote) -> Response.getSuccessful("Dummy Lambda, Always successful")),
-                register);
+        UtInteractor ut = new UtInteractor(utPresenter, titlesRepo, register);
 
         // Controllers
         CagController cagController = new CagController(cag);

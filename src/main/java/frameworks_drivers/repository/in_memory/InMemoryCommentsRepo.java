@@ -10,10 +10,18 @@ import usecases.get_story_comments.GscGatewayComments;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * In memory implementation of the database component in charge of storing
  * comments associated with stories
+ *
+ * <h2> Thread Safety </h2>
+ * This class is thread safe
+ * <br> All read and write operations
+ * engage a repo lock
+ * <br><br>
  */
 public class InMemoryCommentsRepo implements GscGatewayComments, CagGatewayComments {
 
@@ -26,7 +34,7 @@ public class InMemoryCommentsRepo implements GscGatewayComments, CagGatewayComme
         private final int commentId;
         private final int storyId;
         private final String displayName;
-        private String comment;
+        private final String comment;
 
         public CommentsTableRow (int storyId, @NotNull String displayName, @NotNull String comment) {
             commentId = nextAvailableId;
@@ -44,34 +52,49 @@ public class InMemoryCommentsRepo implements GscGatewayComments, CagGatewayComme
     }
 
     private final List<CommentsTableRow> commentsTable;
+    private final Lock lock;
 
     /**
      * Initialize comments table
      */
-    public InMemoryCommentsRepo () { commentsTable = new ArrayList<>(); }
+    public InMemoryCommentsRepo () {
+        commentsTable = new ArrayList<>();
+        lock = new ReentrantLock();
+    }
 
     /**
-     *
+     * <h2> Thread Safety </h2>
+     * This method is thread safe with respect to the repo.
+     * <br> All read and write operations
+     * engage the repo lock
+     * <br><br>
      * @param storyId unique primary key ID of story to which to save a comment
      * @param displayName string guest display name, not null
      * @param comment string comment content, no
-     * @return if the comment was added successfully
+     * @return response with success code if adding the comment was successful, otherwise fail code
      */
     @Override
     @NotNull
     public Response commentAsGuest (int storyId, @NotNull String displayName, @NotNull String comment) {
+        lock.lock();
         commentsTable.add(new CommentsTableRow(storyId, displayName, comment));
+        lock.unlock();
         return Response.getSuccessful("Comment successfully added to Story ID" + storyId);
     }
 
     /**
-     *
+     * <h2> Thread Safety </h2>
+     * This method is thread safe with respect to the repo.
+     * <br> All read and write operations
+     * engage the repo lock
+     * <br><br>
      * @param storyId unique primary key ID of story for which to retrieve all comments
      * @return all comments for the requested story, or null if some failure occurs
      */
     @Override
     @NotNull
     public RepoRes<CommentRepoData> getAllComments (int storyId) {
+        lock.lock();
         RepoRes<CommentRepoData> res = new RepoRes<>();
 
         // Convert to CommentRepoData objects
@@ -81,6 +104,7 @@ public class InMemoryCommentsRepo implements GscGatewayComments, CagGatewayComme
                     row.getDisplayName(), row.getComment()
             ));
         }
+        lock.unlock();
 
         res.setResponse(Response.getSuccessful("Successfully retrieved comments for story " + storyId));
 

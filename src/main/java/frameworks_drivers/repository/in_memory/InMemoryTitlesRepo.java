@@ -5,16 +5,26 @@ import usecases.CommentRepoData;
 import usecases.RepoRes;
 import usecases.Response;
 import usecases.TitleRepoData;
+import usecases.get_all_titles.GatGatewayTitles;
 import usecases.suggest_title.StGatewayTitles;
+import usecases.upvote_title.UtGatewayTitles;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * In memory implementation of the database component in charge of storing
  * suggested titles for stories
+ *
+ * <h2> Thread Safety </h2>
+ * This class is thread safe
+ * <br> All read and write operations
+ * engage a repo lock
+ * <br><br>
  */
-public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles {
+public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles, UtGatewayTitles {
 
     /**
      * DB table row for storing a single suggested title entry
@@ -58,9 +68,7 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles {
          */
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof TitlesTableRow) {
-                TitlesTableRow row = (TitlesTableRow) obj;
-
+            if (obj instanceof TitlesTableRow row) {
                 return row.titleSuggestion.equals(this.titleSuggestion) &&
                         row.storyId == this.storyId;
             } return false;
@@ -68,15 +76,25 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles {
     }
 
     private final List<TitlesTableRow> titlesTable;
+    private final Lock lock;
 
     /**
      * Initialize comments table
      */
-    public InMemoryTitlesRepo () { titlesTable = new ArrayList<>(); }
+    public InMemoryTitlesRepo () {
+        titlesTable = new ArrayList<>();
+        lock = new ReentrantLock();
+    }
 
 
     /**
      * Defaults to 1 upvote when adding, from the player who suggested it
+     * <br><br>
+     * <h2> Thread Safety </h2>
+     * This method is thread safe with respect to the repo.
+     * <br> All read and write operations
+     * engage the repo lock
+     * <br><br>
      * @param storyId unique primary key ID of story for which to save the title suggestion
      * @param titleSuggestion string suggestion of the title
      * @return if the title was successfully added to the DB
@@ -85,18 +103,31 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles {
     @NotNull
     public Response suggestTitle (int storyId, @NotNull String titleSuggestion) {
         TitlesTableRow newRow = new TitlesTableRow(storyId, titleSuggestion, 1);
+        Response res;
+
+        lock.lock();
 
         // Row equality is based on storyId and titleSuggestion
         if (titlesTable.contains(newRow)) {
-            return new Response(Response.ResCode.TITLE_ALREADY_SUGGESTED,
+            res = new Response(Response.ResCode.TITLE_ALREADY_SUGGESTED,
                     "\"" + titleSuggestion + "\" has already been suggested for Story " + storyId);
-        }
+        } else {
+            titlesTable.add(newRow);
 
-        titlesTable.add(newRow);
-        return Response.getSuccessful("Successfully added new suggested title to Story ID" + storyId);
+            res = Response.getSuccessful("Successfully added new suggested title to Story ID" + storyId);
+        }
+        lock.unlock();
+
+        return res;
     }
 
     /**
+     * <br><br>
+     * <h2> Thread Safety </h2>
+     * This method is thread safe with respect to the repo.
+     * <br> All read and write operations
+     * engage the repo lock
+     * <br><br>
      * @param storyId unique primary key ID of story for which to retrieve all suggested titles
      * @return all suggested titles pertaining to the requested story, or null if DB failed
      */
@@ -105,6 +136,7 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles {
     public RepoRes<TitleRepoData> getAllTitles (int storyId) {
         RepoRes<TitleRepoData> res = new RepoRes<>();
 
+        lock.lock();
         // Convert to CommentRepoData objects
         for (TitlesTableRow row : titlesTable) {
             res.addRow(new TitleRepoData(
@@ -112,8 +144,37 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles {
                     row.getTitleSuggestion(), row.getUpvotes()
             ));
         }
+        lock.unlock();
 
         res.setResponse(Response.getSuccessful("Successfully retrieved titles for story " + storyId));
+
+        return res;
+    }
+
+    /**
+     * @param storyId       the ID of the story whose title is to be upvoted
+     * @param titleToUpvote the title to be upvoted
+     * @return Response of upvoting title, success or fail code
+     */
+    @Override
+    @NotNull
+    public Response upvoteTitle(int storyId, String titleToUpvote) {
+        Response res = null;
+
+        lock.lock();
+        for (TitlesTableRow row: titlesTable) {
+            // If story id and title suggestion string match, add upvote
+            if (row.getStoryId() == storyId && row.getTitleSuggestion().equals(titleToUpvote)) {
+                res = Response.getSuccessful("Successfully upvoted title");
+                break;
+            }
+        }
+        lock.unlock();
+
+        if (res == null) {
+            res = new Response(Response.ResCode.TITLE_NOT_FOUND,
+                    "Title \"" + titleToUpvote + "\" not found for story ID " + storyId);
+        }
 
         return res;
     }
