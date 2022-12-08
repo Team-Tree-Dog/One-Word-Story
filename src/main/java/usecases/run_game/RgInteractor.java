@@ -7,6 +7,7 @@ import usecases.pull_game_ended.PgeInputBoundary;
 import usecases.pull_game_ended.PgeInputData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.TimerTask;
 import java.util.concurrent.locks.Lock;
 
@@ -50,7 +51,13 @@ public class RgInteractor {
                 RgInteractor.this.g.getGameTimer().cancel();
 
                 // Perform "Game Ended" use-case via PgeInteractor
-                RgInteractor.this.pge.onGameEnded(new PgeInputData(new ArrayList<>(RgInteractor.this.g.getPlayers())));
+                RgInteractor.this.pge.onGameEnded(
+                        new PgeInputData(
+                                new ArrayList<>(RgInteractor.this.g.getPlayers()),
+                                g.getStoryString(), Arrays.asList(g.getPlayerStatistics()),
+                                g.getAuthorNamesStatistic()
+                        )
+                );
 
                 // Notify the game, after timer cancellation, when the
                 // last execution of the run method has finished, meaning,

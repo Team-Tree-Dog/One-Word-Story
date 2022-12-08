@@ -11,6 +11,7 @@ import entities.validity_checkers.ValidityCheckerFacade;
 import exceptions.GameRunningException;
 import exceptions.IdInUseException;
 import exceptions.InvalidDisplayNameException;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,7 @@ public class SwInteractorTests {
          * @return Returns all the present players in the game
          */
         @Override
-        public Collection<Player> getPlayers() {return this.players;}
+        public @NotNull Collection<Player> getPlayers() {return this.players;}
 
         /**
          * @return Returns whether the game is over
@@ -59,7 +60,7 @@ public class SwInteractorTests {
          * Additional actions that can be done by the game every time the timer is updated
          */
         @Override
-        public void onTimerUpdate() {
+        public void onTimerUpdateLogic() {
 
         }
 
@@ -91,7 +92,7 @@ public class SwInteractorTests {
          * Switches this game's turn and resets the timer
          */
         @Override
-        public boolean switchTurn() {
+        public boolean switchTurnLogic() {
             setSecondsLeftInCurrentTurn(getSecondsPerTurn());
             return players.add(players.remove());
         }
@@ -100,7 +101,7 @@ public class SwInteractorTests {
          * Returns the player whose turn it is
          */
         @Override
-        public Player getCurrentTurnPlayer() {return players.peek();}
+        public @NotNull Player getCurrentTurnPlayer() {return players.peek();}
     }
 
     /**
@@ -165,7 +166,7 @@ public class SwInteractorTests {
             }
         }
 
-        class GameFactoryTest implements GameFactory {
+        class GameFactoryTest extends GameFactory {
             /**
             * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
             */
@@ -258,7 +259,7 @@ public class SwInteractorTests {
             }
         }
 
-        class GameFactoryTest implements GameFactory {
+        class GameFactoryTest extends GameFactory {
             /**
              * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
              */
@@ -329,7 +330,7 @@ public class SwInteractorTests {
             }
         }
 
-        class GameFactoryTest implements GameFactory {
+        class GameFactoryTest extends GameFactory {
             /**
              * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
              */
@@ -411,7 +412,7 @@ public class SwInteractorTests {
             }
         }
 
-        class GameFactoryTest implements GameFactory {
+        class GameFactoryTest extends GameFactory {
             /**
              * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
              */
@@ -500,7 +501,7 @@ public class SwInteractorTests {
             }
         }
 
-        class GameFactoryTest implements GameFactory {
+        class GameFactoryTest extends GameFactory {
             /**
              * An anonymous GameFactoryTest which has a ValidityChecker that can be customizable.
              */

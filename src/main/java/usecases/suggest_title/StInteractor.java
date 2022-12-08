@@ -1,5 +1,5 @@
 package usecases.suggest_title;
-import entities.SuggestedTitleChecker;
+import entities.suggested_title_checkers.SuggestedTitleChecker;
 import usecases.*;
 
 import java.util.ArrayList;

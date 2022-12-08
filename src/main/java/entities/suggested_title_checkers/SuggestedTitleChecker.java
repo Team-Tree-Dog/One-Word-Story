@@ -1,4 +1,4 @@
-package entities;
+package entities.suggested_title_checkers;
 
 /**
  * Abstract interface to check whether a suggested title is a valid title for a story.
