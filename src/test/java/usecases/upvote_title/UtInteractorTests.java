@@ -96,11 +96,11 @@ public class UtInteractorTests {
         // Instantiating interactor
         repo = new CustomizableUtGatewayTitles(false);
         pres = new CustomizableUtOutputBoundary();
-        UtInteractor ut = new UtInteractor(pres, repo, register);
+        UtInteractor ut = new UtInteractor(repo, register);
 
         // Running thread
-        UtInputData d = new UtInputData("request1", 1, "Lovely story");
-        UtInteractor.UtThread innerThreadInstance = ut.new UtThread(d);
+        UtInputData d = new UtInputData(1, "Lovely story");
+        UtInteractor.UtThread innerThreadInstance = ut.new UtThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
@@ -121,11 +121,11 @@ public class UtInteractorTests {
         // Instantiating interactor
         repo = new CustomizableUtGatewayTitles(true);
         pres = new CustomizableUtOutputBoundary();
-        UtInteractor ut = new UtInteractor(pres, repo, register);
+        UtInteractor ut = new UtInteractor(repo, register);
 
         // Running thread
-        UtInputData d = new UtInputData("request1", 1, "Lovely story");
-        UtInteractor.UtThread innerThreadInstance = ut.new UtThread(d);
+        UtInputData d = new UtInputData(1, "Lovely story");
+        UtInteractor.UtThread innerThreadInstance = ut.new UtThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results

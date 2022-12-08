@@ -1,5 +1,7 @@
 package adapters.controllers;
 
+import adapters.presenters.GatPresenter;
+import adapters.view_models.GatViewModel;
 import usecases.get_all_titles.GatInputBoundary;
 import usecases.get_all_titles.GatInputData;
 
@@ -20,6 +22,8 @@ public class GatController {
      */
     public void getAllTitles(int storyId){
         GatInputData inp = new GatInputData(storyId);
-        gat.getAllTitles(inp);
+        GatViewModel viewM = new GatViewModel();
+        GatPresenter pres = new GatPresenter(viewM);
+        gat.getAllTitles(inp, pres);
     }
 }

@@ -1,7 +1,10 @@
 package adapters.controllers;
 
+import adapters.presenters.GmlsPresenter;
+import adapters.view_models.GmlsViewModel;
 import usecases.get_most_liked_stories.GmlsInputBoundary;
 import usecases.get_most_liked_stories.GmlsInputData;
+import usecases.get_most_liked_stories.GmlsOutputBoundary;
 
 public class GmlsController {
     GmlsInputBoundary gmls;
@@ -21,9 +24,13 @@ public class GmlsController {
      *                            in descending order by likes
      * @param upperRangeExclusive the upper inclusive bound for the range of stories sorted
      *                            in descending order by likes
+     * @return View model for this use case
      */
-    public void getMostLikedStories(int lowerRangeInclusive, int upperRangeExclusive){
+    public GmlsViewModel getMostLikedStories(int lowerRangeInclusive, int upperRangeExclusive){
         GmlsInputData inputData = new GmlsInputData(lowerRangeInclusive, upperRangeExclusive);
-        gmls.getMostLikedStories(inputData);
+        GmlsViewModel viewM = new GmlsViewModel();
+        GmlsPresenter pres = new GmlsPresenter(viewM);
+        gmls.getMostLikedStories(inputData, pres);
+        return viewM;
     }
 }

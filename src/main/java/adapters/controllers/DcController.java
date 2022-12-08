@@ -1,5 +1,7 @@
 package adapters.controllers;
 
+import adapters.presenters.DcPresenter;
+import adapters.view_models.DcViewModel;
 import usecases.disconnecting.DcInputBoundary;
 import usecases.disconnecting.DcInputData;
 
@@ -19,10 +21,12 @@ public class DcController {
      * Provide the ID of a player who wishes to disconnect from the game, or who has already
      * disconnected and the server is simply requesting their removal
      * @param playerId Unique ID of player never previously used
+     * @return View model for this use case
      */
-    public void disconnect (String playerId) {
-        dc.disconnect(
-                new DcInputData(playerId)
-        );
+    public DcViewModel disconnect (String playerId) {
+        DcViewModel viewM = new DcViewModel();
+        DcPresenter pres = new DcPresenter(viewM);
+        dc.disconnect(new DcInputData(playerId), pres);
+        return viewM;
     }
 }

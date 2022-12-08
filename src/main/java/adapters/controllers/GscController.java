@@ -1,5 +1,7 @@
 package adapters.controllers;
 
+import adapters.presenters.GscPresenter;
+import adapters.view_models.GscViewModel;
 import usecases.get_story_comments.GscInputBoundary;
 import usecases.get_story_comments.GscInputData;
 
@@ -22,6 +24,8 @@ public class GscController {
     public void getStoryComments(int storyId) {
 
         GscInputData inputData = new GscInputData(storyId);
-        inputBoundary.getStoryComments(inputData);
+        GscViewModel viewM = new GscViewModel();
+        GscPresenter pres = new GscPresenter(viewM);
+        inputBoundary.getStoryComments(inputData, pres);
     }
 }

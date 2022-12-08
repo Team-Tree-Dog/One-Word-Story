@@ -9,7 +9,6 @@ import java.util.Arrays;
  */
 public class GlsInteractor implements GlsInputBoundary{
 
-    private final GlsOutputBoundary pres;
     private final GlsGatewayStory repo;
 
     /**
@@ -20,18 +19,16 @@ public class GlsInteractor implements GlsInputBoundary{
 
     /**
      * Constructor for GlsInteractor
-     * @param pres GlsOutputBoundary
      * @param repo GlsGateway used by this interactor
      */
-    public GlsInteractor(GlsOutputBoundary pres, GlsGatewayStory repo, ThreadRegister register) {
-        this.pres = pres;
+    public GlsInteractor(GlsGatewayStory repo, ThreadRegister register) {
         this.repo = repo;
         this.register = register;
     }
 
     @Override
-    public void getLatestStories(GlsInputData data) {
-        InterruptibleThread thread = new GlsThread(data);
+    public void getLatestStories(GlsInputData data, GlsOutputBoundary pres) {
+        InterruptibleThread thread = new GlsThread(data, pres);
         if (!register.registerThread(thread)) {
             pres.outputShutdownServer();
         }
@@ -40,17 +37,19 @@ public class GlsInteractor implements GlsInputBoundary{
     /**
      * Thread for getting the latest stories
      */
-
     public class GlsThread extends InterruptibleThread {
         private final GlsInputData data;
+        private final GlsOutputBoundary pres;
 
         /**
          * Constructor for Get Latest Stories Thread
          * @param data GlsInputData
+         * @param pres Output boundary for use case
          */
-        public GlsThread(GlsInputData data) {
-            super(GlsInteractor.this.register, GlsInteractor.this.pres);
+        public GlsThread(GlsInputData data, GlsOutputBoundary pres) {
+            super(GlsInteractor.this.register, pres);
             this.data = data;
+            this.pres = pres;
         }
 
         @Override
@@ -65,6 +64,7 @@ public class GlsInteractor implements GlsInputBoundary{
 
             // DB Successfully retrieved stories
             else {
+                // toArray can't produce a null pointer if res code is success
                 StoryRepoData[] stories = res.getRows().toArray(new StoryRepoData[0]);
 
                 Arrays.sort(stories);
@@ -73,12 +73,12 @@ public class GlsInteractor implements GlsInputBoundary{
 
                     StoryRepoData[] stories2 = new StoryRepoData[data.getNumToGet()];
                     if (data.getNumToGet() >= 0) System.arraycopy(stories, 0, stories2, 0, data.getNumToGet());
-                    GlsOutputData outputData2 = new GlsOutputData(stories2,
+                    GlsOutputData outputData2 = new GlsOutputData(Arrays.asList(stories2),
                             Response.getSuccessful("Succesfully got stories"));
                     pres.putStories(outputData2);
                 }
                 else{
-                    GlsOutputData outputData1 = new GlsOutputData(stories,
+                    GlsOutputData outputData1 = new GlsOutputData(Arrays.asList(stories),
                             Response.getSuccessful("Successfully got stories"));
                     pres.putStories(outputData1);
                 }

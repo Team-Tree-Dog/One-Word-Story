@@ -23,7 +23,7 @@ public class StInteractorTests {
     private static final List<TitleRepoData> duplicateRow = new ArrayList<TitleRepoData>(List.of(duplicateTRD));
 
     StOutputBoundary pres;
-    StGateway repo;
+    StGatewayTitles repo;
     SuggestedTitleChecker titleChecker;
 
     /**
@@ -55,7 +55,7 @@ public class StInteractorTests {
      * Customizable class to imitate repository with stories during testing.
      * Records received data to be compared with applied requests
      */
-    static class CustomizableStGateway implements StGateway {
+    static class CustomizableStGateway implements StGatewayTitles {
 
         private final boolean suggestTitleSuccess;
         private final boolean getAllTitlesReturnNull;
@@ -154,17 +154,16 @@ public class StInteractorTests {
         repo = new CustomizableStGateway(true, true);
         pres = new CustomizableStOutputBoundary();
         titleChecker = new CustomizableTitleChecker(true);
-        StInteractor st = new StInteractor(pres, repo, titleChecker, register);
+        StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
-        StInputData d = new StInputData("request1", "Non-Duplicate", 1);
-        StInteractor.StThread innerThreadInstance = st.new StThread(d);
+        StInputData d = new StInputData("Non-Duplicate", 1);
+        StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
         assertEquals(Response.ResCode.FAIL, receivedData.getRes().getCode(), "Wrong code");
     }
 
@@ -180,17 +179,16 @@ public class StInteractorTests {
         repo = new CustomizableStGateway(true, false);
         pres = new CustomizableStOutputBoundary();
         titleChecker = new CustomizableTitleChecker(false);
-        StInteractor st = new StInteractor(pres, repo, titleChecker, register);
+        StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
-        StInputData d = new StInputData("request1", "Non-Duplicate", 1);
-        StInteractor.StThread innerThreadInstance = st.new StThread(d);
+        StInputData d = new StInputData("Non-Duplicate", 1);
+        StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
         assertEquals(Response.ResCode.INVALID_TITLE, receivedData.getRes().getCode(), "Wrong code");
     }
 
@@ -206,11 +204,11 @@ public class StInteractorTests {
         repo = new CustomizableStGateway(true, false);
         pres = new CustomizableStOutputBoundary();
         titleChecker = new CustomizableTitleChecker(true);
-        StInteractor st = new StInteractor(pres, repo, titleChecker, register);
+        StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
-        StInputData d = new StInputData("request1", " d    d ", 1);
-        StInteractor.StThread innerThreadInstance = st.new StThread(d);
+        StInputData d = new StInputData(" d    d ", 1);
+        StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
@@ -232,17 +230,16 @@ public class StInteractorTests {
         repo = new CustomizableStGateway(true, false);
         pres = new CustomizableStOutputBoundary();
         titleChecker = new CustomizableTitleChecker(true);
-        StInteractor st = new StInteractor(pres, repo, titleChecker, register);
+        StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
-        StInputData d = new StInputData("request1", "Duplicate", 1);
-        StInteractor.StThread innerThreadInstance = st.new StThread(d);
+        StInputData d = new StInputData("Duplicate", 1);
+        StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
         assertEquals(Response.ResCode.TITLE_ALREADY_SUGGESTED, receivedData.getRes().getCode(), "Wrong code");
     }
 
@@ -258,17 +255,16 @@ public class StInteractorTests {
         repo = new CustomizableStGateway(false, false);
         pres = new CustomizableStOutputBoundary();
         titleChecker = new CustomizableTitleChecker(true);
-        StInteractor st = new StInteractor(pres, repo, titleChecker, register);
+        StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
-        StInputData d = new StInputData("request1", "Non-Duplicate", 1);
-        StInteractor.StThread innerThreadInstance = st.new StThread(d);
+        StInputData d = new StInputData("Non-Duplicate", 1);
+        StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestID(), "Wrong RequestID");
         assertEquals(Response.ResCode.FAIL, receivedData.getRes().getCode(), "Wrong code");
     }
 
@@ -284,17 +280,16 @@ public class StInteractorTests {
         repo = new CustomizableStGateway(true, false);
         pres = new CustomizableStOutputBoundary();
         titleChecker = new CustomizableTitleChecker(true);
-        StInteractor st = new StInteractor(pres, repo, titleChecker, register);
+        StInteractor st = new StInteractor(repo, titleChecker, register);
 
         // Running thread
-        StInputData d = new StInputData("request1", "Non-Duplicate", 1);
-        StInteractor.StThread innerThreadInstance = st.new StThread(d);
+        StInputData d = new StInputData("Non-Duplicate", 1);
+        StInteractor.StThread innerThreadInstance = st.new StThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results for presenter
         StOutputData receivedData = ((CustomizableStOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestID());
         assertEquals(Response.ResCode.SUCCESS, receivedData.getRes().getCode(), "Wrong code");
     }
 

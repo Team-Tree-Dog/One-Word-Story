@@ -5,6 +5,6 @@ public interface LsInputBoundary {
     /**
      * This is the main method used for adding likes to stories
      * */
-    void likeStory(LsInputData data);
+    void likeStory(LsInputData data, LsOutputBoundary pres);
 
 }

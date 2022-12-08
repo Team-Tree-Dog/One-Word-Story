@@ -1,18 +1,24 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
+import adapters.display_data.not_ended_display_data.GameDisplayDataBuilder;
+import adapters.view_models.JplViewModel;
+import usecases.GameDTO;
+import usecases.PlayerDTO;
+import usecases.Response;
 import usecases.join_public_lobby.JplOutputBoundary;
 import usecases.join_public_lobby.JplOutputDataJoinedGame;
 import usecases.join_public_lobby.JplOutputDataResponse;
 
+import static usecases.Response.ResCode.SHUTTING_DOWN;
+
 public class JplPresenter implements JplOutputBoundary {
 
-    private final ViewModel viewM;
+    private final JplViewModel viewM;
 
     /**
      * @param viewM Instance of the view model to write to
      */
-    public JplPresenter (ViewModel viewM) { this.viewM = viewM; }
+    public JplPresenter (JplViewModel viewM) { this.viewM = viewM; }
 
     /**
      * Notify the view model that a player with a particular ID was added to the pool,
@@ -21,7 +27,7 @@ public class JplPresenter implements JplOutputBoundary {
      */
     @Override
     public void inPool(JplOutputDataResponse dataJoinedPool) {
-
+        viewM.setResponse(dataJoinedPool.getRes());
     }
 
     /**
@@ -31,7 +37,14 @@ public class JplPresenter implements JplOutputBoundary {
      */
     @Override
     public void inGame(JplOutputDataJoinedGame dataJoinedGame) {
-
+        GameDTO g = dataJoinedGame.getGameData();
+        GameDisplayDataBuilder builder = new GameDisplayDataBuilder();
+        for (PlayerDTO p : g.getPlayers()) {
+            builder.addPlayer(p.getPlayerId(), p.getDisplayName(),
+                    p.getPlayerId().equals(g.getCurrentTurnPlayerId()));
+        }
+        builder.setSecondsLeftInTurn(g.getSecondsLeftCurrentTurn()).setStoryString(g.getStory());
+        viewM.setGameDisplay(builder.build());
     }
 
     /**
@@ -41,11 +54,11 @@ public class JplPresenter implements JplOutputBoundary {
      */
     @Override
     public void cancelled(JplOutputDataResponse dataCancelled) {
-
+        viewM.setCancelled();
     }
 
     @Override
     public void outputShutdownServer() {
-
+        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

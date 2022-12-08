@@ -1,19 +1,21 @@
 package adapters.presenters;
 
-
-import adapters.ViewModel;
+import adapters.view_models.CagViewModel;
+import usecases.Response;
 import usecases.comment_as_guest.CagOutputBoundary;
 import usecases.comment_as_guest.CagOutputData;
 
+import static usecases.Response.ResCode.SHUTTING_DOWN;
+
 public class CagPresenter implements CagOutputBoundary {
 
-    private final ViewModel viewM;
+    private final CagViewModel viewM;
 
     /**
      * Constructor for CagPresenter
      * @param viewM Instance of the view model to write to
      */
-    public CagPresenter(ViewModel viewM) {
+    public CagPresenter(CagViewModel viewM) {
         this.viewM = viewM;
     }
 
@@ -23,11 +25,11 @@ public class CagPresenter implements CagOutputBoundary {
      */
     @Override
     public void commentAsGuestOutput(CagOutputData data) {
-
+        viewM.setResponse(data.getRes());
     }
 
     @Override
     public void outputShutdownServer() {
-
+        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

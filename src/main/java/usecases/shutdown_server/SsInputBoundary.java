@@ -8,7 +8,8 @@ public interface SsInputBoundary {
 
     /**
      * This method completely shuts down the server
+     * @param pres output boundary for this use case
      */
-    void shutdownServer();
+    void shutdownServer(SsOutputBoundary pres);
 
 }

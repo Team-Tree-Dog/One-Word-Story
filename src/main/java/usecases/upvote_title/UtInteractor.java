@@ -3,22 +3,20 @@ package usecases.upvote_title;
 import usecases.InterruptibleThread;
 import usecases.Response;
 import usecases.ThreadRegister;
+import usecases.shutdown_server.SsOutputBoundary;
 
 /**
  * The interactor for this use case: carries out all the processes involved in upvoting a title.
  */
 public class UtInteractor implements UtInputBoundary{
-    private final UtOutputBoundary pres;
-    private final UtGatewayTitles repo;
-    private final ThreadRegister register;
+    private UtGatewayTitles repo;
+    private ThreadRegister register;
 
     /**
-     * @param pres      the presenter for this use case
      * @param repo      the repository containing the stories and the titles. Implements UtGatewayTitles
      * @param register  the register for the interruptible threads
      */
-    public UtInteractor(UtOutputBoundary pres, UtGatewayTitles repo, ThreadRegister register) {
-        this.pres = pres;
+    public UtInteractor(UtGatewayTitles repo, ThreadRegister register) {
         this.repo = repo;
         this.register = register;
     }
@@ -28,13 +26,15 @@ public class UtInteractor implements UtInputBoundary{
      */
     public class UtThread extends InterruptibleThread{
         private UtInputData data;
+        private UtOutputBoundary pres;
 
         /**
          * @param data  the input data that this thread takes in to carry out the processes for this use case.
          */
-        public UtThread(UtInputData data) {
-            super(UtInteractor.this.register, UtInteractor.this.pres);
+        public UtThread(UtInputData data, UtOutputBoundary pres) {
+            super(UtInteractor.this.register, pres);
             this.data = data;
+            this.pres = pres;
         }
 
         /**
@@ -45,7 +45,7 @@ public class UtInteractor implements UtInputBoundary{
          */
         public void threadLogic() {
             Response res = repo.upvoteTitle(data.getStoryId(), data.getTitleToUpvote());
-            UtOutputData outputData = new UtOutputData(data.getRequestId(), res); //builds output data
+            UtOutputData outputData = new UtOutputData(res); //builds output data
             pres.upvoteOutput(outputData);
         }
     }
@@ -55,8 +55,8 @@ public class UtInteractor implements UtInputBoundary{
      * @param data  input data for this use case.
      */
     @Override
-    public void upvoteTitle(UtInputData data){
-        InterruptibleThread thread = new UtThread(data);
+    public void upvoteTitle(UtInputData data, UtOutputBoundary pres){
+        InterruptibleThread thread = new UtThread(data, pres);
         boolean success = register.registerThread(thread);
         if (!success){pres.outputShutdownServer();}
     }

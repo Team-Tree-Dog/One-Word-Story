@@ -148,17 +148,16 @@ public class CagInteractorTests {
         pres = new CustomizableCagOutputBoundary();
         commentChecker = new CustomizableCommentChecker(false);
         displayChecker = new CustomizableDisplayNameChecker(true);
-        CagInteractor cag = new CagInteractor(pres, repo, commentChecker, displayChecker, register);
+        CagInteractor cag = new CagInteractor(repo, commentChecker, displayChecker, register);
 
         // Running thread
-        CagInputData d = new CagInputData("request1", "Jim", "You call this a story", 1);
-        CagInteractor.CagThread innerThreadInstance = cag.new CagThread(d);
+        CagInputData d = new CagInputData("Jim", "You call this a story", 1);
+        CagInteractor.CagThread innerThreadInstance = cag.new CagThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
         CagOutputData receivedData = ((CustomizableCagOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestId(), "Wrong RequestId");
         assertEquals(Response.ResCode.INVALID_COMMENT, receivedData.getRes().getCode(), "Wrong code");
     }
 
@@ -175,17 +174,16 @@ public class CagInteractorTests {
         pres = new CustomizableCagOutputBoundary();
         commentChecker = new CustomizableCommentChecker(true);
         displayChecker = new CustomizableDisplayNameChecker(false);
-        CagInteractor cag = new CagInteractor(pres, repo, commentChecker, displayChecker, register);
+        CagInteractor cag = new CagInteractor(repo, commentChecker, displayChecker, register);
 
         // Running thread
-        CagInputData d = new CagInputData("request1", "Jim", "You call this a story", 1);
-        CagInteractor.CagThread innerThreadInstance = cag.new CagThread(d);
+        CagInputData d = new CagInputData("Jim", "You call this a story", 1);
+        CagInteractor.CagThread innerThreadInstance = cag.new CagThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
         CagOutputData receivedData = ((CustomizableCagOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestId(), "Wrong RequestId");
         assertEquals(Response.ResCode.INVALID_DISPLAY_NAME, receivedData.getRes().getCode(), "Wrong code");
     }
 
@@ -203,17 +201,16 @@ public class CagInteractorTests {
         pres = new CustomizableCagOutputBoundary();
         commentChecker = new CustomizableCommentChecker(true);
         displayChecker = new CustomizableDisplayNameChecker(true);
-        CagInteractor cag = new CagInteractor(pres, repo, commentChecker, displayChecker, register);
+        CagInteractor cag = new CagInteractor(repo, commentChecker, displayChecker, register);
 
         // Running thread
-        CagInputData d = new CagInputData("request1", "Jim", "You call this a story", 1);
-        CagInteractor.CagThread innerThreadInstance = cag.new CagThread(d);
+        CagInputData d = new CagInputData("Jim", "You call this a story", 1);
+        CagInteractor.CagThread innerThreadInstance = cag.new CagThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
         CagOutputData receivedData = ((CustomizableCagOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestId(), "Wrong RequestId");
         assertEquals(Response.ResCode.FAIL, receivedData.getRes().getCode(), "Wrong code");
     }
 
@@ -231,17 +228,16 @@ public class CagInteractorTests {
         pres = new CustomizableCagOutputBoundary();
         commentChecker = new CustomizableCommentChecker(true);
         displayChecker = new CustomizableDisplayNameChecker(true);
-        CagInteractor cag = new CagInteractor(pres, repo, commentChecker, displayChecker, register);
+        CagInteractor cag = new CagInteractor(repo, commentChecker, displayChecker, register);
 
         // Running thread
-        CagInputData d = new CagInputData("request1", "Jim", "You call this a story", 1);
-        CagInteractor.CagThread innerThreadInstance = cag.new CagThread(d);
+        CagInputData d = new CagInputData("Jim", "You call this a story", 1);
+        CagInteractor.CagThread innerThreadInstance = cag.new CagThread(d, pres);
         innerThreadInstance.run();
 
         // Verifying results
         CagOutputData receivedData = ((CustomizableCagOutputBoundary) pres).getReceivedData();
         assertNotNull(receivedData, "Presenter was not accessed");
-        assertEquals("request1", receivedData.getRequestId(), "Wrong RequestId");
         assertEquals(Response.ResCode.SUCCESS, receivedData.getRes().getCode(), "Wrong code");
     }
 

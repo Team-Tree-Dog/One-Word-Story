@@ -285,7 +285,7 @@ public class ThreadLockTests {
                 jplCancel.set(true);
             }
         };
-        JplInteractor jplInteractor = new JplInteractor(lobman, jplPres, threadRegister);
+        JplInteractor jplInteractor = new JplInteractor(lobman, threadRegister);
 
         AtomicBoolean dcFlag = new AtomicBoolean(false);
         DcInputData dcInputData = new DcInputData(player1.getPlayerId());
@@ -300,7 +300,7 @@ public class ThreadLockTests {
 
             }
         };
-        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres, threadRegister);
+        DcInteractor dcInteractor = new DcInteractor(lobman, threadRegister);
 
         PgeInputBoundary pgeInputBoundary = data -> {};
         PdInputBoundary pdInputBoundary = d -> {};
@@ -314,30 +314,30 @@ public class ThreadLockTests {
         System.out.println("Case Number: " + newint);
         switch (newint) {
             case 0 :
-                jplInteractor.joinPublicLobby(jplInputData);
+                jplInteractor.joinPublicLobby(jplInputData, jplPres);
                 Thread.sleep(randTime1);
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 Thread.sleep(randTime2);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 break;
             case 1 :
-                jplInteractor.joinPublicLobby(jplInputData);
+                jplInteractor.joinPublicLobby(jplInputData, jplPres);
                 Thread.sleep(randTime1);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 Thread.sleep(randTime2);
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 break;
             case 2 :
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 Thread.sleep(randTime1);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 Thread.sleep(randTime2);
-                jplInteractor.joinPublicLobby(jplInputData);
+                jplInteractor.joinPublicLobby(jplInputData, jplPres);
                 break;
             case 3 :
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 Thread.sleep(randTime1);
-                jplInteractor.joinPublicLobby(jplInputData);
+                jplInteractor.joinPublicLobby(jplInputData, jplPres);
                 Thread.sleep(randTime2);
                 System.out.println("SpTimer should now start");
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
@@ -369,7 +369,7 @@ public class ThreadLockTests {
             System.out.println("Scenario 1 happened: Player 2 remains in the pool, Player 1 disconnected, no game exists.");
 
             // Cancel 2nd player from pool so JPL can end (teardown procedure)
-            dcInteractor.disconnect(new DcInputData("2"));
+            dcInteractor.disconnect(new DcInputData("2"), dcPres);
             // If the above line would be commented out, Java would still force-terminate the JPL thread.
         }
         else {
@@ -481,7 +481,7 @@ public class ThreadLockTests {
 
             }
         };
-        SwInteractor swInteractor = new SwInteractor(swPres, lobman, threadRegister);
+        SwInteractor swInteractor = new SwInteractor(lobman, threadRegister);
 
         AtomicBoolean dcFlag = new AtomicBoolean(false);
         DcInputData dcInputData = new DcInputData(player1.getPlayerId());
@@ -496,7 +496,7 @@ public class ThreadLockTests {
 
             }
         };
-        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres, threadRegister);
+        DcInteractor dcInteractor = new DcInteractor(lobman, threadRegister);
 
         PgeInputBoundary pgeInputBoundary = data -> {};
         PdInputBoundary pdInputBoundary = d -> {};
@@ -508,23 +508,23 @@ public class ThreadLockTests {
         System.out.println("Case number: " + newint);
         switch (newint) {
             case 0 : // SW1, RG, DC1: Word processed, player disconnects.
-                swInteractor.submitWord(swInputData);
+                swInteractor.submitWord(swInputData, swPres);
                 timer.scheduleAtFixedRate(rgTimerTask, 0, 50);
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 break;
             case 1 : // SW1, DC1, RG: Word processed, player disconnects.
-                swInteractor.submitWord(swInputData);
-                dcInteractor.disconnect(dcInputData);
+                swInteractor.submitWord(swInputData, swPres);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 timer.scheduleAtFixedRate(rgTimerTask, 0, 50);
                 break;
             case 2 : // DC1, RG, SW1: PlayerNotFound, word not processed.
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 timer.scheduleAtFixedRate(rgTimerTask, 0, 50);
-                swInteractor.submitWord(swInputData);
+                swInteractor.submitWord(swInputData, swPres);
                 break;
             case 3 : // DC1, SW1, RG: PlayerNotFound, word not processed.
-                dcInteractor.disconnect(dcInputData);
-                swInteractor.submitWord(swInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
+                swInteractor.submitWord(swInputData, swPres);
                 timer.scheduleAtFixedRate(rgTimerTask, 0, 50);
                 break;
         }
@@ -612,7 +612,7 @@ public class ThreadLockTests {
                 codeJpl.set(dataCancelled.getRes().getCode());
             }
         };
-        JplInteractor jplInteractor = new JplInteractor(lobman, jplPres, threadRegister);
+        JplInteractor jplInteractor = new JplInteractor(lobman, threadRegister);
 
         AtomicBoolean dcFlag = new AtomicBoolean(false);
         AtomicReference<Response.ResCode> codeDc = new AtomicReference<>();
@@ -629,7 +629,7 @@ public class ThreadLockTests {
 
             }
         };
-        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres, threadRegister);
+        DcInteractor dcInteractor = new DcInteractor(lobman, threadRegister);
 
         PgeInputBoundary pgeInputBoundary = data -> {};
         PdInputBoundary pdInputBoundary = d -> {};
@@ -643,30 +643,30 @@ public class ThreadLockTests {
         System.out.println("Case Number: " + newint);
         switch (newint) {
             case 0 :
-                jplInteractor.joinPublicLobby(jplInputData);
+                jplInteractor.joinPublicLobby(jplInputData, jplPres);
                 Thread.sleep(randTime1);
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 Thread.sleep(randTime2);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 break;
             case 1 :
-                jplInteractor.joinPublicLobby(jplInputData);
+                jplInteractor.joinPublicLobby(jplInputData, jplPres);
                 Thread.sleep(randTime1);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 Thread.sleep(randTime2);
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 break;
             case 2 :
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 Thread.sleep(randTime1);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 Thread.sleep(randTime2);
-                jplInteractor.joinPublicLobby(jplInputData);
+                jplInteractor.joinPublicLobby(jplInputData, jplPres);
                 break;
             case 3 :
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 Thread.sleep(randTime1);
-                jplInteractor.joinPublicLobby(jplInputData);
+                jplInteractor.joinPublicLobby(jplInputData, jplPres);
                 Thread.sleep(randTime2);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 break;
@@ -808,38 +808,38 @@ public class ThreadLockTests {
 
             }
         };
-        DcInteractor dcInteractor = new DcInteractor(lobman, dcPres, threadRegister);
+        DcInteractor dcInteractor = new DcInteractor(lobman, threadRegister);
 
         int newint = new Random().nextInt(6);
         System.out.println("Case number: " + newint);
         switch (newint) {
             case 0 : // RG, DC, SP
                 rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
                 break;
             case 1 : // RG, SP, DC
                 rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 break;
             case 2 : // SP, RG, DC
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
                 rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 break;
             case 3 : // SP, DC, RG
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
                 break;
             case 4 : // DC, SP, RG
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
                 rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
                 break;
             case 5 : // DC, RG, SP
-                dcInteractor.disconnect(dcInputData);
+                dcInteractor.disconnect(dcInputData, dcPres);
                 rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
                 break;

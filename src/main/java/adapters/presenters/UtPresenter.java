@@ -1,17 +1,20 @@
 package adapters.presenters;
 
-import adapters.ViewModel;
+import adapters.view_models.UtViewModel;
+import usecases.Response;
 import usecases.upvote_title.UtOutputBoundary;
 import usecases.upvote_title.UtOutputData;
 
+import static usecases.Response.ResCode.SHUTTING_DOWN;
+
 public class UtPresenter implements UtOutputBoundary {
-    private ViewModel viewM;
+    private UtViewModel viewM;
 
     /**
      * Constructor for the upvote title use case presenter. Takes in and sets the view model for this use case.
      * @param viewM instance of the view model for this use case.
      */
-    public UtPresenter(ViewModel viewM) {this.viewM = viewM;}
+    public UtPresenter(UtViewModel viewM) {this.viewM = viewM;}
 
     /**
      * Notify the view model of the success of upvoting a title
@@ -20,11 +23,11 @@ public class UtPresenter implements UtOutputBoundary {
      */
     @Override
     public void upvoteOutput(UtOutputData data){
-
+        viewM.setResponse(data.getRes());
     }
 
     @Override
     public void outputShutdownServer(){
-
+        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }
