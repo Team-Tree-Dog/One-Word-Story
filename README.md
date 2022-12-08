@@ -70,3 +70,13 @@ TODO
 
 TODO
 
+## Future updates
+
+1. *Shutdown Messages:* Design a nice structure for use cases to send a message back to the shutdown server use case to display in the view’s terminal (e.g “Sw shutdown successfully”). This would require some cleanup and potentially putting shutdown on its own thread to not block the view
+2. *Time and Round-based Games:* Game ends when either a timer runs out or a certain number of turns pass
+3. *Kicking AFK players:* Keep integer count of how many turns a player missed. If player missed a certain number of turns, remove them
+4. *Multiple Public Lobbies and Matchmaking Settings:* Settings can be selected and sent to the server when joining a public lobby so that you are sorted into a lobby with those desired settings. Weekly Topic. Join a public lobby where the topic is the “weekly topic”. These stories will be filed separately when complete and there will be a “best weekly topic story” vote.
+5. *Lobby Restoration:* Constantly save lobby information to the repository so that if the server ever crashes, previously active lobbies could be restored. Obviously the players would all have been disconnected if the server crashed. We’d need to decide the exact protocol.
+6. *Comment Replies:* As the title implies, comments may be replied to!
+
+
