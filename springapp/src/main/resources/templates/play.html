@@ -7,13 +7,13 @@
 </head>
 
 <body>
-    <!-- game logo -->
-    <div>
-        <img src="media/logo.png" alt="logo" onclick="location.href = '/home'">
-    </div>
+    <div id="play_page">
+        <!-- game logo -->
+        <div>
+            <img src="media/logo.png" alt="logo" onclick="location.href = '/'">
+        </div>
 
-    <!-- form where you need to enter your name and submit it -->
-    <form action="/play">
+        <!-- form where you need to enter your name and submit it -->
         <!-- name input -->
         <label for="name">Enter your name:</label>
         <input type="text" id="name" name="name" required><br><br>
@@ -21,10 +21,74 @@
         <!-- button "Play" -->
         <div class="container">
             <div class="wrap">
-                <button class="button">Play</button>
+                <button id="play_button" class="button">Play</button>
             </div>
         </div>
-    </form>
+
+    </div>
+
+
+
+    <div id="waiting_page">
+        <div class="center">
+            <div class="ring">
+
+            </div>
+            <span> Looking for lobby... </span>
+        </div>
+        <div class="center2">
+            <button id="cancel-button" class="button button1"> Cancel </button>
+        </div>
+    </div>
+
+
+
+    <div id="game_page">
+        <div id="two_columns">
+            <div id="column-1" class="column">
+                <!-- list of players -->
+                <ul>
+                    <li>
+                        <div>
+                            Player 1
+                            <img style="vertical-align:middle" src="media/pencil.png" width="20" alt="Pencil">
+                        </div>
+                    </li>
+
+                    <li>
+                        <div>
+                            Player 2
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- submit a word -->
+                <form action="">
+                    <label for="word">Word:</label>
+                    <input type="text" id="word" name="word" required><br><br>
+                    <input type="button" value="Submit" onClick="pr()">
+                </form>
+                <span id="result"></span>
+            </div>
+
+            <!-- story -->
+            <div id="story_column" class="column">
+                <h3>Your Story</h3>
+                <div id="story">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </div>
+            </div>
+
+            <!-- exit icon -->
+            <div class="column" id="close_button">
+                <img style="vertical-align:middle" src="media/exit.png" width="50" alt="Close" onclick="exit()">
+            </div>
+        </div>
+    </div>
+
 </body>
+
+<script src="js/play.js"> </script>
 
 </html>

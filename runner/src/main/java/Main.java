@@ -36,6 +36,10 @@ import usecases.submit_word.SwInteractor;
 import usecases.suggest_title.StInteractor;
 import usecases.upvote_title.UtInteractor;
 
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Orchestrator. Contains only a main method which boots up
  * the server.
@@ -64,6 +68,49 @@ public class Main {
         InMemoryTitlesRepo titlesRepo = new InMemoryTitlesRepo();
         InMemoryCommentsRepo commentsRepo = new InMemoryCommentsRepo();
         InMemoryStoryRepo storyRepo = new InMemoryStoryRepo();
+
+        // Populate dummy data for testing
+        // -----------------------
+        Set<String> firstAuthors = new HashSet<>();
+        firstAuthors.add("Andrew Serdiuk");
+        Set<String> secondAuthors = new HashSet<>();
+        secondAuthors.add("Andrew Serdiuk");
+        secondAuthors.add("Aleksey Panas");
+        Set<String> thirdAuthors = new HashSet<>();
+        thirdAuthors.add("Suspect");
+
+        storyRepo.saveStory("ONCE upon a time billy went to milk some cows", (new Date().getTime()),
+                firstAuthors);
+
+        storyRepo.saveStory("Once we were able to finish the assignment in time, but then we woke up"
+                , (new Date().getTime()), secondAuthors);
+
+        storyRepo.saveStory("The cause of all evil is: "
+                , (new Date().getTime()), thirdAuthors);
+
+        titlesRepo.suggestTitle(0, "When the cows come home");
+        titlesRepo.upvoteTitle(0, "When the cows come home");
+        titlesRepo.upvoteTitle(0, "When the cows come home");
+        titlesRepo.suggestTitle(0, "When the deadline is due");
+
+        storyRepo.likeStory(1);
+        storyRepo.likeStory(1);
+        storyRepo.likeStory(1);
+
+        storyRepo.likeStory(0);
+        storyRepo.likeStory(0);
+
+        storyRepo.likeStory(2);
+
+        titlesRepo.suggestTitle(1, "Very sad story");
+        for(int i = 0; i  < 100; i++) {
+            titlesRepo.upvoteTitle(1, "Very sad story");
+        }
+
+        commentsRepo.commentAsGuest(0, "Andrew", "This is my best piece of work");
+        commentsRepo.commentAsGuest(1, "Aleksey", "This is very true");
+        commentsRepo.commentAsGuest(2, "Aleksey", "Is this some testing data?");
+        // -----------------------
 
         // Create desired per-player statistics for injection
         PerPlayerIntStatistic[] statistics = {
@@ -115,7 +162,7 @@ public class Main {
 
         System.out.println("Main: Before Spring Init");
 
-        // TODO: Setup and run the view
+        // Setup and run the view
         SpringBootView.init(
           cagController, dcController, gatController, glsController, gmlsController,
           gscController, jplController, lsController, ssController, stController,

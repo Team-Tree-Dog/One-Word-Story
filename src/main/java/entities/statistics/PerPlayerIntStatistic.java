@@ -1,7 +1,6 @@
 package entities.statistics;
 
 import entities.Player;
-import entities.games.GameReadOnly;
 import util.RecursiveSymboledIntegerHashMap;
 
 import java.util.Map;

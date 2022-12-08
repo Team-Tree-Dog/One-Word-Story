@@ -18,13 +18,10 @@ h1 {
 }
 #all_stories {
     display: flex;
-    height: 300px;
+    height: 600px;
     overflow-y: scroll;
-}
-
-#all_stories {
     border-style: solid;
-    margin-top: 20px;
+    margin-top: 100px;
 }
 
 .column {

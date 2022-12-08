@@ -140,10 +140,12 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles, Ut
         lock.lock();
         // Convert to CommentRepoData objects
         for (TitlesTableRow row : titlesTable) {
-            res.addRow(new TitleRepoData(
-                    row.getSuggestionId(), row.getStoryId(),
-                    row.getTitleSuggestion(), row.getUpvotes()
-            ));
+            if (row.storyId == storyId) {
+                res.addRow(new TitleRepoData(
+                        row.getSuggestionId(), row.getStoryId(),
+                        row.getTitleSuggestion(), row.getUpvotes()
+                ));
+            }
         }
         lock.unlock();
 
@@ -166,6 +168,7 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles, Ut
         for (TitlesTableRow row: titlesTable) {
             // If story id and title suggestion string match, add upvote
             if (row.getStoryId() == storyId && row.getTitleSuggestion().equals(titleToUpvote)) {
+                row.addUpvote();
                 res = Response.getSuccessful("Successfully upvoted title");
                 break;
             }

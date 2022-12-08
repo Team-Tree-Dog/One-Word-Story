@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/index.css">
-    <script src="jss/index.js"> </script>
+    <script src="js/index.js"> </script>
     <title>One Word Story</title>
 </head>
+
 <body>
     <div id="name_logo">
         <h1>One Word Story</h1>
@@ -14,7 +15,7 @@
 
     <div class="container">
         <div class="wrap">
-            <form action="/play" method="POST">
+            <form action="/play">
                 <button class="button">Play</button>
             </form>
         </div>
@@ -24,60 +25,28 @@
         <label class="switch">
             <input type="checkbox" id="togBtn">
             <div class="slider round">
-                <span onclick="location.href = '/home?get=latest'" id="latest">Latest</span>
-                <span onclick="location.href = '/home?get=liked'" id="liked">Most Liked</span>
+                <span onclick="location.href = '/?get=latest'" id="latest">Latest</span>
+                <span onclick="location.href = '/?get=liked'" id="liked">Most Liked</span>
             </div>
         </label>
     </div>
 
     <div id="all_stories">
+
+
         <div class="column">
-            <div class="story" id="story1">
-                <a href="/stories/1">
-                    <h2>Title</h2>
+            <div th:each="story: ${stories}" class="story" id="story1">
+                <a th:href="@{/story-{id}(id = ${story.getId()})}">
+                    <h2 th:text="${story.getTitle()}" ></h2>
                 </a>
-                <h4>Authors</h4>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-            </div>
-            <div class="story" id="story2">
-                <a href="/stories/2">
-                    <h2>Title</h2>
-                </a>
-                <h4>Authors</h4>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <span style="color:darkblue" th:text="'&#9829; ' + ${story.getLikes()}"> </span>
+                <p th:text="'Published: ' + ${story.getDateString()}"></p>
+                <h4>Authors: <span th:text="${story.getAuthorString()}" > </span> </h4>
+                <p th:text="${story.getContent()}">  </p>
             </div>
         </div>
 
-        <div class="column">
-            <div class="story" id="story3">
-                <a href="/stories/3">
-                    <h2>Title</h2>
-                </a>
-                <h4>Authors</h4>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-            </div>
-            <div class="story" id="story4">
-                <a href="/stories/4">
-                    <h2>Title</h2>
-                </a>
-                <h4>Authors</h4>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-            </div>
-        </div>
     </div>
-
 
 </body>
 </html>

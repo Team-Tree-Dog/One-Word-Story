@@ -99,10 +99,12 @@ public class InMemoryCommentsRepo implements GscGatewayComments, CagGatewayComme
 
         // Convert to CommentRepoData objects
         for (CommentsTableRow row : commentsTable) {
-            res.addRow(new CommentRepoData(
-                    row.getCommentId(), row.getStoryId(),
-                    row.getDisplayName(), row.getComment()
-            ));
+            if (row.getStoryId() == storyId) {
+                res.addRow(new CommentRepoData(
+                        row.getCommentId(), row.getStoryId(),
+                        row.getDisplayName(), row.getComment()
+                ));
+            }
         }
         lock.unlock();
 
