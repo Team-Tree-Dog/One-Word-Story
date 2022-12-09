@@ -97,12 +97,12 @@ public class GameTests {
     }
 
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void onTimerUpdate() {
     }
 
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void getPlayerById() {
         Game testGame = new CustomizableTestGame(new LinkedList<>());
         Player player1 = new Player("player1", "1");
@@ -115,7 +115,7 @@ public class GameTests {
     }
 
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void removePlayer() {
         Game testGame = new CustomizableTestGame(new LinkedList<>());
         Player player1 = new Player("player1", "1");
@@ -131,7 +131,7 @@ public class GameTests {
     }
 
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void addPlayer() {
         Game testGame = new CustomizableTestGame(new LinkedList<>());
         Player player1 = new Player("player1", "1");
@@ -142,7 +142,7 @@ public class GameTests {
     }
 
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void switchTurn() {
         Game testGame = new CustomizableTestGame(new LinkedList<>());
         Player player1 = new Player("player1", "1");
@@ -161,7 +161,7 @@ public class GameTests {
     }
 
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void getCurrentTurnPlayer() {
         Game testGame = new CustomizableTestGame(new LinkedList<>());
         Player player1 = new Player("player1", "1");

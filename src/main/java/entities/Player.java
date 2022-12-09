@@ -6,7 +6,7 @@ package entities;
  */
 public class Player {
 
-    private String displayName;
+    private final String displayName;
 
     private final String playerId;
 

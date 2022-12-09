@@ -51,8 +51,9 @@ public class SpInteractor {
         @Override
         public void run() {
             // We need to lock all the accesses to the pool and the game to avoid race conditions
-            gameLock.lock();
             playerPoolLock.lock();
+            gameLock.lock();
+
             // If game has ended, set it to null.
             if (!lobbyManager.isGameNull()) {
                 if (lobbyManager.isGameEnded()) {
@@ -74,7 +75,6 @@ public class SpInteractor {
                         Lock lock = playerObserverLink.getPlayerPoolListener().getLock();
                         lock.lock();
                         try {
-
                             lobbyManager.addPlayerToGameRemoveFromPool(player);
                         } catch (PlayerNotFoundException | GameDoesntExistException e) {
                             // GameDoesntExist is an IMPOSSIBLE Error. In this if block, game is not null and

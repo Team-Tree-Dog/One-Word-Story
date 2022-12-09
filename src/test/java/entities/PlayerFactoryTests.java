@@ -22,7 +22,7 @@ public class PlayerFactoryTests {
      * Test a player is added successfully
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testPlayerValid() throws IdInUseException, InvalidDisplayNameException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         Player player1 = playerfac.createPlayer("player1", "1");
@@ -34,7 +34,7 @@ public class PlayerFactoryTests {
      * Test a player with a used ID is not added, with IdInUseException thrown.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testUsedId() throws IdInUseException, InvalidDisplayNameException {
         PlayerFactory playerfac = new PlayerFactory(displayName -> true);
         Player player1 = playerfac.createPlayer("player1", "1");
@@ -48,7 +48,7 @@ public class PlayerFactoryTests {
      * Test a player with an invalid name is not added, with InvalidDisplayNameException thrown.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testInvalidName() {
         PlayerFactory playerfac = new PlayerFactory(displayName -> false);
         assertThrows(InvalidDisplayNameException.class, () -> playerfac.createPlayer("player1", "1"));

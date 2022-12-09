@@ -3,8 +3,6 @@ package usecases.get_latest_stories;
 import usecases.*;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Interactor for Get Latest Stories use-case

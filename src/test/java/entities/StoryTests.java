@@ -53,7 +53,7 @@ public class StoryTests {
      * Tests that a word is valid and is added successfully
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testAddWordSuccess() throws InvalidWordException {
         Player player1 = new Player("player1", "1");
         String newword = "bloop";
@@ -69,7 +69,7 @@ public class StoryTests {
      * Tests that a word is invalid and is refused
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testAddWordFail() {
         Player player1 = new Player("player1", "1");
         String newword = "bloop";
@@ -83,7 +83,7 @@ public class StoryTests {
      * Tests the toString method for a blank story.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testBlankStory() {
         WordFactory wordfac = new WordFactory(new TestValidityCheckerTrue());
         Story story = new Story(wordfac);
@@ -94,7 +94,7 @@ public class StoryTests {
      * Tests the toString method for a story with multiple words.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testStorytoString() throws InvalidWordException {
         Player player1 = new Player("player1", "1");
 

@@ -53,7 +53,7 @@ public class WordFactoryTests {
      * Test that a valid word is added successfully with create().
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testValidWord() throws InvalidWordException {
         Player player1 = new Player("player1", "1");
         String newword = "bloop";
@@ -68,7 +68,7 @@ public class WordFactoryTests {
      * Test that an invalid word is refused successfully with create(), with InvalidWordException thrown.
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testInvalidWord() {
         Player player1 = new Player("player1", "1");
         String newword = "bloop";

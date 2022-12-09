@@ -21,7 +21,7 @@ public class PlayerTests {
      * Test that two players are equal for equal player IDs
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testEquals() {
         Player player1 = new Player("player1", "1");
         Player player2 = new Player("player2", "1");
@@ -33,7 +33,7 @@ public class PlayerTests {
      * Test that two players are not equal for unequal player IDs
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testUnequals() {
         Player player1 = new Player("player1", "1");
         Player player2 = new Player("player2", "2");

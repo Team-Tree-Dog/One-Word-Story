@@ -120,7 +120,7 @@ public class PdInteractorTests {
      * attribute directly
      */
     @Test
-    @Timeout(1000)
+    @Timeout(1)
     public void testRegularGameToGameDTO() {
 
         // To simulate the presenter, we create PdOutBoundary with overridden method for testing
