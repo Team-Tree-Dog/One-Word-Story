@@ -4,8 +4,8 @@
 
 - One Word Story is a common creativity game where a group of participants take turns contributing a word
 to a story with no communication on the story's heading. We thought this would be a perfect game 
-to port online, where anyone can visit the website and contribute words to a story with random
-people around the world.
+to port online, where anyone can visit a website, join a game, and contribute words to a story with random
+people around the world!
 - To play the game, you would navigate to the website, enter a display name, and hit play! You would be connected to other players and could begin contributing words to a story. When a game ends, the story is saved to the blog. Anyone can view the blog of all stories, like them, suggest titles, or add comments!
 
 
