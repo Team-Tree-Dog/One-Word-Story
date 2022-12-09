@@ -2,13 +2,11 @@
 
 ## General Description
 
-- A “One Word Story” local game intends to emulate an online game. Due to following 
-*Clean Architecture* conventions, transforming this game in an online app is easily achievable, 
-but we have made a conscious decision to focus on building the best functionality. 
-- The game is played in the following way. One user opens the game, submits the
-number of players, their names, certain game parameters, and the game starts for each player 
-in a separate window. Players take timed turns submitting words, which contribute to the story. 
-After a fixed number of rounds, the game ends and the story is complete.
+- One Word Story is a common creativity game where a group of participants take turns contributing a word
+to a story with no communication on the story's heading. We thought this would be a perfect gmae 
+to port online, where anyone can visit the website and contribute words to a story with random
+people around the world.
+- To play the game, you would navigate to the website, enter a display name, and hit play! You would be connected to other players and could begin contributing words to a story. When a game ends, the story is saved to the blog. Anyone can view the blog of all stories, like them, suggest titles, or add comments!
 
 
 ## Contributors
@@ -48,7 +46,7 @@ In this project, we used the following design patterns. Many of them were implem
 
 Although, we aimed to satisfy Clean Architecture design as much as possible, in certain places we made a conscious decision not to adhere to certain rules.
 
-* In Pull Game Ended (PGE) use-case, we save RecursiveSymboledIntegerHashMap (RSIH) and pass it to output to the adapters layer despite it being an entity. Although RSIH is an entity, it does not have any ties to actual fundamental entities; in fact, it is a utility data structure which is completely independent of entities, just as any of the java.util items. This being said, instead of pointlessly transferring it to a duplicate object by a different name, we will pass it directly. We do not believe that this crosses layers. In fact, we even store these classes in a separate "util" folder.
+* In Pull Game Ended (PGE) use-case, we save RecursiveSymboledIntegerHashMap (RSIH) and pass it to output to the adapters layer despite it being an entity. Although RSIH is an entity, it does not have any ties to actual fundamental entities; in fact, it is a utility data structure which is effectively independent of entities. This being said, instead of pointlessly transferring it to a duplicate object by a different name, we will pass it directly. We do not believe that this crosses layers. In fact, we even store these classes in a separate "util" folder.
 * In the new view model structure, we directly return use-case-layer objects - StoryRepoData, TitleRepoData, CommentRepoData, and the Response object - to the view. this means that the view crosses into the use case layer. This is not unfixable since alternatively, we could create a duplicate object with the same fields. Moreover, there is not much more manipulation needed for the view to display the situation.
 
 
