@@ -68,7 +68,14 @@ Although, we aimed to satisfy Clean Architecture design as much as possible, in 
 - You should observer Spring launching in the terminal. You can now navigate to http://localhost:8080 and use the application!
 - Typing "shutdown" in the terminal of the running server will close the application (currently doesn't work in specific situations)
 
-### Run 
+### Run Released JAR
+- Visit releases and download `runner.jar` for Release `One Word Story v1.0.0+pre`
+- With java 17 from command line, run the jar `java -jar runner.jar`, or find another way to run the jar
+- You should observer Spring launching in the terminal. You can now navigate to http://localhost:8080 and use the application!
+- Typing "shutdown" in the terminal of the running server will close the application (currently doesn't work in specific situations)
+
+### Play on official website
+- Visit https://onewordstory.net to enjoy our current deployed release of One Word Story
 
 
 ## Software Specifications
