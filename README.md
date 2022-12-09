@@ -66,13 +66,13 @@ Although, we aimed to satisfy Clean Architecture design as much as possible, in 
 <img width="712" alt="image" src="https://user-images.githubusercontent.com/47086586/206599530-cdaf6fc5-6740-4cf1-b54b-11f9deb25bf8.png">
 
 - Run the configuration
-- You should observer Spring launching in the terminal. You can now navigate to http://localhost:8080 and use the application!
+- You should observe Spring launching in the terminal. You can now navigate to http://localhost:8080 and use the application!
 - Typing "shutdown" in the terminal of the running server will close the application (currently doesn't work in specific situations)
 
 ### Run Released JAR
 - Visit releases and download `runner.jar` for Release `One Word Story v1.0.0+pre`
 - With java 17 from command line, run the jar `java -jar runner.jar`, or find another way to run the jar
-- You should observer Spring launching in the terminal. You can now navigate to http://localhost:8080 and use the application!
+- You should observe Spring launching in the terminal. You can now navigate to http://localhost:8080 and use the application!
 - Typing "shutdown" in the terminal of the running server will close the application (currently doesn't work in specific situations)
 
 ### Play on official website
