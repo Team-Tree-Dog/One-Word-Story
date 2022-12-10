@@ -252,7 +252,12 @@ public class LobbyManager {
     }
 
     /**
-     * Create a game based on the provided settings and players from the pool
+     * Create a game based on the provided settings and players from the pool. Note that this
+     * method does not remove players from the pool; Instead, it simply returns a new game
+     * instance populated with players who are currently in the pool.
+     * <br><br>
+     * This method is NOT thread safe all, that is, it engages no locks. Since this method
+     * reads the pool, it is recommended to lock the pool state during this call
      * @param settings Map<String, Integer> String to add to the story
      */
     public Game newGameFromPool (Map<String, Integer> settings) {

@@ -43,4 +43,12 @@ public class Player {
             return ((Player) obj).getPlayerId().equals(this.playerId);
         } return false;
     }
+
+    /**
+     * @return this Player as a string of the form Player(ID, NAME)
+     */
+    @Override
+    public String toString() {
+        return "Player("+ playerId +", "+ displayName +")";
+    }
 }

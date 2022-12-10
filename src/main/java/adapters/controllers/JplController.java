@@ -23,6 +23,7 @@ public class JplController {
      * @return View model for this use case
      */
     public JplViewModel joinPublicLobby (String playerId, String displayName) {
+        System.out.println("JPL Controller called with ID " + playerId + " NAME " + displayName);
         JplViewModel viewM = new JplViewModel();
         JplPresenter pres = new JplPresenter(viewM);
         jpl.joinPublicLobby(new JplInputData(displayName, playerId), pres);

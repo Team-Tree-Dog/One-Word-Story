@@ -76,7 +76,7 @@ public class DcInteractor implements DcInputBoundary {
             Player playerToDisconnect = new Player("", playerId);
 
             // Innocent until proven guilty
-            Response response = Response.getSuccessful("Disconnecting was successful.");
+            Response response = Response.getSuccessful(playerToDisconnect + " disconnected successfully!");
 
             playerPoolLock.lock();
 
@@ -88,7 +88,7 @@ public class DcInteractor implements DcInputBoundary {
             try {
                 // If player was not in pool, throw exception, run catch, and release pool in finally block
                 if(playerLink == null) {
-                    throw new PlayerNotFoundException("Player is not present in the pool");
+                    throw new PlayerNotFoundException(playerToDisconnect + " is not present in the pool");
                 }
                 playerListener = playerLink.getPlayerPoolListener();
                 // Before we continue, we should lock the pool listener's lock
@@ -122,7 +122,7 @@ public class DcInteractor implements DcInputBoundary {
                 } catch (PlayerNotFoundException | GameDoesntExistException e) {
                     // In both PlayerNotFound & GameDoesntExist, player was
                     // not found to be in the game, so respond with fail
-                    response = Response.fromException(e, "Player not found");
+                    response = Response.fromException(e, playerToDisconnect + " not found!");
                 } finally {
                     gameLock.unlock();
                 }

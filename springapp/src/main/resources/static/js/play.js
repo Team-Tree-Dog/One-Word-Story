@@ -192,11 +192,10 @@ addEventListener("click", (e) => {
     });
 })
 
-var hasGameStarted = false;
+let hasGameStarted = false;
 
 document.getElementById("cancel-button").
 addEventListener("click", (e) => {
-    // TODO: Add websocket connection
     console.log("clicked cancel");
 
     // DISCONNECT

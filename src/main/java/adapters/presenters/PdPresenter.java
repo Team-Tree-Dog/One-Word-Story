@@ -23,12 +23,20 @@ public class PdPresenter implements PdOutputBoundary {
     @Override
     public void updateGameInfo(PdOutputData d) {
         GameDTO g = d.getGameInfo();
+
+        // Create builder
         GameDisplayDataBuilder builder = new GameDisplayDataBuilder();
+
+        // Adds players
         for (PlayerDTO p : g.getPlayers()) {
             builder.addPlayer(p.getPlayerId(), p.getDisplayName(),
                     p.getPlayerId().equals(g.getCurrentTurnPlayerId()));
         }
+
+        // Adds other data
         builder.setSecondsLeftInTurn(g.getSecondsLeftCurrentTurn()).setStoryString(g.getStory());
+
+        // Sets state in view model
         viewM.setCurrentGameState(builder.build());
     }
 }
