@@ -30,7 +30,7 @@ public class JplPresenter implements JplOutputBoundary {
     @Override
     public void inPool(JplOutputDataResponse dataJoinedPool) {
         Log.sendMessage(ANSI.BLUE, "JPL", ANSI.LIGHT_BLUE,
-                "Presenter for Player ID: " + dataJoinedPool.getPlayerId() + ", " +
+                "Presenter in pool for Player ID: " + dataJoinedPool.getPlayerId() + ", " +
                         dataJoinedPool.getRes());
         viewM.setResponse(dataJoinedPool.getRes());
     }

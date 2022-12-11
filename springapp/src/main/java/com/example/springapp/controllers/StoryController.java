@@ -112,11 +112,23 @@ public class StoryController {
         public Story() {
         }
 
+        private String addZeroIfNecessary(int value) {
+            String result = String.valueOf(value);
+            if (value < 10) {
+                result = '0' + result;
+            }
+            return result;
+        }
+
         public String getDateString() {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String formattedDateTime = pub.format(formatter);
-            System.out.println(formattedDateTime);
-            return formattedDateTime;
+            String output = addZeroIfNecessary(pub.getMonthValue()) + "/" +
+                    addZeroIfNecessary(pub.getDayOfMonth()) + '/' +
+                    pub.getYear() + ' ' +
+                    addZeroIfNecessary(pub.getHour()) + ':' +
+                    addZeroIfNecessary(pub.getMinute()) +
+                    ':' + addZeroIfNecessary(pub.getSecond());
+
+            return output;
         }
 
         public Long getId() {

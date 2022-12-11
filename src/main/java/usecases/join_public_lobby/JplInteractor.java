@@ -93,7 +93,7 @@ public class JplInteractor implements JplInputBoundary {
          * Core logic of the use case
          */
         @Override
-        public void threadLogic() {
+        public void threadLogic() throws InterruptedException {
             try {
                 // It is better to always lock the whole critical section (a useful rule of thumb)
                 Log.useCaseMsg("JPL", "Wants JPL lock " + data.getId());
@@ -149,15 +149,7 @@ public class JplInteractor implements JplInputBoundary {
                                 // Response object with IdInUseException response code
                                 Response.fromException(e, e.getMessage()),
                                 data.getId()));
-            } catch (InterruptedException e) {
-                EntityException emptyException = new EntityException("");
-                pres.inPool(
-                        new JplOutputDataResponse(
-                                // Response object with IdInUseException response code
-                                Response.fromException(emptyException, e.getMessage()),
-                                data.getId()));
-            }
-            finally {
+            } finally {
                 lock.unlock();
                 Log.useCaseMsg("JPL", "Released JPL lock " + data.getId());
             }
