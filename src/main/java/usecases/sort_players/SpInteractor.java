@@ -52,26 +52,23 @@ public class SpInteractor {
         @Override
         public void run() {
             // We need to lock all the accesses to the pool and the game to avoid race conditions
-            //System.out.println("SP: Wants POOL and GAME locks");
-            Log.useCaseMsg("SP", "Wants POOL lock");
+            //Log.useCaseMsg("SP", "Wants POOL lock");
             playerPoolLock.lock();
-            Log.useCaseMsg("SP", "Got POOL lock");
-            Log.useCaseMsg("SP", "Wants GAME lock");
+            //Log.useCaseMsg("SP", "Got POOL lock");
+            //Log.useCaseMsg("SP", "Wants GAME lock");
             gameLock.lock();
-            Log.useCaseMsg("SP", "Got GAME lock");
-            //System.out.println("SP: Got POOL and GAME locks");
+            //Log.useCaseMsg("SP", "Got GAME lock");
 
             // If game has ended, set it to null.
             if (!lobbyManager.isGameNull()) {
-                //System.out.println("SP: Detected isGameNull = false");
                 if (lobbyManager.isGameEnded()) {
-                    System.out.println("SP: Detected isGameEnded = true");
+                    Log.useCaseMsg("SP", "Detected isGameEnded = true");
 
                     // if isGameEnded() is true, GameRunningException cannot be thrown
                     // No other thread currently changes isGameEnded() state so this error is IMPOSSIBLE
                     try {
                         lobbyManager.setGameNull();
-                        System.out.println("SP: Set game to null successfully");
+                        Log.useCaseMsg("SP", "Set game to null successfully");
                     } catch (GameRunningException e) {
                         gameLock.unlock();
                         playerPoolLock.unlock();
@@ -131,9 +128,9 @@ public class SpInteractor {
                 new RgInteractor(game, pge, pd, gameLock).startTimer();
             }
             gameLock.unlock();
-            Log.useCaseMsg("SP", "Released GAME lock");
+            //Log.useCaseMsg("SP", "Released GAME lock");
             playerPoolLock.unlock();
-            Log.useCaseMsg("SP", "Released POOL lock");
+            //Log.useCaseMsg("SP", "Released POOL lock");
         }
     }
 

@@ -79,6 +79,7 @@ public class PgeInteractor implements PgeInputBoundary {
             // Pass id, display name, and array-converted rec map stat data accumulation
             playerStatDTOs[i] = new PlayerStatisticDTO(
                     p.getPlayerId(), p.getDisplayName(),
+                    // TODO: playerToStats.get(p) returns null
                     playerToStats.get(p).toArray(new RecursiveSymboledIntegerHashMap[0])
             );
         }

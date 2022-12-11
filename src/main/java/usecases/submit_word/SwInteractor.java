@@ -93,9 +93,9 @@ public class SwInteractor implements SwInputBoundary {
          */
         @Override
         public void threadLogic() {
-            Log.useCaseMsg("SP", "Wants GAME lock");
+            Log.useCaseMsg("SW", "Wants GAME lock");
             gameLock.lock();
-            Log.useCaseMsg("SP", "Got GAME lock");
+            Log.useCaseMsg("SW", "Got GAME lock");
             boolean success = true;
 
             try{

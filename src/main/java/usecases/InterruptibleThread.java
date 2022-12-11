@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class InterruptibleThread extends Thread {
 
-    protected final AtomicBoolean blockInterrupt = new AtomicBoolean(true);
+    protected final AtomicBoolean blockInterrupt = new AtomicBoolean(false);
     protected final ThreadRegister register;
     protected final SsOutputBoundary outputBoundary;
 
