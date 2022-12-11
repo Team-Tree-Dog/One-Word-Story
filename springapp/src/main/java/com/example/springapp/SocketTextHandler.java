@@ -4,8 +4,8 @@ import adapters.display_data.not_ended_display_data.GameDisplayData;
 import adapters.view_models.DcViewModel;
 import adapters.view_models.JplViewModel;
 import adapters.view_models.SwViewModel;
-import com.example.springapp.controllers.Log;
 import frameworks_drivers.views.View;
+import org.example.Log;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -103,6 +103,8 @@ public class SocketTextHandler extends TextWebSocketHandler {
             // Convert raw payload to command object
             ClientCommand incomingCmd = ClientCommand.parseCommand(payload);
 
+            Log.sendSocketGeneral("HANDLE CMD RECV", incomingCmd.toString());
+
             // Prepare response object
             ServerResponse response = null;
 
@@ -120,8 +122,6 @@ public class SocketTextHandler extends TextWebSocketHandler {
                 newWord(session.getId(), ((ClientCommand.SendWord) incomingCmd).word());
             }
 
-            Log.sendSocketGeneral("HANDLE CMD RECV", incomingCmd.toString());
-
             // Sends response, if there is one
             if(response != null) {
                 // Pack response object into raw payload
@@ -135,6 +135,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
 
         } catch (Exception e) {
             Log.sendSocketError("HANDLE", e.toString());
+            e.printStackTrace();
         }
     }
 

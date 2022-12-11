@@ -1,6 +1,8 @@
 package adapters.presenters;
 
 import adapters.view_models.DcViewModel;
+import org.example.ANSI;
+import org.example.Log;
 import usecases.Response;
 import usecases.disconnecting.DcOutputBoundary;
 import usecases.disconnecting.DcOutputData;
@@ -26,11 +28,13 @@ public class DcPresenter implements DcOutputBoundary {
      */
     @Override
     public void hasDisconnected(DcOutputData data) {
+        Log.useCaseMsg("DC", "Presenter " + data.getResponse() + " with player ID " + data.getPlayerId());
         viewM.setResponse(data.getResponse());
     }
 
     @Override
     public void outputShutdownServer() {
+        Log.useCaseMsg("DC", "Presenter outputShutdownServer");
         viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

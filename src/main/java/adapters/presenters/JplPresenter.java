@@ -2,6 +2,8 @@ package adapters.presenters;
 
 import adapters.display_data.not_ended_display_data.GameDisplayDataBuilder;
 import adapters.view_models.JplViewModel;
+import org.example.ANSI;
+import org.example.Log;
 import usecases.GameDTO;
 import usecases.PlayerDTO;
 import usecases.Response;
@@ -27,8 +29,9 @@ public class JplPresenter implements JplOutputBoundary {
      */
     @Override
     public void inPool(JplOutputDataResponse dataJoinedPool) {
-        System.out.println("JPL Presenter for Player ID: " + dataJoinedPool.getPlayerId()
-        + " with Response CODE " + dataJoinedPool.getRes().getCode() + " MSG " + dataJoinedPool.getRes().getMessage());
+        Log.sendMessage(ANSI.BLUE, "JPL", ANSI.LIGHT_BLUE,
+                "Presenter for Player ID: " + dataJoinedPool.getPlayerId() + ", " +
+                        dataJoinedPool.getRes());
         viewM.setResponse(dataJoinedPool.getRes());
     }
 
@@ -39,6 +42,10 @@ public class JplPresenter implements JplOutputBoundary {
      */
     @Override
     public void inGame(JplOutputDataJoinedGame dataJoinedGame) {
+        Log.sendMessage(ANSI.BLUE, "JPL", ANSI.LIGHT_BLUE,
+                "Presenter in game ply ID " + dataJoinedGame.getPlayerId() + ", " +
+                dataJoinedGame.getRes());
+
         GameDTO g = dataJoinedGame.getGameData();
         GameDisplayDataBuilder builder = new GameDisplayDataBuilder();
         for (PlayerDTO p : g.getPlayers()) {
@@ -56,11 +63,16 @@ public class JplPresenter implements JplOutputBoundary {
      */
     @Override
     public void cancelled(JplOutputDataResponse dataCancelled) {
+        Log.sendMessage(ANSI.BLUE, "JPL", ANSI.LIGHT_BLUE,
+                "Presenter cancelled from pool ply ID " + dataCancelled.getPlayerId() +
+                        ", " + dataCancelled.getRes());
         viewM.setCancelled();
     }
 
     @Override
     public void outputShutdownServer() {
+        Log.sendMessage(ANSI.BLUE, "JPL", ANSI.LIGHT_BLUE,
+                "Presenter outputShutdownServer");
         viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

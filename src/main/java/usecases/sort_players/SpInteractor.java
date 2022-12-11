@@ -6,6 +6,7 @@ import entities.games.Game;
 import exceptions.GameDoesntExistException;
 import exceptions.GameRunningException;
 import exceptions.PlayerNotFoundException;
+import org.example.Log;
 import usecases.pull_data.PdInputBoundary;
 import usecases.pull_game_ended.PgeInputBoundary;
 import usecases.run_game.RgInteractor;
@@ -52,8 +53,12 @@ public class SpInteractor {
         public void run() {
             // We need to lock all the accesses to the pool and the game to avoid race conditions
             //System.out.println("SP: Wants POOL and GAME locks");
+            Log.useCaseMsg("SP", "Wants POOL lock");
             playerPoolLock.lock();
+            Log.useCaseMsg("SP", "Got POOL lock");
+            Log.useCaseMsg("SP", "Wants GAME lock");
             gameLock.lock();
+            Log.useCaseMsg("SP", "Got GAME lock");
             //System.out.println("SP: Got POOL and GAME locks");
 
             // If game has ended, set it to null.
@@ -76,20 +81,15 @@ public class SpInteractor {
                     }
 
                 } else {
-                    System.out.println("SP: Detected isGameEnded = false");
                     for (LobbyManager.PlayerObserverLink playerObserverLink : lobbyManager.getPool()) {
                         Player player = playerObserverLink.getPlayer();
 
-                        System.out.println("SP: Processing player with ID: " + player.getPlayerId() +
-                                " NAME: " + player.getDisplayName());
-
-                        System.out.println("SP: Wants JPL lock for Ply ID: " + player.getPlayerId());
+                        Log.useCaseMsg("SP", "Wants JPL lock " + player.getPlayerId());
                         Lock lock = playerObserverLink.getPlayerPoolListener().getLock();
                         lock.lock();
-                        System.out.println("SP: Got JPL lock for Ply ID: " + player.getPlayerId());
+                        Log.useCaseMsg("SP", "Got JPL lock " + player.getPlayerId());
                         try {
                             lobbyManager.addPlayerToGameRemoveFromPool(player);
-                            System.out.println("SP: Successfully added player to game and removed from pool ID: " + player.getPlayerId());
                         } catch (PlayerNotFoundException | GameDoesntExistException e) {
                             // GameDoesntExist is an IMPOSSIBLE Error. In this if block, game is not null and
                             // only SortPlayers sets game to null.
@@ -102,14 +102,13 @@ public class SpInteractor {
                             throw new RuntimeException(e);
                         } finally {
                             lock.unlock();
-                            System.out.println("SP: Released JPL lock for Ply ID: " + player.getPlayerId());
+                            Log.useCaseMsg("SP", "Released JPL lock " + player.getPlayerId());
                         }
                     }
                 }
             }
             else if (lobbyManager.getPool().size() >= LobbyManager.PLAYERS_TO_START_GAME) {
-                System.out.println("SP: Detected isGameNull = true AND >= 2 players in pool");
-                System.out.println("SP: Detected Pool Length: " + lobbyManager.getPool().size());
+                Log.useCaseMsg("SP", "SP: Detected Pool Length: " + lobbyManager.getPool().size());
 
                 Map<String, Integer> settings = null; // currently player settings isn't a feature, thus null
                 Game game = lobbyManager.newGameFromPool(settings);
@@ -120,7 +119,9 @@ public class SpInteractor {
                     lobbyManager.setGame(game);
                 } catch (GameRunningException e) {
                     gameLock.unlock();
+                    Log.useCaseMsg("SP", "Released GAME lock");
                     playerPoolLock.unlock();
+                    Log.useCaseMsg("SP", "Released POOL lock");
                     throw new RuntimeException(e);
                 }
 
@@ -130,8 +131,9 @@ public class SpInteractor {
                 new RgInteractor(game, pge, pd, gameLock).startTimer();
             }
             gameLock.unlock();
+            Log.useCaseMsg("SP", "Released GAME lock");
             playerPoolLock.unlock();
-            //System.out.println("SP: Released POOL and GAME locks");
+            Log.useCaseMsg("SP", "Released POOL lock");
         }
     }
 

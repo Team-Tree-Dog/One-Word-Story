@@ -49,27 +49,19 @@
         <div id="two_columns">
             <div id="column-1" class="column">
                 <!-- list of players -->
-                <ul>
-                    <li>
-                        <div>
-                            Player 1
-                            <img style="vertical-align:middle" src="media/pencil.png" width="20" alt="Pencil">
-                        </div>
-                    </li>
+                <ul id="players-list">
 
-                    <li>
-                        <div>
-                            Player 2
-                        </div>
-                    </li>
                 </ul>
 
                 <!-- submit a word -->
-                <form action="">
+                <div class="column">
                     <label for="word">Word:</label>
-                    <input type="text" id="word" name="word" required><br><br>
-                    <input type="button" value="Submit" onClick="pr()">
-                </form>
+                    <input type="text" id="word" name="word"><br><br>
+                    <div>
+                        <button type="button" onClick="submitWord()"> Submit </button>
+                        <span id="seconds-left">0s</span>
+                    </div>
+                </div>
                 <span id="result"></span>
             </div>
 

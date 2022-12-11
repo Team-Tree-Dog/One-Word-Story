@@ -5,6 +5,8 @@ import entities.Player;
 import entities.PlayerPoolListener;
 import exceptions.GameDoesntExistException;
 import exceptions.PlayerNotFoundException;
+import org.example.ANSI;
+import org.example.Log;
 import usecases.InterruptibleThread;
 import usecases.Response;
 import usecases.ThreadRegister;
@@ -78,7 +80,9 @@ public class DcInteractor implements DcInputBoundary {
             // Innocent until proven guilty
             Response response = Response.getSuccessful(playerToDisconnect + " disconnected successfully!");
 
+            Log.useCaseMsg("DC", "Wants POOL lock");
             playerPoolLock.lock();
+            Log.useCaseMsg("DC", "Got POOL lock");
 
             // Null if player not found, looks through pool hence above lock is needed
             LobbyManager.PlayerObserverLink playerLink = lm.getLinkFromPlayer(playerToDisconnect);
@@ -90,15 +94,20 @@ public class DcInteractor implements DcInputBoundary {
                 if(playerLink == null) {
                     throw new PlayerNotFoundException(playerToDisconnect + " is not present in the pool");
                 }
+                Log.useCaseMsg("DC", "Found in pool PLY " + playerId);
+                Log.useCaseMsg("DC", "Wants JPL lock PlyID " + playerId);
                 playerListener = playerLink.getPlayerPoolListener();
                 // Before we continue, we should lock the pool listener's lock
                 playerListener.getLock().lock();
+                Log.useCaseMsg("DC", "Got JPL lock PlyID " + playerId);
 
                 // Try to cancel player from pool. Will throw PlayerNotFound
                 // if player isn't in pool so no need to check contains explicitly
                 lm.removeFromPoolCancel(playerToDisconnect);
             } catch (PlayerNotFoundException ignored) {
+                Log.useCaseMsg("DC", "Wants GAME lock");
                 gameLock.lock();
+                Log.useCaseMsg("DC", "Got GAME lock");
                 try {
                     // In this catch block, we know player was not in the pool. However, we don't know if the player
                     // is in the game. We try to see if the player is in the game using .contains, which uses .equals,
@@ -125,13 +134,16 @@ public class DcInteractor implements DcInputBoundary {
                     response = Response.fromException(e, playerToDisconnect + " not found!");
                 } finally {
                     gameLock.unlock();
+                    Log.useCaseMsg("DC", "Released GAME lock");
                 }
             }
             finally {
                 if(playerListener != null) {
                     playerListener.getLock().unlock();
+                    Log.useCaseMsg("DC", "Released JPL lock PlyID " + playerId);
                 }
                 playerPoolLock.unlock();
+                Log.useCaseMsg("DC", "Released POOL lock");
             }
 
             DcOutputData outputData = new DcOutputData(response, playerId);

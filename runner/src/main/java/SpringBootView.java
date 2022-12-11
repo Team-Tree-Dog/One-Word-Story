@@ -3,8 +3,9 @@ import adapters.view_models.PdViewModel;
 import adapters.view_models.PgeViewModel;
 import adapters.view_models.SsViewModel;
 import com.example.springapp.SpringApp;
-import entities.LobbyManager;
 import frameworks_drivers.views.View;
+import org.example.ANSI;
+import org.example.Log;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.BufferedReader;
@@ -84,8 +85,9 @@ public class SpringBootView extends View {
     @Override
     public void end() {
         // Calls shutdown
+        Log.sendMessage("SPRING VIEW", ANSI.PURPLE, "Initiating Shutdown Use Case...");
         SsViewModel ssViewM = ssController.shutdownServer();
-        //System.out.println("Success of Shutdown: " + ssViewM.getShutdown());
+        Log.sendMessage("SPRING VIEW", ANSI.PURPLE, "Use Cases have been shut down!");
 
         app.close();
         try {
@@ -93,7 +95,6 @@ public class SpringBootView extends View {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        Log.sendMessage("SPRING VIEW", ANSI.PURPLE, "Spring has closed");
     }
-
-
 }

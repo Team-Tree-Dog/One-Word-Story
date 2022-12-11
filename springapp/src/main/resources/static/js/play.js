@@ -1,21 +1,7 @@
-
-function pr() {
-    document.getElementById("story").innerHTML += " " + document.getElementById('word').value;
-    document.getElementById('word').value = "";
-}
-
-function exit() {
-    console.log("disconnect pressed")
-}
-
-
 /*
 
  */
 let GameAPI = null;
-
-
-var x = false;
 
 
 document.getElementById("play_button").
@@ -26,6 +12,7 @@ addEventListener("click", (e) => {
     // TODO: Add websocket connection
     GameAPI = (function(url) {
         function uuidv4() {
+            // Lol thank you stackoverflow
             return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
                 (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
             );
@@ -171,7 +158,34 @@ addEventListener("click", (e) => {
                 }
 
                 if (hasGameStarted) {
-                    // Update frontend
+                    // Update frontend with new game data
+
+
+                    // Clear players list
+                    let ply_list = document.getElementById("players-list")
+                    ply_list.innerHTML = "";
+
+                    // BUILD PLAYER LIST
+                    updatedGameState.players.forEach(e => {
+                        // Build <li> element for player, with pencil icon if it's the player's turn
+                        let new_li = document.createElement("li")
+                        new_li.innerHTML = `<li>
+                                <div>
+                                    `+ e.displayName +
+                            (e.isCurrentTurnPlayer ? `<img style="vertical-align:middle" src="media/pencil.png" width="20" alt="Pencil">` : "") + `
+                                </div>
+                            </li>`
+
+                        ply_list.appendChild(new_li)
+                    })
+
+                    // POPULATE STORY
+                    document.getElementById("story").innerHTML = updatedGameState.storyString
+
+                    // POPULATE TIME
+                    document.getElementById("seconds-left").innerHTML = updatedGameState.secondsLeftInTurn
+
+
                 }
 
                 console.log("Current game state: ", updatedGameState);
@@ -222,3 +236,15 @@ function switchToGame () {
     document.getElementsByTagName("body")[0].style.background = "#3aafa9";
 }
 
+function submitWord() {
+    let word = document.getElementById("word").value
+    document.getElementById("word").value = ""
+    if (word !== "") {
+        GameAPI.sendWord(word)
+    }
+}
+
+function exit() {
+    // DISCONNECT
+    window.location.reload()
+}

@@ -5,6 +5,7 @@ import exceptions.GameDoesntExistException;
 import exceptions.InvalidWordException;
 import exceptions.OutOfTurnException;
 import exceptions.PlayerNotFoundException;
+import org.example.Log;
 import usecases.InterruptibleThread;
 import usecases.Response;
 import usecases.ThreadRegister;
@@ -92,7 +93,9 @@ public class SwInteractor implements SwInputBoundary {
          */
         @Override
         public void threadLogic() {
+            Log.useCaseMsg("SP", "Wants GAME lock");
             gameLock.lock();
+            Log.useCaseMsg("SP", "Got GAME lock");
             boolean success = true;
 
             try{
@@ -126,6 +129,7 @@ public class SwInteractor implements SwInputBoundary {
                 presenter.valid(new SwOutputDataValidWord(inputData.getWord(), this.playerId, resp));
             }
             gameLock.unlock();
+            Log.useCaseMsg("SP", "Released GAME lock");
         }
     }
 }

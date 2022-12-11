@@ -1,6 +1,8 @@
 package adapters.presenters;
 
 import adapters.view_models.SwViewModel;
+import org.example.ANSI;
+import org.example.Log;
 import usecases.Response;
 import usecases.submit_word.SwOutputBoundary;
 import usecases.submit_word.SwOutputDataFailure;
@@ -24,6 +26,9 @@ public class SwPresenter implements SwOutputBoundary {
      */
     @Override
     public void valid(SwOutputDataValidWord outputDataValidWord) {
+        Log.sendMessage(ANSI.BLUE, "SW", ANSI.LIGHT_BLUE,
+                "Presenter valid word ply ID " + outputDataValidWord.getPlayerId() +
+                ", " + outputDataValidWord.getWord() + ", " + outputDataValidWord.getResponse());
         viewM.setResponse(outputDataValidWord.getResponse());
     }
 
@@ -34,11 +39,16 @@ public class SwPresenter implements SwOutputBoundary {
      */
     @Override
     public void invalid(SwOutputDataFailure outputDataFailure) {
+        Log.sendMessage(ANSI.BLUE, "SW", ANSI.LIGHT_BLUE,
+                "Presenter invalid word ply ID " + outputDataFailure.getPlayerId() +
+                        ", " + outputDataFailure.getResponse());
         viewM.setResponse(outputDataFailure.getResponse());
     }
 
     @Override
     public void outputShutdownServer() {
+        Log.sendMessage(ANSI.BLUE, "SW", ANSI.LIGHT_BLUE,
+                "Presenter outputShutdownServer");
         viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

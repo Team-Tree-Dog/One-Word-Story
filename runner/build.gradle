@@ -17,6 +17,7 @@ targetCompatibility = '17'
 dependencies {
     implementation project(':')
     implementation project(':springapp')
+    implementation project(':terminal_debug')
     implementation 'org.jetbrains:annotations:23.0.0'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'

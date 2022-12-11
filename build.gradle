@@ -9,6 +9,7 @@ repositories {
 }
 
 dependencies {
+    implementation project(':terminal_debug')
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.jetbrains:annotations:23.0.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'

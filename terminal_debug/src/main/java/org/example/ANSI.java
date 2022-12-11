@@ -1,7 +1,7 @@
-package com.example.springapp;
+package org.example;
 
 /**
- * Constants for ANSI terminal escape codes which can be used to output colored
+ * Constants for org.example.ANSI terminal escape codes which can be used to output colored
  * terminal text
  */
 public class ANSI {
@@ -14,4 +14,5 @@ public class ANSI {
     public static final String PURPLE = "\u001B[35m";
     public static final String CYAN = "\u001B[36m";
     public static final String WHITE = "\u001B[37m";
+    public static final String LIGHT_BLUE = "\u001B[94m";
 }

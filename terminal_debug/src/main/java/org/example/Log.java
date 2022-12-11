@@ -1,19 +1,18 @@
-package com.example.springapp.controllers;
-
-import com.example.springapp.ANSI;
+package org.example;
 
 /**
  * Defines a standard for debug messages for this application.
  */
 public class Log {
-    private static String headerColor = ANSI.YELLOW;
 
     /**
-     * Change the color of the [Header] in debug messages
-     * @param color ANSI escape code string
+     * Send a message of the form [Header] Content
+     * @param headerContent content inside the square brackets, excluding the brackets
+     * @param bodyColor color of body content
+     * @param bodyContent string of body content
      */
-    public static void setHeaderColor(String color) {
-        headerColor = color;
+    public static void sendMessage(String headerColor, String headerContent, String bodyColor, String bodyContent) {
+        System.out.println(headerColor + "["+headerContent+"] " + bodyColor + bodyContent + ANSI.RESET);
     }
 
     /**
@@ -23,7 +22,11 @@ public class Log {
      * @param bodyContent string of body content
      */
     public static void sendMessage(String headerContent, String bodyColor, String bodyContent) {
-        System.out.println(headerColor + "["+headerContent+"] " + bodyColor + bodyContent + ANSI.RESET);
+        sendMessage(ANSI.YELLOW, headerContent, bodyColor, bodyContent);
+    }
+
+    public static void useCaseMsg(String header, String content) {
+        sendMessage(ANSI.BLUE, header, ANSI.LIGHT_BLUE, content);
     }
 
     /**

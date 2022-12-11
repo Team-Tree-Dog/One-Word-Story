@@ -1,6 +1,7 @@
 package usecases.run_game;
 
 import entities.games.Game;
+import org.example.Log;
 import usecases.pull_data.PdInputBoundary;
 import usecases.pull_data.PdInputData;
 import usecases.pull_game_ended.PgeInputBoundary;
@@ -43,7 +44,9 @@ public class RgInteractor {
          */
         @Override
         public void run () {
+            Log.useCaseMsg("RG", "Wants GAME lock");
             gameLock.lock();
+            Log.useCaseMsg("RG", "Got GAME lock");
             if (RgInteractor.this.g.isGameOver()) {
                 // Game ending procedure:
 
@@ -79,6 +82,7 @@ public class RgInteractor {
 
             }
             gameLock.unlock();
+            Log.useCaseMsg("RG", "Released GAME lock");
         }
     }
 

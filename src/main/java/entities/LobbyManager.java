@@ -270,7 +270,10 @@ public class LobbyManager {
 
     /**
      * Removes a PlayerObserverLink from the pool via its player
-     * Notice that this method is not thread-safe AT ALL! It engages no locks
+     * <br><br>
+     * <h2>Thread Safety:</h2>
+     * <p> NOT Thread Safe, engages no locks </p>
+     * <p> Engage pool lock AND PlayerPoolListener lock for player p surrounding use as appropriate </p>
      * @param p the player in the POL to be removed
      * @throws PlayerNotFoundException if the player was not found in any POLs in playerPool
      */

@@ -2,6 +2,8 @@ package adapters.controllers;
 
 import adapters.presenters.DcPresenter;
 import adapters.view_models.DcViewModel;
+import org.example.ANSI;
+import org.example.Log;
 import usecases.disconnecting.DcInputBoundary;
 import usecases.disconnecting.DcInputData;
 
@@ -24,6 +26,8 @@ public class DcController {
      * @return View model for this use case
      */
     public DcViewModel disconnect (String playerId) {
+        Log.sendMessage(ANSI.BLUE, "DC", ANSI.LIGHT_BLUE,
+                "Controller called with ID " + playerId);
         DcViewModel viewM = new DcViewModel();
         DcPresenter pres = new DcPresenter(viewM);
         dc.disconnect(new DcInputData(playerId), pres);
