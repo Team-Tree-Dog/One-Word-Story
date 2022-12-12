@@ -1,140 +1,22 @@
-/*
-
+/**
+ * Generate UUID
+ * @returns A new UUID string
  */
-let GameAPI = null;
+function uuidv4() {
+    // Lol thank you stackoverflow
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+}
 
-
-document.getElementById("play_button").
-addEventListener("click", (e) => {
-
+/**
+ * Callback for play button
+ * @param e event (ignored)
+ */
+function onPlay(e) {
     document.getElementById("play_button").disabled = true;
 
-    // TODO: Add websocket connection
-    GameAPI = (function(url) {
-        function uuidv4() {
-            // Lol thank you stackoverflow
-            return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-            );
-        }
-
-        const CMD_TRY_JOIN = "try_join";
-        const CMD_STATE_UPDATE = "state_update";
-        const CMD_SEND_WORD = "send_word";
-        const CMD_LEAVE = "leave";
-
-        const RESPONSE_JOIN = "join_response";
-        const RESPONSE_STATE = "current_state";
-
-        const SEPARATOR = String.fromCharCode(30);
-
-        const apiObj = {
-            _ws: {
-                isConnected: false,
-                wsHandle: null,
-                messageHandlers: {},
-
-                init: function(url, mainHandler) {
-                    this.messageHandlers = {
-                        "root": mainHandler
-                    };
-
-                    this.wsHandle = new WebSocket(url);
-                    this.wsHandle.onmessage = (data) => {
-                        // console.log("Active handlers: ", this.messageHandlers);
-
-                        (Object.values(this.messageHandlers) || []).filter(x => typeof x == 'function').forEach(x => x(data));
-                    };
-                    this.wsHandle.onopen = () => {
-                        console.log("CONNECTED!");
-                        this.isConnected = true
-                    };
-                },
-
-                encode: (...elements) => (elements || []).join(SEPARATOR),
-                decode: data => (data || "").split(SEPARATOR),
-
-                send: function(message) {
-                    if(!this.isConnected) {
-                        throw "Invalid state";
-                    }
-
-                    this.wsHandle.send(message);
-                }
-            },
-            apiUrl: url,
-            pendingCb: null,
-            log: function(message) { console.log(message) },
-
-            onReady: function(callback) {
-                const interval = setInterval(() => {
-                    console.log("Checking connection");
-                    if(this._ws.isConnected) {
-                        console.log("Connection established");
-                        clearInterval(interval);
-                        callback();
-                    }
-                }, 50);
-            },
-
-            tryJoin: async function(playerName) {
-                return await new Promise((resolve, reject) => {
-                    const waiterGuid = uuidv4();
-
-                    this._ws.messageHandlers[waiterGuid] = (msg) => {
-                        // console.log("Got message: ", msg);
-
-                        const decoded = this._ws.decode(msg.data);
-
-                        if(decoded[0] == RESPONSE_JOIN) {
-                            delete this._ws.messageHandlers[waiterGuid];
-                            resolve(decoded[1] === "true");
-                        }
-                    }
-
-                    this._ws.send(this._ws.encode(CMD_TRY_JOIN, playerName));
-                });
-            },
-
-            getGameState: async function(playerName) {
-                return await new Promise((resolve, reject) => {
-                    const waiterGuid = uuidv4();
-
-                    this._ws.messageHandlers[waiterGuid] = (msg) => {
-                        // console.log("Got message: ", msg);
-
-                        const decoded = this._ws.decode(msg.data);
-
-                        if(decoded[0] == RESPONSE_STATE) {
-                            delete this._ws.messageHandlers[waiterGuid];
-                            resolve(JSON.parse(decoded[1]));
-                        }
-                    }
-
-                    this._ws.send(this._ws.encode(CMD_STATE_UPDATE, playerName));
-                });
-            },
-
-            sendWord: function(word) {
-                this._ws.send(this._ws.encode(CMD_SEND_WORD, word));
-            },
-
-            leave: function() {
-                this._ws.send(this._ws.encode(CMD_LEAVE));
-            }
-        };
-
-        apiObj._ws.init(
-            url,
-            (incoming) => {} //console.log("incoming:", incoming.data)
-        );
-
-        return apiObj;
-    })("ws://localhost:8080/game");
-
-
-    console.log("clicked play");
-
+    GameAPI = createAPI("ws://localhost:8080/game");
 
     GameAPI.onReady(async function() {
         GameAPI.log("TEST API READY");
@@ -190,33 +72,153 @@ addEventListener("click", (e) => {
 
                 console.log("Current game state: ", updatedGameState);
             }, 1000);
-
-            // GameAPI.sendWord("word1");
-            // GameAPI.sendWord("word2");
-
-            // setTimeout(() => {
-            //     clearInterval(intervalId);
-            //     console.log("Leaving!");
-            //     GameAPI.leave();
-            // }, 4000);
         } else {
             // Disconnect, display name invalid
             window.location.reload();
         }
     });
-})
+}
 
+// SOCKET LOGIC
+// ================================================
+
+let GameAPI = null;
 let hasGameStarted = false;
 
-document.getElementById("cancel-button").
-addEventListener("click", (e) => {
-    console.log("clicked cancel");
+const SEPARATOR = String.fromCharCode(30);
 
-    // DISCONNECT
-    window.location.reload();
-})
+const CMD_TRY_JOIN = "try_join";
+const CMD_STATE_UPDATE = "state_update";
+const CMD_SEND_WORD = "send_word";
+const CMD_LEAVE = "leave";
+
+const RESPONSE_JOIN = "join_response";
+const RESPONSE_STATE = "current_state";
+
+/**
+ * Create and return the API object for interacting with
+ * the websocket
+ * @param url The websocket endpoint URL string
+ */
+function createAPI (url) {
+    const apiObj = {
+
+        _ws: {
+            isConnected: false,
+            wsHandle: null,
+            messageHandlers: {},
+
+            init: function(url, mainHandler) {
+                this.messageHandlers = {
+                    "root": mainHandler
+                };
+
+                this.wsHandle = new WebSocket(url);
+                this.wsHandle.onmessage = (data) => {
+                    // console.log("Active handlers: ", this.messageHandlers);
+
+                    (Object.values(this.messageHandlers) || []).filter(x => typeof x == 'function').forEach(x => x(data));
+                };
+                this.wsHandle.onopen = () => {
+                    console.log("CONNECTED!");
+                    this.isConnected = true
+                };
+                this.wsHandle.onclose = () => {
+                    console.log("DISCONNECTED!");
+                };
+            },
+
+            encode: (...elements) => (elements || []).join(SEPARATOR),
+            decode: data => (data || "").split(SEPARATOR),
+
+            send: function(message) {
+                if(!this.isConnected) {
+                    throw "Invalid state";
+                }
+
+                this.wsHandle.send(message);
+            }
+        },
+
+        apiUrl: url,
+        pendingCb: null,
+        log: function(message) { console.log(message) },
+
+        onReady: function(callback) {
+            const interval = setInterval(() => {
+                console.log("Checking connection");
+                if(this._ws.isConnected) {
+                    console.log("Connection established");
+                    clearInterval(interval);
+                    callback();
+                }
+            }, 50);
+        },
+
+        tryJoin: async function(playerName) {
+            return await new Promise((resolve, reject) => {
+                const waiterGuid = uuidv4();
+
+                this._ws.messageHandlers[waiterGuid] = (msg) => {
+                    // console.log("Got message: ", msg);
+
+                    const decoded = this._ws.decode(msg.data);
+
+                    if(decoded[0] == RESPONSE_JOIN) {
+                        delete this._ws.messageHandlers[waiterGuid];
+                        resolve(decoded[1] === "true");
+                    }
+                }
+
+                this._ws.send(this._ws.encode(CMD_TRY_JOIN, playerName));
+            });
+        },
+
+        getGameState: async function(playerName) {
+            return await new Promise((resolve, reject) => {
+                const waiterGuid = uuidv4();
+
+                this._ws.messageHandlers[waiterGuid] = (msg) => {
+                    // console.log("Got message: ", msg);
+
+                    const decoded = this._ws.decode(msg.data);
+
+                    if(decoded[0] == RESPONSE_STATE) {
+                        delete this._ws.messageHandlers[waiterGuid];
+                        resolve(JSON.parse(decoded[1]));
+                    }
+                }
+
+                this._ws.send(this._ws.encode(CMD_STATE_UPDATE, playerName));
+            });
+        },
+
+        sendWord: function(word) {
+            this._ws.send(this._ws.encode(CMD_SEND_WORD, word));
+        },
+
+        leave: function() {
+            this._ws.send(this._ws.encode(CMD_LEAVE));
+        }
+    };
+
+    apiObj._ws.init(
+        url,
+        (incoming) => {} //console.log("incoming:", incoming.data)
+    );
+
+    return apiObj;
+}
+
+// ================================================
 
 
+document.getElementById("play_button").addEventListener("click", onPlay)
+document.getElementById("cancel-button").addEventListener("click", exit)
+
+/**
+ * Switch screens to waiting page
+ */
 function switchToWaiting () {
     document.getElementById("game_page").style.display = "none";
     document.getElementById("play_page").style.display = "none";
@@ -226,7 +228,9 @@ function switchToWaiting () {
     document.getElementsByTagName("body")[0].style.background = "#17252a";
 }
 
-
+/**
+ * Switch screens to game page
+ */
 function switchToGame () {
     document.getElementById("waiting_page").style.display = "none";
     document.getElementById("play_page").style.display = "none";
@@ -236,6 +240,9 @@ function switchToGame () {
     document.getElementsByTagName("body")[0].style.background = "#3aafa9";
 }
 
+/**
+ * Submit word button callback
+ */
 function submitWord() {
     let word = document.getElementById("word").value
     document.getElementById("word").value = ""
@@ -244,6 +251,9 @@ function submitWord() {
     }
 }
 
+/**
+ * Disconnect button & Cancel button callback
+ */
 function exit() {
     // DISCONNECT
     window.location.reload()

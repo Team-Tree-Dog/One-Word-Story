@@ -64,6 +64,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         sessionToPlyId.put(session.getId(), new PlayerState(UUID.randomUUID().toString()));
+        System.out.println(session.getId());
     }
 
     @Override
