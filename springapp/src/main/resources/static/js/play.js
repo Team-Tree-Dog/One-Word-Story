@@ -34,6 +34,9 @@ function onPlay(e) {
     // Disable button so we don't start two connections if someone clicks it again quickly
     document.getElementById("play_button").disabled = true;
 
+    // Show loading icon
+    $("#load-icon-container").show();
+
     // Create API which initiates socket connection
     GameAPI = createAPI(SOCKET_URL);
 
@@ -329,5 +332,5 @@ function submitWord() {
  */
 function exit() {
     // DISCONNECT
-    window.location.reload()
+    window.location.search = ""
 }
