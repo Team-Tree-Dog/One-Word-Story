@@ -3,9 +3,12 @@ package com.example.springapp.controllers;
 import adapters.view_models.*;
 import com.example.springapp.SpringApp;
 import frameworks_drivers.views.View;
+import org.example.ANSI;
+import org.example.Log;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 import usecases.CommentRepoData;
 import usecases.Response;
 import usecases.StoryRepoData;
@@ -327,7 +330,12 @@ public class StoryController {
 
         boolean isfail = viewM.getResponseCode() != Response.ResCode.SUCCESS;
 
-        return "redirect:/story-" + id + "?isfail=" + isfail + "&message=" + viewM.getResponseMessage();
+        UriComponentsBuilder urlBuilder = UriComponentsBuilder.newInstance();
+        urlBuilder.queryParam("isfail", isfail);
+        urlBuilder.queryParam("message", viewM.getResponseMessage());
+        Log.sendMessage(ANSI.YELLOW, "suggest-title/story/id", ANSI.CYAN, urlBuilder.toUriString());
+
+        return "redirect:/story-" + id + urlBuilder.toUriString();
     }
 
     @PostMapping("suggest-title/story/{id}")
@@ -344,7 +352,12 @@ public class StoryController {
 
         boolean isfailTitle = viewM.getResponseCode() != Response.ResCode.SUCCESS;
 
-        return "redirect:/story-" + id + "?isfailTitle=" + isfailTitle + "&message=" + viewM.getResponseMessage();
+        UriComponentsBuilder urlBuilder = UriComponentsBuilder.newInstance();
+        urlBuilder.queryParam("isfailTitle", isfailTitle);
+        urlBuilder.queryParam("message", viewM.getResponseMessage());
+        Log.sendMessage(ANSI.YELLOW, "suggest-title/story/id", ANSI.CYAN, urlBuilder.toUriString());
+
+        return "redirect:/story-" + id + urlBuilder.toUriString();
     }
 
     @PostMapping("upvote-suggestion/suggestion/{id}")

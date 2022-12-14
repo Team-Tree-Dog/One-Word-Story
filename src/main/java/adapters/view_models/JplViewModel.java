@@ -33,23 +33,13 @@ public class JplViewModel extends ViewModel {
     }
 
     @Nullable
-    public Response.ResCode getResponseCode() {
-        Response.ResCode out;
+    public Response getResponse() {
+        Response out;
         lock.lock();
-        if (res == null) { out = null;}
-        else { out = res.getCode(); }
+        // Response is readonly so we don't care to copy it. It'll be thread safe as is
+        out = res;
         lock.unlock();
-        return out;
-    }
-
-    @Nullable
-    public String getResponseMessage() {
-        String out;
-        lock.lock();
-        if (res == null) { out = null; }
-        else { out = res.getMessage(); }
-        lock.unlock();
-        return out;
+        return res;
     }
 
     public boolean getCancelled() {

@@ -1,5 +1,9 @@
 /* Game Page */
 
+@font-face {
+    font-family: 'Lobster';
+    src: url('/media/fonts/Lobster.ttf');
+}
 
 /* main colors of the website */
 :root {
@@ -27,7 +31,7 @@ body {
 }
 
 /* story title design */
-h3 {
+.story-title {
     font-family: 'Brush Script MT', cursive;
     font-size: 50px;
     text-align: center;
@@ -250,7 +254,7 @@ input:invalid:required {
     box-shadow: 0 0 5px rgba(225, 225, 225, .3);
 }
 
-span{
+#play_page span, #game_page span, #waiting_page span {
     color: #feffff;
     font-size: 20px;
     font-family: Lobster;

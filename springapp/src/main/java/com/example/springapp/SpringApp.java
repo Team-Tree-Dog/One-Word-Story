@@ -37,7 +37,7 @@ public class SpringApp {
 	@EnableWebSocket
 	public static class WebSocketConfig implements WebSocketConfigurer {
 		public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-			registry.addHandler(new SocketTextHandler(viewRef), "/game");
+			registry.addHandler(new SocketTextHandler(), "/game");
 		}
 	}
 }

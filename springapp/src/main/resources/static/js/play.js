@@ -2,6 +2,19 @@ IS_SECURE = false
 DOMAIN = window.location.hostname + (!!window.location.port ? ":" + window.location.port : "")
 SOCKET_URL = "ws"+(IS_SECURE ? "s" : "")+"://"+DOMAIN+"/game"
 
+$(document).ready(() => {
+    let urlParams = new URLSearchParams(window.location.search);
+    let errMessage = urlParams.get("errorMessage")
+    let errTitle = urlParams.get("errorTitle")
+    if (!!errMessage) {
+        Swal.fire({
+            title: errTitle || "Error",
+            text: errMessage,
+            icon: "error"
+        })
+    }
+});
+
 /**
  * Generate UUID
  * @returns A new UUID string
@@ -48,15 +61,16 @@ const RESPONSE_STATE = "current_state";
  * Initiates and runs the socket logic once the connection has been established
  */
 async function socketLogic () {
+    // Call JPL
     const joinResult = await GameAPI.tryJoin(document.getElementById("name").value);
     console.log("Join result: " + joinResult);
 
-    if (joinResult) {
+    if (joinResult.code === "SUCCESS") {
 
         switchToWaiting()
 
         const intervalId = setInterval(async () => {
-            // Get the state every second
+            // Get the state periodically and run game logic
 
             const updatedGameState = await GameAPI.getGameState();
 
@@ -98,10 +112,11 @@ async function socketLogic () {
             }
 
             console.log("Current game state: ", updatedGameState);
-        }, 1000);
+        }, 500);
     } else {
         // Disconnect, display name invalid
-        window.location.reload();
+        let mess = encodeURIComponent(joinResult.message);
+        window.location.search = `errorTitle=${joinResult.code}&errorMessage=${mess}`;
     }
 }
 
@@ -200,21 +215,36 @@ function createAPI (url) {
 
         /**
          * JPL (displayName, uniqueId = socket session ID)
+         *
+         * Adds a callback to the messageHandlers which resolves the promise with
+         * the server's response. Then sends command to server. Awaiting this method
+         * call will give you the server response corresponding to this message sent
+         *
          * @param playerName {string} desired display name
-         * @returns {Promise<boolean>}
+         * @returns {Promise<Object>}
          */
         tryJoin: async function(playerName) {
             return new Promise((resolve, reject) => {
                 const waiterGuid = uuidv4();
 
-                this._ws.messageHandlers[waiterGuid] = (msg) => {
-                    // console.log("Got message: ", msg);
+                // If server hasn't responded to try join in a while, reload with failure
+                let tryJoinCounter = 0
+                let tryJoinTimeout = setInterval(()=>{
+                    tryJoinCounter++
+                    if (tryJoinCounter === 5) {
+                        window.location.search = "errorMessage=Server%20connection%20timed%20out"
+                    }
+                },1000)
 
+                this._ws.messageHandlers[waiterGuid] = (msg) => {
                     const decoded = this._ws.decode(msg.data);
 
-                    if(decoded[0] == RESPONSE_JOIN) {
+                    if(decoded[0] === RESPONSE_JOIN) {
+                        clearInterval(tryJoinTimeout)
+
                         delete this._ws.messageHandlers[waiterGuid];
-                        resolve(decoded[1] === "true");
+                        console.log(decoded[1])
+                        resolve(JSON.parse(decoded[1]));
                     }
                 }
 
@@ -227,11 +257,9 @@ function createAPI (url) {
                 const waiterGuid = uuidv4();
 
                 this._ws.messageHandlers[waiterGuid] = (msg) => {
-                    // console.log("Got message: ", msg);
-
                     const decoded = this._ws.decode(msg.data);
 
-                    if(decoded[0] == RESPONSE_STATE) {
+                    if(decoded[0] === RESPONSE_STATE) {
                         delete this._ws.messageHandlers[waiterGuid];
                         resolve(JSON.parse(decoded[1]));
                     }

@@ -1,5 +1,12 @@
 package com.example.springapp;
 
+import adapters.view_models.JplViewModel;
+import adapters.view_models.SwViewModel;
+import org.jetbrains.annotations.Nullable;
+import usecases.Response;
+
+import static com.example.springapp.SpringApp.viewRef;
+
 /**
  * Unifies a structure of all the possible INCOMING (RECEIVE) messages from clients.
  * <br><br>
@@ -20,25 +27,105 @@ public sealed interface ClientCommand {
 
     char SEPARATOR = 30;
 
+    @Nullable
+    ServerResponse handler(PlayerState playerState) throws InterruptedException;
+
     /**
      * JPL Command for initial joining
      * @param playerName desired display name of player who is trying to join
      */
-    record TryJoin(String playerName) implements ClientCommand {}
+    record TryJoin(String playerName) implements ClientCommand {
+        /**
+         * <h2>Sub Handler: JPL</h2>
+         * A newly connected client must first tryJoin in order to continue to the game. All
+         * other commands will be ignored until this one is successfully called.
+         * <br><br>
+         * Calls JPL with player's desired display name and returns a boolean indicating if
+         * JPL's inPool response was a success (success if player was added to the pool and
+         * their display name was valid)
+         */
+        @Override
+        public ServerResponse handler(PlayerState playerState) throws InterruptedException {
+            // Calls JPL
+            JplViewModel jplViewM = viewRef.jplController.joinPublicLobby(
+                    playerState.playerId(), playerName);
+
+            // Wait for initial inPool response
+            while (jplViewM.getResponse() == null) {
+                Thread.sleep(20);
+            }
+
+            if (jplViewM.getResponse().getCode() == Response.ResCode.SUCCESS) {
+                // Player name was approved, move forward
+                playerState.changeToInPool(jplViewM, playerName);
+
+                return new ServerResponse.JoinResponse(jplViewM.getResponse());
+            } else {
+                // Tell frontend to reload page and disconnect, display name was bad
+                return new ServerResponse.JoinResponse(jplViewM.getResponse());
+            }
+            // TODO: Convert socket system to allow multi message sending
+            // The solution to ^ might be to call another method before returning this one
+            // and have that method await JPL for the second reply and send the message.
+            // Of course, this still means modifying the API to allow messages to be sent like
+            // that
+        }
+    }
+
     /**
      * A constant request from clients to get current game data if
      * that client is in a game
      */
-    record StateUpdate() implements ClientCommand {}
+    record StateUpdate() implements ClientCommand {
+        /**
+         * <h2>Sub Handler: PD</h2>
+         * Handler to retrieve current game state from PD view model. Called periodically by
+         * all players in a game. returns null if player didn't pass tryJoin
+         * <br><br>
+         * Gets GameDisplayData from PD view model and returns it
+         */
+        @Override
+        public ServerResponse handler(PlayerState playerState) throws InterruptedException {
+            if (playerState.displayName() != null) {
+                return new ServerResponse.CurrentState(
+                        viewRef.pdViewM.getCurrentGameState()
+                );
+            } else {
+                return null;
+            }
+        }
+    }
 
     /**
      * A player's command to try to submit a word to the game
      * @param word Punctuation and word that player wants to submit
      */
-    record SendWord(String word) implements ClientCommand {}
+    record SendWord(String word) implements ClientCommand {
+        /**
+         * <h2>Sub Handler: SW</h2>
+         * Handler to submit a word to the game. Called when a player
+         * tries to submit a word to the game. ignores command if player didn't pass tryJoin
+         * OR if the player was not yet sorted into the game
+         */
+        @Override
+        public @Nullable ServerResponse handler(PlayerState playerState) throws InterruptedException {
+
+            if (playerState.displayName() != null && playerState.jplViewM().getGameState() != null) {
+                SwViewModel viewM = viewRef.swController.submitWord(playerState.playerId(), word);
+
+                while (viewM.getResponseCode() == null) {
+                    Thread.sleep(20);
+                }
+            }
+
+            // TODO: Ideally, return response code
+            return null;
+        }
+    }
 
     /**
-     * Parse raw payload into a client command object
+     * Parse raw payload into a client command object.
+     * This is a factory
      * @param payload content received from a client over the websocket
      * @return a parsed client command object
      */

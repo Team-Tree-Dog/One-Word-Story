@@ -7,10 +7,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class GameDisplayData {
 
-    private @NotNull PlayerDisplayData[] players;
-    private @NotNull PlayerDisplayData currentPlayerTurn;
-    private @NotNull String storyString;
-    private int secondsLeftInTurn;
+    private final @NotNull PlayerDisplayData[] players;
+    private final @NotNull PlayerDisplayData currentPlayerTurn;
+    private final @NotNull String storyString;
+    private final int secondsLeftInTurn;
 
     /**
      * Constructor for GameDisplayData
