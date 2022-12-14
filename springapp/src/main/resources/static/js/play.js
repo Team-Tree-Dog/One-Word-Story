@@ -169,6 +169,9 @@ function createAPI (url) {
                 this.wsHandle.onclose = () => {
                     console.log("%c[Socket] %cConnection Closed",
                         "color:#8c1aff;font-weight:bold", "color:#ff99e6");
+
+                    let mess = encodeURIComponent("You have been disconnected from the game");
+                    window.location.search = `errorTitle=Disconnected&errorMessage=${mess}`;
                 };
             },
 
