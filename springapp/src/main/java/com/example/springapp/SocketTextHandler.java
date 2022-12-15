@@ -24,16 +24,16 @@ public class SocketTextHandler extends TextWebSocketHandler {
      * <br><br>
      * <b>Note</b> that the session ID is DIFFERENT from the PlayerState.playerId.
      */
-    private final static Map<String, PlayerState> sessionToPlyId = new ConcurrentHashMap<>();
+    private static final Map<String, PlayerState> sessionToPlyState = new ConcurrentHashMap<>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        sessionToPlyId.put(session.getId(), new PlayerState(UUID.randomUUID().toString()));
+        sessionToPlyState.put(session.getId(), new PlayerState(UUID.randomUUID().toString(), session));
     }
 
     @Override
     public void afterConnectionClosed(@NotNull WebSocketSession session, @NotNull CloseStatus status) throws Exception {
-        PlayerState p = sessionToPlyId.get(session.getId());
+        PlayerState p = sessionToPlyState.get(session.getId());
 
         // Calls disconnect on a thread. Response shouldn't matter, player has disconnected!
         DcViewModel viewM = coreAPI.dcController.disconnect(p.playerId());
@@ -53,7 +53,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
         }
 
         // Delete PlayerState object for this player
-        sessionToPlyId.remove(session.getId());
+        sessionToPlyState.remove(session.getId());
     }
 
     @Override
@@ -71,7 +71,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
             Log.sendSocketGeneral("HANDLE CMD RECV", incomingCmd.toString());
 
             // Call command handler to get corresponding server response
-            ServerResponse response = incomingCmd.handler(sessionToPlyId.get(session.getId()));
+            ServerResponse response = incomingCmd.handler(sessionToPlyState.get(session.getId()));
 
             // Sends response, if there is one
             if(response != null) {

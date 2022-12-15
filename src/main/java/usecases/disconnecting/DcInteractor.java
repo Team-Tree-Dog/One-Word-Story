@@ -112,10 +112,10 @@ public class DcInteractor implements DcInputBoundary {
                     // In this catch block, we know player was not in the pool. However, we don't know if the player
                     // is in the game. We try to see if the player is in the game using .contains, which uses .equals,
                     // so only playerIDs are compared. If the game is null, GameDoesntExistException is thrown.
-                    if (lm.getPlayersFromGame().contains(playerToDisconnect)){
+                    if (lm.getGameReadOnly().getPlayers().contains(playerToDisconnect)){
                         // The player is in the game. We then check if it's the player's turn.
                         // If it is, then we switch the turn so play can continue.
-                        if (lm.getCurrentTurnPlayer().getPlayerId().equals(this.playerId)) {
+                        if (lm.getGameReadOnly().getCurrentTurnPlayer().getPlayerId().equals(this.playerId)) {
                             // Switch turn returns a boolean of whether switch turn succeeded.
                             // In this case, it should succeed! If game makes it fail for whatever reason
                             // then we have an issue. TODO: Perhaps switch turn should not be allowed to fail

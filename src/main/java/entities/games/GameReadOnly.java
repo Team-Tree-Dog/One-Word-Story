@@ -80,4 +80,9 @@ public interface GameReadOnly {
      * @return If RG has processed the fact that isGameOver is true and stopped the timer
      */
     boolean isTimerStopped ();
+
+    /**
+     * @return Returns how many seconds are left for the current turn, or null if game timer not yet started
+     */
+    int getSecondsLeftInCurrentTurn();
 }

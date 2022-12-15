@@ -440,9 +440,9 @@ public class ThreadLockTests {
         Game currGame = gameFac.createGame(new HashMap<>(), players);
         lobman.setGame(currGame);
 
-        assertTrue(lobman.getPlayersFromGame().contains(player1), "Player 1 is not in the Game");
-        assertTrue(lobman.getPlayersFromGame().contains(player2), "Player 2 is not in the Game");
-        assertTrue(lobman.getPlayersFromGame().contains(player3), "Player 3 is not in the Game");
+        assertTrue(lobman.getGameReadOnly().getPlayers().contains(player1), "Player 1 is not in the Game");
+        assertTrue(lobman.getGameReadOnly().getPlayers().contains(player2), "Player 2 is not in the Game");
+        assertTrue(lobman.getGameReadOnly().getPlayers().contains(player3), "Player 3 is not in the Game");
 
         assertTrue(currGame.getPlayers().contains(player1), "Player 1 is not in the Game");
         assertTrue(currGame.getPlayers().contains(player2), "Player 2 is not in the Game");
@@ -757,7 +757,7 @@ public class ThreadLockTests {
 
         assertEquals(0, lobman.getPlayersFromPool().size(),
                 "No one should be in the pool, but someone is.");
-        assertTrue(lobman.getPlayersFromGame().contains(player1), "Player 1 is not in the Game");
+        assertTrue(lobman.getGameReadOnly().getPlayers().contains(player1), "Player 1 is not in the Game");
         assertTrue(currGame.getPlayers().contains(player1), "Player 1 is not in the Game");
         assertEquals(player1, currGame.getCurrentTurnPlayer(), "It should be Player 1's turn, but it isn't.");
 

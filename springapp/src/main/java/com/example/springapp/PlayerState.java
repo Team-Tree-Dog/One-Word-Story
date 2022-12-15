@@ -1,6 +1,7 @@
 package com.example.springapp;
 
 import adapters.view_models.JplViewModel;
+import org.springframework.web.socket.WebSocketSession;
 
 /**
  * Stores information about a particular connected client and their corresponding
@@ -42,33 +43,26 @@ public class PlayerState {
     private final String playerId;
     private String displayName;
     private JplViewModel jplViewM;
+    private final WebSocketSession session;
 
     /**
      * @param playerId Create a new unique ID never used before to identify this client
      *                 (UUID recommended)
      */
-    public PlayerState(String playerId) {
+    public PlayerState(String playerId, WebSocketSession session) {
         this.playerId = playerId;
+        this.session = session;
+
         state = State.NOT_PROCESSED;
         displayName = null;
         jplViewM = null;
     }
 
-    public State state() {
-        return this.state;
-    }
-
-    public String playerId() {
-        return this.playerId;
-    }
-
-    public String displayName() {
-        return this.displayName;
-    }
-
-    public JplViewModel jplViewM() {
-        return this.jplViewM;
-    }
+    public State state() { return this.state; }
+    public String playerId() { return this.playerId; }
+    public String displayName() { return this.displayName; }
+    public JplViewModel jplViewM() { return this.jplViewM; }
+    public WebSocketSession session() { return this.session; }
 
     public void changeToRejected() {
         this.state = State.REJECTED;

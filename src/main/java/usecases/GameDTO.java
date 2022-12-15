@@ -2,6 +2,7 @@ package usecases;
 
 import entities.Player;
 import entities.games.Game;
+import entities.games.GameReadOnly;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,10 +62,12 @@ public class GameDTO {
 
     /**
      * Convenience method for building a GameDTO from a Game Object
+     * <br>
+     * BE SURE TO LOCK THE GAME if you are passing the game object directly
      * @param game Game entity object to build DTO from
      * @return GameDTO built from provided game
      */
-    public static GameDTO fromGame (Game game) {
+    public static GameDTO fromGame (GameReadOnly game) {
         return new GameDTO(
                 game.getStoryString(),
                 game.getPlayers(), game.getCurrentTurnPlayer().getPlayerId(),

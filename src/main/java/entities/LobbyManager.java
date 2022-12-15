@@ -2,6 +2,7 @@ package entities;
 
 import entities.games.Game;
 import entities.games.GameFactory;
+import entities.games.GameReadOnly;
 import exceptions.*;
 
 import java.util.ArrayList;
@@ -377,14 +378,15 @@ public class LobbyManager {
     }
 
     /**
-     * Gets all the players from the game
+     * Gets the game typed as readonly so only the immutable getters are
+     * accessible. DO NOT down cast to game.
      * @return an arraylist of players
      */
-    public List<Player> getPlayersFromGame () throws GameDoesntExistException {
+    public GameReadOnly getGameReadOnly () throws GameDoesntExistException {
         if (this.isGameNull()){
             throw new GameDoesntExistException("Game does not exist.");
         }
-        return new ArrayList<>(game.getPlayers());
+        return game;
     }
 
     /**
@@ -396,9 +398,4 @@ public class LobbyManager {
      * @return the lock associated with the player pool list
      */
     public Lock getPlayerPoolLock() { return playerPoolLock; }
-
-    /**
-     * @return the player whose turn it is
-     */
-    public Player getCurrentTurnPlayer() { return this.game.getCurrentTurnPlayer(); }
 }

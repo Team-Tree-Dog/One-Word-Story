@@ -6,6 +6,7 @@ import exceptions.InvalidWordException;
 import exceptions.OutOfTurnException;
 import exceptions.PlayerNotFoundException;
 import org.example.Log;
+import usecases.GameDTO;
 import usecases.InterruptibleThread;
 import usecases.Response;
 import usecases.ThreadRegister;
@@ -126,7 +127,12 @@ public class SwInteractor implements SwInputBoundary {
                 lobbyManager.switchTurn(); // Switch the turn.
                 String mess = String.format("Word '%1$s' has been added!", inputData.getWord());
                 Response resp = Response.getSuccessful(mess);
-                presenter.valid(new SwOutputDataValidWord(inputData.getWord(), this.playerId, resp));
+
+                try {
+                    presenter.valid(new SwOutputDataValidWord(GameDTO.fromGame(lobbyManager.getGameReadOnly()),
+                            this.playerId, resp));
+                } catch (GameDoesntExistException ignored) {/* IMPOSSIBLE ERROR */}
+
             }
             gameLock.unlock();
             Log.useCaseMsg("SP", "Released GAME lock");

@@ -133,6 +133,7 @@ public abstract class Game implements GameReadOnly {
     /**
      * @return Returns how many seconds are left for the current turn, or null if game timer not yet started
      */
+    @Override
     public int getSecondsLeftInCurrentTurn() {return secondsLeftInCurrentTurn;}
 
     /**

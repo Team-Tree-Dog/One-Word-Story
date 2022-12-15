@@ -5,6 +5,8 @@ import adapters.view_models.SwViewModel;
 import org.jetbrains.annotations.Nullable;
 import usecases.Response;
 
+import java.util.function.Function;
+
 import static com.example.springapp.SpringApp.coreAPI;
 
 /**
@@ -130,12 +132,13 @@ public sealed interface ClientCommand {
      * @return a parsed client command object
      */
     static ClientCommand parseCommand(String payload) {
+
         // Splits the payload into COMMAND + BODY by the agreed separator
         String[] payloadBlocks = payload.split(Character.toString(SEPARATOR));
 
         // Switch on the command header
         return switch (payloadBlocks[0]) {
-            case CMD_TRY_JOIN -> new TryJoin(payloadBlocks[1]);
+            case CMD_TRY_JOIN -> new TryJoin(payloadBlocks.length > 1 ? payloadBlocks[1] : "");
             case CMD_STATE_UPDATE -> new StateUpdate();
             case CMD_SEND_WORD -> new SendWord(payloadBlocks[1]);
 
