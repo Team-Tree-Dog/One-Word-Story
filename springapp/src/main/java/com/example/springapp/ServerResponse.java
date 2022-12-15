@@ -3,6 +3,7 @@ package com.example.springapp;
 import adapters.display_data.not_ended_display_data.GameDisplayData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.Nullable;
 import usecases.Response;
 
 /**
@@ -16,8 +17,10 @@ import usecases.Response;
  * between client side JS code and this backend Java code
  */
 public sealed interface ServerResponse {
-    String RESPONSE_JOIN = "join_response";
+    String RESPONSE_JOIN = "JPL:out:in_pool";
+    String RESPONSE_SUBMIT_WORD = "SW:out";
     String RESPONSE_STATE = "current_state";
+
 
     char SEPARATOR = 30;
 
@@ -28,7 +31,7 @@ public sealed interface ServerResponse {
     String pack() throws JsonProcessingException;
 
     /**
-     * Response sent upon processing a client's tryJoin command. Either the player's
+     * Response sent upon processing a client's JoinPublicLobby command. Either the player's
      * display name was valid and they were added to the waiting pool, or the name
      * was invalid, so the player will not be allowed further into the game
      * @param response whether the player's display name was accepted
@@ -41,11 +44,28 @@ public sealed interface ServerResponse {
     }
 
     /**
+     * Response sent upon processing a client's submit word command. Either the player's
+     * word was valid, so we pass back game data, or it was invalid, so we pass only a
+     * response with fail code
+     * @param response whether the player's word was added
+     * @param gameData new game state after word submission
+     */
+    record SubmitWordResponse(Response response, @Nullable GameDisplayData gameData) implements ServerResponse {
+        @Override
+        public String pack() throws JsonProcessingException {
+            ObjectMapper mapper = new ObjectMapper();
+            return RESPONSE_SUBMIT_WORD + SEPARATOR +
+                    mapper.writeValueAsString(response) + SEPARATOR +
+                    mapper.writeValueAsString(gameData);
+        }
+    }
+
+    /**
      * Response sent each time a player asks to get new game state (which should be very
      * frequent when players are in a game) containing the current game information
      * @param data game information necessary to display the current game state
      */
-    record CurrentState(GameDisplayData data) implements ServerResponse {
+    record CurrentState(@Nullable GameDisplayData data) implements ServerResponse {
         @Override
         public String pack() throws JsonProcessingException {
             return RESPONSE_STATE + SEPARATOR + (new ObjectMapper()).writeValueAsString(data);

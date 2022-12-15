@@ -1,6 +1,9 @@
 package adapters.display_data.not_ended_display_data;
 
+import usecases.PlayerDTO;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -35,6 +38,20 @@ public class GameDisplayDataBuilder {
     }
 
     /**
+     * Convenient shorthand for adding all players from a list of PlayerDTOs
+     * @param players list of player DTOs
+     * @param currentTurnPlayerID ID of current turn player needed to set each player's
+     *                            isCurrentTurnPlayer flag
+     * @return this builder
+     */
+    public GameDisplayDataBuilder addPlayersFromDTO(List<PlayerDTO> players, String currentTurnPlayerID) {
+        for (PlayerDTO p : players) {
+            this.addPlayer(p.getPlayerId(), p.getDisplayName(), p.getPlayerId().equals(currentTurnPlayerID));
+        }
+        return this;
+    }
+
+    /**
      * @param secs time in seconds left in the current turn
      * @return this builder
      */
@@ -56,6 +73,9 @@ public class GameDisplayDataBuilder {
      * @return the built GameDisplayData object
      */
     public GameDisplayData build() {
+        if (curTurnPlayer == null || storyString == null) {
+            throw new IllegalStateException("Not all GameDisplayData has been set!");
+        }
         return new GameDisplayData(players.toArray(new PlayerDisplayData[0]),
                 curTurnPlayer, storyString, secondsLeftInTurn);
     }

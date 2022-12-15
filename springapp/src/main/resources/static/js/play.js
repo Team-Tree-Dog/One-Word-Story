@@ -15,6 +15,10 @@ $(document).ready(() => {
     }
 });
 
+// print pretty ;)
+nicelog = (header, content, header_col="#9933ff", content_col="#ff99e6") =>
+    console.log(`%c[${header}] %c" + ${content}`, `color:${header_col};font-weight:bold`, `color:${content_col}`)
+
 /**
  * Generate UUID
  * @returns A new UUID string
@@ -52,12 +56,12 @@ let hasGameStarted = false;
 
 const SEPARATOR = String.fromCharCode(30);
 
-const CMD_TRY_JOIN = "try_join";
+const CMD_TRY_JOIN = "JPL";
 const CMD_STATE_UPDATE = "state_update";
-const CMD_SEND_WORD = "send_word";
-const CMD_LEAVE = "leave";
+const CMD_SEND_WORD = "SW";
 
-const RESPONSE_JOIN = "join_response";
+const RESPONSE_JOIN = "JPL:out:in_pool";
+const RESPONSE_SUBMIT_WORD = "SW:out";
 const RESPONSE_STATE = "current_state";
 
 /**
@@ -65,8 +69,8 @@ const RESPONSE_STATE = "current_state";
  */
 async function socketLogic () {
     // Call JPL
-    const joinResult = await GameAPI.tryJoin(document.getElementById("name").value);
-    console.log("Join result: " + joinResult);
+    const joinResult = await GameAPI.joinPublicLobby(document.getElementById("name").value);
+    nicelog("Socket Logic", "Join result: " + joinResult);
 
     if (joinResult.code === "SUCCESS") {
 
@@ -117,7 +121,7 @@ async function socketLogic () {
 
             }
 
-            console.log("Current game state: ", updatedGameState);
+            nicelog("Socket Logic", "Current game state: " + updatedGameState);
         }, 500);
     } else {
         // Disconnect, display name invalid
@@ -156,22 +160,20 @@ function createAPI (url) {
                 this.wsHandle = new WebSocket(url);
 
                 this.wsHandle.onmessage = (data) => {
-                    // Get all message handlers
+                    // Call all message handlers with message
                     (Object.values(this.messageHandlers) || [])
                         .filter(x => typeof x == 'function')
                         .forEach(x => x(data));
                 };
 
                 this.wsHandle.onopen = () => {
-                    console.log("%c[Socket] %cConnection Established",
-                        "color:#8c1aff;font-weight:bold", "color:#ff99e6");
+                    nicelog("Socket", "Connection Established");
 
                     this.isConnected = true
                 };
 
                 this.wsHandle.onclose = () => {
-                    console.log("%c[Socket] %cConnection Closed",
-                        "color:#8c1aff;font-weight:bold", "color:#ff99e6");
+                    nicelog("Socket", "Connection Closed");
 
                     let mess = encodeURIComponent("You have been disconnected from the game");
                     window.location.search = `errorTitle=Disconnected&errorMessage=${mess}`;
@@ -202,9 +204,6 @@ function createAPI (url) {
             }
         },
 
-        /** Logs messages in a pretty colored css format */
-        log: (m) => console.log("%c[Socket] %c" + m, "color:#8c1aff;font-weight:bold", "color:#ff99e6"),
-
         /**
          * Ensures that websocket is open before calling callback
          * To safely use the socket, call this method and include all
@@ -213,9 +212,9 @@ function createAPI (url) {
          */
         onReady: function(callback) {
             const interval = setInterval(() => {
-                this.log("Checking connection...");
+                nicelog("Socket", "Checking connection...");
                 if (this._ws.isConnected) {
-                    this.log("Ready!");
+                    nicelog("Socket", "Ready!");
                     clearInterval(interval);
                     callback();
                 }
@@ -223,7 +222,7 @@ function createAPI (url) {
         },
 
         /**
-         * JPL (displayName, uniqueId = socket session ID)
+         * JPL (displayName, playerId = passed in backend)
          *
          * Adds a callback to the messageHandlers which resolves the promise with
          * the server's response. Then sends command to server. Awaiting this method
@@ -232,15 +231,15 @@ function createAPI (url) {
          * @param playerName {string} desired display name
          * @returns {Promise<Object>}
          */
-        tryJoin: async function(playerName) {
+        joinPublicLobby: async function(playerName) {
             return new Promise((resolve, reject) => {
                 const waiterGuid = uuidv4();
 
                 // If server hasn't responded to try join in a while, reload with failure
-                let tryJoinCounter = 0
-                let tryJoinTimeout = setInterval(()=>{
-                    tryJoinCounter++
-                    if (tryJoinCounter === 5) {
+                let jplCounter = 0
+                let jplTimeout = setInterval(()=>{
+                    jplCounter++
+                    if (jplCounter === 5) {
                         window.location.search = "errorMessage=Server%20connection%20timed%20out"
                     }
                 },1000)
@@ -249,15 +248,46 @@ function createAPI (url) {
                     const decoded = this._ws.decode(msg.data);
 
                     if(decoded[0] === RESPONSE_JOIN) {
-                        clearInterval(tryJoinTimeout)
+                        clearInterval(jplTimeout)
 
                         delete this._ws.messageHandlers[waiterGuid];
-                        console.log(decoded[1])
+                        nicelog("Socket: joinPublicLobby", "Serv Res: " + decoded[1])
                         resolve(JSON.parse(decoded[1]));
                     }
                 }
 
                 this._ws.send(this._ws.encode(CMD_TRY_JOIN, playerName));
+            });
+        },
+
+        /**
+         * SW (word, playerId = passed in backend)
+         *
+         * Adds a callback to the messageHandlers which resolves the promise with
+         * the server's response. Then sends command to server. Awaiting this method
+         * call will give you the server response corresponding to this message sent
+         *
+         * @param word {string} desired word and punctuation to submit
+         * @returns {Promise<Object>}
+         */
+        submitWord: function(word) {
+            return new Promise((resolve, reject) => {
+                const waiterGuid = uuidv4();
+
+                this._ws.messageHandlers[waiterGuid] = (servRes) => {
+                    const decoded = this._ws.decode(servRes);
+
+                    if (decoded[0] === RESPONSE_SUBMIT_WORD) {
+                        delete this._ws.messageHandlers[waiterGuid]
+
+                        resolve({
+                            "response": JSON.parse(decoded[1]),
+                            "game_data": JSON.parse(decoded[2]) // Can be null
+                        })
+                    }
+                }
+
+                this._ws.send(this._ws.encode(CMD_SEND_WORD, word));
             });
         },
 
@@ -276,14 +306,6 @@ function createAPI (url) {
 
                 this._ws.send(this._ws.encode(CMD_STATE_UPDATE, playerName));
             });
-        },
-
-        sendWord: function(word) {
-            this._ws.send(this._ws.encode(CMD_SEND_WORD, word));
-        },
-
-        leave: function() {
-            this._ws.send(this._ws.encode(CMD_LEAVE));
         }
     };
 
@@ -325,11 +347,13 @@ function switchToGame () {
 /**
  * Submit word button callback
  */
-function submitWord() {
+async function submitWord() {
     let word = document.getElementById("word").value
     document.getElementById("word").value = ""
+
     if (word !== "") {
-        GameAPI.sendWord(word)
+        let data = await GameAPI.submitWord(word)
+        console.log(data)
     }
 }
 

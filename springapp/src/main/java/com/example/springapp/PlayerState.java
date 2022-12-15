@@ -17,26 +17,29 @@ public class PlayerState {
          * <br><br>
          * displayName and jplViewM will both be null
          */
-        NOT_PROCESSED,
+        NOT_PROCESSED(0),
         /**
          * The player's display name has been rejected. This player should disconnect
          * since no further action will be taken on their part.
          * <br><br>
          * displayName and jplViewM will both be null
          */
-        REJECTED,
+        REJECTED(1),
         /**
          * Player's display name was accepted and the player is waiting in the pool.
          * <br><br>
          * displayName and jplViewM will both be set
          */
-        IN_POOL,
+        IN_POOL(2),
         /**
          * Player has been added to a game
          * <br><br>
          * displayName and jplViewM will both be set
          */
-        IN_GAME
+        IN_GAME(3);
+
+        final int level;
+        State(int level) {this.level = level;}
     }
 
     private State state;

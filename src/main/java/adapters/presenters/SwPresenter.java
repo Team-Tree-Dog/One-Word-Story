@@ -1,5 +1,6 @@
 package adapters.presenters;
 
+import adapters.display_data.not_ended_display_data.GameDisplayData;
 import adapters.display_data.not_ended_display_data.GameDisplayDataBuilder;
 import adapters.view_models.SwViewModel;
 import org.example.ANSI;
@@ -32,12 +33,7 @@ public class SwPresenter implements SwOutputBoundary {
                 "Presenter valid word ply ID " + outputDataValidWord.getPlayerId() +
                 ", " + outputDataValidWord.getResponse());
 
-        GameDisplayDataBuilder builder = new GameDisplayDataBuilder();
-        for (PlayerDTO p : outputDataValidWord.getGameData().getPlayers()) {
-            builder.addPlayer(p.getPlayerId(), p.getDisplayName(), p.)
-        }
-
-        viewM.setGameData();
+        viewM.setGameData(GameDisplayData.fromGameDTO(outputDataValidWord.getGameData()));
         viewM.setResponse(outputDataValidWord.getResponse());
     }
 

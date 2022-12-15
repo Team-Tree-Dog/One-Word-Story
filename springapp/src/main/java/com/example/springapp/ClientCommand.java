@@ -5,8 +5,6 @@ import adapters.view_models.SwViewModel;
 import org.jetbrains.annotations.Nullable;
 import usecases.Response;
 
-import java.util.function.Function;
-
 import static com.example.springapp.SpringApp.coreAPI;
 
 /**
@@ -22,13 +20,17 @@ import static com.example.springapp.SpringApp.coreAPI;
  * between client side JS code and this backend Java code
  */
 public sealed interface ClientCommand {
-    String CMD_TRY_JOIN = "try_join";
+    String CMD_TRY_JOIN = "JPL";
     String CMD_STATE_UPDATE = "state_update";
-    String CMD_SEND_WORD = "send_word";
-    String CMD_LEAVE = "leave";
+    String CMD_SEND_WORD = "SW";
 
     char SEPARATOR = 30;
 
+    /**
+     * @param playerState
+     * @return ServerResponse corresponding to the command, or null if this command has no response (one way)
+     * @throws InterruptedException If thread is interrupted
+     */
     @Nullable
     ServerResponse handler(PlayerState playerState) throws InterruptedException;
 
@@ -36,7 +38,7 @@ public sealed interface ClientCommand {
      * JPL Command for initial joining
      * @param playerName desired display name of player who is trying to join
      */
-    record TryJoin(String playerName) implements ClientCommand {
+    record JoinPublicLobby(String playerName) implements ClientCommand {
         /**
          * <h2>Sub Handler: JPL</h2>
          * A newly connected client must first tryJoin in order to continue to the game. All
@@ -60,17 +62,38 @@ public sealed interface ClientCommand {
             if (jplViewM.getResponse().getCode() == Response.ResCode.SUCCESS) {
                 // Player name was approved, move forward
                 playerState.changeToInPool(jplViewM, playerName);
-
-                return new ServerResponse.JoinResponse(jplViewM.getResponse());
-            } else {
-                // Tell frontend to reload page and disconnect, display name was bad
-                return new ServerResponse.JoinResponse(jplViewM.getResponse());
             }
+
+            return new ServerResponse.JoinResponse(jplViewM.getResponse());
             // TODO: Convert socket system to allow multi message sending
             // The solution to ^ might be to call another method before returning this one
             // and have that method await JPL for the second reply and send the message.
             // Of course, this still means modifying the API to allow messages to be sent like
             // that
+        }
+    }
+
+    /**
+     * A player's command to try to submit a word to the game
+     * @param word Punctuation and word that player wants to submit
+     */
+    record SubmitWord(String word) implements ClientCommand {
+        /**
+         * <h2>Sub Handler: SW</h2>
+         * Handler to submit a word to the game. Called when a player
+         * tries to submit a word to the game. The command is still
+         * processed even when the player isn't in the pool or game. SW
+         * will take care of checking and failing that situation
+         */
+        @Override
+        public ServerResponse handler(PlayerState playerState) throws InterruptedException {
+            SwViewModel viewM = coreAPI.swController.submitWord(playerState.playerId(), word);
+
+            while (viewM.getResponse() == null) {
+                Thread.sleep(20);
+            }
+
+            return new ServerResponse.SubmitWordResponse(viewM.getResponse(), viewM.getGameData());
         }
     }
 
@@ -99,33 +122,6 @@ public sealed interface ClientCommand {
     }
 
     /**
-     * A player's command to try to submit a word to the game
-     * @param word Punctuation and word that player wants to submit
-     */
-    record SendWord(String word) implements ClientCommand {
-        /**
-         * <h2>Sub Handler: SW</h2>
-         * Handler to submit a word to the game. Called when a player
-         * tries to submit a word to the game. ignores command if player didn't pass tryJoin
-         * OR if the player was not yet sorted into the game
-         */
-        @Override
-        public @Nullable ServerResponse handler(PlayerState playerState) throws InterruptedException {
-
-            if (playerState.displayName() != null && playerState.jplViewM().getGameState() != null) {
-                SwViewModel viewM = coreAPI.swController.submitWord(playerState.playerId(), word);
-
-                while (viewM.getResponseCode() == null) {
-                    Thread.sleep(20);
-                }
-            }
-
-            // TODO: Ideally, return response code
-            return null;
-        }
-    }
-
-    /**
      * Parse raw payload into a client command object.
      * This is a factory
      * @param payload content received from a client over the websocket
@@ -138,9 +134,9 @@ public sealed interface ClientCommand {
 
         // Switch on the command header
         return switch (payloadBlocks[0]) {
-            case CMD_TRY_JOIN -> new TryJoin(payloadBlocks.length > 1 ? payloadBlocks[1] : "");
+            case CMD_TRY_JOIN -> new JoinPublicLobby(payloadBlocks.length > 1 ? payloadBlocks[1] : "");
             case CMD_STATE_UPDATE -> new StateUpdate();
-            case CMD_SEND_WORD -> new SendWord(payloadBlocks[1]);
+            case CMD_SEND_WORD -> new SubmitWord(payloadBlocks.length > 1 ? payloadBlocks[1] : "");
 
             // Crash if client sent a command which isn't recognized by the server
             default -> throw new UnsupportedOperationException("Invalid parameter: " + payloadBlocks[0]);

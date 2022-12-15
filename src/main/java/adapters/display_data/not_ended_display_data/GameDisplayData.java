@@ -1,6 +1,7 @@
 package adapters.display_data.not_ended_display_data;
 
 import org.jetbrains.annotations.NotNull;
+import usecases.GameDTO;
 
 /**
  * Data structure for game display data
@@ -35,4 +36,19 @@ public class GameDisplayData {
     public @NotNull String getStoryString() { return storyString; }
 
     public int getSecondsLeftInTurn() {return  secondsLeftInTurn; }
+
+    /**
+     * Factory method for making a GameDisplayData from GameDTO
+     * @param gameData GameDTO object
+     * @return new GameDisplayData from the GameDTO
+     * @throws IllegalArgumentException if the passed GameDTO had some null fields which were missing
+     * important game display information
+     */
+    public static GameDisplayData fromGameDTO(GameDTO gameData) throws IllegalArgumentException {
+        return new GameDisplayDataBuilder()
+                .addPlayersFromDTO(gameData.getPlayers(), gameData.getCurrentTurnPlayerId())
+                .setStoryString(gameData.getStory())
+                .setSecondsLeftInTurn(gameData.getSecondsLeftCurrentTurn())
+                .build();
+    }
 }

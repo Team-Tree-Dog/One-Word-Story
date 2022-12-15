@@ -1,5 +1,6 @@
 package adapters.presenters;
 
+import adapters.display_data.not_ended_display_data.GameDisplayData;
 import adapters.display_data.not_ended_display_data.GameDisplayDataBuilder;
 import adapters.view_models.JplViewModel;
 import org.example.ANSI;
@@ -46,14 +47,7 @@ public class JplPresenter implements JplOutputBoundary {
                 "Presenter in game ply ID " + dataJoinedGame.getPlayerId() + ", " +
                 dataJoinedGame.getRes());
 
-        GameDTO g = dataJoinedGame.getGameData();
-        GameDisplayDataBuilder builder = new GameDisplayDataBuilder();
-        for (PlayerDTO p : g.getPlayers()) {
-            builder.addPlayer(p.getPlayerId(), p.getDisplayName(),
-                    p.getPlayerId().equals(g.getCurrentTurnPlayerId()));
-        }
-        builder.setSecondsLeftInTurn(g.getSecondsLeftCurrentTurn()).setStoryString(g.getStory());
-        viewM.setGameDisplay(builder.build());
+        viewM.setGameDisplay(GameDisplayData.fromGameDTO(dataJoinedGame.getGameData()));
     }
 
     /**

@@ -1,11 +1,11 @@
 package usecases;
 
 import entities.Player;
-import entities.games.Game;
 import entities.games.GameReadOnly;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * A data transfer object for a Game entity. Contains data from a Game
@@ -58,7 +58,7 @@ public class GameDTO {
     /**
      * @return List of players who were in the game in this game state data
      */
-    public ArrayList<PlayerDTO> getPlayers() { return players; }
+    public List<PlayerDTO> getPlayers() { return players; }
 
     /**
      * Convenience method for building a GameDTO from a Game Object
