@@ -17,12 +17,13 @@ public class PgeViewModel extends ViewModel {
     }
 
     /**
-     * null if a game has never ended previously.
-     * Gets set each time a game ends but never resets to null.
-     * View must listen for each time it gets updated to know a game has just ended
+     * null if a game has never ended previously.<br>
+     * Gets set each time a game ends but never resets to null.<br>
+     * View must listen for each time it gets updated to know a game has just ended<br>
+     * Treat as readonly! There are ways to modify the content but DO NOT
      */
     @Nullable
-    public GameEndPlayerDisplayData[] getCurrentGameState() {
+    public GameEndPlayerDisplayData[] getPlayerStatData() {
         GameEndPlayerDisplayData[] out;
         lock.lock();
         //  We will only copy the array and not the objects inside. However, the objects inside the

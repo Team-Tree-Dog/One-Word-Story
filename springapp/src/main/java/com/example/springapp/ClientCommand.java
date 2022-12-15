@@ -5,7 +5,7 @@ import adapters.view_models.SwViewModel;
 import org.jetbrains.annotations.Nullable;
 import usecases.Response;
 
-import static com.example.springapp.SpringApp.viewRef;
+import static com.example.springapp.SpringApp.coreAPI;
 
 /**
  * Unifies a structure of all the possible INCOMING (RECEIVE) messages from clients.
@@ -47,7 +47,7 @@ public sealed interface ClientCommand {
         @Override
         public ServerResponse handler(PlayerState playerState) throws InterruptedException {
             // Calls JPL
-            JplViewModel jplViewM = viewRef.jplController.joinPublicLobby(
+            JplViewModel jplViewM = coreAPI.jplController.joinPublicLobby(
                     playerState.playerId(), playerName);
 
             // Wait for initial inPool response
@@ -88,7 +88,7 @@ public sealed interface ClientCommand {
         public ServerResponse handler(PlayerState playerState) throws InterruptedException {
             if (playerState.displayName() != null) {
                 return new ServerResponse.CurrentState(
-                        viewRef.pdViewM.getCurrentGameState()
+                        coreAPI.pdViewM.getCurrentGameState()
                 );
             } else {
                 return null;
@@ -111,7 +111,7 @@ public sealed interface ClientCommand {
         public @Nullable ServerResponse handler(PlayerState playerState) throws InterruptedException {
 
             if (playerState.displayName() != null && playerState.jplViewM().getGameState() != null) {
-                SwViewModel viewM = viewRef.swController.submitWord(playerState.playerId(), word);
+                SwViewModel viewM = coreAPI.swController.submitWord(playerState.playerId(), word);
 
                 while (viewM.getResponseCode() == null) {
                     Thread.sleep(20);

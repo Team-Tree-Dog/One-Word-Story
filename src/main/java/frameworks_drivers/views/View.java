@@ -1,88 +1,45 @@
 package frameworks_drivers.views;
 
-import adapters.controllers.*;
-import adapters.view_models.PdViewModel;
-import adapters.view_models.PgeViewModel;
-import entities.LobbyManager;
-
-import java.io.IOException;
-
 /**
- * TODO: ADD DOC
+ * Defines a rough structure for a view. Call runApplicationLoop
+ * to run the view. This will trigger 3 abstract method in order:
+ * start, run, end.
+ * Start should typically be used for initialization. Run should
+ * have some form of loop to keep the program running until it is closed.
+ * End should run teardown procedures.
  */
 public abstract class View {
 
-    public final CagController cagController;
-    public final DcController dcController;
-    public final GatController gatController;
-    public final GlsController glsController;
-    public final GmlsController gmlsController;
-    public final GscController gscController;
-    public final JplController jplController;
-    public final LsController lsController;
-    public final SsController ssController;
-    public final UtController utController;
-    public final SwController swController;
-    public final StController stController;
-    public final PgeViewModel pgeViewM;
-    public final PdViewModel pdViewM;
+    private final CoreAPI api;
 
     /**
-     * SMELLY CODE
+     * @param api access to core API of the clean arch program
      */
-    public View (
-            CagController cagController,
-            DcController dcController,
-            GatController gatController,
-            GlsController glsController,
-            GmlsController gmlsController,
-            GscController gscController,
-            JplController jplController,
-            LsController lsController,
-            SsController ssController,
-            StController stController,
-            SwController swController,
-            UtController utController,
-            PgeViewModel pgeViewM,
-            PdViewModel pdViewM
-    ) {
-        this.cagController = cagController;
-        this.dcController = dcController;
-        this.gatController = gatController;
-        this.glsController = glsController;
-        this.gmlsController = gmlsController;
-        this.gscController = gscController;
-        this.jplController = jplController;
-        this.lsController = lsController;
-        this.ssController = ssController;
-        this.utController = utController;
-        this.swController = swController;
-        this.stController = stController;
-        this.pgeViewM = pgeViewM;
-        this.pdViewM = pdViewM;
+    public View(CoreAPI api) {
+        this.api = api;
     }
 
     /**
-     * TODO ADD DOC
+     * Initialize your view
      */
-    public abstract void start ();
+    public abstract void start (CoreAPI coreAPI);
 
     /**
-     * TODO: ADD DOC
+     * Run the core logic of your view
      */
-    public abstract void run (/*LobbyManager lm*/);
+    public abstract void run (CoreAPI coreAPI);
 
     /**
-     * TODO: ADD DOC
+     * Teardown your view's resources
      */
-    public abstract void end ();
+    public abstract void end (CoreAPI coreAPI);
 
     /**
-     * TODO: ADD DOC
+     * Start and run the application.
      */
-    public void runApplicationLoop(/*LobbyManager lm*/) {
-        start();
-        run();
-        end();
+    public void runApplicationLoop() {
+        start(api);
+        run(api);
+        end(api);
     };
 }

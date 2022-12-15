@@ -19,6 +19,7 @@ import entities.games.GameFactoryRegular;
 import frameworks_drivers.repository.in_memory.InMemoryCommentsRepo;
 import frameworks_drivers.repository.in_memory.InMemoryStoryRepo;
 import frameworks_drivers.repository.in_memory.InMemoryTitlesRepo;
+import frameworks_drivers.views.CoreAPI;
 import usecases.comment_as_guest.CagInteractor;
 import usecases.ThreadRegister;
 import usecases.disconnecting.DcInteractor;
@@ -41,8 +42,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Orchestrator. Contains only a main method which boots up
- * the server.
+ * Orchestrator. Contains only a main method which initializes the clean architecture
  */
 public class Main {
 
@@ -163,12 +163,10 @@ public class Main {
         System.out.println("Main: Before Spring Init");
 
         // Setup and run the view
-        SpringBootView.init(
+        new SpringBootView(new CoreAPI(
           cagController, dcController, gatController, glsController, gmlsController,
           gscController, jplController, lsController, ssController, stController,
           swController, utController, pgeViewM, pdViewM
-        );
-
-        SpringBootView.getInstance().runApplicationLoop(/*manager*/);
+        )).runApplicationLoop();
     }
 }

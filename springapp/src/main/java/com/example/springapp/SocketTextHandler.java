@@ -1,6 +1,5 @@
 package com.example.springapp;
 import adapters.view_models.DcViewModel;
-import frameworks_drivers.views.View;
 import org.example.Log;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.socket.CloseStatus;
@@ -13,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.example.springapp.SpringApp.viewRef;
+import static com.example.springapp.SpringApp.coreAPI;
 
 /**
  * Handler logic for game websocket!
@@ -37,7 +36,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
         PlayerState p = sessionToPlyId.get(session.getId());
 
         // Calls disconnect on a thread. Response shouldn't matter, player has disconnected!
-        DcViewModel viewM = viewRef.dcController.disconnect(p.playerId());
+        DcViewModel viewM = coreAPI.dcController.disconnect(p.playerId());
 
         // Waits for view model data TODO: FIX VIEW MODELS
         while (viewM.getResponseCode() == null) {
@@ -83,6 +82,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
 
                 // Sends message to client
                 session.sendMessage(new TextMessage(msg));
+
             }
 
         } catch (Exception e) {

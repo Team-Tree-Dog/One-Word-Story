@@ -2,6 +2,7 @@ package com.example.springapp.controllers;
 
 import adapters.view_models.*;
 import com.example.springapp.SpringApp;
+import frameworks_drivers.views.CoreAPI;
 import frameworks_drivers.views.View;
 import org.example.ANSI;
 import org.example.Log;
@@ -175,7 +176,7 @@ public class StoryController {
 
     @GetMapping("/")
     public String index(Model model, @RequestParam(name="get", defaultValue="latest") String storiesToGet ) throws InterruptedException {
-        View v = SpringApp.viewRef;
+        CoreAPI v = SpringApp.coreAPI;
 
         List<Story> stories = new ArrayList<>();
 
@@ -249,7 +250,7 @@ public class StoryController {
                         @RequestParam(name="isfail", defaultValue="false") String isfail,
                         @RequestParam(name="isfailTitle", defaultValue="false") String isfailTitle,
                         @RequestParam(name="message", defaultValue=".") String mess) throws InterruptedException {
-        View v = SpringApp.viewRef;
+        CoreAPI v = SpringApp.coreAPI;
 
         // get all stories TODO: Make 1000 get ALL instead
         GlsViewModel glsViewM = v.glsController.getLatestStories(100);
@@ -316,7 +317,7 @@ public class StoryController {
 
     @PostMapping("comment/story/{id}")
     public String comment(@RequestParam("id") String id, Comment comment) throws InterruptedException {
-        View v = SpringApp.viewRef;
+        CoreAPI v = SpringApp.coreAPI;
 
         long longId = Long.parseLong(id);
         System.out.printf("Received comment for story " + longId + '\n');
@@ -344,7 +345,7 @@ public class StoryController {
         System.out.println("Received suggest title request story " + id + '\n');
         System.out.println("Suggested title: " + suggestedTitle + '\n');
 
-        View v = SpringApp.viewRef;
+        CoreAPI v = SpringApp.coreAPI;
 
         StViewModel viewM = v.stController.suggestTitle(Integer.parseInt(id), suggestedTitle);
 
@@ -363,7 +364,7 @@ public class StoryController {
     @PostMapping("upvote-suggestion/suggestion/{id}")
     public String upvoteSuggestedTitle(@RequestParam("id") String title,
                                        @RequestParam("storyId") String storyId) throws InterruptedException {
-        View v = SpringApp.viewRef;
+        CoreAPI v = SpringApp.coreAPI;
 
         UtViewModel utViewM = v.utController.upvoteTitle(Integer.parseInt(storyId), title);
 
@@ -381,7 +382,7 @@ public class StoryController {
     public String like(@RequestParam("id") String id) throws InterruptedException {
         System.out.println("Received like request for story " + id);
 
-        View v = SpringApp.viewRef;
+        CoreAPI v = SpringApp.coreAPI;
 
         LsViewModel viewM = v.lsController.likeStory(Integer.parseInt(id));
 

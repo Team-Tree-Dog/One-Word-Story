@@ -1,5 +1,6 @@
 package com.example.springapp;
 
+import frameworks_drivers.views.CoreAPI;
 import frameworks_drivers.views.View;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +15,7 @@ public class SpringApp {
 	 * to all the use case controllers, as well as the PGE and PD view models
 	 * which contain game data
 	 */
-	public static View viewRef;
+	public static CoreAPI coreAPI;
 
 	/**
 	 * Start the spring web application
@@ -22,8 +23,8 @@ public class SpringApp {
 	 * @param args Optional String arguments to pass into the spring run call
 	 * @return The top interface of the newly created spring application; the spring Application Context
 	 */
-	public static org.springframework.context.ConfigurableApplicationContext startServer(View viewRef, String[] args) {
-		SpringApp.viewRef = viewRef;
+	public static org.springframework.context.ConfigurableApplicationContext startServer(CoreAPI viewRef, String[] args) {
+		SpringApp.coreAPI = viewRef;
 		return org.springframework.boot.SpringApplication.run(SpringApp.class, args);
 	}
 

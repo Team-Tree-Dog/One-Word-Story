@@ -72,6 +72,9 @@ async function socketLogic () {
 
         switchToWaiting()
 
+        /**
+         * Central game timer
+         */
         const intervalId = setInterval(async () => {
             // Get the state periodically and run game logic
 

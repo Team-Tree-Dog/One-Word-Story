@@ -7,9 +7,9 @@ import util.RecursiveSymboledIntegerHashMap;
  */
 public class GameEndPlayerDisplayData {
 
-    private String id;
-    private String displayName;
-    private RecursiveSymboledIntegerHashMap[] stats;
+    private final String id;
+    private final String displayName;
+    private final RecursiveSymboledIntegerHashMap[] stats;
 
     /**
      * Constructor for GameEndPlayerDisplayData

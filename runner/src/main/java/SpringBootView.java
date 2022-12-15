@@ -3,6 +3,7 @@ import adapters.view_models.PdViewModel;
 import adapters.view_models.PgeViewModel;
 import adapters.view_models.SsViewModel;
 import com.example.springapp.SpringApp;
+import frameworks_drivers.views.CoreAPI;
 import frameworks_drivers.views.View;
 import org.example.ANSI;
 import org.example.Log;
@@ -14,55 +15,28 @@ import java.io.InputStreamReader;
 
 public class SpringBootView extends View {
 
-    private static SpringBootView singeltonInstance = null;
-
-    /**
-     * Initialize singleton static instance
-     */
-    public static void init(CagController cagController, DcController dcController, GatController gatController,
-                       GlsController glsController, GmlsController gmlsController, GscController gscController,
-                       JplController jplController, LsController lsController, SsController ssController,
-                       StController stController, SwController swController, UtController utController,
-                            PgeViewModel pgeViewM, PdViewModel pdViewM) {
-        SpringBootView.singeltonInstance = new SpringBootView(cagController, dcController, gatController, glsController, gmlsController, gscController,
-                jplController, lsController, ssController, stController, swController, utController, pgeViewM, pdViewM);
-    }
-
-    /**
-     * @return the static singleton instance
-     */
-    public static SpringBootView getInstance() {
-        if(singeltonInstance == null) {
-            throw new IllegalStateException("Invalid state! View is uninitialized");
-        }
-
-        return singeltonInstance;
-    }
-
     private BufferedReader reader;
     private ConfigurableApplicationContext app;
 
+    public SpringBootView(CoreAPI api) {
+        super(api);
+    }
+
     /**
-     * SMELLY CODE
+     * Start spring application and console input reader
      */
-    private SpringBootView(CagController cagController, DcController dcController, GatController gatController,
-                           GlsController glsController, GmlsController gmlsController, GscController gscController,
-                           JplController jplController, LsController lsController, SsController ssController,
-                           StController stController, SwController swController, UtController utController,
-                           PgeViewModel pgeViewM, PdViewModel pdViewM) {
-        super(cagController, dcController, gatController, glsController, gmlsController, gscController,
-                jplController, lsController, ssController, stController, swController, utController,
-                pgeViewM, pdViewM);
-    }
-
     @Override
-    public void start() {
+    public void start(CoreAPI coreAPI) {
         reader = new BufferedReader(new InputStreamReader(System.in));
-        app = SpringApp.startServer(this, new String[0]);
+        app = SpringApp.startServer(coreAPI, new String[0]);
     }
 
+    /**
+     * read console for commands on loop. Spring is already running on its own threads.
+     * Terminate loop if "shutdown" command issues
+     */
     @Override
-    public void run() {
+    public void run(CoreAPI coreAPI) {
         while (true) {
             try {
                 String inp = reader.readLine();
@@ -78,11 +52,15 @@ public class SpringBootView extends View {
         }
     }
 
+    /**
+     * Call shutdown use case which runs synchronously. Then close
+     * the spring application and console reader.
+     */
     @Override
-    public void end() {
+    public void end(CoreAPI coreAPI) {
         // Calls shutdown
         Log.sendMessage("SPRING VIEW", ANSI.PURPLE, "Initiating Shutdown Use Case...");
-        SsViewModel ssViewM = ssController.shutdownServer();
+        SsViewModel ssViewM = coreAPI.ssController.shutdownServer();
         Log.sendMessage("SPRING VIEW", ANSI.PURPLE, "Use Cases have been shut down!");
 
         app.close();
