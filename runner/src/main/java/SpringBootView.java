@@ -41,7 +41,7 @@ public class SpringBootView extends View {
             try {
                 String inp = reader.readLine();
 
-                if (inp.equals("shutdown")) {
+                if (inp.equals("s")) {
                     break;
                 } else {
                     System.out.println("\"" + inp + "\" is not a valid command");

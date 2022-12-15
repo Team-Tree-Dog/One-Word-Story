@@ -1,6 +1,14 @@
-/* Game Page */
+/*
+  _______  _______ .__   __.  _______ .______          ___       __
+ /  _____||   ____||  \ |  | |   ____||   _  \        /   \     |  |
+|  |  __  |  |__   |   \|  | |  |__   |  |_)  |      /  ^  \    |  |
+|  | |_ | |   __|  |  . `  | |   __|  |      /      /  /_\  \   |  |
+|  |__| | |  |____ |  |\   | |  |____ |  |\  \----./  _____  \  |  `----.
+ \______| |_______||__| \__| |_______|| _| `._____/__/     \__\ |_______|
 
-@font-face {
+ */
+
+ @font-face {
     font-family: 'Lobster';
     src: url('/media/fonts/Lobster.ttf');
 }
@@ -12,61 +20,13 @@
     --color3: #3aafa9;
     --color4: #def2f1;
     --color5: #feffff;
+    --parchment: #fffbdf;
 }
 
-body {
-    background: var(--color3);
-}
-
-#two_columns {
-    display: flex;
-}
-
-#column-1 {
-    flex: 30%;
-}
-
-#story_column {
-    flex: 60%;
-}
-
-/* story title design */
-.story-title {
-    font-family: 'Brush Script MT', cursive;
-    font-size: 50px;
-    text-align: center;
-    text-shadow: #2b7a78 3px 3px;
-    padding: -10px;
-}
-
-/* story box design */
-#story {
-    font-family: URW Chancery L, cursive;
-    border-style: solid;
-    height: 300px;
-    overflow-y:scroll;
-    background-color: var(--color4);
-    padding: 10px;
-}
-
-/* remove dots from unordered list of players */
-ul {
-    list-style-type: none;
-}
-
-#game_page {
-    display: none;
-}
-
-/*---------------------------- MINI LOADING ICON*/
-.loader {
-    border: 4px solid #f3f3f3; /* Light grey */
-    border-top: 4px solid #3498db; /* Blue */
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: spin 2s linear infinite;
-    margin-right: 10px;
+@keyframes flashingText {
+    50%{
+        color: #17252a;
+    }
 }
 
 @keyframes spin {
@@ -74,42 +34,60 @@ ul {
     100% { transform: rotate(360deg); }
 }
 
-
-
-
-
-
-
-
-
-/* ------------ Play Page -------------- */
-
-#load-icon-container {
-    align-content: center;
-    justify-content: center;
-    display: flex;
+@keyframes buttonRing {
+    0% {
+        width: 30px;
+        height: 30px;
+        opacity: 1;
+    }
+    100% {
+        width: 150px;
+        height: 150px;
+        opacity: 0;
+    }
 }
 
-/* colors of the website */
-:root {
-    --color1: #17252a;
-    --color2: #2b7a78;
-    --color3: #3aafa9;
-    --color4: #def2f1;
-    --color5: #feffff;
+
+@keyframes ring {
+    0%{
+        transform: rotate(0deg);
+        box-shadow: 1px 5px 2px #2b7a78;
+    }
+    50%{
+        transform: rotate(180deg);
+        box-shadow: 1px 5px 2px #3aafa9;
+    }
+    100%{
+        transform: rotate(360deg);
+        box-shadow: 1px 5px 2px #def2f1;
+    }
 }
 
-/*body {
+
+
+
+
+
+
+/*
+     ___       __       __
+    /   \     |  |     |  |
+   /  ^  \    |  |     |  |
+  /  /_\  \   |  |     |  |
+ /  _____  \  |  `----.|  `----.
+/__/     \__\ |_______||_______|
+
+ */
+
+ body {
     background: var(--color3);
-}*/
-
-#name {
-    margin: auto;
 }
 
-form {
-    position: center;
-    text-align: center;
+.flashing-text {
+    color: #feffff;
+    font-size: 20px;
+    font-family: Lobster;
+    animation: flashingText 3s ease-in-out infinite;
 }
 
 input:invalid {
@@ -120,27 +98,22 @@ input:invalid:required {
     background-color: var(--color2);
 }
 
-/* design of button */
-.container {
-    height: 150px;
-    position: relative;
-}
-
-.wrap {
-    position: relative;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* remove dots from unordered list of players */
+ul {
+    list-style-type: none;
 }
 
 .button {
+    transition-duration: 0.4s;
+    display: inline-block;
     min-width: 150px;
     min-height: 60px;
     font-family: 'Nunito', sans-serif;
     font-size: 22px;
     text-transform: uppercase;
     letter-spacing: 1.3px;
+    font-size: 16px;
+    font-family: Lobster;
     font-weight: 700;
     color: #313133;
     background: #4FD1C5;
@@ -185,11 +158,11 @@ input:invalid:required {
     border-radius: 100%;
     border: 6px solid #00FFCB;
     position: absolute;
-    z-index: -1;
+    z-index: -10;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    animation: ring 1.5s infinite;
+    animation: buttonRing 1.5s infinite;
 }
 
 .button:hover::after, .button:focus::after {
@@ -197,17 +170,223 @@ input:invalid:required {
     display: none;
 }
 
-@keyframes ring {
-    0% {
-        width: 30px;
-        height: 30px;
-        opacity: 1;
-    }
-    100% {
-        width: 150px;
-        height: 150px;
-        opacity: 0;
-    }
+.button1 {
+    background-color: white;
+    color: #2b7a78;
+    border: 2px solid #17252a;
+    margin: auto;
+}
+
+.button1:hover {
+    background-color: #17252a;
+    color: #def2f1;
+}
+
+
+
+
+
+
+
+
+
+
+ /*
+   _______      ___      .___  ___.  _______ 
+ /  _____|    /   \     |   \/   | |   ____|
+|  |  __     /  ^  \    |  \  /  | |  |__   
+|  | |_ |   /  /_\  \   |  |\/|  | |   __|  
+|  |__| |  /  _____  \  |  |  |  | |  |____ 
+ \______| /__/     \__\ |__|  |__| |_______|
+                                            
+ */
+
+#two_columns {
+    display: flex;
+    flex-direction: row;
+}
+
+#column-1 {
+    /*flex: 30%;*/
+}
+
+#story_column {
+    flex: 60%;
+}
+
+/* story title design */
+.story-title {
+    font-size: 50px;
+    padding: -10px;
+}
+
+.game-fancy-title {
+    font-family: 'Brush Script MT', cursive;
+    text-align: center;
+    text-shadow: #2b7a78 2px 2px;
+}
+
+/* story box design */
+#story {
+    font-family: URW Chancery L, cursive;
+    border-style: solid;
+    height: 300px;
+    overflow-y:scroll;
+    background: linear-gradient(to bottom, var(--parchment), var(--color4));
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#players-list-container {
+    padding: 10px;
+    margin: 10px 30px 10px 30px;
+    overflow: hidden;
+    position: relative;
+    top: 17%;
+}
+
+#players-list {
+    background: linear-gradient(to bottom, var(--parchment), var(--color4));
+    border-radius: 5px;
+    overflow: hidden;
+    padding: 15px 20px 10px 20px;
+    border-style: solid;
+}
+
+#players-list-title {
+    font-size: 30px;
+    margin: 10px;
+}
+
+.player {
+    margin: 5px;
+}
+
+#submit-word-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    margin: 20px 17% 0px 30%;
+}
+
+#word {
+    background-color: var(--color4);
+    font-family: Chalkduster, fantasy;
+    font-size: medium;
+    padding: 4px;
+    border-radius: 5px;
+    transition: background-color 2s;
+    flex-grow: 4;
+}
+
+#word:focus {
+    background-color: var(--parchment);
+    outline: none;
+}
+
+#submit-word-button {
+    background-color: #1a6124;
+    font-family: OCR A Std, monospace;
+    border: none;
+    color: white;
+    padding: 4px 7px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: transparent;
+    border-width: 0 0 3px 0;
+    transition: border-color 0.5s;
+}
+
+#submit-word-button:hover {
+    border-color: #000000;
+}
+
+#submit-word-error {
+    margin-top: 10px;
+    color: darkred;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+#game_page {
+    display: none;
+}
+
+
+
+
+
+
+
+
+
+
+/*
+.______    __          ___   ____    ____ 
+|   _  \  |  |        /   \  \   \  /   / 
+|  |_)  | |  |       /  ^  \  \   \/   /  
+|   ___/  |  |      /  /_\  \  \_    _/   
+|  |      |  `----./  _____  \   |  |     
+| _|      |_______/__/     \__\  |__|     
+                                          
+*/
+
+#play-logo-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    margin-bottom: 20px;
+}
+
+#load-icon-container {
+    align-content: center;
+    justify-content: center;
+    display: flex;
+}
+
+#name {
+    margin: auto;
+}
+
+#play-form-container {
+    position: center;
+    text-align: center;
+}
+
+
+
+/* design of button */
+.play-button-container {
+    height: 150px;
+    position: relative;
+}
+
+.play-button-wrap {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/*---------------------------- MINI LOADING ICON*/
+.loader {
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 2s linear infinite;
+    margin-right: 10px;
 }
 
 
@@ -220,12 +399,15 @@ input:invalid:required {
 
 
 
-
-/*-------- WAITING PAGE CSS ----------- */
-
-/*body{
-    background: #17252a;
-}*/
+/*
+____    __    ____  ___       __  .___________. __  .__   __.   _______ 
+\   \  /  \  /   / /   \     |  | |           ||  | |  \ |  |  /  _____|
+ \   \/    \/   / /  ^  \    |  | `---|  |----`|  | |   \|  | |  |  __  
+  \            / /  /_\  \   |  |     |  |     |  | |  . `  | |  | |_ | 
+   \    /\    / /  _____  \  |  |     |  |     |  | |  |\   | |  |__| | 
+    \__/  \__/ /__/     \__\ |__|     |__|     |__| |__| \__|  \______| 
+                                                                        
+*/
 
 .center{
     display: flex;
@@ -251,21 +433,6 @@ input:invalid:required {
     animation: ring 2s infinite;
 }
 
-@keyframes ring {
-    0%{
-        transform: rotate(0deg);
-        box-shadow: 1px 5px 2px #2b7a78;
-    }
-    50%{
-        transform: rotate(180deg);
-        box-shadow: 1px 5px 2px #3aafa9;
-    }
-    100%{
-        transform: rotate(360deg);
-        box-shadow: 1px 5px 2px #def2f1;
-    }
-}
-
 .ring:before{
     position: absolute;
     content: '';
@@ -275,40 +442,6 @@ input:invalid:required {
     width: 100%;
     border-radius: 50%;
     box-shadow: 0 0 5px rgba(225, 225, 225, .3);
-}
-
-#play_page span, #game_page span, #waiting_page span {
-    color: #feffff;
-    font-size: 20px;
-    font-family: Lobster;
-    animation: text 3s ease-in-out infinite;
-}
-
-@keyframes text {
-    50%{
-        color: #17252a;
-    }
-}
-
-.button {
-    padding: 16px 32px;
-    display: inline-block;
-    font-size: 16px;
-    font-family: Lobster;
-    transition-duration: 0.4s;
-    cursor: pointer;
-}
-
-.button1 {
-    background-color: white;
-    color: #2b7a78;
-    border: 2px solid #17252a;
-    margin: auto;
-}
-
-.button1:hover {
-    background-color: #17252a;
-    color: #def2f1;
 }
 
 #waiting_page {

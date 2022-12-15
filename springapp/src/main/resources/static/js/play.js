@@ -17,7 +17,7 @@ $(document).ready(() => {
 
 // print pretty ;)
 nicelog = (header, content, header_col="#9933ff", content_col="#ff99e6") =>
-    console.log(`%c[${header}] %c" + ${content}`, `color:${header_col};font-weight:bold`, `color:${content_col}`)
+    console.log(`%c[${header}] %c ${content}`, `color:${header_col};font-weight:bold`, `color:${content_col}`)
 
 /**
  * Generate UUID
@@ -28,24 +28,6 @@ function uuidv4() {
     return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
-}
-
-/**
- * Callback for play button, initiates websocket
- * @param e event (ignored)
- */
-function onPlay(e) {
-    // Disable button so we don't start two connections if someone clicks it again quickly
-    document.getElementById("play_button").disabled = true;
-
-    // Show loading icon
-    $("#load-icon-container").show();
-
-    // Create API which initiates socket connection
-    GameAPI = createAPI(SOCKET_URL);
-
-    // Wait for socket to be ready and then proceed with logic
-    GameAPI.onReady(socketLogic);
 }
 
 // SOCKET LOGIC
@@ -92,33 +74,7 @@ async function socketLogic () {
 
             if (hasGameStarted) {
                 // Update frontend with new game data
-
-
-                // Clear players list
-                let ply_list = document.getElementById("players-list")
-                ply_list.innerHTML = "";
-
-                // BUILD PLAYER LIST
-                updatedGameState.players.forEach(e => {
-                    // Build <li> element for player, with pencil icon if it's the player's turn
-                    let new_li = document.createElement("li")
-                    new_li.innerHTML = `<li>
-                            <div>
-                                `+ e.displayName +
-                        (e.isCurrentTurnPlayer ? `<img style="vertical-align:middle" src="media/pencil.png" width="20" alt="Pencil">` : "") + `
-                            </div>
-                        </li>`
-
-                    ply_list.appendChild(new_li)
-                })
-
-                // POPULATE STORY
-                document.getElementById("story").innerHTML = updatedGameState.storyString
-
-                // POPULATE TIME
-                document.getElementById("seconds-left").innerHTML = updatedGameState.secondsLeftInTurn
-
-
+                updateGameState(updatedGameState);
             }
 
             nicelog("Socket Logic", "Current game state: " + updatedGameState);
@@ -175,8 +131,18 @@ function createAPI (url) {
                 this.wsHandle.onclose = () => {
                     nicelog("Socket", "Connection Closed");
 
-                    let mess = encodeURIComponent("You have been disconnected from the game");
-                    window.location.search = `errorTitle=Disconnected&errorMessage=${mess}`;
+                    // Makes popup on the spot with a reload. This is so that
+                    // when the server shuts down, you can read the popup an not just
+                    // get a web error screen
+                    Swal.fire({
+                        title: "Disconnected",
+                        text: "You have been disconnected from the game",
+                        icon: "error",
+                        confirmButtonText: "Leave",
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {window.location.search = ``}
+                    })
                 };
             },
 
@@ -275,7 +241,7 @@ function createAPI (url) {
                 const waiterGuid = uuidv4();
 
                 this._ws.messageHandlers[waiterGuid] = (servRes) => {
-                    const decoded = this._ws.decode(servRes);
+                    const decoded = this._ws.decode(servRes.data);
 
                     if (decoded[0] === RESPONSE_SUBMIT_WORD) {
                         delete this._ws.messageHandlers[waiterGuid]
@@ -317,13 +283,56 @@ function createAPI (url) {
 // ================================================
 
 
-document.getElementById("play_button").addEventListener("click", onPlay)
-document.getElementById("cancel-button").addEventListener("click", exit)
+/**
+ * Given new information from server, update the game state
+ * @param updatedGameState {Object<GameDisplayData>} a JSON-converted GameDisplayData object
+ */
+function updateGameState(updatedGameState) {
+    // Clear players list
+    let ply_list = document.getElementById("players-list")
+    ply_list.innerHTML = "";
+
+    // BUILD PLAYER LIST
+    updatedGameState.players.forEach(e => {
+        // Build <li> element for player, with pencil icon if it's the player's turn
+        let new_li = document.createElement("div")
+
+        new_li.classList.add("player")
+        new_li.innerHTML = e.displayName +
+            (e.isCurrentTurnPlayer ?
+                `<img style="vertical-align:middle" src="media/pencil.png" width="20" alt="Pencil">` : "")
+
+        ply_list.appendChild(new_li)
+    })
+
+    // POPULATE STORY
+    document.getElementById("story").innerHTML = updatedGameState.storyString
+
+    // POPULATE TIME
+    document.getElementById("seconds-left").innerHTML = updatedGameState.secondsLeftInTurn
+}
+
+/**
+ * Display a temporary error message under the submit word text field
+ * @param errorText {string} error message
+ */
+function showSubmitWordError(errorText) {
+    $("#submit-word-error-text").html(errorText);
+    $("#submit-word-error").css("opacity", "1");
+}
+
+/**
+ * Display a temporary error message under the submit word text field
+ * @param errorText {string} error message
+ */
+function hideSubmitWordError() {
+    $("#submit-word-error").css("opacity", "0");
+}
 
 /**
  * Switch screens to waiting page
  */
-function switchToWaiting () {
+function switchToWaiting() {
     document.getElementById("game_page").style.display = "none";
     document.getElementById("play_page").style.display = "none";
 
@@ -335,7 +344,7 @@ function switchToWaiting () {
 /**
  * Switch screens to game page
  */
-function switchToGame () {
+function switchToGame() {
     document.getElementById("waiting_page").style.display = "none";
     document.getElementById("play_page").style.display = "none";
 
@@ -344,23 +353,70 @@ function switchToGame () {
     document.getElementsByTagName("body")[0].style.background = "#3aafa9";
 }
 
+
+/*
+  ____        _   _                 ____      _ _ _                _
+ | __ ) _   _| |_| |_ ___  _ __    / ___|__ _| | | |__   __ _  ___| | _____
+ |  _ \| | | | __| __/ _ \| '_ \  | |   / _` | | | '_ \ / _` |/ __| |/ / __|
+ | |_) | |_| | |_| || (_) | | | | | |__| (_| | | | |_) | (_| | (__|   <\__ \
+ |____/ \__,_|\__|\__\___/|_| |_|  \____\__,_|_|_|_.__/ \__,_|\___|_|\_\___/
+ */
+
+document.getElementById("play-button").addEventListener("click", onPlay)
+document.getElementById("cancel-button").addEventListener("click", onExit)
+document.getElementById("exit-game-button").addEventListener("click", onExit)
+document.getElementById("submit-word-button").addEventListener("click", onSubmitWord)
+$("#word").focus(() => {
+    hideSubmitWordError()
+})
+
 /**
  * Submit word button callback
  */
-async function submitWord() {
-    let word = document.getElementById("word").value
-    document.getElementById("word").value = ""
+async function onSubmitWord() {
+    let word_element = document.getElementById("word");
+    let word = word_element.value;
 
     if (word !== "") {
         let data = await GameAPI.submitWord(word)
         console.log(data)
+
+        if (data.response.code === "SUCCESS") {
+            // Clear text area and update game data
+            word_element.value = "";
+            updateGameState(data.game_data);
+        }
+        // Show the error for 3.5 seconds
+        else {
+            showSubmitWordError(data.response.message);
+            setTimeout(() => {
+                hideSubmitWordError()
+            }, 3500)
+        }
     }
 }
 
 /**
  * Disconnect button & Cancel button callback
  */
-function exit() {
+function onExit() {
     // DISCONNECT
     window.location.search = ""
+}
+
+/**
+ * Callback for play button, initiates websocket
+ */
+function onPlay() {
+    // Disable button so we don't start two connections if someone clicks it again quickly
+    document.getElementById("play-button").disabled = true;
+
+    // Show loading icon
+    $("#load-icon-container").show();
+
+    // Create API which initiates socket connection
+    GameAPI = createAPI(SOCKET_URL);
+
+    // Wait for socket to be ready and then proceed with logic
+    GameAPI.onReady(socketLogic);
 }

@@ -48,6 +48,7 @@ public class RgInteractor {
             gameLock.lock();
             //Log.useCaseMsg("RG", "Got GAME lock");
             if (RgInteractor.this.g.isGameOver()) {
+                Log.useCaseMsg("RG", "Detected isGameOver() = true");
                 // Game ending procedure:
 
                 // Cancel the game timer
@@ -66,6 +67,7 @@ public class RgInteractor {
                 // last execution of the run method has finished, meaning,
                 // no more game timer code will run
                 RgInteractor.this.g.setTimerStopped();
+                Log.useCaseMsg("RG", "Timer has been stopped");
 
             } else {
                 // Regular game procedure:
