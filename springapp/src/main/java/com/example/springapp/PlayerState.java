@@ -1,7 +1,12 @@
 package com.example.springapp;
 
 import adapters.view_models.JplViewModel;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.io.IOException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Stores information about a particular connected client and their corresponding
@@ -47,6 +52,8 @@ public class PlayerState {
     private String displayName;
     private JplViewModel jplViewM;
     private final WebSocketSession session;
+    private final Lock lock;
+    private final Lock sendingLock;
 
     /**
      * @param playerId Create a new unique ID never used before to identify this client
@@ -59,25 +66,42 @@ public class PlayerState {
         state = State.NOT_PROCESSED;
         displayName = null;
         jplViewM = null;
+
+        lock = new ReentrantLock();
+        sendingLock = new ReentrantLock();
     }
 
-    public State state() { return this.state; }
+    public State state() { lock.lock(); State out = this.state; lock.unlock(); return out; }
     public String playerId() { return this.playerId; }
-    public String displayName() { return this.displayName; }
-    public JplViewModel jplViewM() { return this.jplViewM; }
-    public WebSocketSession session() { return this.session; }
+    public String displayName() { lock.lock(); String out = this.displayName; lock.unlock(); return out; }
+    public JplViewModel jplViewM() { lock.lock(); JplViewModel out = this.jplViewM; lock.unlock(); return out; }
+
+    /**
+     * Thread-Safely send a message to this client's session object. (Since sending
+     * cannot be done concurrently)
+     * @param payload string content to send
+     */
+    public void sendMessage(String payload) throws IOException {
+        sendingLock.lock();
+        session.sendMessage(new TextMessage(payload));
+        sendingLock.unlock();
+    }
 
     public void changeToRejected() {
         this.state = State.REJECTED;
     }
 
     public void changeToInPool(JplViewModel viewM, String displayName) {
+        lock.lock();
         this.displayName = displayName;
         this.jplViewM = viewM;
         this.state = State.IN_POOL;
+        lock.unlock();
     }
 
     public void changeToInGame() {
+        lock.lock();
         this.state = State.IN_GAME;
+        lock.unlock();
     }
 }

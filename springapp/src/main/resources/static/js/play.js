@@ -39,7 +39,6 @@ let hasGameStarted = false;
 const SEPARATOR = String.fromCharCode(30);
 
 const CMD_TRY_JOIN = "JPL";
-const CMD_STATE_UPDATE = "state_update";
 const CMD_SEND_WORD = "SW";
 
 const RESPONSE_JOIN = "JPL:out:in_pool";
@@ -58,27 +57,30 @@ async function socketLogic () {
 
         switchToWaiting()
 
-        /**
-         * Central game timer
-         */
-        const intervalId = setInterval(async () => {
-            // Get the state periodically and run game logic
+        // Subscribe a handler which will listen for game updates
+        const game_update_handler_guid = uuidv4()
+        GameAPI._ws.messageHandlers[game_update_handler_guid] = (servRes) => {
+            const decoded = GameAPI._ws.decode(servRes.data);
 
-            const updatedGameState = await GameAPI.getGameState();
+            // Game logic inside this if statement
+            if(decoded[0] === RESPONSE_STATE) {
+                const updatedGameState = JSON.parse(decoded[1]);
 
-            if (!hasGameStarted && !!updatedGameState) {
-                hasGameStarted = true;
+                if (!hasGameStarted && !!updatedGameState) {
+                    hasGameStarted = true;
 
-                switchToGame();
+                    switchToGame();
+                }
+
+                if (hasGameStarted) {
+                    // Update frontend with new game data
+                    updateGameState(updatedGameState);
+                }
+
+                nicelog("Socket Logic", "Current game state: " + updatedGameState);
             }
+        }
 
-            if (hasGameStarted) {
-                // Update frontend with new game data
-                updateGameState(updatedGameState);
-            }
-
-            nicelog("Socket Logic", "Current game state: " + updatedGameState);
-        }, 500);
     } else {
         // Disconnect, display name invalid
         let mess = encodeURIComponent(joinResult.message);
@@ -254,23 +256,6 @@ function createAPI (url) {
                 }
 
                 this._ws.send(this._ws.encode(CMD_SEND_WORD, word));
-            });
-        },
-
-        getGameState: async function(playerName) {
-            return new Promise((resolve, reject) => {
-                const waiterGuid = uuidv4();
-
-                this._ws.messageHandlers[waiterGuid] = (msg) => {
-                    const decoded = this._ws.decode(msg.data);
-
-                    if(decoded[0] === RESPONSE_STATE) {
-                        delete this._ws.messageHandlers[waiterGuid];
-                        resolve(JSON.parse(decoded[1]));
-                    }
-                }
-
-                this._ws.send(this._ws.encode(CMD_STATE_UPDATE, playerName));
             });
         }
     };

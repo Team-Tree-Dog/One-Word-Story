@@ -1,5 +1,7 @@
 package com.example.springapp;
 
+import adapters.display_data.not_ended_display_data.GameDisplayData;
+import adapters.view_models.JplCallback;
 import adapters.view_models.JplViewModel;
 import adapters.view_models.SwViewModel;
 import org.jetbrains.annotations.Nullable;
@@ -21,13 +23,12 @@ import static com.example.springapp.SpringApp.coreAPI;
  */
 public sealed interface ClientCommand {
     String CMD_TRY_JOIN = "JPL";
-    String CMD_STATE_UPDATE = "state_update";
     String CMD_SEND_WORD = "SW";
 
     char SEPARATOR = 30;
 
     /**
-     * @param playerState
+     * @param playerState player state object, duh
      * @return ServerResponse corresponding to the command, or null if this command has no response (one way)
      * @throws InterruptedException If thread is interrupted
      */
@@ -62,14 +63,19 @@ public sealed interface ClientCommand {
             if (jplViewM.getResponse().getCode() == Response.ResCode.SUCCESS) {
                 // Player name was approved, move forward
                 playerState.changeToInPool(jplViewM, playerName);
+
+                // Inject callback to wait for further info
+                jplViewM.injectCallback((hasCancelled, gameData) -> {
+                    if (gameData != null) {
+                        // TODO: Create and send unique JPL IN GAME response to THIS player
+                        // Note we need to engage the sending lock, and there is no beautiful way
+                        // to do it currently
+                        playerState.sendMessage();
+                    }
+                });
             }
 
             return new ServerResponse.JoinResponse(jplViewM.getResponse());
-            // TODO: Convert socket system to allow multi message sending
-            // The solution to ^ might be to call another method before returning this one
-            // and have that method await JPL for the second reply and send the message.
-            // Of course, this still means modifying the API to allow messages to be sent like
-            // that
         }
     }
 
@@ -98,30 +104,6 @@ public sealed interface ClientCommand {
     }
 
     /**
-     * A constant request from clients to get current game data if
-     * that client is in a game
-     */
-    record StateUpdate() implements ClientCommand {
-        /**
-         * <h2>Sub Handler: PD</h2>
-         * Handler to retrieve current game state from PD view model. Called periodically by
-         * all players in a game. returns null if player didn't pass tryJoin
-         * <br><br>
-         * Gets GameDisplayData from PD view model and returns it
-         */
-        @Override
-        public ServerResponse handler(PlayerState playerState) throws InterruptedException {
-            if (playerState.displayName() != null) {
-                return new ServerResponse.CurrentState(
-                        coreAPI.pdViewM.getCurrentGameState()
-                );
-            } else {
-                return null;
-            }
-        }
-    }
-
-    /**
      * Parse raw payload into a client command object.
      * This is a factory
      * @param payload content received from a client over the websocket
@@ -135,7 +117,6 @@ public sealed interface ClientCommand {
         // Switch on the command header
         return switch (payloadBlocks[0]) {
             case CMD_TRY_JOIN -> new JoinPublicLobby(payloadBlocks.length > 1 ? payloadBlocks[1] : "");
-            case CMD_STATE_UPDATE -> new StateUpdate();
             case CMD_SEND_WORD -> new SubmitWord(payloadBlocks.length > 1 ? payloadBlocks[1] : "");
 
             // Crash if client sent a command which isn't recognized by the server
