@@ -4,6 +4,7 @@ import entities.games.Game;
 import entities.games.GameFactory;
 import entities.games.GameReadOnly;
 import exceptions.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -380,7 +381,8 @@ public class LobbyManager {
     /**
      * Gets the game typed as readonly so only the immutable getters are
      * accessible. DO NOT down cast to game.
-     * @return an arraylist of players
+     * @return game object in its readonly state
+     * @throws GameDoesntExistException if game is null
      */
     public GameReadOnly getGameReadOnly () throws GameDoesntExistException {
         if (this.isGameNull()){

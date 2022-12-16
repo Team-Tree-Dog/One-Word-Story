@@ -57,29 +57,18 @@ async function socketLogic () {
 
         switchToWaiting()
 
-        // Subscribe a handler which will listen for game updates
-        const game_update_handler_guid = uuidv4()
-        GameAPI._ws.messageHandlers[game_update_handler_guid] = (servRes) => {
-            const decoded = GameAPI._ws.decode(servRes.data);
+        // Wait to be added to a game
+        GameAPI.onJoinedGame((initialGameData) => {
+            updateGameState(initialGameData)
+            hasGameStarted = true;
+            switchToGame()
 
-            // Game logic inside this if statement
-            if(decoded[0] === RESPONSE_STATE) {
-                const updatedGameState = JSON.parse(decoded[1]);
-
-                if (!hasGameStarted && !!updatedGameState) {
-                    hasGameStarted = true;
-
-                    switchToGame();
-                }
-
-                if (hasGameStarted) {
-                    // Update frontend with new game data
-                    updateGameState(updatedGameState);
-                }
-
-                nicelog("Socket Logic", "Current game state: " + updatedGameState);
-            }
-        }
+            // Update game state each time new state is received
+            GameAPI.onStateUpdate((updatedGameState) => {
+                updateGameState(updatedGameState);
+                console.log(updatedGameState);
+            })
+        })
 
     } else {
         // Disconnect, display name invalid
@@ -212,6 +201,7 @@ function createAPI (url) {
                     }
                 },1000)
 
+                // Server response handler
                 this._ws.messageHandlers[waiterGuid] = (msg) => {
                     const decoded = this._ws.decode(msg.data);
 
@@ -242,22 +232,63 @@ function createAPI (url) {
             return new Promise((resolve, reject) => {
                 const waiterGuid = uuidv4();
 
+                // Server response handler
                 this._ws.messageHandlers[waiterGuid] = (servRes) => {
                     const decoded = this._ws.decode(servRes.data);
 
                     if (decoded[0] === RESPONSE_SUBMIT_WORD) {
                         delete this._ws.messageHandlers[waiterGuid]
 
-                        resolve({
-                            "response": JSON.parse(decoded[1]),
-                            "game_data": JSON.parse(decoded[2]) // Can be null
-                        })
+                        resolve(JSON.parse(decoded[1]))
                     }
                 }
 
                 this._ws.send(this._ws.encode(CMD_SEND_WORD, word));
             });
-        }
+        },
+
+        /**
+         * Callback called with initial game data when player is added to game
+         * @param callback {Function<Object>} takes in decoded GameDisplayData object
+         */
+        onJoinedGame: function(callback) {
+            const waiterGuid = uuidv4();
+
+            // Server response handler
+            this._ws.messageHandlers[waiterGuid] = (servRes) => {
+                const decoded = this._ws.decode(servRes.data);
+
+                // decoded[2] = isInitialJPLState, which is only true if player added to game
+                if (decoded[0] === RESPONSE_STATE && decoded[2] === "true") {
+                    nicelog("onJoinedGame", "Initial game data received!")
+                    delete this._ws.messageHandlers[waiterGuid]
+
+                    callback(JSON.parse(decoded[1]))
+                }
+            }
+        },
+
+        /**
+         * Callback called with updated game data. It is a good idea to wait for
+         * onJoinGame first and then subscribe a callback to this.
+         * @param callback {Function<Object>} takes in decoded GameDisplayData object
+         */
+        onStateUpdate: function(callback) {
+            const waiterGuid = uuidv4();
+
+            // Server response handler
+            this._ws.messageHandlers[waiterGuid] = (servRes) => {
+                const decoded = this._ws.decode(servRes.data);
+                console.log(decoded[1])
+
+                // decoded[2] = isInitialJPLState, which is only true if player added to game
+                if (decoded[0] === RESPONSE_STATE && decoded[1] !== "null") {
+                    nicelog("onStateUpdate", "Game state update received!")
+
+                    callback(JSON.parse(decoded[1]))
+                }
+            }
+        },
     };
 
     apiObj._ws.init(url);
@@ -366,14 +397,13 @@ async function onSubmitWord() {
         let data = await GameAPI.submitWord(word)
         console.log(data)
 
-        if (data.response.code === "SUCCESS") {
-            // Clear text area and update game data
+        if (data.code === "SUCCESS") {
+            // Clear text area
             word_element.value = "";
-            updateGameState(data.game_data);
         }
         // Show the error for 3.5 seconds
         else {
-            showSubmitWordError(data.response.message);
+            showSubmitWordError(data.message);
             setTimeout(() => {
                 hideSubmitWordError()
             }, 3500)

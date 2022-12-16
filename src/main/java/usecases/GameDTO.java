@@ -2,6 +2,7 @@ package usecases;
 
 import entities.Player;
 import entities.games.GameReadOnly;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,10 +68,12 @@ public class GameDTO {
      * @param game Game entity object to build DTO from
      * @return GameDTO built from provided game
      */
-    public static GameDTO fromGame (GameReadOnly game) {
+    @NotNull
+    public static GameDTO fromGame (@NotNull GameReadOnly game) {
         return new GameDTO(
                 game.getStoryString(),
-                game.getPlayers(), game.getCurrentTurnPlayer().getPlayerId(),
+                game.getPlayers(),
+                game.getCurrentTurnPlayer() == null ? "" : game.getCurrentTurnPlayer().getPlayerId(),
                 game.getSecondsLeftInCurrentTurn());
     }
 }

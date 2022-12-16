@@ -4,8 +4,11 @@ import adapters.display_data.not_ended_display_data.GameDisplayData;
 import adapters.view_models.JplCallback;
 import adapters.view_models.JplViewModel;
 import adapters.view_models.SwViewModel;
+import org.example.Log;
 import org.jetbrains.annotations.Nullable;
 import usecases.Response;
+
+import java.io.IOException;
 
 import static com.example.springapp.SpringApp.coreAPI;
 
@@ -33,7 +36,7 @@ public sealed interface ClientCommand {
      * @throws InterruptedException If thread is interrupted
      */
     @Nullable
-    ServerResponse handler(PlayerState playerState) throws InterruptedException;
+    ServerResponse[] handler(PlayerState playerState) throws InterruptedException;
 
     /**
      * JPL Command for initial joining
@@ -50,7 +53,7 @@ public sealed interface ClientCommand {
          * their display name was valid)
          */
         @Override
-        public ServerResponse handler(PlayerState playerState) throws InterruptedException {
+        public ServerResponse[] handler(PlayerState playerState) throws InterruptedException {
             // Calls JPL
             JplViewModel jplViewM = coreAPI.jplController.joinPublicLobby(
                     playerState.playerId(), playerName);
@@ -67,15 +70,23 @@ public sealed interface ClientCommand {
                 // Inject callback to wait for further info
                 jplViewM.injectCallback((hasCancelled, gameData) -> {
                     if (gameData != null) {
-                        // TODO: Create and send unique JPL IN GAME response to THIS player
-                        // Note we need to engage the sending lock, and there is no beautiful way
-                        // to do it currently
-                        playerState.sendMessage();
+                        // Send initial game state info to notify player they were added to the game
+                        try {
+                            playerState.sendMessage((new ServerResponse.CurrentState(gameData,
+                                    true, false)).pack());
+                            Log.sendSocketGeneral("JPL Callback",
+                                    "Initial Game Data sent to " + playerState.displayName());
+                        } catch (IOException ignored) {
+                            Log.sendSocketError("JPL Callback",
+                                    "Client " + playerState.displayName() + " triggered IOException");
+                        }
                     }
                 });
             }
 
-            return new ServerResponse.JoinResponse(jplViewM.getResponse());
+            return new ServerResponse[]{
+                    new ServerResponse.JoinResponse(jplViewM.getResponse(), false)
+            };
         }
     }
 
@@ -92,14 +103,17 @@ public sealed interface ClientCommand {
          * will take care of checking and failing that situation
          */
         @Override
-        public ServerResponse handler(PlayerState playerState) throws InterruptedException {
+        public ServerResponse[] handler(PlayerState playerState) throws InterruptedException {
             SwViewModel viewM = coreAPI.swController.submitWord(playerState.playerId(), word);
 
             while (viewM.getResponse() == null) {
                 Thread.sleep(20);
             }
 
-            return new ServerResponse.SubmitWordResponse(viewM.getResponse(), viewM.getGameData());
+            return new ServerResponse[]{
+                    new ServerResponse.SubmitWordResponse(viewM.getResponse(), false),
+                    new ServerResponse.CurrentState(viewM.getGameData(), false, true)
+            };
         }
     }
 

@@ -21,7 +21,6 @@ public sealed interface ServerResponse {
     String RESPONSE_SUBMIT_WORD = "SW:out";
     String RESPONSE_STATE = "current_state";
 
-
     char SEPARATOR = 30;
 
     /**
@@ -31,15 +30,25 @@ public sealed interface ServerResponse {
     String pack() throws JsonProcessingException;
 
     /**
+     * @return if this response should be broadcast to all clients
+     */
+    boolean isBroadcast();
+
+    /**
      * Response sent upon processing a client's JoinPublicLobby command. Either the player's
      * display name was valid and they were added to the waiting pool, or the name
      * was invalid, so the player will not be allowed further into the game
      * @param response whether the player's display name was accepted
      */
-    record JoinResponse(Response response) implements ServerResponse {
+    record JoinResponse(Response response, boolean isBroadcast) implements ServerResponse {
         @Override
         public String pack() throws JsonProcessingException {
             return RESPONSE_JOIN + SEPARATOR + (new ObjectMapper()).writeValueAsString(response);
+        }
+
+        @Override
+        public boolean isBroadcast() {
+            return isBroadcast;
         }
     }
 
@@ -48,27 +57,51 @@ public sealed interface ServerResponse {
      * word was valid, so we pass back game data, or it was invalid, so we pass only a
      * response with fail code
      * @param response whether the player's word was added
-     * @param gameData new game state after word submission
      */
-    record SubmitWordResponse(Response response, @Nullable GameDisplayData gameData) implements ServerResponse {
+    record SubmitWordResponse(Response response, boolean isBroadcast) implements ServerResponse {
         @Override
         public String pack() throws JsonProcessingException {
             ObjectMapper mapper = new ObjectMapper();
             return RESPONSE_SUBMIT_WORD + SEPARATOR +
-                    mapper.writeValueAsString(response) + SEPARATOR +
-                    mapper.writeValueAsString(gameData);
+                    mapper.writeValueAsString(response);
+        }
+
+        @Override
+        public boolean isBroadcast() {
+            return isBroadcast;
         }
     }
 
     /**
      * Response sent each time a player asks to get new game state (which should be very
      * frequent when players are in a game) containing the current game information
+     * <br><br>
+     * <h2>Note on isInitialJPLState</h2> Currently, PD just broadcasts game updates to ALL connected
+     * clients when a game is running. A client moves from the waiting screen to the game screen when
+     * they receive a PD message. However, this PD broadcast DOES NOT guarantee that the player is
+     * actually in the game in the entities layer. Consider a game that is not accepting anymore
+     * players. Players who are in the waiting stage will not be moved into the game but will be
+     * fooled by a PD message to move the the game screen. They will not be able to submit any words
+     * and won't even be displayed in the players list. Effectively, they will be spectators. We do not
+     * want this, so we set this flag to notify when a player was actually added to the game
+     *
      * @param data game information necessary to display the current game state
+     * @param isInitialJPLState This flag indicates that this game data being sent is a special
+     *                          response for a SPECIFIC client that gets sent as soon as the client
+     *                          got added to a game.
      */
-    record CurrentState(@Nullable GameDisplayData data) implements ServerResponse {
+    record CurrentState(@Nullable GameDisplayData data,
+                        Boolean isInitialJPLState, boolean isBroadcast) implements ServerResponse {
         @Override
         public String pack() throws JsonProcessingException {
-            return RESPONSE_STATE + SEPARATOR + (new ObjectMapper()).writeValueAsString(data);
+            return RESPONSE_STATE + SEPARATOR +
+                    (new ObjectMapper()).writeValueAsString(data) + SEPARATOR +
+                    isInitialJPLState.toString();
+        }
+
+        @Override
+        public boolean isBroadcast() {
+            return isBroadcast;
         }
     }
 }

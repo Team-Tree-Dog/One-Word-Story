@@ -30,7 +30,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
         coreAPI.pdViewM.injectCallback((GameDisplayData gameData) -> {
             try {
                 Log.sendSocketGeneral("PD Callback", "Broadcasting new Game State");
-                broadcast((new ServerResponse.CurrentState(gameData)).pack());
+                broadcast((new ServerResponse.CurrentState(gameData, false, true)).pack());
             } catch (JsonProcessingException e) {
                 Log.sendSocketError("PD Callback", "Failed to process JSON");
             }
@@ -53,7 +53,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
     public void broadcast(String message) {
         for (PlayerState p: sessionToPlyState.values()) {
             try {
-                Log.sendSocketGeneral("Broadcast", "Sending message to " + p.displayName());
+                Log.sendSocketGeneral("Broadcast", "Sending '"+message+"' to " + p.displayName());
                 p.sendMessage(message);
             }
             // It is likely this occurs when the player has disconnected and the .values()
@@ -81,19 +81,23 @@ public class SocketTextHandler extends TextWebSocketHandler {
         DcViewModel viewM = coreAPI.dcController.disconnect(p.playerId());
 
         // Waits for view model data TODO: FIX VIEW MODELS
-        while (viewM.getResponseCode() == null) {
+        while (viewM.getResponse() == null) {
             Thread.sleep(20);
         }
 
-        // TODO: broadcast new game data to clients. Add GameDisplayData as output to disconnect use case
+        // Broadcasts new game data to clients if this player was disconnected from game
+        if (viewM.getGameData() != null) {
+            Log.sendSocketGeneral("DC Broadcast",
+                    "Broadcasting new Game State; " + p.displayName() + " disconnected from game!");
+            broadcast((new ServerResponse.CurrentState(
+                    viewM.getGameData(), false, true)).pack());
+        }
 
         // Prints DC output
-        if (viewM.getResponseCode() == Response.ResCode.SUCCESS) {
-            Log.sendSocketSuccess("CLOSED",
-                    viewM.getResponseCode() + " " + viewM.getResponseMessage());
+        if (viewM.getResponse().getCode() == Response.ResCode.SUCCESS) {
+            Log.sendSocketSuccess("CLOSED", viewM.getResponse().toString());
         } else {
-            Log.sendSocketError("CLOSED",
-                    viewM.getResponseCode() + " " + viewM.getResponseMessage());
+            Log.sendSocketError("CLOSED", viewM.getResponse().toString());
         }
 
 
@@ -114,19 +118,24 @@ public class SocketTextHandler extends TextWebSocketHandler {
             Log.sendSocketGeneral("HANDLE CMD RECV", incomingCmd.toString());
 
             // Call command handler to get corresponding server response
-            ServerResponse response = incomingCmd.handler(sessionToPlyState.get(session.getId()));
+            ServerResponse[] responses = incomingCmd.handler(sessionToPlyState.get(session.getId()));
 
-            // Sends response, if there is one
-            if(response != null) {
-                // Pack response object into raw payload
-                String msg = response.pack();
+            // Sends responses
+            for (ServerResponse response : responses) {
+                if (response != null) {
+                    // Pack response object into raw payload
+                    String msg = response.pack();
 
-                Log.sendSocketGeneral("HANDLE PREP RES", msg);
+                    Log.sendSocketGeneral("HANDLE PREP RES", msg);
 
-                // Sends message to client in a thread-safe manner through the object
-                PlayerState p = sessionToPlyState.get(session.getId());
-                p.sendMessage(msg);
-
+                    // Thread safely either broadcast to ALL clients, or to THIS client
+                    if (response.isBroadcast()) {
+                        broadcast(msg);
+                    } else {
+                        PlayerState p = sessionToPlyState.get(session.getId());
+                        p.sendMessage(msg);
+                    }
+                }
             }
 
         } catch (Exception e) {

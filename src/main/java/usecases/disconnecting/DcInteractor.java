@@ -7,6 +7,7 @@ import exceptions.GameDoesntExistException;
 import exceptions.PlayerNotFoundException;
 import org.example.ANSI;
 import org.example.Log;
+import usecases.GameDTO;
 import usecases.InterruptibleThread;
 import usecases.Response;
 import usecases.ThreadRegister;
@@ -80,6 +81,9 @@ public class DcInteractor implements DcInputBoundary {
             // Innocent until proven guilty
             Response response = Response.getSuccessful(playerToDisconnect + " disconnected successfully!");
 
+            // Gets set if player was removed from game
+            GameDTO gameData = null;
+
             Log.useCaseMsg("DC", "Wants POOL lock");
             playerPoolLock.lock();
             Log.useCaseMsg("DC", "Got POOL lock");
@@ -113,6 +117,7 @@ public class DcInteractor implements DcInputBoundary {
                     // is in the game. We try to see if the player is in the game using .contains, which uses .equals,
                     // so only playerIDs are compared. If the game is null, GameDoesntExistException is thrown.
                     if (lm.getGameReadOnly().getPlayers().contains(playerToDisconnect)){
+
                         // The player is in the game. We then check if it's the player's turn.
                         // If it is, then we switch the turn so play can continue.
                         if (lm.getGameReadOnly().getCurrentTurnPlayer().getPlayerId().equals(this.playerId)) {
@@ -121,8 +126,12 @@ public class DcInteractor implements DcInputBoundary {
                             // then we have an issue. TODO: Perhaps switch turn should not be allowed to fail
                             lm.switchTurn();
                         }
+
                         // Now try to remove player from game.
                         lm.removePlayerFromGame(playerToDisconnect);
+
+                        // We create GameDTO since player was likely removed from game
+                        gameData = GameDTO.fromGame(lm.getGameReadOnly());
                     }
                     else {
                         throw new PlayerNotFoundException("Player is not present in the pool or the game.");
@@ -146,7 +155,7 @@ public class DcInteractor implements DcInputBoundary {
                 Log.useCaseMsg("DC", "Released POOL lock");
             }
 
-            DcOutputData outputData = new DcOutputData(response, playerId);
+            DcOutputData outputData = new DcOutputData(response, playerId, gameData);
             pres.hasDisconnected(outputData);
         }
     }
