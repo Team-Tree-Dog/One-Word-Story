@@ -1,9 +1,13 @@
 package com.example.springapp;
 
+import com.example.springapp.guest_management.GuestAccountManager;
 import frameworks_drivers.views.CoreAPI;
 import frameworks_drivers.views.View;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
@@ -39,6 +43,15 @@ public class SpringApp {
 	public static class WebSocketConfig implements WebSocketConfigurer {
 		public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 			registry.addHandler(new SocketTextHandler(), "/game");
+		}
+	}
+
+	@Configuration
+	@EnableWebMvc
+	public static class WebConfig implements WebMvcConfigurer {
+		@Override
+		public void addInterceptors(InterceptorRegistry registry) {
+			registry.addInterceptor(new GuestAccountManager());
 		}
 	}
 }

@@ -3,7 +3,6 @@ package com.example.springapp.controllers;
 import adapters.view_models.*;
 import com.example.springapp.SpringApp;
 import frameworks_drivers.views.CoreAPI;
-import frameworks_drivers.views.View;
 import org.example.ANSI;
 import org.example.Log;
 import org.springframework.stereotype.Controller;
