@@ -5,6 +5,7 @@ import adapters.view_models.JplCallback;
 import adapters.view_models.JplViewModel;
 import adapters.view_models.SwViewModel;
 import org.example.Log;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import usecases.Response;
 
@@ -32,10 +33,11 @@ public sealed interface ClientCommand {
 
     /**
      * @param playerState player state object, duh
-     * @return ServerResponse corresponding to the command, or null if this command has no response (one way)
+     * @return ServerResponses corresponding to the command, or empty array if this command
+     * has no response (one way)
      * @throws InterruptedException If thread is interrupted
      */
-    @Nullable
+    @NotNull
     ServerResponse[] handler(PlayerState playerState) throws InterruptedException;
 
     /**
@@ -82,6 +84,8 @@ public sealed interface ClientCommand {
                         }
                     }
                 });
+            } else {
+                playerState.changeToRejected();
             }
 
             return new ServerResponse[]{

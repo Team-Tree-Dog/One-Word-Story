@@ -49,26 +49,27 @@ const RESPONSE_STATE = "current_state";
  * Initiates and runs the socket logic once the connection has been established
  */
 async function socketLogic () {
+    // Wait to be added to a game
+    // This is called first to prevent a race condition between subscribing this callback
+    // and the player being added to the game
+    GameAPI.onJoinedGame((initialGameData) => {
+        updateGameState(initialGameData)
+        hasGameStarted = true;
+        switchToGame()
+
+        // Update game state each time new state is received
+        GameAPI.onStateUpdate((updatedGameState) => {
+            updateGameState(updatedGameState);
+            console.log(updatedGameState);
+        })
+    })
+
     // Call JPL
     const joinResult = await GameAPI.joinPublicLobby(document.getElementById("name").value);
     nicelog("Socket Logic", "Join result: " + joinResult);
 
     if (joinResult.code === "SUCCESS") {
-
         switchToWaiting()
-
-        // Wait to be added to a game
-        GameAPI.onJoinedGame((initialGameData) => {
-            updateGameState(initialGameData)
-            hasGameStarted = true;
-            switchToGame()
-
-            // Update game state each time new state is received
-            GameAPI.onStateUpdate((updatedGameState) => {
-                updateGameState(updatedGameState);
-                console.log(updatedGameState);
-            })
-        })
 
     } else {
         // Disconnect, display name invalid
