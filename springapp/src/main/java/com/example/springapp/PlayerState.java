@@ -41,7 +41,14 @@ public class PlayerState {
          * <br><br>
          * displayName and jplViewM will both be set
          */
-        IN_GAME(3);
+        IN_GAME(3),
+        /**
+         * Player has been removed from the entities and is now disconnected, frontend should
+         * remove this player
+         * <br><br>
+         * displayName and jplViewM will both be set
+         */
+        DISCONNECTED(4);
 
         final int level;
         State(int level) {this.level = level;}
@@ -102,6 +109,12 @@ public class PlayerState {
     public void changeToInGame() {
         lock.lock();
         this.state = State.IN_GAME;
+        lock.unlock();
+    }
+
+    public void changeToDisconnected() {
+        lock.lock();
+        this.state = State.DISCONNECTED;
         lock.unlock();
     }
 }

@@ -46,12 +46,12 @@ public class SpringApp {
 		}
 	}
 
-	@Configuration
-	@EnableWebMvc
-	public static class WebConfig implements WebMvcConfigurer {
-		@Override
-		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addInterceptor(new GuestAccountManager());
-		}
-	}
+//	@Configuration
+//	@EnableWebMvc
+//	public static class WebConfig implements WebMvcConfigurer {
+//		@Override
+//		public void addInterceptors(InterceptorRegistry registry) {
+//			registry.addInterceptor(new GuestAccountManager());
+//		}
+//	}
 }

@@ -11,7 +11,7 @@ public class GuestAccountManager implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) throws Exception {
-        request.setAttribute("thingie", new VeryCoolObject());
+        //request.setAttribute("thingie", new VeryCoolObject());
         return true;
     }
 }

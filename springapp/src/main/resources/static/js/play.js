@@ -44,6 +44,7 @@ const CMD_SEND_WORD = "SW";
 const RESPONSE_JOIN = "JPL:out:in_pool";
 const RESPONSE_SUBMIT_WORD = "SW:out";
 const RESPONSE_STATE = "current_state";
+const RESPONSE_GAME_ENDED = "PGE:out";
 
 /**
  * Initiates and runs the socket logic once the connection has been established
@@ -61,6 +62,13 @@ async function socketLogic () {
         GameAPI.onStateUpdate((updatedGameState) => {
             updateGameState(updatedGameState);
             console.log(updatedGameState);
+        })
+
+        // Reload (disconnect) when game ends
+        GameAPI.onGameEnded((gameEndData) => {
+
+            nicelog("OnGameEnded callback", "game ended");
+            //window.location.search = ``;
         })
     })
 
@@ -280,16 +288,40 @@ function createAPI (url) {
             // Server response handler
             this._ws.messageHandlers[waiterGuid] = (servRes) => {
                 const decoded = this._ws.decode(servRes.data);
-                console.log(decoded[1])
 
                 // decoded[2] = isInitialJPLState, which is only true if player added to game
                 if (decoded[0] === RESPONSE_STATE && decoded[1] !== "null") {
                     nicelog("onStateUpdate", "Game state update received!")
+                    console.log(decoded[1])
 
                     callback(JSON.parse(decoded[1]))
                 }
             }
         },
+
+        /**
+         * Callback called with player statistics. This notifies that the game in which
+         * the player was in has just ended.
+         * @param callback {Function<Object>} takes in decoded GameEndPlayerDisplayData
+         */
+        onGameEnded: function(callback) {
+            const waiterGuid = uuidv4();
+
+            // Server Response handler
+            this._ws.messageHandlers[waiterGuid] = (servRes) => {
+                const decoded = this._ws.decode(servRes.data);
+
+                if (decoded[0] === RESPONSE_GAME_ENDED && decoded[1] !== "null") {
+                    // GameEndPlayerDisplayData object
+                    let pgeData = JSON.parse(decoded[1]);
+
+                    nicelog("onGameEnded", "PGE data received!")
+                    console.log(pgeData);
+
+                    callback(pgeData);
+                }
+            }
+        }
     };
 
     apiObj._ws.init(url);

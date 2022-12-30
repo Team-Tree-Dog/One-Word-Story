@@ -3,12 +3,14 @@ package util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
+
 /**
  * An integer which optionally comes with a string suffix
  * <br>
  * e.g: 50s, 10%, 16px
  */
-public class SymboledInteger {
+public class SymboledInteger implements Serializable {
     private Integer value;
     private String suffix;
 

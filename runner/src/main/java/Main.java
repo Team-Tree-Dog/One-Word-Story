@@ -2,6 +2,8 @@ import adapters.controllers.*;
 import adapters.presenters.*;
 import adapters.view_models.PdViewModel;
 import adapters.view_models.PgeViewModel;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import entities.LobbyManager;
 import entities.PlayerFactory;
 import entities.comment_checkers.CommentChecker;
@@ -36,6 +38,8 @@ import usecases.sort_players.SpInteractor;
 import usecases.submit_word.SwInteractor;
 import usecases.suggest_title.StInteractor;
 import usecases.upvote_title.UtInteractor;
+import util.RecursiveSymboledIntegerHashMap;
+import util.SymboledInteger;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -161,6 +165,23 @@ public class Main {
         UtController utController = new UtController(ut);
 
         System.out.println("Main: Before Spring Init");
+
+        // TODO: Testing serialization of recursive map, remove after
+        RecursiveSymboledIntegerHashMap n = new RecursiveSymboledIntegerHashMap();
+        n.put("Apple", new RecursiveSymboledIntegerHashMap(new SymboledInteger(5, "lb")));
+        RecursiveSymboledIntegerHashMap m = new RecursiveSymboledIntegerHashMap();
+        m.put("a", new RecursiveSymboledIntegerHashMap(new SymboledInteger(1, "s")));
+        m.put("b", new RecursiveSymboledIntegerHashMap(new SymboledInteger(2, "s")));
+        m.put("c", new RecursiveSymboledIntegerHashMap(new SymboledInteger(3, "s")));
+        m.put("d", new RecursiveSymboledIntegerHashMap(new SymboledInteger(4, "s")));
+        m.put("e", n);
+
+        try {
+            System.out.println(m.getJsonString());
+            System.out.println((new ObjectMapper()).writeValueAsString(new SymboledInteger(1, "s")));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         // Setup and run the view
         new SpringBootView(new CoreAPI(

@@ -72,10 +72,12 @@ public sealed interface ClientCommand {
                 // Inject callback to wait for further info
                 jplViewM.injectCallback((hasCancelled, gameData) -> {
                     if (gameData != null) {
+                        playerState.changeToInGame();
                         // Send initial game state info to notify player they were added to the game
                         try {
                             playerState.sendMessage((new ServerResponse.CurrentState(gameData,
-                                    true, false)).pack());
+                                    true, false, null)).pack());
+
                             Log.sendSocketGeneral("JPL Callback",
                                     "Initial Game Data sent to " + playerState.displayName());
                         } catch (IOException ignored) {
@@ -89,7 +91,7 @@ public sealed interface ClientCommand {
             }
 
             return new ServerResponse[]{
-                    new ServerResponse.JoinResponse(jplViewM.getResponse(), false)
+                    new ServerResponse.JoinResponse(jplViewM.getResponse(), false, null)
             };
         }
     }
@@ -115,8 +117,9 @@ public sealed interface ClientCommand {
             }
 
             return new ServerResponse[]{
-                    new ServerResponse.SubmitWordResponse(viewM.getResponse(), false),
-                    new ServerResponse.CurrentState(viewM.getGameData(), false, true)
+                    new ServerResponse.SubmitWordResponse(viewM.getResponse(), false, null),
+                    new ServerResponse.CurrentState(viewM.getGameData(), false, true,
+                            (p) -> p.state() == PlayerState.State.IN_GAME) // Broadcast new gamestate to those in game
             };
         }
     }

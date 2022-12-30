@@ -1,4 +1,5 @@
 package com.example.springapp;
+import adapters.display_data.GameEndPlayerDisplayData;
 import adapters.display_data.not_ended_display_data.GameDisplayData;
 import adapters.view_models.DcViewModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,17 +25,53 @@ public class SocketTextHandler extends TextWebSocketHandler {
 
     /**
      * Injects into PD a lambda which will broadcast the new PD content to all
-     * clients
+     * clients. Also injects PGE lambda for reacting to games ending
      */
     public SocketTextHandler() {
+        // PD
         coreAPI.pdViewM.injectCallback((GameDisplayData gameData) -> {
             try {
                 Log.sendSocketGeneral("PD Callback", "Broadcasting new Game State");
-                broadcast((new ServerResponse.CurrentState(gameData, false, true)).pack());
+                // Broadcast only to those in a game
+                broadcast(new ServerResponse.CurrentState(
+                        gameData, false, true,
+                        (p) -> p.state() == PlayerState.State.IN_GAME));
             } catch (JsonProcessingException e) {
                 Log.sendSocketError("PD Callback", "Failed to process JSON");
             }
+        });
 
+        // PGE
+        coreAPI.pgeViewM.injectCallback((playerStatData) -> {
+            Log.sendSocketGeneral("PGE Callback", "Sending player stats to each player");
+
+            // Loop through ALL sessions
+            for (PlayerState ply: sessionToPlyState.values()) {
+                // See if the session links to a player whose stats were provided
+                String plyId = ply.playerId();
+                GameEndPlayerDisplayData statData = playerStatData.get(plyId);
+
+                // if yes (see above comment), continue
+                if (statData != null) {
+                    String name = playerStatData.get(plyId).getDisplayName();
+
+                    // Try to send individual game end stat data to this player
+                    try {
+                        String msg = new ServerResponse.GameEndResponse(playerStatData.get(plyId),
+                                false, null).pack();
+
+                        Log.sendSocketGeneral("PGE Callback", "To: " + name + " DATA: " + msg);
+
+                        ply.sendMessage(msg);
+                    } catch (JsonProcessingException e) {
+                        Log.sendSocketError("PGE Callback",  "Failed to process JSON for " + name);
+                    } catch (IOException e) {
+                        Log.sendSocketError("PGE Callback", name + " triggered IOException");
+                    }
+
+                    ply.changeToDisconnected();
+                }
+            }
         });
     }
 
@@ -46,21 +83,31 @@ public class SocketTextHandler extends TextWebSocketHandler {
     private static final Map<String, PlayerState> sessionToPlyState = new ConcurrentHashMap<>();
 
     /**
-     * Send a message to all clients <br><br>
+     * Send a server response to all clients <br><br>
      * Note that since WebSocket sessions are not concurrent with respect
      * to sending, a lock is engaged for each client before sending.
      */
-    public void broadcast(String message) {
+    public void broadcast(ServerResponse responseToSend) throws JsonProcessingException {
+        String message = responseToSend.pack();
+
         for (PlayerState p: sessionToPlyState.values()) {
-            try {
-                Log.sendSocketGeneral("Broadcast", "Sending '"+message+"' to " + p.displayName());
-                p.sendMessage(message);
-            }
-            // It is likely this occurs when the player has disconnected and the .values()
-            // has stale information
-            catch (IOException ignored) {
-                Log.sendSocketError("Broadcast",
-                        "Client " + p.displayName() + " triggered IOException when sending broadcast");
+
+            // Either the predicate is null (meaning broadcast to all) or we check if this player should be
+            // broadcast to by testing the predicate
+            if (responseToSend.isDoBroadcast() == null || responseToSend.isDoBroadcast().test(p)) {
+
+                try {
+                    Log.sendSocketGeneral("Broadcast", "Sending '" + message + "' to " + p.displayName());
+                    p.sendMessage(message);
+                }
+
+                // It is likely this occurs when the player has disconnected and the .values()
+                // has stale information
+                catch (IOException ignored) {
+                    Log.sendSocketError("Broadcast",
+                            "Client " + p.displayName() + " triggered IOException when sending broadcast");
+                }
+
             }
         }
     }
@@ -74,9 +121,6 @@ public class SocketTextHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(@NotNull WebSocketSession session, @NotNull CloseStatus status) throws Exception {
         PlayerState p = sessionToPlyState.get(session.getId());
 
-        // Delete PlayerState object from map so no send calls can be made
-        sessionToPlyState.remove(session.getId());
-
         // Calls disconnect on a thread. Response shouldn't matter, player has disconnected!
         DcViewModel viewM = coreAPI.dcController.disconnect(p.playerId());
 
@@ -85,12 +129,16 @@ public class SocketTextHandler extends TextWebSocketHandler {
             Thread.sleep(20);
         }
 
+        // Delete PlayerState object from map so no send calls can be made
+        sessionToPlyState.remove(session.getId());
+
         // Broadcasts new game data to clients if this player was disconnected from game
         if (viewM.getGameData() != null) {
             Log.sendSocketGeneral("DC Broadcast",
                     "Broadcasting new Game State; " + p.displayName() + " disconnected from game!");
-            broadcast((new ServerResponse.CurrentState(
-                    viewM.getGameData(), false, true)).pack());
+            broadcast(new ServerResponse.CurrentState(
+                    viewM.getGameData(), false, true,
+                    (ply) -> ply.state() == PlayerState.State.IN_GAME)); // Broadcast new gamestate to those in game
         }
 
         // Prints DC output
@@ -130,7 +178,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
 
                     // Thread safely either broadcast to ALL clients, or to THIS client
                     if (response.isBroadcast()) {
-                        broadcast(msg);
+                        broadcast(response);
                     } else {
                         PlayerState p = sessionToPlyState.get(session.getId());
                         p.sendMessage(msg);

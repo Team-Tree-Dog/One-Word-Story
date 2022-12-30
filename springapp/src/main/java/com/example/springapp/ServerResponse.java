@@ -1,10 +1,14 @@
 package com.example.springapp;
 
+import adapters.display_data.GameEndPlayerDisplayData;
 import adapters.display_data.not_ended_display_data.GameDisplayData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import usecases.Response;
+
+import java.util.function.Predicate;
 
 /**
  * Unifies a structure of all the possible OUTGOING (SEND) responses to the clients.
@@ -20,6 +24,7 @@ public sealed interface ServerResponse {
     String RESPONSE_JOIN = "JPL:out:in_pool";
     String RESPONSE_SUBMIT_WORD = "SW:out";
     String RESPONSE_STATE = "current_state";
+    String RESPONSE_GAME_ENDED = "PGE:out";
 
     char SEPARATOR = 30;
 
@@ -35,12 +40,22 @@ public sealed interface ServerResponse {
     boolean isBroadcast();
 
     /**
+     * If predicate is null, broadcast to everyone
+     * @return a predicate for filtering if a specific PlayerState should be broadcast to
+     */
+    @Nullable
+    Predicate<PlayerState> isDoBroadcast();
+
+    /**
      * Response sent upon processing a client's JoinPublicLobby command. Either the player's
      * display name was valid and they were added to the waiting pool, or the name
      * was invalid, so the player will not be allowed further into the game
      * @param response whether the player's display name was accepted
+     * @param isDoBroadcast Custom filter function for broadcasting, return true if you want to broadcast
+     *                      to the given player; irrelevant if isBroadcast is false
      */
-    record JoinResponse(Response response, boolean isBroadcast) implements ServerResponse {
+    record JoinResponse(Response response, boolean isBroadcast,
+                        @Nullable Predicate<PlayerState> isDoBroadcast) implements ServerResponse {
         @Override
         public String pack() throws JsonProcessingException {
             return RESPONSE_JOIN + SEPARATOR + (new ObjectMapper()).writeValueAsString(response);
@@ -57,8 +72,11 @@ public sealed interface ServerResponse {
      * word was valid, so we pass back game data, or it was invalid, so we pass only a
      * response with fail code
      * @param response whether the player's word was added
+     * @param isDoBroadcast Custom filter function for broadcasting, return true if you want to broadcast
+     *                      to the given player; irrelevant if isBroadcast is false
      */
-    record SubmitWordResponse(Response response, boolean isBroadcast) implements ServerResponse {
+    record SubmitWordResponse(Response response, boolean isBroadcast,
+                              @Nullable Predicate<PlayerState> isDoBroadcast) implements ServerResponse {
         @Override
         public String pack() throws JsonProcessingException {
             ObjectMapper mapper = new ObjectMapper();
@@ -89,9 +107,12 @@ public sealed interface ServerResponse {
      * @param isInitialJPLState This flag indicates that this game data being sent is a special
      *                          response for a SPECIFIC client that gets sent as soon as the client
      *                          got added to a game.
+     * @param isDoBroadcast Custom filter function for broadcasting, return true if you want to broadcast
+     *                      to the given player; irrelevant if isBroadcast is false
      */
     record CurrentState(@Nullable GameDisplayData data,
-                        Boolean isInitialJPLState, boolean isBroadcast) implements ServerResponse {
+                        Boolean isInitialJPLState, boolean isBroadcast,
+                        @Nullable Predicate<PlayerState> isDoBroadcast) implements ServerResponse {
         @Override
         public String pack() throws JsonProcessingException {
             return RESPONSE_STATE + SEPARATOR +
@@ -104,4 +125,28 @@ public sealed interface ServerResponse {
             return isBroadcast;
         }
     }
+
+    /**
+     * Response each time a game ends (PGE)
+     * @param playerStats a single player's statistic
+     * @param isDoBroadcast Custom filter function for broadcasting, return true if you want to broadcast
+     *                      to the given player; irrelevant if isBroadcast is false
+     */
+    record GameEndResponse(@NotNull GameEndPlayerDisplayData playerStats,
+                           boolean isBroadcast,
+                           @Nullable Predicate<PlayerState> isDoBroadcast) implements ServerResponse {
+
+        @Override
+        public String pack() throws JsonProcessingException {
+            ObjectMapper mapper = new ObjectMapper();
+
+            return RESPONSE_GAME_ENDED + SEPARATOR + mapper.writeValueAsString(playerStats);
+        }
+
+        @Override
+        public boolean isBroadcast() { return isBroadcast; }
+    }
+
+    // Add new state for disconnected PlayerState, and add boradcast constraints to prevent game
+    // broadcast to non-joined players or disconnected ones
 }

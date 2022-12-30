@@ -2,10 +2,12 @@ package adapters.display_data;
 
 import util.RecursiveSymboledIntegerHashMap;
 
+import java.io.Serializable;
+
 /**
  * Data that needs to be sent to players who were still in the game when it ended
  */
-public class GameEndPlayerDisplayData {
+public class GameEndPlayerDisplayData implements Serializable {
 
     private final String id;
     private final String displayName;
