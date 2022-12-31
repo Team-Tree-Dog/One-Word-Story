@@ -76,4 +76,10 @@ public class GameDTO {
                 game.getCurrentTurnPlayer() == null ? "" : game.getCurrentTurnPlayer().getPlayerId(),
                 game.getSecondsLeftInCurrentTurn());
     }
+
+    @Override
+    public String toString() {
+        return "GameDTO('" + story + "', " + currentTurnPlayerId + ", "
+                + secondsLeftCurrentTurn + ", " + players + ")";
+    }
 }

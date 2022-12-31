@@ -166,23 +166,6 @@ public class Main {
 
         System.out.println("Main: Before Spring Init");
 
-        // TODO: Testing serialization of recursive map, remove after
-        RecursiveSymboledIntegerHashMap n = new RecursiveSymboledIntegerHashMap();
-        n.put("Apple", new RecursiveSymboledIntegerHashMap(new SymboledInteger(5, "lb")));
-        RecursiveSymboledIntegerHashMap m = new RecursiveSymboledIntegerHashMap();
-        m.put("a", new RecursiveSymboledIntegerHashMap(new SymboledInteger(1, "s")));
-        m.put("b", new RecursiveSymboledIntegerHashMap(new SymboledInteger(2, "s")));
-        m.put("c", new RecursiveSymboledIntegerHashMap(new SymboledInteger(3, "s")));
-        m.put("d", new RecursiveSymboledIntegerHashMap(new SymboledInteger(4, "s")));
-        m.put("e", n);
-
-        try {
-            System.out.println(m.getJsonNode());
-            System.out.println((new ObjectMapper()).writeValueAsString(new SymboledInteger(1, "s")));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
         // Setup and run the view
         new SpringBootView(new CoreAPI(
           cagController, dcController, gatController, glsController, gmlsController,

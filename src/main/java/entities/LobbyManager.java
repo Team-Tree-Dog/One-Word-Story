@@ -334,6 +334,7 @@ public class LobbyManager {
      * @param p the player in the PlayerObserverLink
      * @return the PlayerObserverLink containing player p, null if there isn't one
      */
+    @Nullable
     public PlayerObserverLink getLinkFromPlayer(Player p){
         for (PlayerObserverLink pol : playerPool) {
             if (pol.getPlayer().equals(p)) {

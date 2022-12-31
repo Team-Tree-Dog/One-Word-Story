@@ -18,16 +18,8 @@ h1 {text-align: center;
     padding: 10px;
 }
 
-.container1{
-    float: right;
-    border-radius: 10px;
-    background-color: #def2f1;
-    padding: 20px;
-    height: auto;
-}
-
-.container2{
-    float: left;
+.container{
+    float: inside;
     border-radius: 10px;
     background-color: #def2f1;
     padding: 20px;

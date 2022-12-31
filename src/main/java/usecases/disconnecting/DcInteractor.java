@@ -118,6 +118,13 @@ public class DcInteractor implements DcInputBoundary {
                     // so only playerIDs are compared. If the game is null, GameDoesntExistException is thrown.
                     if (lm.getGameReadOnly().getPlayers().contains(playerToDisconnect)){
 
+                        // If the game is ended but not yet set to null, the player is effectively not there
+                        // anymore, so we could consider this a PlayerNotFound scenario
+                        if (lm.isGameEnded()) {
+                            throw new PlayerNotFoundException("Player was found but game is ended and will soon" +
+                                    "be set to null, so player is technically not there");
+                        }
+
                         // The player is in the game. We then check if it's the player's turn.
                         // If it is, then we switch the turn so play can continue.
                         if (lm.getGameReadOnly().getCurrentTurnPlayer().getPlayerId().equals(this.playerId)) {
