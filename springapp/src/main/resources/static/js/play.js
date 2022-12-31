@@ -68,7 +68,10 @@ async function socketLogic () {
         GameAPI.onGameEnded((gameEndData) => {
 
             nicelog("OnGameEnded callback", "game ended");
-            //window.location.search = ``;
+            console.log(gameEndData);
+
+            localStorage.setItem("gameEndStatData", JSON.stringify(gameEndData));
+            window.location.href = `/game-end`;
         })
     })
 

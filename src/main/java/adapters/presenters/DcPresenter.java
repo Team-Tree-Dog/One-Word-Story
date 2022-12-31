@@ -2,7 +2,6 @@ package adapters.presenters;
 
 import adapters.display_data.not_ended_display_data.GameDisplayData;
 import adapters.view_models.DcViewModel;
-import org.example.ANSI;
 import org.example.Log;
 import usecases.Response;
 import usecases.disconnecting.DcOutputBoundary;

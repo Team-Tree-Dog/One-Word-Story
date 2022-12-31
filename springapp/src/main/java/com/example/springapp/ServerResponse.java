@@ -2,11 +2,17 @@ package com.example.springapp;
 
 import adapters.display_data.GameEndPlayerDisplayData;
 import adapters.display_data.not_ended_display_data.GameDisplayData;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonFactoryBuilder;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import usecases.Response;
+import util.RecursiveSymboledIntegerHashMap;
 
 import java.util.function.Predicate;
 
@@ -140,7 +146,18 @@ public sealed interface ServerResponse {
         public String pack() throws JsonProcessingException {
             ObjectMapper mapper = new ObjectMapper();
 
-            return RESPONSE_GAME_ENDED + SEPARATOR + mapper.writeValueAsString(playerStats);
+            ObjectNode root = mapper.createObjectNode();
+            root.put("id", playerStats.getId());
+            root.put("display", playerStats.getDisplayName());
+
+            ArrayNode statNode = mapper.createArrayNode();
+            for (RecursiveSymboledIntegerHashMap stat: playerStats.getStats()) {
+                statNode.add(stat.getJsonNode());
+            }
+
+            root.set("stats", statNode);
+
+            return RESPONSE_GAME_ENDED + SEPARATOR + mapper.writeValueAsString(root);
         }
 
         @Override

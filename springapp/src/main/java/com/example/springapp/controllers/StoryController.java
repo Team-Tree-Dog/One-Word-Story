@@ -314,6 +314,13 @@ public class StoryController {
         return "play";
     }
 
+    @GetMapping("/game-end")
+    public String gameEnd() {
+        System.out.println("Get /game-end");
+
+        return "endscreen";
+    }
+
     @PostMapping("comment/story/{id}")
     public String comment(@RequestParam("id") String id, Comment comment) throws InterruptedException {
         CoreAPI v = SpringApp.coreAPI;

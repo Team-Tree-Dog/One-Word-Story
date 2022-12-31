@@ -1,5 +1,7 @@
 package util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,5 +86,14 @@ public class SymboledInteger implements Serializable {
     @Override
     public String toString() {
         return suffix == null ? value.toString() : value + suffix;
+    }
+
+    @NotNull
+    public ObjectNode getJsonNode() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode rootNode = mapper.createObjectNode();
+        rootNode.put("value", value);
+        rootNode.put("suffix", suffix);
+        return rootNode;
     }
 }

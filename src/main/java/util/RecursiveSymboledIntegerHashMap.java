@@ -3,6 +3,7 @@ package util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -95,11 +96,15 @@ public class RecursiveSymboledIntegerHashMap implements Serializable {
         return map == null ? null : map.values();
     }
 
-    public String getJsonString() throws JsonProcessingException {
-        ObjectWriter m = new ObjectMapper().writerWithDefaultPrettyPrinter();
+    public ObjectNode getJsonNode() throws JsonProcessingException {
         if (isBaseCase()) {
-            return m.writeValueAsString(value);
+            return value.getJsonNode();
         }
-        return m.writeValueAsString(map);
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode root = mapper.createObjectNode();
+        for (String k: map.keySet()) {
+            root.set(k, map.get(k).getJsonNode());
+        }
+        return root;
     }
 }

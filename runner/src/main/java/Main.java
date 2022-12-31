@@ -177,7 +177,7 @@ public class Main {
         m.put("e", n);
 
         try {
-            System.out.println(m.getJsonString());
+            System.out.println(m.getJsonNode());
             System.out.println((new ObjectMapper()).writeValueAsString(new SymboledInteger(1, "s")));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
