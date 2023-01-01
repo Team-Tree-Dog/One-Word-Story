@@ -1,12 +1,9 @@
 package adapters.presenters;
 
 import adapters.display_data.not_ended_display_data.GameDisplayData;
-import adapters.display_data.not_ended_display_data.GameDisplayDataBuilder;
 import adapters.view_models.JplViewModel;
 import org.example.ANSI;
 import org.example.Log;
-import usecases.GameDTO;
-import usecases.PlayerDTO;
 import usecases.Response;
 import usecases.join_public_lobby.JplOutputBoundary;
 import usecases.join_public_lobby.JplOutputDataJoinedGame;
@@ -33,7 +30,8 @@ public class JplPresenter implements JplOutputBoundary {
         Log.sendMessage(ANSI.BLUE, "JPL", ANSI.LIGHT_BLUE,
                 "Presenter in pool for Player ID: " + dataJoinedPool.getPlayerId() + ", " +
                         dataJoinedPool.getRes());
-        viewM.setResponse(dataJoinedPool.getRes());
+        viewM.getResponseAwaitable().set(dataJoinedPool.getRes());
+        viewM.getPlayerIdAwaitable().set(dataJoinedPool.getPlayerId());
     }
 
     /**
@@ -67,6 +65,6 @@ public class JplPresenter implements JplOutputBoundary {
     public void outputShutdownServer() {
         Log.sendMessage(ANSI.BLUE, "JPL", ANSI.LIGHT_BLUE,
                 "Presenter outputShutdownServer");
-        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
+        viewM.getResponseAwaitable().set(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

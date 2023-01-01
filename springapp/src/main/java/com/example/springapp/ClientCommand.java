@@ -60,12 +60,11 @@ public sealed interface ClientCommand {
             JplViewModel jplViewM = coreAPI.jplController.joinPublicLobby(
                     playerState.playerId(), playerName);
 
-            // Wait for initial inPool response
-            while (jplViewM.getResponse() == null) {
-                Thread.sleep(20);
-            }
+            // Wait for properties to be set
+            Response res = jplViewM.getResponseAwaitable().await();
+            String playerId = jplViewM.getPlayerIdAwaitable().await();
 
-            if (jplViewM.getResponse().getCode() == Response.ResCode.SUCCESS) {
+            if (res != null && res.getCode() == Response.ResCode.SUCCESS) {
                 // Player name was approved, move forward
                 playerState.changeToInPool(jplViewM, playerName);
 
@@ -91,7 +90,7 @@ public sealed interface ClientCommand {
             }
 
             return new ServerResponse[]{
-                    new ServerResponse.JoinResponse(jplViewM.getResponse(), false, null)
+                    new ServerResponse.JoinResponse(res, playerId, false, null)
             };
         }
     }

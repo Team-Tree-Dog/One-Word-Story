@@ -4,12 +4,8 @@ import adapters.display_data.not_ended_display_data.GameDisplayData;
 import org.example.Log;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+public class PdViewModel extends ViewModel {
 
-public class PdViewModel {
-
-    private final Lock lock = new ReentrantLock();
     private PdCallback callback = null;
 
     public void setCurrentGameState(@NotNull GameDisplayData d) {

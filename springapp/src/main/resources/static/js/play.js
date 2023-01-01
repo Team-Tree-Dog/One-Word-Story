@@ -50,6 +50,8 @@ const RESPONSE_GAME_ENDED = "PGE:out";
  * Initiates and runs the socket logic once the connection has been established
  */
 async function socketLogic () {
+    let playerID = "";
+
     // Wait to be added to a game
     // This is called first to prevent a race condition between subscribing this callback
     // and the player being added to the game
@@ -79,13 +81,14 @@ async function socketLogic () {
     const joinResult = await GameAPI.joinPublicLobby(document.getElementById("name").value);
     nicelog("Socket Logic", "Join result: " + joinResult);
 
-    if (joinResult.code === "SUCCESS") {
+    if (joinResult.res.code === "SUCCESS") {
         switchToWaiting()
+        playerID = joinResult.plyID
 
     } else {
         // Disconnect, display name invalid
-        let mess = encodeURIComponent(joinResult.message);
-        window.location.search = `errorTitle=${joinResult.code}&errorMessage=${mess}`;
+        let mess = encodeURIComponent(joinResult.res.message);
+        window.location.search = `errorTitle=${joinResult.res.code}&errorMessage=${mess}`;
     }
 }
 
@@ -222,7 +225,7 @@ function createAPI (url) {
 
                         delete this._ws.messageHandlers[waiterGuid];
                         nicelog("Socket: joinPublicLobby", "Serv Res: " + decoded[1])
-                        resolve(JSON.parse(decoded[1]));
+                        resolve({plyID: decoded[2], res: JSON.parse(decoded[1])});
                     }
                 }
 

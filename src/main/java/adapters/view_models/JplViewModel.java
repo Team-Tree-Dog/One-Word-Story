@@ -8,10 +8,14 @@ import usecases.Response;
 
 public class JplViewModel extends ViewModel {
 
+    // Second stage callback data
     private GameDisplayData display = null;
     private boolean cancelled = false;
-    private Response res = null;
     private JplCallback callback = null;
+
+    // Awaitables
+    private final Awaitable<Response> res = new Awaitable<>();
+    private final Awaitable<String> playerId = new Awaitable<>();
 
     /**
      * THIS METHOD MUST BE CALLED AT MOST ONCE FOR A JplViewModel INSTANCE
@@ -44,27 +48,6 @@ public class JplViewModel extends ViewModel {
         lock.unlock();
     }
 
-    public void setResponse(Response response) {
-        lock.lock();
-        res = response;
-        condition.signal();
-        lock.unlock();
-    }
-
-    /**
-     * Thread safe
-     * @return Initial response from JPL indicating if the player made it into the pool
-     */
-    @Nullable
-    public Response getResponse() {
-        Response out;
-        lock.lock();
-        // Response is readonly so we don't care to copy it. It'll be thread safe as is
-        out = res;
-        lock.unlock();
-        return out;
-    }
-
     /**
      * Inject a callback which will be called once second stage data is set; that is, once
      * the corresponding player has either cancelled or been added to a game
@@ -86,5 +69,27 @@ public class JplViewModel extends ViewModel {
             this.callback = callback;
         }
         lock.unlock();
+    }
+
+    /**
+     * Get this object for both setting and getting purposes, from different threads.
+     * <br><br>
+     * <b>Thread Safety: </b> The Response object is immutable and thus is completely safe
+     * to get from multiple threads, not counting the setter thread
+     * @return The awaitable object wrapping the response
+     */
+    public Awaitable<Response> getResponseAwaitable() {
+        return res;
+    }
+
+    /**
+     * Get this object for both setting and getting purposes, from different threads.
+     * <br><br>
+     * <b>Thread Safety: </b> A String object is immutable and thus is completely safe
+     * to get from multiple threads, not counting the setter thread
+     * @return The awaitable object wrapping the player ID string
+     */
+    public Awaitable<String> getPlayerIdAwaitable() {
+        return playerId;
     }
 }

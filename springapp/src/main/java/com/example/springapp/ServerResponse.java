@@ -2,9 +2,6 @@ package com.example.springapp;
 
 import adapters.display_data.GameEndPlayerDisplayData;
 import adapters.display_data.not_ended_display_data.GameDisplayData;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonFactoryBuilder;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -60,11 +57,12 @@ public sealed interface ServerResponse {
      * @param isDoBroadcast Custom filter function for broadcasting, return true if you want to broadcast
      *                      to the given player; irrelevant if isBroadcast is false
      */
-    record JoinResponse(Response response, boolean isBroadcast,
+    record JoinResponse(Response response, String playerID, boolean isBroadcast,
                         @Nullable Predicate<PlayerState> isDoBroadcast) implements ServerResponse {
         @Override
         public String pack() throws JsonProcessingException {
-            return RESPONSE_JOIN + SEPARATOR + (new ObjectMapper()).writeValueAsString(response);
+            return RESPONSE_JOIN + SEPARATOR + (new ObjectMapper()).writeValueAsString(response) +
+                    SEPARATOR + playerID;
         }
 
         @Override
