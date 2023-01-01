@@ -5,45 +5,28 @@ import org.jetbrains.annotations.Nullable;
 import usecases.Response;
 
 public class SwViewModel extends ViewModel {
-    private Response res = null;
-    private GameDisplayData gameData = null;
+    private final Awaitable<Response> res = new Awaitable<>();
+    private final Awaitable<GameDisplayData> gameData = new Awaitable<>();
 
-    public void setGameData(GameDisplayData gameData) {
-        lock.lock();
-        this.gameData = gameData;
-        lock.unlock();
-    }
-
-    public void setResponse(Response response) {
-        lock.lock();
-        res = response;
-        condition.signal();
-        lock.unlock();
+    /**
+     * Get this object for both setting and getting purposes, from different threads.
+     * <br><br>
+     * <b>Thread Safety: </b> The Response object is immutable and thus is completely safe
+     * to get from multiple threads, not counting the setter thread
+     * @return The awaitable object wrapping the response
+     */
+    public Awaitable<Response> getResponseAwaitable() {
+        return res;
     }
 
     /**
-     * Thread safe
-     * @return the response from this use case, or null if it hasn't been set yet
+     * Get this object for both setting and getting purposes, from different threads.
+     * <br><br>
+     * <b>Thread Safety: </b> The GameDisplayData object is immutable and thus is completely safe
+     * to get from multiple threads, not counting the setter thread
+     * @return The awaitable object wrapping the game display data
      */
-    @Nullable
-    public Response getResponse() {
-        Response out;
-        lock.lock();
-        out = res;
-        lock.unlock();
-        return out;
-    }
-
-    /**
-     * Thread safe
-     * @return new game state, or null if EITHER sw hasn't finished executing OR response is an error
-     */
-    @Nullable
-    public GameDisplayData getGameData() {
-        GameDisplayData out;
-        lock.lock();
-        out = gameData;
-        lock.unlock();
-        return out;
+    public Awaitable<GameDisplayData> getGameDataAwaitable() {
+        return gameData;
     }
 }

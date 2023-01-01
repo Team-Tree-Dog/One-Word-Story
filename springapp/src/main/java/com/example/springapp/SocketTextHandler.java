@@ -107,7 +107,6 @@ public class SocketTextHandler extends TextWebSocketHandler {
                     Log.sendSocketError("Broadcast",
                             "Client " + p.displayName() + " triggered IOException when sending broadcast");
                 }
-
             }
         }
     }
@@ -124,31 +123,28 @@ public class SocketTextHandler extends TextWebSocketHandler {
         // Calls disconnect on a thread. Response shouldn't matter, player has disconnected!
         DcViewModel viewM = coreAPI.dcController.disconnect(p.playerId());
 
-        // Waits for view model data TODO: FIX VIEW MODELS
-        while (viewM.getResponse() == null) {
-            Thread.sleep(20);
-        }
+        // Waits for view model data. Response object is set last.
+        Response res = viewM.getResponseAwaitable().await();
+        GameDisplayData gameData = viewM.getGameDataAwaitable().get();
 
         // Delete PlayerState object from map so no send calls can be made
         sessionToPlyState.remove(session.getId());
 
         // Broadcasts new game data to clients if this player was disconnected from game
-        if (viewM.getGameData() != null) {
+        if (gameData != null) {
             Log.sendSocketGeneral("DC Broadcast",
                     "Broadcasting new Game State; " + p.displayName() + " disconnected from game!");
             broadcast(new ServerResponse.CurrentState(
-                    viewM.getGameData(), false, true,
+                    gameData, false, true,
                     (ply) -> ply.state() == PlayerState.State.IN_GAME)); // Broadcast new gamestate to those in game
         }
 
         // Prints DC output
-        if (viewM.getResponse().getCode() == Response.ResCode.SUCCESS) {
-            Log.sendSocketSuccess("CLOSED", viewM.getResponse().toString());
+        if (res.getCode() == Response.ResCode.SUCCESS) {
+            Log.sendSocketSuccess("CLOSED", res.toString());
         } else {
-            Log.sendSocketError("CLOSED", viewM.getResponse().toString());
+            Log.sendSocketError("CLOSED", res.toString());
         }
-
-
     }
 
     @Override

@@ -31,14 +31,14 @@ public class DcPresenter implements DcOutputBoundary {
         Log.useCaseMsg("DC Presenter", data.getResponse() + " with player ID " + data.getPlayerId());
         if (data.getGameData() != null) {
             Log.useCaseMsg("DC Presenter", data.getGameData() + " with player ID " + data.getPlayerId());
-            viewM.setGameData(GameDisplayData.fromGameDTO(data.getGameData()));
+            viewM.getGameDataAwaitable().set(GameDisplayData.fromGameDTO(data.getGameData()));
         }
-        viewM.setResponse(data.getResponse());
+        viewM.getResponseAwaitable().set(data.getResponse());
     }
 
     @Override
     public void outputShutdownServer() {
         Log.useCaseMsg("DC", "Presenter outputShutdownServer");
-        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
+        viewM.getResponseAwaitable().set(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

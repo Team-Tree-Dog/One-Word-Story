@@ -1,11 +1,9 @@
 package adapters.presenters;
 
 import adapters.display_data.not_ended_display_data.GameDisplayData;
-import adapters.display_data.not_ended_display_data.GameDisplayDataBuilder;
 import adapters.view_models.SwViewModel;
 import org.example.ANSI;
 import org.example.Log;
-import usecases.PlayerDTO;
 import usecases.Response;
 import usecases.submit_word.SwOutputBoundary;
 import usecases.submit_word.SwOutputDataFailure;
@@ -33,8 +31,8 @@ public class SwPresenter implements SwOutputBoundary {
                 "Presenter valid word ply ID " + outputDataValidWord.getPlayerId() +
                 ", " + outputDataValidWord.getResponse());
 
-        viewM.setGameData(GameDisplayData.fromGameDTO(outputDataValidWord.getGameData()));
-        viewM.setResponse(outputDataValidWord.getResponse());
+        viewM.getGameDataAwaitable().set(GameDisplayData.fromGameDTO(outputDataValidWord.getGameData()));
+        viewM.getResponseAwaitable().set(outputDataValidWord.getResponse());
     }
 
     /**
@@ -47,13 +45,13 @@ public class SwPresenter implements SwOutputBoundary {
         Log.sendMessage(ANSI.BLUE, "SW", ANSI.LIGHT_BLUE,
                 "Presenter invalid word ply ID " + outputDataFailure.getPlayerId() +
                         ", " + outputDataFailure.getResponse());
-        viewM.setResponse(outputDataFailure.getResponse());
+        viewM.getResponseAwaitable().set(outputDataFailure.getResponse());
     }
 
     @Override
     public void outputShutdownServer() {
         Log.sendMessage(ANSI.BLUE, "SW", ANSI.LIGHT_BLUE,
                 "Presenter outputShutdownServer");
-        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
+        viewM.getResponseAwaitable().set(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

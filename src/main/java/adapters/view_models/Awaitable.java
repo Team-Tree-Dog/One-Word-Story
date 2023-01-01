@@ -91,6 +91,7 @@ public class Awaitable<T> {
      * so it is safe in that regard
      * @return the item of this Awaitable, or null if not yet set
      */
+    @Nullable
     public T get() {
         lock.lock();
         T out = content;

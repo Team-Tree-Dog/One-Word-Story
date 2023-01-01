@@ -56,13 +56,13 @@ async function socketLogic () {
     // This is called first to prevent a race condition between subscribing this callback
     // and the player being added to the game
     GameAPI.onJoinedGame((initialGameData) => {
-        updateGameState(initialGameData)
+        updateGameState(initialGameData, playerID)
         hasGameStarted = true;
         switchToGame()
 
         // Update game state each time new state is received
         GameAPI.onStateUpdate((updatedGameState) => {
-            updateGameState(updatedGameState);
+            updateGameState(updatedGameState, playerID);
             console.log(updatedGameState);
         })
 
@@ -82,8 +82,8 @@ async function socketLogic () {
     nicelog("Socket Logic", "Join result: " + joinResult);
 
     if (joinResult.res.code === "SUCCESS") {
-        switchToWaiting()
-        playerID = joinResult.plyID
+        switchToWaiting();
+        playerID = joinResult.plyID;
 
     } else {
         // Disconnect, display name invalid
@@ -341,8 +341,9 @@ function createAPI (url) {
 /**
  * Given new information from server, update the game state
  * @param updatedGameState {Object<GameDisplayData>} a JSON-converted GameDisplayData object
+ * @param playerID {String} the id of THIS player, who YOU are
  */
-function updateGameState(updatedGameState) {
+function updateGameState(updatedGameState, playerID) {
     // Clear players list
     let ply_list = document.getElementById("players-list")
     ply_list.innerHTML = "";
@@ -352,8 +353,10 @@ function updateGameState(updatedGameState) {
         // Build <li> element for player, with pencil icon if it's the player's turn
         let new_li = document.createElement("div")
 
+        let name = (playerID === e.id ? `<b> ${e.displayName} (you) </b>` : e.displayName);
+
         new_li.classList.add("player")
-        new_li.innerHTML = e.displayName +
+        new_li.innerHTML = name +
             (e.isCurrentTurnPlayer ?
                 `<img style="vertical-align:middle" src="media/pencil.png" width="20" alt="Pencil">` : "")
 

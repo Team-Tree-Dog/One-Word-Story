@@ -111,13 +111,13 @@ public sealed interface ClientCommand {
         public ServerResponse[] handler(PlayerState playerState) throws InterruptedException {
             SwViewModel viewM = coreAPI.swController.submitWord(playerState.playerId(), word);
 
-            while (viewM.getResponse() == null) {
-                Thread.sleep(20);
-            }
+            // Res is always set last, and gameData isnt guaranteed to be set, hence we do this:
+            Response res = viewM.getResponseAwaitable().await();
+            GameDisplayData gameData = viewM.getGameDataAwaitable().get();
 
             return new ServerResponse[]{
-                    new ServerResponse.SubmitWordResponse(viewM.getResponse(), false, null),
-                    new ServerResponse.CurrentState(viewM.getGameData(), false, true,
+                    new ServerResponse.SubmitWordResponse(res, false, null),
+                    new ServerResponse.CurrentState(gameData, false, true,
                             (p) -> p.state() == PlayerState.State.IN_GAME) // Broadcast new gamestate to those in game
             };
         }
