@@ -26,11 +26,11 @@ public class LsPresenter implements LsOutputBoundary {
      * @param data The output data that should be presented to the user
      * */
     public void likeOutput(LsOutputData data) {
-        viewModel.setResponse(data.getResponse());
+        viewModel.getResponseAwaitable().set(data.getResponse());
     }
 
     @Override
     public void outputShutdownServer() {
-        viewModel.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
+        viewModel.getResponseAwaitable().set(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

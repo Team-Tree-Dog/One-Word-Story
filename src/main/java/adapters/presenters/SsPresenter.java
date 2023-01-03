@@ -28,7 +28,7 @@ public class SsPresenter implements SsOutputBoundary {
     public void outputShutdownServer() {
         Log.sendMessage(ANSI.BLUE, "SS", ANSI.LIGHT_BLUE,
                 "Presenter outputShutdownServer");
-        viewModel.setShutdown();
+        viewModel.getIsShutdownAwaitable().set(true);
     }
 
 }

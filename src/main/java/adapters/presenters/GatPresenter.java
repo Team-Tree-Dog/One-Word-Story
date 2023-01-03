@@ -5,27 +5,25 @@ import usecases.Response;
 import usecases.get_all_titles.GatOutputBoundary;
 import usecases.get_all_titles.GatOutputData;
 
-import java.util.List;
-
 import static usecases.Response.ResCode.SHUTTING_DOWN;
 
 public class GatPresenter implements GatOutputBoundary {
-    private GatViewModel viewM;
+    private final GatViewModel viewM;
 
     public GatPresenter(GatViewModel viewM) {this.viewM = viewM;}
 
     @Override
     public void putSuggestedTitles(GatOutputData data){
         if (data.getSuggestedTitles() == null) {
-            viewM.setResponse(data.getRes());
+            viewM.getResponseAwaitable().set(data.getRes());
         } else {
-            viewM.setSuggestedTitles(data.getSuggestedTitles());
-            viewM.setResponse(data.getRes());
+            viewM.getSuggestedTitlesAwaitable().set(data.getSuggestedTitles());
+            viewM.getResponseAwaitable().set(data.getRes());
         }
     }
 
     @Override
     public void outputShutdownServer(){
-        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
+        viewM.getResponseAwaitable().set(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

@@ -25,15 +25,15 @@ public class GmlsPresenter implements GmlsOutputBoundary {
     @Override
     public void putStories(GmlsOutputData data) {
         if (data.getStories() == null) {
-            viewM.setResponse(data.getRes());
+            viewM.getResponseAwaitable().set(data.getRes());
         } else {
-            viewM.setLatestStories(data.getStories());
-            viewM.setResponse(data.getRes());
+            viewM.getStoriesAwaitable().set(data.getStories());
+            viewM.getResponseAwaitable().set(data.getRes());
         }
     }
 
     @Override
     public void outputShutdownServer() {
-        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
+        viewM.getResponseAwaitable().set(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

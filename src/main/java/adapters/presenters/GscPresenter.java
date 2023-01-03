@@ -27,15 +27,15 @@ public class GscPresenter implements GscOutputBoundary {
     @Override
     public void putStoryComments(GscOutputData data) {
         if (data.getComments() == null) {
-            viewM.setResponse(data.getRes());
+            viewM.getResponseAwaitable().set(data.getRes());
         } else {
-            viewM.setStoryComments(data.getComments());
-            viewM.setResponse(data.getRes());
+            viewM.getCommentsAwaitable().set(data.getComments());
+            viewM.getResponseAwaitable().set(data.getRes());
         }
     }
 
     @Override
     public void outputShutdownServer() {
-        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
+        viewM.getResponseAwaitable().set(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }
