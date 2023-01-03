@@ -174,68 +174,52 @@ public class StoryController {
 
 
     @GetMapping("/")
-    public String index(Model model, @RequestParam(name="get", defaultValue="latest") String storiesToGet ) throws InterruptedException {
+    public String index(Model model,
+                        @RequestParam(name="get", defaultValue="latest") String storiesToGet ) throws InterruptedException {
         CoreAPI v = SpringApp.coreAPI;
 
-        List<Story> stories = new ArrayList<>();
+        Response res;
+        List<StoryRepoData> stories;
+
+        List<Story> finalStories = new ArrayList<>();
 
         if (storiesToGet.equals("liked")) {
             GmlsViewModel gmlsViewM = v.gmlsController.getMostLikedStories(0, 100);
 
-            // Wait for output
-            Thread.sleep(500);
-            //gmlsViewM.awaitChange();
-            // Convert to Story object
-            if (gmlsViewM.getResponseCode() == Response.ResCode.SUCCESS) {
-                // TODO: Rename View model method name to GMLS
-                for (StoryRepoData story: gmlsViewM.getLatestStories()) {
-                    // Get most upvoted title
-                    GatViewModel gatViewM = v.gatController.getAllTitles(story.getStoryId());
-                    Thread.sleep(500);
-                    int upvotes = -1;
-                    String title = "No Title";
-                    for (TitleRepoData t : gatViewM.getSuggestedTitles()) {
-                        if (t.getUpvotes() > upvotes) {
-                            upvotes = t.getUpvotes();
-                            title = t.getTitle();
-                        }
-                    }
-
-                    stories.add(new Story((long) story.getStoryId(), title, story.getStory(),
-                            story.getAuthorNames(), story.getLikes(), story.getPublishTimeStamp()));
-                }
-            }
-            else {/* TODO: Add error handling and frontend message (e.g stories failed to load) */}
+            res = gmlsViewM.getResponseAwaitable().await();
+            stories = gmlsViewM.getStoriesAwaitable().get();
         }
 
         else {
             // Defaults to "latest"
             GlsViewModel glsViewM = v.glsController.getLatestStories(100);
 
-            // Wait for output
-            Thread.sleep(500);
-            //glsViewM.awaitChange();
-            // Convert to Story object
-            if (glsViewM.getResponseCode() == Response.ResCode.SUCCESS) {
-                for (StoryRepoData story: glsViewM.getLatestStories()) {
-                    // Get most upvoted title
-                    GatViewModel gatViewM = v.gatController.getAllTitles(story.getStoryId());
-                    Thread.sleep(500);
-                    int upvotes = -1;
-                    String title = "No Title";
-                    for (TitleRepoData t : gatViewM.getSuggestedTitles()) {
-                        if (t.getUpvotes() > upvotes) {
-                            upvotes = t.getUpvotes();
-                            title = t.getTitle();
-                        }
-                    }
-
-                    stories.add(new Story((long) story.getStoryId(), title, story.getStory(),
-                            story.getAuthorNames(), story.getLikes(), story.getPublishTimeStamp()));
-                }
-            }
-            else {/* TODO: Add error handling and frontend message (e.g stories failed to load) */}
+            res = glsViewM.getResponseAwaitable().await();
+            stories = glsViewM.getStoriesAwaitable().get();
         }
+
+        if (res.getCode() == Response.ResCode.SUCCESS) {
+            for (StoryRepoData story: stories) {
+
+                // Get most upvoted title
+                GatViewModel gatViewM = v.gatController.getAllTitles(story.getStoryId());
+
+                List<TitleRepoData> titles = gatViewM.getSuggestedTitlesAwaitable().await();
+
+                int upvotes = -1;
+                String title = "No Title";
+                for (TitleRepoData t : titles) {
+                    if (t.getUpvotes() > upvotes) {
+                        upvotes = t.getUpvotes();
+                        title = t.getTitle();
+                    }
+                }
+
+                finalStories.add(new Story((long) story.getStoryId(), title, story.getStory(),
+                        story.getAuthorNames(), story.getLikes(), story.getPublishTimeStamp()));
+            }
+        }
+        else {/* TODO: Add error handling and frontend message (e.g stories failed to load) */}
 
         model.addAttribute("stories", stories);
 
@@ -256,24 +240,29 @@ public class StoryController {
         GatViewModel gatViewM = v.gatController.getAllTitles(id.intValue());
         GscViewModel gscViewM = v.gscController.getStoryComments(id.intValue());
 
-        // Wait for output
-        Thread.sleep(500);
-//        glsViewM.awaitChange();
-//        gatViewM.awaitChange();
-//        gscViewM.awaitChange();
+        Response gatRes = gatViewM.getResponseAwaitable().await();
+        Response glsRes = glsViewM.getResponseAwaitable().await();
+        Response gscRes = gscViewM.getResponseAwaitable().await();
 
-        if (glsViewM.getResponseCode() == Response.ResCode.SUCCESS &&
-        gatViewM.getResponseCode() == Response.ResCode.SUCCESS) {
-            for (StoryRepoData story: glsViewM.getLatestStories()) {
+        List<StoryRepoData> stories = glsViewM.getStoriesAwaitable().get();
+        List<TitleRepoData> titles = gatViewM.getSuggestedTitlesAwaitable().get();
+        List<CommentRepoData> comments = gscViewM.getCommentsAwaitable().get();
+
+        if (glsRes.getCode() == Response.ResCode.SUCCESS &&
+            gatRes.getCode() == Response.ResCode.SUCCESS &&
+            gscRes.getCode() == Response.ResCode.SUCCESS) {
+            assert titles != null && stories != null && comments != null;
+
+            for (StoryRepoData story: stories) {
                 if (story.getStoryId() == id.intValue()) {
 
-                    List<Comment> comments = new ArrayList<>();
+                    List<Comment> newComments = new ArrayList<>();
                     List<Suggestion> suggestions = new ArrayList<>();
 
                     // Get most upvoted title
                     int upvotes = -1;
                     String title = "No Title";
-                    for (TitleRepoData t : gatViewM.getSuggestedTitles()) {
+                    for (TitleRepoData t : titles) {
                         if (t.getUpvotes() > upvotes) {
                             upvotes = t.getUpvotes();
                             title = t.getTitle();
@@ -282,15 +271,15 @@ public class StoryController {
                         suggestions.add(new Suggestion(t.getTitle(), t.getUpvotes(), t.getSuggestionId()));
                     }
 
-                    for (CommentRepoData c : gscViewM.getStoryComments()) {
-                        comments.add(new Comment(c.getDisplayName(), c.getContent()));
+                    for (CommentRepoData c : comments) {
+                        newComments.add(new Comment(c.getDisplayName(), c.getContent()));
                     }
 
                     model.addAttribute("storyId", id);
                     model.addAttribute("storyTitle", title);
                     model.addAttribute("content", story.getStory());
 
-                    model.addAttribute("comments", comments);
+                    model.addAttribute("comments", newComments);
                     model.addAttribute("suggestions", suggestions);
                     model.addAttribute("comment", new Comment());
 
@@ -333,13 +322,13 @@ public class StoryController {
         CagViewModel viewM = v.cagController.commentAsGuest(comment.username, comment.comment,
                 Integer.parseInt(id));
 
-        Thread.sleep(500);
+        Response res = viewM.getResponseAwaitable().await();
 
-        boolean isfail = viewM.getResponseCode() != Response.ResCode.SUCCESS;
+        boolean isfail = res.getCode() != Response.ResCode.SUCCESS;
 
         UriComponentsBuilder urlBuilder = UriComponentsBuilder.newInstance();
         urlBuilder.queryParam("isfail", isfail);
-        urlBuilder.queryParam("message", viewM.getResponseMessage());
+        urlBuilder.queryParam("message", res.getMessage());
         Log.sendMessage(ANSI.YELLOW, "suggest-title/story/id", ANSI.CYAN, urlBuilder.toUriString());
 
         return "redirect:/story-" + id + urlBuilder.toUriString();
@@ -355,13 +344,13 @@ public class StoryController {
 
         StViewModel viewM = v.stController.suggestTitle(Integer.parseInt(id), suggestedTitle);
 
-        Thread.sleep(500);
+        Response res = viewM.getResponseAwaitable().await();
 
-        boolean isfailTitle = viewM.getResponseCode() != Response.ResCode.SUCCESS;
+        boolean isfailTitle = res.getCode() != Response.ResCode.SUCCESS;
 
         UriComponentsBuilder urlBuilder = UriComponentsBuilder.newInstance();
         urlBuilder.queryParam("isfailTitle", isfailTitle);
-        urlBuilder.queryParam("message", viewM.getResponseMessage());
+        urlBuilder.queryParam("message", res.getMessage());
         Log.sendMessage(ANSI.YELLOW, "suggest-title/story/id", ANSI.CYAN, urlBuilder.toUriString());
 
         return "redirect:/story-" + id + urlBuilder.toUriString();

@@ -1,5 +1,6 @@
 package adapters.view_models;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.locks.Condition;
@@ -39,9 +40,9 @@ public class Awaitable<T> {
      * Wait for the content to be set. Once the content is set, it is returned
      * @return the content once it is set, or null if the await call was interrupted
      */
-    @Nullable
-    public T await() {
-        T out = null;
+    @NotNull
+    public T await() throws InterruptedException {
+        T out;
 
         lock.lock();
         try {
@@ -49,7 +50,9 @@ public class Awaitable<T> {
                 condition.await();
             }
             out = content;
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException e) {
+            throw new InterruptedException(e.getMessage());
+        }
         finally {
             lock.unlock();
         }
@@ -71,10 +74,11 @@ public class Awaitable<T> {
 
     /**
      * Set the content of this awaitable and wake anything awaiting it.
-     * Do not mutate the object after setting it from the thread which sets it!
+     * Do not mutate the object after setting it from the thread which sets it! That is,
+     * the content that you pass in to this method to be set should not be mutated.
      * @param content the content to set
      */
-    public void set(T content) {
+    public void set(@NotNull T content) {
         lock.lock();
         this.content = content;
         signal();
@@ -89,7 +93,7 @@ public class Awaitable<T> {
      * <br><br>
      * As a rule, the thread which sets the object should not mutate the object
      * so it is safe in that regard
-     * @return the item of this Awaitable, or null if not yet set
+     * @return the item of this Awaitable, or null if not yet set.
      */
     @Nullable
     public T get() {

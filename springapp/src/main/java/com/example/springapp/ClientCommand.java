@@ -64,7 +64,7 @@ public sealed interface ClientCommand {
             Response res = jplViewM.getResponseAwaitable().await();
             String playerId = jplViewM.getPlayerIdAwaitable().await();
 
-            if (res != null && res.getCode() == Response.ResCode.SUCCESS) {
+            if (res.getCode() == Response.ResCode.SUCCESS) {
                 // Player name was approved, move forward
                 playerState.changeToInPool(jplViewM, playerName);
 
