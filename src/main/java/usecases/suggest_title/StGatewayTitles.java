@@ -1,7 +1,6 @@
 package usecases.suggest_title;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import usecases.RepoRes;
 import usecases.Response;
 import usecases.TitleRepoData;

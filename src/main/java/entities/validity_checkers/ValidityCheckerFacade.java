@@ -38,7 +38,7 @@ public class ValidityCheckerFacade {
         }
 
         if (punc != null && word != null) {
-            return punc + word;
+            return punc + " " + word;
         }
         return null;
     }

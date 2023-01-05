@@ -112,7 +112,7 @@ public class GlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        List<StoryRepoData> stories = receivedData.getStories();
+        List<StoryRepoData> stories = receivedData.stories();
         assertEquals(2, stories.size(), "Returned wrong number of stories");
         assertEquals("text 3", stories.get(0).getStory(), "Returned incorrect story");
         assertEquals("text 2", stories.get(1).getStory(), "Returned incorrect story");
@@ -139,7 +139,7 @@ public class GlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        List<StoryRepoData> stories = receivedData.getStories();
+        List<StoryRepoData> stories = receivedData.stories();
         assertEquals(0, stories.size(), "Returned wrong number of stories");
     }
 
@@ -165,7 +165,7 @@ public class GlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        List<StoryRepoData> stories = receivedData.getStories();
+        List<StoryRepoData> stories = receivedData.stories();
         assertEquals(3, stories.size(), "Returned wrong number of stories");
         assertEquals("text 3", stories.get(0).getStory(), "Returned incorrect story");
         assertEquals("text 2", stories.get(1).getStory(), "Returned incorrect story");
@@ -194,7 +194,7 @@ public class GlsInteractorTests {
         assertNotNull(receivedData, "Presenter was not accessed");
 
         // Verify received data is correct
-        List<StoryRepoData> stories = receivedData.getStories();
+        List<StoryRepoData> stories = receivedData.stories();
         assertEquals(3, stories.size(), "Returned wrong number of stories");
         assertEquals("text 3", stories.get(0).getStory(), "Returned incorrect story");
         assertEquals("text 2", stories.get(1).getStory(), "Returned incorrect story");

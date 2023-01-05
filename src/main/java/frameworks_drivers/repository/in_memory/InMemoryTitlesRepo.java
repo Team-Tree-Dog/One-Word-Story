@@ -1,11 +1,11 @@
 package frameworks_drivers.repository.in_memory;
 
 import org.jetbrains.annotations.NotNull;
-import usecases.CommentRepoData;
 import usecases.RepoRes;
 import usecases.Response;
 import usecases.TitleRepoData;
 import usecases.get_all_titles.GatGatewayTitles;
+import usecases.get_latest_stories.GlsGatewayTitles;
 import usecases.suggest_title.StGatewayTitles;
 import usecases.upvote_title.UtGatewayTitles;
 
@@ -24,7 +24,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * engage a repo lock
  * <br><br>
  */
-public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles, UtGatewayTitles {
+public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles,
+        UtGatewayTitles, GlsGatewayTitles {
 
     /**
      * DB table row for storing a single suggested title entry
@@ -183,4 +184,31 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles, Ut
         return res;
     }
 
+    @Override
+    public @NotNull RepoRes<String> getMostUpvotedStoryTitle(int storyId) {
+        lock.lock();
+
+        String suggestion = null;
+        int upvotes = -1;
+
+        for (TitlesTableRow row : titlesTable) {
+            if (row.getStoryId() == storyId) {
+                if (row.getUpvotes() > upvotes) {
+                    suggestion = row.getTitleSuggestion();
+                    upvotes = row.getUpvotes();
+                }
+            }
+        }
+
+        lock.unlock();
+
+        if (suggestion == null) {
+            return new RepoRes<>(Response.getFailure("Either story doesn't exist or has no titles"));
+        } else {
+            List<String> s = new ArrayList<>();
+            s.add(suggestion);
+
+            return new RepoRes<>(Response.getSuccessful("Found most upvoted title"), s);
+        }
+    }
 }

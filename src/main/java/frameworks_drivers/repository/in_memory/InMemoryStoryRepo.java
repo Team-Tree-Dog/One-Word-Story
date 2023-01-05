@@ -1,6 +1,5 @@
 package frameworks_drivers.repository.in_memory;
 
-import entities.Story;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import usecases.RepoRes;

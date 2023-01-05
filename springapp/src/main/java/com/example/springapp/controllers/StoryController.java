@@ -92,84 +92,7 @@ public class StoryController {
         }
     }
 
-    private static class Story {
 
-        private Long id;
-
-        private String title;
-        private String content;
-        private int likes;
-        private String[] authors;
-        private LocalDateTime pub;
-
-        public Story(Long id, String title, String content, String[] authors, int likes, LocalDateTime pub) {
-            this.id = id;
-            this.title = title;
-            this.content = content;
-            this.authors = authors;
-            this.likes = likes;
-            this.pub = pub;
-        }
-
-        public Story() {
-        }
-
-        private String addZeroIfNecessary(int value) {
-            String result = String.valueOf(value);
-            if (value < 10) {
-                result = '0' + result;
-            }
-            return result;
-        }
-
-        public String getDateString() {
-            String output = addZeroIfNecessary(pub.getMonthValue()) + "/" +
-                    addZeroIfNecessary(pub.getDayOfMonth()) + '/' +
-                    pub.getYear() + ' ' +
-                    addZeroIfNecessary(pub.getHour()) + ':' +
-                    addZeroIfNecessary(pub.getMinute()) +
-                    ':' + addZeroIfNecessary(pub.getSecond());
-
-            return output;
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public int getLikes() {
-            return likes;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public String getAuthorString() {
-            StringBuilder s = new StringBuilder();
-
-            for (String author: authors) {
-                s.append(author).append(", ");
-            }
-            return s.toString();
-        }
-
-        public String getContent() {
-            return content;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public void setContent(String content) {
-            this.content = content;
-        }
-    }
 
 
 
@@ -221,7 +144,7 @@ public class StoryController {
         }
         else {/* TODO: Add error handling and frontend message (e.g stories failed to load) */}
 
-        model.addAttribute("stories", stories);
+        model.addAttribute("stories", finalStories);
 
         System.out.println("Get /");
 
