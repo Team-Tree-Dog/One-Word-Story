@@ -139,8 +139,8 @@ public class Main {
 
         CagInteractor cag = new CagInteractor(commentsRepo, commentChecker, displayChecker, register);
         DcInteractor dc = new DcInteractor(manager, register);
-        GlsInteractor gls = new GlsInteractor(storyRepo, register);
-        GmlsInteractor gmls = new GmlsInteractor(storyRepo, register);
+        GlsInteractor gls = new GlsInteractor(storyRepo, titlesRepo, register);
+        GmlsInteractor gmls = new GmlsInteractor(storyRepo, titlesRepo, register);
         GscInteractor gsc = new GscInteractor(commentsRepo, register);
         GatInteractor gat = new GatInteractor(titlesRepo, register);
         JplInteractor jpl = new JplInteractor(manager, register);

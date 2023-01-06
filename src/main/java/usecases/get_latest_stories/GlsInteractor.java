@@ -62,8 +62,8 @@ public class GlsInteractor implements GlsInputBoundary{
 
             // DB Failed to get stories
             if (!res.isSuccess()) {
-                pres.putStories(new GlsOutputData(null,
-                        Response.getFailure("DB Failed to get stories")));
+                pres.putStories(null,
+                        Response.getFailure("DB Failed to get stories"));
             }
 
             // DB Successfully retrieved stories
@@ -94,9 +94,7 @@ public class GlsInteractor implements GlsInputBoundary{
                     }
                 }
 
-                GlsOutputData outputData1 = new GlsOutputData(out,
-                        Response.getSuccessful("Successfully got stories"));
-                pres.putStories(outputData1);
+                pres.putStories(out, Response.getSuccessful("Successfully got stories"));
             }
         }
     }

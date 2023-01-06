@@ -3,46 +3,48 @@ package adapters.presenters;
 import adapters.display_data.story_data.AuthorNameStringCreatorCommas;
 import adapters.display_data.story_data.DateFormatterBasic;
 import adapters.display_data.story_data.StoryDisplayData;
-import adapters.view_models.GlsViewModel;
+import adapters.view_models.StoryListViewModel;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import usecases.FullStoryDTO;
 import usecases.Response;
 import usecases.get_latest_stories.GlsOutputBoundary;
-import usecases.get_latest_stories.GlsOutputData;
+import usecases.get_most_liked_stories.GmlsOutputBoundary;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static usecases.Response.ResCode.SHUTTING_DOWN;
 
-public class GlsPresenter implements GlsOutputBoundary {
+public class StoryListPresenter implements GlsOutputBoundary, GmlsOutputBoundary {
 
-    private final GlsViewModel viewM;
+    private final StoryListViewModel viewM;
 
     /**
      * @param viewM Instance of the view model to write to
      */
-    public GlsPresenter(GlsViewModel viewM) { this.viewM = viewM; }
+    public StoryListPresenter(StoryListViewModel viewM) { this.viewM = viewM; }
 
     /**
      * Notify the view model with the retrieved
      * data.numToGet(nullable) stories
      */
     @Override
-    public void putStories(GlsOutputData data) {
-        if (data.stories() == null) {
-            viewM.getResponseAwaitable().set(data.res());
+    public void putStories(@Nullable List<FullStoryDTO> storyDTOS, @NotNull Response res) {
+        if (storyDTOS == null) {
+            viewM.getResponseAwaitable().set(res);
         } else {
             // Convert to StoryDisplayData
             List<StoryDisplayData> stories = new ArrayList<>();
-            for (FullStoryDTO storyData : data.stories()) {
+            for (FullStoryDTO storyData : storyDTOS) {
                 stories.add(StoryDisplayData.fromFullStoryDTO(
-                        storyData, "No Title", new AuthorNameStringCreatorCommas(),
-                        new DateFormatterBasic()
+                        storyData, Constants.NO_TITLE_STORY_PLACEHOLDER,
+                        new AuthorNameStringCreatorCommas(), new DateFormatterBasic()
                 ));
             }
 
             viewM.getStoriesAwaitable().set(stories);
-            viewM.getResponseAwaitable().set(data.res());
+            viewM.getResponseAwaitable().set(res);
         }
     }
 

@@ -14,7 +14,6 @@ import usecases.Response;
 import usecases.StoryRepoData;
 import usecases.TitleRepoData;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -107,7 +106,7 @@ public class StoryController {
         List<Story> finalStories = new ArrayList<>();
 
         if (storiesToGet.equals("liked")) {
-            GmlsViewModel gmlsViewM = v.gmlsController.getMostLikedStories(0, 100);
+            StoryListViewModel gmlsViewM = v.gmlsController.getMostLikedStories(0, 100);
 
             res = gmlsViewM.getResponseAwaitable().await();
             stories = gmlsViewM.getStoriesAwaitable().get();

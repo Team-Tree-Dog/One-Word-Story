@@ -1,11 +1,15 @@
 package adapters.view_models;
 
-import usecases.StoryRepoData;
+import adapters.display_data.story_data.StoryDisplayData;
 import java.util.List;
 
-public class GmlsViewModel extends ResponseViewModel {
+/**
+ * View model which outputs a list of StoryDisplayData. Used by Gls, Gmls, and
+ * any future story retrieval use case
+ */
+public class StoryListViewModel extends ResponseViewModel {
 
-    private final Awaitable<List<StoryRepoData>> stories = new Awaitable<>();
+    private final Awaitable<List<StoryDisplayData>> stories = new Awaitable<>();
 
     /**
      * Get this object for both setting and getting purposes, from different threads.
@@ -14,5 +18,5 @@ public class GmlsViewModel extends ResponseViewModel {
      * It is not thread safe if multiple threads mutate the same returned list.
      * @return The awaitable object wrapping the list of database rows for stories
      */
-    public Awaitable<List<StoryRepoData>> getStoriesAwaitable() { return stories; }
+    public Awaitable<List<StoryDisplayData>> getStoriesAwaitable() { return stories; }
 }
