@@ -63,7 +63,7 @@ public class GlsInteractor implements GlsInputBoundary{
             // DB Failed to get stories
             if (!res.isSuccess()) {
                 pres.putStories(null,
-                        Response.getFailure("DB Failed to get stories"));
+                        res.getRes());
             }
 
             // DB Successfully retrieved stories

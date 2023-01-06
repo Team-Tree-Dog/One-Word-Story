@@ -13,5 +13,6 @@ public interface GsbiGatewayStories {
      * a list of rows containing a single row representing the retrieved story. otherwise this extra
      * data is null
      */
-    RepoRes<StoryRepoData> getStoryById(@NotNull int storyId);
+    @NotNull
+    RepoRes<StoryRepoData> getStoryById(int storyId);
 }

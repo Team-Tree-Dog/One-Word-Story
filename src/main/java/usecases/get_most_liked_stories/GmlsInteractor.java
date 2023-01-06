@@ -57,7 +57,7 @@ public class GmlsInteractor implements GmlsInputBoundary {
             // DB Has failed to get the stories
             if (!res.isSuccess()) {
                 pres.putStories(null,
-                        Response.getFailure("DB Failed to retrieve stories"));
+                        res.getRes());
             }
 
             // DB Has gotten the stories

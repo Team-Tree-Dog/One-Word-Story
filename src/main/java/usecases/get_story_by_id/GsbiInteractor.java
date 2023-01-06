@@ -1,9 +1,9 @@
 package usecases.get_story_by_id;
 
-import usecases.InterruptibleThread;
-import usecases.RepoRes;
-import usecases.StoryRepoData;
-import usecases.ThreadRegister;
+import usecases.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GsbiInteractor implements GsbiInputBoundary {
 
@@ -36,7 +36,17 @@ public class GsbiInteractor implements GsbiInputBoundary {
             RepoRes<StoryRepoData> repoData = storyRepo.getStoryById(storyId);
 
             if (!repoData.isSuccess()) {
-                pres.putStories(null, ); //TODO: Pass repo fail code??
+                pres.putStories(null, repoData.getRes());
+            } else {
+                StoryRepoData story = repoData.getRows().get(0);
+
+                RepoRes<String> titleRepoData = titlesRepo.getMostUpvotedStoryTitle(storyId);
+
+                List<FullStoryDTO> outList = new ArrayList<>();
+                outList.add(new FullStoryDTO(
+                        titleRepoData.isSuccess() ? titleRepoData.getRows().get(0) : null, story));
+
+                pres.putStories(outList, Response.getSuccessful("Story retrieved successfully"));
             }
         }
     }
