@@ -91,5 +91,6 @@ This project must be run in `Java 17`
 4. *Multiple Public Lobbies and Matchmaking Settings:* Settings can be selected and sent to the server when joining a public lobby so that you are sorted into a lobby with those desired settings. Weekly Topic. Join a public lobby where the topic is the “weekly topic”. These stories will be filed separately when complete and there will be a “best weekly topic story” vote.
 5. *Lobby Restoration:* Constantly save lobby information to the repository so that if the server ever crashes, previously active lobbies could be restored. Obviously the players would all have been disconnected if the server crashed. We’d need to decide the exact protocol.
 6. *Comment Replies:* As the title implies, comments may be replied to!
+7. *Website Rework* A restructuring of the current website's design to make it more intuitive and appealing.
 
 
