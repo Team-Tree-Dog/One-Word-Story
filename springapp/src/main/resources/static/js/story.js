@@ -1,11 +1,3 @@
-function myFunction(){
-    let data = "";
-    let comment = document.getElementById("userComment").value
-    let guest_name = document.getElementById("userName").value
-
-    return comment+guest_name
-}
-
 function addVote(e){
     let count = Number(e.nextElementSibling.innerText) + 1;
     e.nextElementSibling.innerText = count;

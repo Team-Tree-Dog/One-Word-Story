@@ -1,6 +1,10 @@
 package com.example.springapp.controllers;
 
+import adapters.display_data.comment_data.CommentDisplayData;
+import adapters.display_data.comment_data.CommentDisplayDataBuilder;
 import adapters.display_data.story_data.StoryDisplayData;
+import adapters.display_data.title_data.SuggestedTitleDisplayData;
+import adapters.display_data.title_data.SuggestedTitleDisplayDataBuilder;
 import adapters.view_models.*;
 import com.example.springapp.SpringApp;
 import frameworks_drivers.views.CoreAPI;
@@ -10,93 +14,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import usecases.CommentRepoData;
 import usecases.Response;
-import usecases.StoryRepoData;
-import usecases.TitleRepoData;
 
 import java.util.*;
 
 @Controller
 public class StoryController {
 
-    private static class Comment {
-
-        private String username;
-        private String comment;
-
-        public Comment() {
-
-        }
-
-        public Comment(String username, String comment) {
-            this.username = username;
-            this.comment = comment;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getComment() {
-            return comment;
-        }
-
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-        public void setComment(String comment) {
-            this.comment = comment;
-        }
-    }
-
-    private static class Suggestion {
-
-        private String suggestedTitle;
-        private int count;
-
-        private Long id;
-
-        public Suggestion(String suggestedTitle, int count, long id) {
-            this.suggestedTitle = suggestedTitle;
-            this.count = count;
-            this.id = id;
-        }
-
-        public Suggestion() {
-        }
-
-        public String getSuggestedTitle() {
-            return suggestedTitle;
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        public void setSuggestedTitle(String suggestedTitle) {
-            this.suggestedTitle = suggestedTitle;
-        }
-
-        public void setCount(int count) {
-            this.count = count;
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-    }
-
     @GetMapping("/")
     public String index(Model model,
                         @RequestParam(name="get", defaultValue="latest") String storiesToGet )
             throws InterruptedException {
-
         CoreAPI v = SpringApp.coreAPI;
         System.out.println("Get /");
 
@@ -122,45 +50,39 @@ public class StoryController {
     }
 
     @GetMapping("/story-{id}")
-    public String story(@PathVariable Long id, Model model,
+    public String story(@PathVariable int id, Model model,
                         @RequestParam(name="isfail", defaultValue="false") String isfail,
                         @RequestParam(name="isfailTitle", defaultValue="false") String isfailTitle,
-                        @RequestParam(name="message", defaultValue=".") String mess) throws InterruptedException {
+                        @RequestParam(name="message", defaultValue=".") String mess
+    ) throws InterruptedException {
         CoreAPI v = SpringApp.coreAPI;
+        System.out.println("Get /story-"+id);
 
-        StoryListViewModel gsbiViewM = v.gsbiController.getStoryById(id.intValue());
-        GatViewModel gatViewM = v.gatController.getAllTitles(id.intValue());
-        GscViewModel gscViewM = v.gscController.getStoryComments(id.intValue());
+        StoryListViewModel gsbiViewM = v.gsbiController.getStoryById(id);
+        GatViewModel gatViewM = v.gatController.getAllTitles(id);
+        GscViewModel gscViewM = v.gscController.getStoryComments(id);
 
         Response gatRes = gatViewM.getResponseAwaitable().await();
         Response gsbiRes = gsbiViewM.getResponseAwaitable().await();
         Response gscRes = gscViewM.getResponseAwaitable().await();
 
         List<StoryDisplayData> stories = gsbiViewM.getStoriesAwaitable().get();
-        List<TitleRepoData> titles = gatViewM.getSuggestedTitlesAwaitable().get();
-        List<CommentRepoData> comments = gscViewM.getCommentsAwaitable().get();
+        List<SuggestedTitleDisplayData> titles = gatViewM.getSuggestedTitlesAwaitable().get();
+        List<CommentDisplayData> comments = gscViewM.getCommentsAwaitable().get();
 
         if (gsbiRes.getCode() == Response.ResCode.SUCCESS &&
             gatRes.getCode() == Response.ResCode.SUCCESS &&
             gscRes.getCode() == Response.ResCode.SUCCESS) {
             assert titles != null && stories != null && comments != null;
 
-            List<Comment> newComments = new ArrayList<>();
-            List<Suggestion> suggestions = new ArrayList<>();
-
-            for (TitleRepoData t : titles) {
-                suggestions.add(new Suggestion(t.getTitle(), t.getUpvotes(), t.getSuggestionId()));
-            }
-
-            for (CommentRepoData c : comments) {
-                newComments.add(new Comment(c.getDisplayName(), c.getContent()));
-            }
-
             model.addAttribute("story", stories.get(0));
 
-            model.addAttribute("comments", newComments);
-            model.addAttribute("suggestions", suggestions);
-            model.addAttribute("comment", new Comment());
+            model.addAttribute("comments", comments);
+            model.addAttribute("suggestions", titles);
+
+            // Empty objects, will be populated by spring form submission
+            model.addAttribute("commentBuilder", new CommentDisplayDataBuilder());
+            model.addAttribute("titleBuilder", new SuggestedTitleDisplayDataBuilder());
 
             model.addAttribute("isfail", Boolean.parseBoolean(isfail));
             model.addAttribute("isfailTitle", Boolean.parseBoolean(isfailTitle));
@@ -186,16 +108,18 @@ public class StoryController {
     }
 
     @PostMapping("comment/story/{id}")
-    public String comment(@RequestParam("id") String id, Comment comment) throws InterruptedException {
+    public String comment(@PathVariable int id,
+                          @ModelAttribute CommentDisplayDataBuilder commentBuilder
+    ) throws InterruptedException {
         CoreAPI v = SpringApp.coreAPI;
+        System.out.println("Post /comment/story/" + id);
+        CommentDisplayData comment = commentBuilder.build();
 
-        long longId = Long.parseLong(id);
-        System.out.printf("Received comment for story " + longId + '\n');
-        System.out.printf("The username: " + comment.username + '\n');
-        System.out.printf("The comment: " + comment.comment + '\n');
+        System.out.println("Received comment for story " + id);
+        System.out.println("The username: " + comment.displayName());
+        System.out.println("The comment: " + comment.content());
 
-        CagViewModel viewM = v.cagController.commentAsGuest(comment.username, comment.comment,
-                Integer.parseInt(id));
+        CagViewModel viewM = v.cagController.commentAsGuest(comment.displayName(), comment.content(), id);
 
         Response res = viewM.getResponseAwaitable().await();
 
@@ -210,14 +134,17 @@ public class StoryController {
     }
 
     @PostMapping("suggest-title/story/{id}")
-    public String suggestTitle(@RequestParam("id") String id,
-                               @RequestParam(name="suggestedTitle") String suggestedTitle) throws InterruptedException {
-        System.out.println("Received suggest title request story " + id + '\n');
-        System.out.println("Suggested title: " + suggestedTitle + '\n');
-
+    public String suggestTitle(@PathVariable int id,
+                               @ModelAttribute SuggestedTitleDisplayDataBuilder builder
+    ) throws InterruptedException {
         CoreAPI v = SpringApp.coreAPI;
+        System.out.println("Post suggest-title/story/" + id);
+        SuggestedTitleDisplayData titleData = builder.build();
 
-        StViewModel viewM = v.stController.suggestTitle(Integer.parseInt(id), suggestedTitle);
+        System.out.println("Received suggest title request story " + id);
+        System.out.println("Suggested title: " + titleData.title());
+
+        StViewModel viewM = v.stController.suggestTitle(id, titleData.title());
 
         Response res = viewM.getResponseAwaitable().await();
 
@@ -231,78 +158,37 @@ public class StoryController {
         return "redirect:/story-" + id + urlBuilder.toUriString();
     }
 
-    @PostMapping("upvote-suggestion/suggestion/{id}")
+    @PostMapping("upvote-suggestion/suggestion")
     public String upvoteSuggestedTitle(@RequestParam("id") String title,
-                                       @RequestParam("storyId") String storyId) throws InterruptedException {
+                                       @RequestParam("storyId") String storyId
+    ) throws InterruptedException {
         CoreAPI v = SpringApp.coreAPI;
+        System.out.println("Post upvote-suggestion/suggestion/" + title);
 
         UtViewModel utViewM = v.utController.upvoteTitle(Integer.parseInt(storyId), title);
 
-        Thread.sleep(500);
+        utViewM.getResponseAwaitable().await();
 
-        // We will ignore the response. If upvoting fails, we wont display anything
+        // We will ignore the response. If upvoting fails, we won't display anything
 
         System.out.println("Received upvote suggested title : " + title + '\n');
 
         return "redirect:/story-" + storyId;
     }
 
-
     @PostMapping("like/story/{id}")
-    public String like(@RequestParam("id") String id) throws InterruptedException {
+    public String like(
+            @PathVariable int id
+    ) throws InterruptedException {
         System.out.println("Received like request for story " + id);
+        System.out.println("Post like/story/" + id);
 
         CoreAPI v = SpringApp.coreAPI;
 
-        LsViewModel viewM = v.lsController.likeStory(Integer.parseInt(id));
+        LsViewModel viewM = v.lsController.likeStory(id);
 
-        Thread.sleep(500);
+        viewM.getResponseAwaitable().await();
 
         return "redirect:/story-" + id;
     }
-        /*
-    ----------------
-     */
-
-    // There is a strange bug. If you replace story-{id} with story/{id}, the css will not be loaded
-//    @GetMapping("/story-{id}")
-//    public String story(@PathVariable Long id, Model model) {
-//        model.addAttribute("storyId", id);
-//        model.addAttribute("storyTitle", storyTitles.get(id.intValue()));
-//        model.addAttribute("content", storyContent.get(id.intValue()));
-//        List<Comment> comments = storyComments.get(id);
-//        List<Suggestion> suggestions = suggestedTitles.get(id);
-//        model.addAttribute("comments", comments);
-//        model.addAttribute("suggestions", suggestions);
-//        model.addAttribute("comment", new Comment());
-//        return "story";
-//    }
-//
-//
-////    // There is a strange bug. If you replace story-{id} with story/{id}, the css will not be loaded
-//    @PostMapping("comment/story/{id}")
-//    public String comment(@RequestParam("id") String id, Comment comment) {
-//        long longId = Long.parseLong(id);
-//        System.out.printf("Received comment for story " + longId + '\n');
-//        System.out.printf("The username: " + comment.username + '\n');
-//        System.out.printf("The comment: " + comment.comment + '\n');
-//        return "redirect:/story-" + id;
-//    }
-//
-////    // There is a strange bug. If you replace story-{id} with story/{id}, the css will not be loaded
-//
-//
-//    @PostMapping("suggest-title/story/{id}")
-//    public String suggestTitle(@RequestParam("id") String id, @RequestBody String suggestedTitle) {
-//        System.out.println("Received suggest title request story " + id + '\n');
-//        System.out.println("Suggested title: " + suggestedTitle + '\n');
-//        return "redirect:/story-" + id;
-//    }
-//
-////    @PostMapping("upvote-suggestion/suggestion/{id}")
-//    public String upvoteSuggestedTitle(@RequestParam("id") String id, @RequestParam("storyId") String storyId) {
-//        System.out.println("Received upvote suggested title request with id: " + id + '\n');
-//        return "redirect:/story-" + storyId;
-//    }
-
 }

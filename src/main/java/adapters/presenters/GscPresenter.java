@@ -1,10 +1,13 @@
 package adapters.presenters;
 
+import adapters.display_data.comment_data.CommentDisplayData;
 import adapters.view_models.GscViewModel;
+import usecases.CommentRepoData;
 import usecases.Response;
 import usecases.get_story_comments.GscOutputBoundary;
 import usecases.get_story_comments.GscOutputData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static usecases.Response.ResCode.SHUTTING_DOWN;
@@ -29,7 +32,13 @@ public class GscPresenter implements GscOutputBoundary {
         if (data.getComments() == null) {
             viewM.getResponseAwaitable().set(data.getRes());
         } else {
-            viewM.getCommentsAwaitable().set(data.getComments());
+            // Convert to display data
+            List<CommentDisplayData> displayDataList = new ArrayList<>();
+            for (CommentRepoData comment: data.getComments()) {
+                displayDataList.add(CommentDisplayData.fromCommentRepoData(comment));
+            }
+
+            viewM.getCommentsAwaitable().set(displayDataList);
             viewM.getResponseAwaitable().set(data.getRes());
         }
     }

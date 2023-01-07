@@ -26,6 +26,8 @@ public record StoryDisplayData(int id,
     /**
      * @param storyDTO DTO object
      * @param titlePlaceholder Title string to display if title doesn't exist
+     * @param authorNameStringCreator method on how to concat the author list into a string
+     * @param dateFormatter method on how to convert the publish date to a string
      * @return the StoryDisplayData converted from the FullStoryDTO based on provided implementations
      */
     public static StoryDisplayData fromFullStoryDTO(FullStoryDTO storyDTO,
