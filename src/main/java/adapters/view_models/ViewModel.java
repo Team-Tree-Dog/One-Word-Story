@@ -10,16 +10,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public abstract class ViewModel {
 
     protected Lock lock;
-    protected Condition condition;
 
     public ViewModel() {
         lock = new ReentrantLock();
-        condition = lock.newCondition();
-    }
-
-    public void awaitChange() throws InterruptedException {
-        lock.lock();
-        condition.await();
-        lock.unlock();
     }
 }

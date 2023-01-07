@@ -3,6 +3,7 @@ package usecases.pull_game_ended;
 import entities.Player;
 import entities.statistics.AllPlayerNamesStatistic;
 import entities.statistics.PerPlayerIntStatistic;
+import org.example.Log;
 import usecases.Response;
 import util.RecursiveSymboledIntegerHashMap;
 
@@ -41,10 +42,14 @@ public class PgeInteractor implements PgeInputBoundary {
         ---------------
          */
         AllPlayerNamesStatistic authorNames = data.getAuthorNamesStat();
-        // We currently don't do anything on fail. If repo returns a fail code, then the
+        // We currently don't do anything on fail except print. If repo returns a fail code, then the
         // story has failed to save so "oh well"
-        repo.saveStory(data.getStoryString(), Instant.now().getEpochSecond(),
+        Response res = repo.saveStory(data.getStoryString(), Instant.now().getEpochSecond(),
                 authorNames.getStatData());
+
+        // Show message
+        if (res.getCode() == Response.ResCode.SUCCESS) Log.useCaseMsg("PGE", "Saved Story to DB!");
+        else Log.useCaseMsg("PGE ERROR", "Failed to save story: " + res);
 
         /*
         Below code takes care of output
@@ -79,7 +84,7 @@ public class PgeInteractor implements PgeInputBoundary {
             // Pass id, display name, and array-converted rec map stat data accumulation
             playerStatDTOs[i] = new PlayerStatisticDTO(
                     p.getPlayerId(), p.getDisplayName(),
-                    playerToStats.get(p).toArray(new RecursiveSymboledIntegerHashMap[0])
+                    playerToStats.getOrDefault(p, new ArrayList<>()).toArray(new RecursiveSymboledIntegerHashMap[0])
             );
         }
 

@@ -21,8 +21,8 @@ public class WordFactoryTests {
         }
 
         @Override
-        public String isValid(String word) {
-            return word;
+        public String[] isValid(String word) {
+            return new String[]{word};
         }
     }
 
@@ -36,7 +36,7 @@ public class WordFactoryTests {
         }
 
         @Override
-        public String isValid(String word) {
+        public String[] isValid(String word) {
             return null;
         }
     }

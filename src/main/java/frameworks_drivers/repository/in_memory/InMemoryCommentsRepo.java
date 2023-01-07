@@ -1,7 +1,6 @@
 package frameworks_drivers.repository.in_memory;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import usecases.CommentRepoData;
 import usecases.RepoRes;
 import usecases.Response;
@@ -99,10 +98,12 @@ public class InMemoryCommentsRepo implements GscGatewayComments, CagGatewayComme
 
         // Convert to CommentRepoData objects
         for (CommentsTableRow row : commentsTable) {
-            res.addRow(new CommentRepoData(
-                    row.getCommentId(), row.getStoryId(),
-                    row.getDisplayName(), row.getComment()
-            ));
+            if (row.getStoryId() == storyId) {
+                res.addRow(new CommentRepoData(
+                        row.getCommentId(), row.getStoryId(),
+                        row.getDisplayName(), row.getComment()
+                ));
+            }
         }
         lock.unlock();
 

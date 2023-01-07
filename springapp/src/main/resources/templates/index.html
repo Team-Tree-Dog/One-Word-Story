@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/index.js"> </script>
+    <title>One Word Story</title>
+</head>
+
+<body>
+    <div id="name_logo">
+        <h1>One Word Story</h1>
+        <img src="media/logo.png" alt="One Word Story Logo">
+    </div>
+
+    <div class="container">
+        <div class="wrap">
+            <form action="/play">
+                <button class="button">Play</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="wrap">
+        <label class="switch">
+            <input type="checkbox" id="togBtn">
+            <div class="slider round">
+                <span onclick="location.href = '/?get=latest'" id="latest">Latest</span>
+                <span onclick="location.href = '/?get=liked'" id="liked">Most Liked</span>
+            </div>
+        </label>
+    </div>
+
+    <div id="all_stories">
+
+
+        <div class="column">
+            <div th:each="story: ${stories}" class="story" id="story1">
+                <a th:href="@{/story-{id}(id = ${story.id()})}">
+                    <h2 th:text="${story.title()}" ></h2>
+                </a>
+                <span style="color:darkblue" th:text="'&#9829; ' + ${story.likes()}"> </span>
+                <p th:text="'Published: ' + ${story.publishDateString()}"></p>
+                <h4>Authors: <span th:text="${story.authorString()}" > </span> </h4>
+                <p th:text="${story.content()}">  </p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

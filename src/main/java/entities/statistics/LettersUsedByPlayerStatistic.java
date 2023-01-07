@@ -79,13 +79,17 @@ public class LettersUsedByPlayerStatistic implements PerPlayerIntStatistic {
             // Loops through letters
             for (String letter: letterCountsOld.keySet()) {
                 // Adds a new base case recursive map with the count value and letter as key
-                letterCounts.put(letter, new RecursiveSymboledIntegerHashMap(
+                letterCounts.put(letter.toUpperCase(Locale.ENGLISH), new RecursiveSymboledIntegerHashMap(
                         letterCountsOld.get(letter)
                 ));
             }
 
+            // Adds outer title
+            RecursiveSymboledIntegerHashMap out = new RecursiveSymboledIntegerHashMap();
+            out.put("Letters Used", letterCounts);
+
             // Maps this recursive map to the player
-            output.put(p, letterCounts);
+            output.put(p, out);
         }
 
         return output;

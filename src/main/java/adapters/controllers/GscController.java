@@ -21,11 +21,12 @@ public class GscController {
      * Takes a story id and retrieves all comments made on the respective story
      * @param storyId id of the story go get comments from
      */
-    public void getStoryComments(int storyId) {
+    public GscViewModel getStoryComments(int storyId) {
 
         GscInputData inputData = new GscInputData(storyId);
         GscViewModel viewM = new GscViewModel();
         GscPresenter pres = new GscPresenter(viewM);
         inputBoundary.getStoryComments(inputData, pres);
+        return viewM;
     }
 }

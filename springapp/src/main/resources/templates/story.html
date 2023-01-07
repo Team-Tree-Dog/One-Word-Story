@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="en">
+<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lobster" />
+<link rel="stylesheet" href="css/story.css">
+
+<head>
+    <meta charset="UTF-8">
+
+    <script src="js/story.js"> </script>
+    <script src="https://kit.fontawesome.com/f6dcf461c1.js" crossorigin="anonymous"></script>
+    <title th:text="${story.title()}"></title>
+</head>
+
+<body>
+    <img src="media/logo.png" alt="One Word Story Logo" width="50px" height="50px" onclick="location.href = '/'"></a>
+
+    <div class="row">
+
+        <div class="column">
+            <br>
+            <h3> Like the Story </h3>
+            <div class="center">
+                <form method="POST" th:action="@{like/story/{id}(id = ${story.id()})}">
+                    <Button type="submit" onclick="Toggle1()" id="btn1" class="btn"><i class="fas fa-heart"></i></Button>
+                </form>
+            </div>
+
+            <br><br>
+            <h3>< Vote for Title ></h3>
+            <div id="all_votes">
+                <form method="POST" th:action="@{upvote-suggestion/suggestion(id = ${suggestion.title()},
+                storyId = ${story.id()})}"
+                        th:each="suggestion: ${suggestions}" class="titles" id="title1">
+                    <p th:text="${suggestion.title()}"></p>
+                    <br>
+                    <button type="submit" onclick="addVote(this)">Upvote</button>
+                    <span th:text="${suggestion.numUpvotes()}" class="count"></span>
+                </form>
+                <div th:if="${#lists.isEmpty(suggestions)}" class="all_votes">
+                    <div class="titles">
+                        Be the first to suggest the title!
+                    </div>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="center">
+                <form method="POST" th:object="${titleBuilder}"
+                      th:action="@{suggest-title/story/{id}(id = ${story.id()})}" id="add_title">
+                    <input th:field="*{title}" id="title_name" type="text" name="suggestedTitle" placeholder="Suggest your own...">
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+            <p style="color:darkred" th:if="${isfailTitle}" th:text="${message}"> </p>
+        </div>
+
+        <div class="column2">
+
+            <h1 th:text="${story.title()}" id="heading"></h1>
+            <script>addTitle()</script>
+
+            <p th:text="${story.content()}" class="story">
+            </p>
+
+            <h3>Comments</h3>
+
+            <div id="all_comments">
+
+                <div th:each="comment: ${comments}" class="comments" id="comment1">
+                    <img src="media/user.jpeg" class="user_profile" alt="not available">
+                    <p  class="comment">
+                        <b th:text="${comment.displayName()}"></b> <br>
+                    <p th:text="${comment.content()}"></p>
+                    </p>
+                </div>
+                <div th:if="${#lists.isEmpty(comments)}" class="comments">
+                    <p class="comment">
+                        Be the first to add a comment!
+                    </p>
+                </div>
+            </div>
+
+            <h3>Leave a Comment</h3>
+
+            <div class="center">
+                <form method="POST" th:object="${commentBuilder}"
+                      th:action="@{comment/story/{id}(id = ${story.id()})}" id="comment-story-form">
+                    <!--The placeholder works only when the tag is on one line !-->
+                    <textarea placeholder="Your comment" th:field="*{content}" id ="userComment" rows="5" cols="42" name="comment"></textarea>
+                    <br>
+                    Comment as Guest: <input id="userName" th:field="*{displayName}" type="text" name="guest_name" placeholder="Enter a Guest Name...">
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+            <p style="color:darkred" th:if="${isfail}" th:text="${message}"> </p>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

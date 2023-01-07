@@ -1,5 +1,7 @@
 package usecases;
 
+import org.example.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -59,14 +61,20 @@ public class ThreadRegister {
      * the server will never be shut down
      */
     public void stopThreads() {
+        Log.useCaseMsg("SS", "Wants SHUTDOWN lock");
         shuttingDownLock.lock();
+        Log.useCaseMsg("SS", "Got SHUTDOWN lock");
         shuttingDown = true;
         for (InterruptibleThread thread: runningThreads) {
+            Log.useCaseMsg("SS", "Waiting on block...");
             while (thread.blockInterrupt.get()) {
                 Thread.onSpinWait();
             }
+            Log.useCaseMsg("SS", "Finished waiting on block");
             thread.interrupt();
+            Log.useCaseMsg("SS", "Thread Interrupted Successfully");
         }
         shuttingDownLock.unlock();
+        Log.useCaseMsg("SS", "Released SHUTDOWN lock");
     }
 }

@@ -2,14 +2,17 @@ package usecases.get_latest_stories;
 
 import usecases.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Interactor for Get Latest Stories use-case
  */
 public class GlsInteractor implements GlsInputBoundary{
 
-    private final GlsGatewayStory repo;
+    private final GlsGatewayStory storyRepo;
+    private final GlsGatewayTitles titlesRepo;
 
     /**
      * The ThreadRegister that keeps track of all the running use case threads
@@ -19,10 +22,11 @@ public class GlsInteractor implements GlsInputBoundary{
 
     /**
      * Constructor for GlsInteractor
-     * @param repo GlsGateway used by this interactor
+     * @param storyRepo GlsGateway used by this interactor
      */
-    public GlsInteractor(GlsGatewayStory repo, ThreadRegister register) {
-        this.repo = repo;
+    public GlsInteractor(GlsGatewayStory storyRepo, GlsGatewayTitles titlesRepo, ThreadRegister register) {
+        this.storyRepo = storyRepo;
+        this.titlesRepo = titlesRepo;
         this.register = register;
     }
 
@@ -54,12 +58,12 @@ public class GlsInteractor implements GlsInputBoundary{
 
         @Override
         public void threadLogic() {
-            RepoRes<StoryRepoData> res = repo.getAllStories();
+            RepoRes<StoryRepoData> res = storyRepo.getAllStories();
 
             // DB Failed to get stories
             if (!res.isSuccess()) {
-                pres.putStories(new GlsOutputData(null,
-                        Response.getFailure("DB Failed to get stories")));
+                pres.putStories(null,
+                        res.getRes());
             }
 
             // DB Successfully retrieved stories
@@ -69,22 +73,29 @@ public class GlsInteractor implements GlsInputBoundary{
 
                 Arrays.sort(stories);
 
+                // If numToGet is set, then trim the stories list
                 if (data.getNumToGet() != null && data.getNumToGet() <= stories.length){
 
                     StoryRepoData[] stories2 = new StoryRepoData[data.getNumToGet()];
+
                     if (data.getNumToGet() >= 0) System.arraycopy(stories, 0, stories2, 0, data.getNumToGet());
-                    GlsOutputData outputData2 = new GlsOutputData(Arrays.asList(stories2),
-                            Response.getSuccessful("Succesfully got stories"));
-                    pres.putStories(outputData2);
+
+                    stories = stories2;
                 }
-                else{
-                    GlsOutputData outputData1 = new GlsOutputData(Arrays.asList(stories),
-                            Response.getSuccessful("Successfully got stories"));
-                    pres.putStories(outputData1);
+
+                // Get titles for each story and convert to FullStoryDTO
+                List<FullStoryDTO> out = new ArrayList<>();
+                for (StoryRepoData storyData : stories) {
+                    RepoRes<String> titleData = titlesRepo.getMostUpvotedStoryTitle(storyData.getStoryId());
+                    if (titleData.isSuccess()) {
+                        out.add(new FullStoryDTO(titleData.getRows().get(0), storyData));
+                    } else {
+                        out.add(new FullStoryDTO(null, storyData));
+                    }
                 }
+
+                pres.putStories(out, Response.getSuccessful("Successfully got stories"));
             }
-
-
         }
     }
 }

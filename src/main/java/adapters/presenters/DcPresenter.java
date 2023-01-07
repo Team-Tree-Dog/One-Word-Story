@@ -1,6 +1,8 @@
 package adapters.presenters;
 
+import adapters.display_data.not_ended_display_data.GameDisplayData;
 import adapters.view_models.DcViewModel;
+import org.example.Log;
 import usecases.Response;
 import usecases.disconnecting.DcOutputBoundary;
 import usecases.disconnecting.DcOutputData;
@@ -26,11 +28,17 @@ public class DcPresenter implements DcOutputBoundary {
      */
     @Override
     public void hasDisconnected(DcOutputData data) {
-        viewM.setResponse(data.getResponse());
+        Log.useCaseMsg("DC Presenter", data.getResponse() + " with player ID " + data.getPlayerId());
+        if (data.getGameData() != null) {
+            Log.useCaseMsg("DC Presenter", data.getGameData() + " with player ID " + data.getPlayerId());
+            viewM.getGameDataAwaitable().set(GameDisplayData.fromGameDTO(data.getGameData()));
+        }
+        viewM.getResponseAwaitable().set(data.getResponse());
     }
 
     @Override
     public void outputShutdownServer() {
-        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
+        Log.useCaseMsg("DC", "Presenter outputShutdownServer");
+        viewM.getResponseAwaitable().set(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

@@ -5,6 +5,7 @@ import entities.Player;
 import entities.PlayerPoolListener;
 import entities.games.Game;
 import exceptions.EntityException;
+import org.example.Log;
 import usecases.GameDTO;
 import usecases.InterruptibleThread;
 import usecases.Response;
@@ -92,16 +93,20 @@ public class JplInteractor implements JplInputBoundary {
          * Core logic of the use case
          */
         @Override
-        public void threadLogic() {
+        public void threadLogic() throws InterruptedException {
             try {
                 // It is better to always lock the whole critical section (a useful rule of thumb)
+                Log.useCaseMsg("JPL", "Wants JPL lock " + data.getId());
                 lock.lock();
+                Log.useCaseMsg("JPL", "Got JPL lock " + data.getId());
 
                 // Throws IdInUseException, code after runs if this line succeeded
                 Player player = lobbyManager.createNewPlayer(data.getDisplayName(), data.getId());
 
                 // Add player to matchmaking pool and subscribe to hear updates
+                Log.useCaseMsg("JPL", "Wants POOL");
                 lobbyManager.addPlayerToPool(player, this);
+                Log.useCaseMsg("JPL", "Got and Released POOL");
 
                 // Notifies presenter that player was successfully added to pool
                 pres.inPool(new JplOutputDataResponse(
@@ -109,16 +114,21 @@ public class JplInteractor implements JplInputBoundary {
                         player.getPlayerId()
                 ));
 
+                Log.useCaseMsg("JPL", "Awaiting Signal...");
                 // Block thread until an update is heard on the player in the pool
                 while (game == null && !hasCancelled) {
                     // Makes this waiting loop less CPU expensive
                     conditionVariable.await();
                 }
+                Log.useCaseMsg("JPL", "Got Signal!");
 
                 if (game != null) {
+                    Log.useCaseMsg("JPL", "Wants GAME lock");
                     JplInteractor.this.gameLock.lock();
+                    Log.useCaseMsg("JPL", "Got GAME lock");
                     GameDTO gameState = GameDTO.fromGame(game);
                     JplInteractor.this.gameLock.unlock();
+                    Log.useCaseMsg("JPL", "Released GAME lock");
 
                     pres.inGame(new JplOutputDataJoinedGame(
                             Response.getSuccessful("Player successfully joined a game"),
@@ -139,16 +149,9 @@ public class JplInteractor implements JplInputBoundary {
                                 // Response object with IdInUseException response code
                                 Response.fromException(e, e.getMessage()),
                                 data.getId()));
-            } catch (InterruptedException e) {
-                EntityException emptyException = new EntityException("");
-                pres.inPool(
-                        new JplOutputDataResponse(
-                                // Response object with IdInUseException response code
-                                Response.fromException(emptyException, e.getMessage()),
-                                data.getId()));
-            }
-            finally {
+            } finally {
                 lock.unlock();
+                Log.useCaseMsg("JPL", "Released JPL lock " + data.getId());
             }
         }
     }

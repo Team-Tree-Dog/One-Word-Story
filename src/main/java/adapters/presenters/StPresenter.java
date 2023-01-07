@@ -27,11 +27,11 @@ public class StPresenter implements StOutputBoundary {
      */
     @Override
     public void suggestTitleOutput(StOutputData data) {
-        viewM.setResponse(data.getRes());
+        viewM.getResponseAwaitable().set(data.getRes());
     }
 
     @Override
     public void outputShutdownServer() {
-        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
+        viewM.getResponseAwaitable().set(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

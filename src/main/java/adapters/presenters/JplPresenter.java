@@ -1,9 +1,9 @@
 package adapters.presenters;
 
-import adapters.display_data.not_ended_display_data.GameDisplayDataBuilder;
+import adapters.display_data.not_ended_display_data.GameDisplayData;
 import adapters.view_models.JplViewModel;
-import usecases.GameDTO;
-import usecases.PlayerDTO;
+import org.example.ANSI;
+import org.example.Log;
 import usecases.Response;
 import usecases.join_public_lobby.JplOutputBoundary;
 import usecases.join_public_lobby.JplOutputDataJoinedGame;
@@ -27,7 +27,11 @@ public class JplPresenter implements JplOutputBoundary {
      */
     @Override
     public void inPool(JplOutputDataResponse dataJoinedPool) {
-        viewM.setResponse(dataJoinedPool.getRes());
+        Log.sendMessage(ANSI.BLUE, "JPL", ANSI.LIGHT_BLUE,
+                "Presenter in pool for Player ID: " + dataJoinedPool.getPlayerId() + ", " +
+                        dataJoinedPool.getRes());
+        viewM.getResponseAwaitable().set(dataJoinedPool.getRes());
+        viewM.getPlayerIdAwaitable().set(dataJoinedPool.getPlayerId());
     }
 
     /**
@@ -37,14 +41,11 @@ public class JplPresenter implements JplOutputBoundary {
      */
     @Override
     public void inGame(JplOutputDataJoinedGame dataJoinedGame) {
-        GameDTO g = dataJoinedGame.getGameData();
-        GameDisplayDataBuilder builder = new GameDisplayDataBuilder();
-        for (PlayerDTO p : g.getPlayers()) {
-            builder.addPlayer(p.getPlayerId(), p.getDisplayName(),
-                    p.getPlayerId().equals(g.getCurrentTurnPlayerId()));
-        }
-        builder.setSecondsLeftInTurn(g.getSecondsLeftCurrentTurn()).setStoryString(g.getStory());
-        viewM.setGameDisplay(builder.build());
+        Log.sendMessage(ANSI.BLUE, "JPL", ANSI.LIGHT_BLUE,
+                "Presenter in game ply ID " + dataJoinedGame.getPlayerId() + ", " +
+                dataJoinedGame.getRes());
+
+        viewM.setGameDisplay(GameDisplayData.fromGameDTO(dataJoinedGame.getGameData()));
     }
 
     /**
@@ -54,11 +55,16 @@ public class JplPresenter implements JplOutputBoundary {
      */
     @Override
     public void cancelled(JplOutputDataResponse dataCancelled) {
+        Log.sendMessage(ANSI.BLUE, "JPL", ANSI.LIGHT_BLUE,
+                "Presenter cancelled from pool ply ID " + dataCancelled.getPlayerId() +
+                        ", " + dataCancelled.getRes());
         viewM.setCancelled();
     }
 
     @Override
     public void outputShutdownServer() {
-        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
+        Log.sendMessage(ANSI.BLUE, "JPL", ANSI.LIGHT_BLUE,
+                "Presenter outputShutdownServer");
+        viewM.getResponseAwaitable().set(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

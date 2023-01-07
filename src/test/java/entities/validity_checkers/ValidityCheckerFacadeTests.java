@@ -55,8 +55,9 @@ public class ValidityCheckerFacadeTests {
     @Timeout(1000)
     public void testNoPuncNoWord() {
         String inputWord = "";
-        String validifiedWord = v.isValid(inputWord);
-        assertEquals("", validifiedWord);
+        String[] validifiedWord = v.isValid(inputWord);
+        assertEquals("", validifiedWord[0]);
+        assertEquals(validifiedWord.length, 1);
     }
 
     /**
@@ -66,8 +67,9 @@ public class ValidityCheckerFacadeTests {
     @Timeout(1000)
     public void testNoPuncNoWordSpace() {
         String inputWord = " ";
-        String validifiedWord = v.isValid(inputWord);
-        assertEquals("", validifiedWord);
+        String[] validifiedWord = v.isValid(inputWord);
+        assertEquals("", validifiedWord[0]);
+        assertEquals(validifiedWord.length, 1);
     }
 
     /**
@@ -77,8 +79,9 @@ public class ValidityCheckerFacadeTests {
     @Timeout(1000)
     public void testNoPuncWord() {
         String inputWord = "word";
-        String validifiedWord = v.isValid(inputWord);
-        assertEquals("word", validifiedWord);
+        String[] validifiedWord = v.isValid(inputWord);
+        assertEquals("word", validifiedWord[0]);
+        assertEquals(validifiedWord.length, 1);
     }
 
     /**
@@ -88,8 +91,9 @@ public class ValidityCheckerFacadeTests {
     @Timeout(1000)
     public void testNoPuncWordWithSpaces() {
         String inputWord = "  word   ";
-        String validifiedWord = v.isValid(inputWord);
-        assertEquals("word", validifiedWord);
+        String[] validifiedWord = v.isValid(inputWord);
+        assertEquals("word", validifiedWord[0]);
+        assertEquals(validifiedWord.length, 1);
     }
 
     /**
@@ -99,8 +103,9 @@ public class ValidityCheckerFacadeTests {
     @Timeout(1000)
     public void testPuncWord() {
         String inputWord = "! word";
-        String validifiedWord = v.isValid(inputWord);
-        assertEquals("!word", validifiedWord);
+        String[] validifiedWord = v.isValid(inputWord);
+        assertEquals("word", validifiedWord[0]);
+        assertEquals("!", validifiedWord[1]);
     }
 
     /**
@@ -110,7 +115,8 @@ public class ValidityCheckerFacadeTests {
     @Timeout(1000)
     public void testPuncWordSpaces() {
         String inputWord = "    !   word  ";
-        String validifiedWord = v.isValid(inputWord);
-        assertEquals("!word", validifiedWord);
+        String[] validifiedWord = v.isValid(inputWord);
+        assertEquals("word", validifiedWord[0]);
+        assertEquals("!", validifiedWord[1]);
     }
 }

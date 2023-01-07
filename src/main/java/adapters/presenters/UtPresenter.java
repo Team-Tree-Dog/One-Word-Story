@@ -8,7 +8,7 @@ import usecases.upvote_title.UtOutputData;
 import static usecases.Response.ResCode.SHUTTING_DOWN;
 
 public class UtPresenter implements UtOutputBoundary {
-    private UtViewModel viewM;
+    private final UtViewModel viewM;
 
     /**
      * Constructor for the upvote title use case presenter. Takes in and sets the view model for this use case.
@@ -23,11 +23,11 @@ public class UtPresenter implements UtOutputBoundary {
      */
     @Override
     public void upvoteOutput(UtOutputData data){
-        viewM.setResponse(data.getRes());
+        viewM.getResponseAwaitable().set(data.getRes());
     }
 
     @Override
     public void outputShutdownServer(){
-        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
+        viewM.getResponseAwaitable().set(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

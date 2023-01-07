@@ -6,7 +6,8 @@ import java.util.Arrays;
 import java.util.*;
 
 public class GmlsInteractor implements GmlsInputBoundary {
-    private final GmlsGatewayStory repo;
+    private final GmlsGatewayStory storyRepo;
+    private final GmlsGatewayTitles titlesRepo;
 
     /**
      * The ThreadRegister that keeps track of all the running use case threads
@@ -17,10 +18,11 @@ public class GmlsInteractor implements GmlsInputBoundary {
     /**
      * Constructor for use case interactor
      *
-     * @param repo the repository from which the stories will be extracted
+     * @param storyRepo the repository from which the stories will be extracted
      */
-    public GmlsInteractor(GmlsGatewayStory repo, ThreadRegister register) {
-        this.repo = repo;
+    public GmlsInteractor(GmlsGatewayStory storyRepo, GmlsGatewayTitles titlesRepo, ThreadRegister register) {
+        this.storyRepo = storyRepo;
+        this.titlesRepo = titlesRepo;
         this.register = register;
     }
 
@@ -50,12 +52,12 @@ public class GmlsInteractor implements GmlsInputBoundary {
          */
         @Override
         public void threadLogic() {
-            RepoRes<StoryRepoData> res = repo.getAllStories();
+            RepoRes<StoryRepoData> res = storyRepo.getAllStories();
 
             // DB Has failed to get the stories
             if (!res.isSuccess()) {
-                pres.putStories(new GmlsOutputData(null,
-                        Response.getFailure("DB Failed to retrieve stories")));
+                pres.putStories(null,
+                        res.getRes());
             }
 
             // DB Has gotten the stories
@@ -63,8 +65,20 @@ public class GmlsInteractor implements GmlsInputBoundary {
                 StoryRepoData[] stories = res.getRows().toArray(new StoryRepoData[0]);
 
                 StoryRepoData[] outputStories = sortAndExtractStories(stories, this.data);
-                pres.putStories(new GmlsOutputData(Arrays.asList(outputStories),
-                        Response.getSuccessful("Stories successfully extracted")));
+
+                List<FullStoryDTO> fullStoryDTOs = new ArrayList<>();
+                for (StoryRepoData story: outputStories) {
+                    RepoRes<String> titleOut = titlesRepo.getMostUpvotedStoryTitle(story.getStoryId());
+
+                    fullStoryDTOs.add(new FullStoryDTO(
+                            titleOut.getRes().getCode() == Response.ResCode.SUCCESS ?
+                                    titleOut.getRows().get(0) : null,
+                            story
+                    ));
+                }
+
+                pres.putStories(fullStoryDTOs,
+                        Response.getSuccessful("Stories successfully extracted"));
             }
         }
 

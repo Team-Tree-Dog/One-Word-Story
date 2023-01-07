@@ -1,54 +1,17 @@
 package adapters.view_models;
 
-import org.jetbrains.annotations.Nullable;
-import usecases.Response;
-import usecases.TitleRepoData;
-
+import adapters.display_data.title_data.SuggestedTitleDisplayData;
 import java.util.List;
 
-public class GatViewModel extends ViewModel {
-    private List<TitleRepoData> stories = null;
-    private Response res = null;
+public class GatViewModel extends ResponseViewModel {
+    private final Awaitable<List<SuggestedTitleDisplayData>> suggestedTitles = new Awaitable<>();
 
-    public void setSuggestedTitles(List<TitleRepoData> data) {
-        lock.lock();
-        stories = data;
-        lock.unlock();
-    }
-
-    public void setResponse(Response response) {
-        lock.lock();
-        res = response;
-        condition.signal();
-        lock.unlock();
-    }
-
-    @Nullable
-    public List<TitleRepoData> getSuggestedTitles() {
-        List<TitleRepoData> out;
-        lock.lock();
-        out = stories;
-        lock.unlock();
-        return out;
-    }
-
-    @Nullable
-    public Response.ResCode getResponseCode() {
-        Response.ResCode out;
-        lock.lock();
-        if (res == null) { out = null;}
-        else { out = res.getCode(); }
-        lock.unlock();
-        return out;
-    }
-
-    @Nullable
-    public String getResponseMessage() {
-        String out;
-        lock.lock();
-        if (res == null) { out = null; }
-        else { out = res.getMessage(); }
-        lock.unlock();
-        return out;
-    }
+    /**
+     * Get this object for both setting and getting purposes, from different threads.
+     * <br><br>
+     * <b>Thread Safety: </b> The TitleRepoData object is read only, but the list is mutable.
+     * It is not thread safe if multiple threads mutate the same returned list.
+     * @return The awaitable object wrapping the list of database rows for suggested titles
+     */
+    public Awaitable<List<SuggestedTitleDisplayData>> getSuggestedTitlesAwaitable() { return suggestedTitles; }
 }

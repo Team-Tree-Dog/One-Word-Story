@@ -119,8 +119,8 @@ public class SwInteractorTests {
          * @return true
          */
         @Override
-        public String isValid(String word) {
-            return word;
+        public String[] isValid(String word) {
+            return new String[]{word};
         }
     }
 
@@ -139,7 +139,7 @@ public class SwInteractorTests {
          * @return false
          */
         @Override
-        public String isValid(String word) {
+        public String[] isValid(String word) {
             return null;
         }
     }

@@ -1,15 +1,20 @@
 package util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Used to store JSON-like data where the keys are always strings
  * and the values are always SymboledInteger
  */
-public class RecursiveSymboledIntegerHashMap {
+public class RecursiveSymboledIntegerHashMap implements Serializable {
 
     private final Map<String, RecursiveSymboledIntegerHashMap> map;
     private final SymboledInteger value;
@@ -89,5 +94,17 @@ public class RecursiveSymboledIntegerHashMap {
     @Nullable
     public Collection<RecursiveSymboledIntegerHashMap> values() {
         return map == null ? null : map.values();
+    }
+
+    public ObjectNode getJsonNode() throws JsonProcessingException {
+        if (isBaseCase()) {
+            return value.getJsonNode();
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode root = mapper.createObjectNode();
+        for (String k: map.keySet()) {
+            root.set(k, map.get(k).getJsonNode());
+        }
+        return root;
     }
 }

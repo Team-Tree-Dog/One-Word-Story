@@ -1,38 +1,33 @@
 package adapters.view_models;
 
 import adapters.display_data.GameEndPlayerDisplayData;
-import adapters.display_data.not_ended_display_data.GameDisplayData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
 public class PgeViewModel extends ViewModel {
 
-    private GameEndPlayerDisplayData[] gameEndPlayerStats = null;
+    private PgeCallback callback = null;
 
-    public void setCurrentGameState(@NotNull GameEndPlayerDisplayData[] d) {
+    public void setEndGameData(@NotNull Map<String, GameEndPlayerDisplayData> d) {
         lock.lock();
-        gameEndPlayerStats = d;
-        condition.signal();
+        if (callback != null) callback.onGameEnd(d);
         lock.unlock();
     }
 
     /**
-     * null if a game has never ended previously.
-     * Gets set each time a game ends but never resets to null.
-     * View must listen for each time it gets updated to know a game has just ended
+     * Inject a callback which will be called from now on each time a game ends.
+     * Injecting a new callback will override the old one. Passing null will
+     * erase the old callback. The callback will be called for all future
+     * game end events after injection, but for none of the previous ones.
+     * <br><br>
+     * Thread Safe. This method engages the view model locks
+     * @param callback The method you'd like executed each time a game ends
      */
-    @Nullable
-    public GameEndPlayerDisplayData[] getCurrentGameState() {
-        GameEndPlayerDisplayData[] out;
+    public void injectCallback(@Nullable PgeCallback callback) {
         lock.lock();
-        //  We will only copy the array and not the objects inside. However, the objects inside the
-        //  array have a stats array which can be acquired and modified, and recursive map in that
-        //  array can also be technically modified. This is indeed a problem but it would be very
-        //  annoying to copy the inner array and the recursive data structure. For this reason, we
-        //  will explicitly document this concern and trust that whoever calls this getter will
-        //  treat the inner array objects as readonly
-        out = gameEndPlayerStats.clone();
+        this.callback = callback;
         lock.unlock();
-        return out;
     }
 }
