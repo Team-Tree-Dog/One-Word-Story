@@ -84,14 +84,14 @@ public class Main {
         Set<String> thirdAuthors = new HashSet<>();
         thirdAuthors.add("Suspect");
 
-        storyRepo.saveStory("ONCE upon a time billy went to milk some cows", (new Date().getTime()),
-                firstAuthors);
+        storyRepo.saveStory("ONCE upon a time billy went to milk some cows",
+                (new Date().getTime() / 1000.0) - 86400, firstAuthors);
 
         storyRepo.saveStory("Once we were able to finish the assignment in time, but then we woke up"
-                , (new Date().getTime()), secondAuthors);
+                , (new Date().getTime() / 1000.0) - 2 * 86400, secondAuthors);
 
         storyRepo.saveStory("The cause of all evil is: "
-                , (new Date().getTime()), thirdAuthors);
+                , (new Date().getTime() / 1000.0) - 3 * 86400, thirdAuthors);
 
         titlesRepo.suggestTitle(0, "When the cows come home");
         titlesRepo.upvoteTitle(0, "When the cows come home");
