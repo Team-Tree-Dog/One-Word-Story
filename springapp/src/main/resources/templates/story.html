@@ -8,7 +8,7 @@
 
     <script src="js/story.js"> </script>
     <script src="https://kit.fontawesome.com/f6dcf461c1.js" crossorigin="anonymous"></script>
-    <title th:text="${title}"></title>
+    <title th:text="${story.title()}"></title>
 </head>
 
 <body>
@@ -20,7 +20,7 @@
             <br>
             <h3> Like the Story </h3>
             <div class="center">
-                <form method="POST" th:action="@{like/story/id(id = ${storyId})}">
+                <form method="POST" th:action="@{like/story/id(id = ${story.id()})}">
                     <Button type="submit" onclick="Toggle1()" id="btn1" class="btn"><i class="fas fa-heart"></i></Button>
                 </form>
             </div>
@@ -29,7 +29,7 @@
             <h3>< Vote for Title ></h3>
             <div id="all_votes">
                 <form method="POST" th:action="@{upvote-suggestion/suggestion/id(id = ${suggestion.getSuggestedTitle()},
-                storyId = ${storyId})}"
+                storyId = ${story.id()})}"
                         th:each="suggestion: ${suggestions}" class="titles" id="title1">
                     <p th:text="${suggestion.suggestedTitle}"></p>
                     <br>
@@ -46,7 +46,7 @@
             <br>
 
             <div class="center">
-                <form method="POST" th:action="@{suggest-title/story/id(id = ${storyId})}" id="add_title">
+                <form method="POST" th:action="@{suggest-title/story/id(id = ${story.id()})}" id="add_title">
                     <input id="title_name" type="text" th:value="${suggestedTitle}" name="suggestedTitle"
                            placeholder="Suggest your own...">
                     <input type="submit" onclick="addTitle()" value="Submit">
@@ -57,10 +57,10 @@
 
         <div class="column2">
 
-            <h1 th:text="${storyTitle}" id="heading"></h1>
+            <h1 th:text="${story.title()}" id="heading"></h1>
             <script>addTitle()</script>
 
-            <p th:text="${content}" class="story">
+            <p th:text="${story.content()}" class="story">
             </p>
 
             <h3>Comments</h3>
@@ -85,7 +85,7 @@
 
             <div class="center">
                 <form method="POST" th:object="${comment}"
-                      th:action="@{comment/story/id(id = ${storyId})}" id="comment-story-form">
+                      th:action="@{comment/story/id(id = ${story.id()})}" id="comment-story-form">
                     <!--The placeholder works only when the tag is on one line !-->
                     <textarea placeholder="Your comment" th:field="${comment.comment}" id ="userComment" rows="5" cols="42" name="comment"></textarea>
                     <br>

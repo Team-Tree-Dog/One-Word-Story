@@ -7,6 +7,7 @@ import usecases.TitleRepoData;
 import usecases.get_all_titles.GatGatewayTitles;
 import usecases.get_latest_stories.GlsGatewayTitles;
 import usecases.get_most_liked_stories.GmlsGatewayTitles;
+import usecases.get_story_by_id.GsbiGatewayTitles;
 import usecases.suggest_title.StGatewayTitles;
 import usecases.upvote_title.UtGatewayTitles;
 
@@ -26,7 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * <br><br>
  */
 public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles,
-        UtGatewayTitles, GlsGatewayTitles, GmlsGatewayTitles {
+        UtGatewayTitles, GlsGatewayTitles, GmlsGatewayTitles, GsbiGatewayTitles {
 
     /**
      * DB table row for storing a single suggested title entry

@@ -28,6 +28,7 @@ import usecases.disconnecting.DcInteractor;
 import usecases.get_all_titles.GatInteractor;
 import usecases.get_latest_stories.GlsInteractor;
 import usecases.get_most_liked_stories.GmlsInteractor;
+import usecases.get_story_by_id.GsbiInteractor;
 import usecases.get_story_comments.GscInteractor;
 import usecases.join_public_lobby.JplInteractor;
 import usecases.like_story.LsInteractor;
@@ -136,11 +137,11 @@ public class Main {
         sp.startTimer();
 
         // Use cases called by users
-
         CagInteractor cag = new CagInteractor(commentsRepo, commentChecker, displayChecker, register);
         DcInteractor dc = new DcInteractor(manager, register);
         GlsInteractor gls = new GlsInteractor(storyRepo, titlesRepo, register);
         GmlsInteractor gmls = new GmlsInteractor(storyRepo, titlesRepo, register);
+        GsbiInteractor gsbi = new GsbiInteractor(storyRepo, titlesRepo, register);
         GscInteractor gsc = new GscInteractor(commentsRepo, register);
         GatInteractor gat = new GatInteractor(titlesRepo, register);
         JplInteractor jpl = new JplInteractor(manager, register);
@@ -156,6 +157,7 @@ public class Main {
         GatController gatController = new GatController(gat);
         GlsController glsController = new GlsController(gls);
         GmlsController gmlsController = new GmlsController(gmls);
+        GsbiController gsbiController = new GsbiController(gsbi);
         GscController gscController = new GscController(gsc);
         JplController jplController = new JplController(jpl);
         LsController lsController = new LsController(ls);
@@ -168,7 +170,7 @@ public class Main {
 
         // Setup and run the view
         new SpringBootView(new CoreAPI(
-          cagController, dcController, gatController, glsController, gmlsController,
+          cagController, dcController, gatController, glsController, gmlsController, gsbiController,
           gscController, jplController, lsController, ssController, stController,
           swController, utController, pgeViewM, pdViewM
         )).runApplicationLoop();

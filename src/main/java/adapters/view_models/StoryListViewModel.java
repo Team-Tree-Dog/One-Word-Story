@@ -16,7 +16,8 @@ public class StoryListViewModel extends ResponseViewModel {
      * <br><br>
      * <b>Thread Safety: </b> The StoryRepoData object is read only, but the list is mutable.
      * It is not thread safe if multiple threads mutate the same returned list.
-     * @return The awaitable object wrapping the list of database rows for stories
+     * @return The awaitable object wrapping the list of database rows for stories. This awaitable
+     * is never set if the response code was a fail, so check for null to check that case.
      */
     public Awaitable<List<StoryDisplayData>> getStoriesAwaitable() { return stories; }
 }

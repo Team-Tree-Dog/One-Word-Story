@@ -2,6 +2,7 @@ package adapters.controllers;
 
 import adapters.presenters.StoryListPresenter;
 import adapters.view_models.StoryListViewModel;
+import org.jetbrains.annotations.Nullable;
 import usecases.get_latest_stories.GlsInputBoundary;
 import usecases.get_latest_stories.GlsInputData;
 
@@ -19,12 +20,12 @@ public class GlsController {
 
     /**
      * Provide the number(otherwise null) the latest stories one wants to get from the repo
-     * @param numToget number of the latest stories to get
+     * @param numToGet number of the latest stories to get, or null to get all
      * @return View model for this use case
      */
 
-    public StoryListViewModel getLatestStories(Integer numToget) {
-        GlsInputData data = new GlsInputData(numToget);
+    public StoryListViewModel getLatestStories(@Nullable Integer numToGet) {
+        GlsInputData data = new GlsInputData(numToGet);
         StoryListViewModel viewM = new StoryListViewModel();
         StoryListPresenter pres = new StoryListPresenter(viewM);
 

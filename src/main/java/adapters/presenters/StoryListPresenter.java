@@ -10,13 +10,14 @@ import usecases.FullStoryDTO;
 import usecases.Response;
 import usecases.get_latest_stories.GlsOutputBoundary;
 import usecases.get_most_liked_stories.GmlsOutputBoundary;
+import usecases.get_story_by_id.GsbiOutputBoundary;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static usecases.Response.ResCode.SHUTTING_DOWN;
 
-public class StoryListPresenter implements GlsOutputBoundary, GmlsOutputBoundary {
+public class StoryListPresenter implements GlsOutputBoundary, GmlsOutputBoundary, GsbiOutputBoundary {
 
     private final StoryListViewModel viewM;
 

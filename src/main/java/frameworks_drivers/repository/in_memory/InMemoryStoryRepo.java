@@ -7,6 +7,7 @@ import usecases.Response;
 import usecases.StoryRepoData;
 import usecases.get_latest_stories.GlsGatewayStory;
 import usecases.get_most_liked_stories.GmlsGatewayStory;
+import usecases.get_story_by_id.GsbiGatewayStories;
 import usecases.like_story.LsGatewayStory;
 import usecases.pull_game_ended.PgeGatewayStory;
 
@@ -31,7 +32,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * <br><br>
  */
 public class InMemoryStoryRepo implements LsGatewayStory, GlsGatewayStory,
-        GmlsGatewayStory, PgeGatewayStory {
+        GmlsGatewayStory, GsbiGatewayStories, PgeGatewayStory {
 
     /**
      * Simulates a single row entry in a DB table. Does not separate authors table
@@ -172,5 +173,28 @@ public class InMemoryStoryRepo implements LsGatewayStory, GlsGatewayStory,
         lock.unlock();
 
         return Response.getSuccessful("Story successfully saved");
+    }
+
+    @Override
+    public @NotNull RepoRes<StoryRepoData> getStoryById(int storyId) {
+        RepoRes<StoryRepoData> repoRes = new RepoRes<>(new Response(Response.ResCode.STORY_NOT_FOUND,
+                "Story with id " + storyId + " not found!"));
+
+        lock.lock();
+        for (StoryTableRow row: storyTable) {
+            if (row.getStoryId() == storyId) {
+                repoRes.addRow(new StoryRepoData(
+                        row.getStoryId(), row.getStory(), row.getAuthors(),
+                        // No idea what offset means, or nanoOfSecond. Just guessing here
+                        LocalDateTime.ofEpochSecond((long) row.getPublishUnixTimestamp(),
+                                0, ZoneOffset.UTC), row.getLikes()));
+
+                repoRes.setResponse(Response.getSuccessful("Story found!"));
+                break;
+            }
+        }
+        lock.unlock();
+
+        return repoRes;
     }
 }

@@ -15,6 +15,7 @@ public class CoreAPI {
     public final GatController gatController;
     public final GlsController glsController;
     public final GmlsController gmlsController;
+    public final GsbiController gsbiController;
     public final GscController gscController;
     public final JplController jplController;
     public final LsController lsController;
@@ -31,6 +32,7 @@ public class CoreAPI {
             GatController gatController,
             GlsController glsController,
             GmlsController gmlsController,
+            GsbiController gsbiController,
             GscController gscController,
             JplController jplController,
             LsController lsController,
@@ -46,6 +48,7 @@ public class CoreAPI {
         this.gatController = gatController;
         this.glsController = glsController;
         this.gmlsController = gmlsController;
+        this.gsbiController = gsbiController;
         this.gscController = gscController;
         this.jplController = jplController;
         this.lsController = lsController;

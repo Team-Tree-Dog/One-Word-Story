@@ -1,5 +1,6 @@
 package com.example.springapp.controllers;
 
+import adapters.display_data.story_data.StoryDisplayData;
 import adapters.view_models.*;
 import com.example.springapp.SpringApp;
 import frameworks_drivers.views.CoreAPI;
@@ -91,61 +92,31 @@ public class StoryController {
         }
     }
 
-
-
-
-
     @GetMapping("/")
     public String index(Model model,
-                        @RequestParam(name="get", defaultValue="latest") String storiesToGet ) throws InterruptedException {
+                        @RequestParam(name="get", defaultValue="latest") String storiesToGet )
+            throws InterruptedException {
+
         CoreAPI v = SpringApp.coreAPI;
+        System.out.println("Get /");
 
+        StoryListViewModel viewM;
         Response res;
-        List<StoryRepoData> stories;
-
-        List<Story> finalStories = new ArrayList<>();
+        List<StoryDisplayData> stories;
 
         if (storiesToGet.equals("liked")) {
-            StoryListViewModel gmlsViewM = v.gmlsController.getMostLikedStories(0, 100);
-
-            res = gmlsViewM.getResponseAwaitable().await();
-            stories = gmlsViewM.getStoriesAwaitable().get();
+            viewM = v.gmlsController.getMostLikedStories(0, 100);
+        }
+        else {  // Defaults to "latest"
+            viewM = v.glsController.getLatestStories(100);
         }
 
-        else {
-            // Defaults to "latest"
-            GlsViewModel glsViewM = v.glsController.getLatestStories(100);
+        res = viewM.getResponseAwaitable().await();
+        stories = viewM.getStoriesAwaitable().get();
 
-            res = glsViewM.getResponseAwaitable().await();
-            stories = glsViewM.getStoriesAwaitable().get();
-        }
+        // TODO: Add error handling and frontend message (e.g stories failed to load) if res is a fail code
 
-        if (res.getCode() == Response.ResCode.SUCCESS) {
-            for (StoryRepoData story: stories) {
-
-                // Get most upvoted title
-                GatViewModel gatViewM = v.gatController.getAllTitles(story.getStoryId());
-
-                List<TitleRepoData> titles = gatViewM.getSuggestedTitlesAwaitable().await();
-
-                int upvotes = -1;
-                String title = "No Title";
-                for (TitleRepoData t : titles) {
-                    if (t.getUpvotes() > upvotes) {
-                        upvotes = t.getUpvotes();
-                        title = t.getTitle();
-                    }
-                }
-
-                finalStories.add(new Story((long) story.getStoryId(), title, story.getStory(),
-                        story.getAuthorNames(), story.getLikes(), story.getPublishTimeStamp()));
-            }
-        }
-        else {/* TODO: Add error handling and frontend message (e.g stories failed to load) */}
-
-        model.addAttribute("stories", finalStories);
-
-        System.out.println("Get /");
+        model.addAttribute("stories", stories == null ? new ArrayList<>() : stories);
 
         return "index";
     }
@@ -157,61 +128,43 @@ public class StoryController {
                         @RequestParam(name="message", defaultValue=".") String mess) throws InterruptedException {
         CoreAPI v = SpringApp.coreAPI;
 
-        // get all stories TODO: Make 1000 get ALL instead
-        GlsViewModel glsViewM = v.glsController.getLatestStories(100);
+        StoryListViewModel gsbiViewM = v.gsbiController.getStoryById(id.intValue());
         GatViewModel gatViewM = v.gatController.getAllTitles(id.intValue());
         GscViewModel gscViewM = v.gscController.getStoryComments(id.intValue());
 
         Response gatRes = gatViewM.getResponseAwaitable().await();
-        Response glsRes = glsViewM.getResponseAwaitable().await();
+        Response gsbiRes = gsbiViewM.getResponseAwaitable().await();
         Response gscRes = gscViewM.getResponseAwaitable().await();
 
-        List<StoryRepoData> stories = glsViewM.getStoriesAwaitable().get();
+        List<StoryDisplayData> stories = gsbiViewM.getStoriesAwaitable().get();
         List<TitleRepoData> titles = gatViewM.getSuggestedTitlesAwaitable().get();
         List<CommentRepoData> comments = gscViewM.getCommentsAwaitable().get();
 
-        if (glsRes.getCode() == Response.ResCode.SUCCESS &&
+        if (gsbiRes.getCode() == Response.ResCode.SUCCESS &&
             gatRes.getCode() == Response.ResCode.SUCCESS &&
             gscRes.getCode() == Response.ResCode.SUCCESS) {
             assert titles != null && stories != null && comments != null;
 
-            for (StoryRepoData story: stories) {
-                if (story.getStoryId() == id.intValue()) {
+            List<Comment> newComments = new ArrayList<>();
+            List<Suggestion> suggestions = new ArrayList<>();
 
-                    List<Comment> newComments = new ArrayList<>();
-                    List<Suggestion> suggestions = new ArrayList<>();
-
-                    // Get most upvoted title
-                    int upvotes = -1;
-                    String title = "No Title";
-                    for (TitleRepoData t : titles) {
-                        if (t.getUpvotes() > upvotes) {
-                            upvotes = t.getUpvotes();
-                            title = t.getTitle();
-                        }
-
-                        suggestions.add(new Suggestion(t.getTitle(), t.getUpvotes(), t.getSuggestionId()));
-                    }
-
-                    for (CommentRepoData c : comments) {
-                        newComments.add(new Comment(c.getDisplayName(), c.getContent()));
-                    }
-
-                    model.addAttribute("storyId", id);
-                    model.addAttribute("storyTitle", title);
-                    model.addAttribute("content", story.getStory());
-
-                    model.addAttribute("comments", newComments);
-                    model.addAttribute("suggestions", suggestions);
-                    model.addAttribute("comment", new Comment());
-
-                    model.addAttribute("isfail", Boolean.parseBoolean(isfail));
-                    model.addAttribute("isfailTitle", Boolean.parseBoolean(isfailTitle));
-                    model.addAttribute("message", mess);
-
-                    break;
-                }
+            for (TitleRepoData t : titles) {
+                suggestions.add(new Suggestion(t.getTitle(), t.getUpvotes(), t.getSuggestionId()));
             }
+
+            for (CommentRepoData c : comments) {
+                newComments.add(new Comment(c.getDisplayName(), c.getContent()));
+            }
+
+            model.addAttribute("story", stories.get(0));
+
+            model.addAttribute("comments", newComments);
+            model.addAttribute("suggestions", suggestions);
+            model.addAttribute("comment", new Comment());
+
+            model.addAttribute("isfail", Boolean.parseBoolean(isfail));
+            model.addAttribute("isfailTitle", Boolean.parseBoolean(isfailTitle));
+            model.addAttribute("message", mess);
         }
         else {/* TODO: Add error handling and frontend message (e.g stories failed to load) */}
 

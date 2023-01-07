@@ -12,7 +12,7 @@ public class AuthorNameStringCreatorCommas implements AuthorNameStringCreator {
         for (String author: authors) {
             s.append(author).append(", ");
         }
-        s.deleteCharAt(s.length());
+        s.deleteCharAt(s.length() - 1);
 
         return s.toString();
     }
