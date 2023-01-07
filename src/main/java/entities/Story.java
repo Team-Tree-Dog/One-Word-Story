@@ -52,8 +52,9 @@ public class Story {
         StringBuilder builder = new StringBuilder();
 
         for (Word word: words) {
-            builder.append(word.getWord());
+            if (word.getPunctuation() != null) builder.append(word.getPunctuation());
             builder.append(" ");
+            builder.append(word.getWord());
         }
         return builder.toString();
     }

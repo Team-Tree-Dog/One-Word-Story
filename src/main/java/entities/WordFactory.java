@@ -20,16 +20,21 @@ public class WordFactory {
 
     /**
      * Checks if string representation of the word is valid using validity checker
-     * @param word string representation of the word
+     * @param wordAndPunct string representation of the word and punctuation
      * @param author the author of the word
      * @return new Word if its string representation is valid
      * @throws InvalidWordException if its string representation is not valid
      */
-    public Word create(String word, Player author) throws InvalidWordException {
-        String checkedWord = validityChecker.isValid(word);
-        if(checkedWord == null)
+    public Word create(String wordAndPunct, Player author) throws InvalidWordException {
+        String[] output = validityChecker.isValid(wordAndPunct);
+
+        if(output == null)
             throw new InvalidWordException("The word is not valid!");
-        return new Word(checkedWord, author);
+
+        String word = output[0];
+        String punc = output.length == 2 ? output[1] : null;
+
+        return new Word(word, author, punc);
     }
 
 }
