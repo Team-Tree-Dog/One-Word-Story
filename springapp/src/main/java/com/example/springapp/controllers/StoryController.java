@@ -7,9 +7,11 @@ import adapters.display_data.title_data.SuggestedTitleDisplayData;
 import adapters.display_data.title_data.SuggestedTitleDisplayDataBuilder;
 import adapters.view_models.*;
 import com.example.springapp.SpringApp;
+import com.example.springapp.db.PostgresStoryRepo;
 import frameworks_drivers.views.CoreAPI;
 import org.example.ANSI;
 import org.example.Log;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,10 +23,15 @@ import java.util.*;
 @Controller
 public class StoryController {
 
+    @Autowired
+    private PostgresStoryRepo storyRepo;
+
     @GetMapping("/")
     public String index(Model model,
                         @RequestParam(name="get", defaultValue="latest") String storiesToGet )
             throws InterruptedException {
+        storyRepo.getStoryById(5);
+
         CoreAPI v = SpringApp.coreAPI;
         System.out.println("Get /");
 

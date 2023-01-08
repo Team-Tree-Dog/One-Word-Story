@@ -5,6 +5,7 @@ import adapters.view_models.SsViewModel;
 import com.example.springapp.SpringApp;
 import frameworks_drivers.views.CoreAPI;
 import frameworks_drivers.views.View;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.example.ANSI;
 import org.example.Log;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -28,6 +29,14 @@ public class SpringBootView extends View {
     @Override
     public void start(CoreAPI coreAPI) {
         reader = new BufferedReader(new InputStreamReader(System.in));
+
+        // Load env
+        Dotenv dotenv = Dotenv.load();
+        assert dotenv.get("POSTGRES_PORT") != null;
+        assert dotenv.get("POSTGRES_USERNAME") != null;
+        assert dotenv.get("POSTGRES_PASSWORD") != null;
+        assert dotenv.get("POSTGRES_ADDRESS") != null;
+
         app = SpringApp.startServer(coreAPI, new String[0]);
     }
 

@@ -6,6 +6,7 @@
 gradlew
 gradlew.bat
 gradle/
+*.env
 
 # User-specific stuff
 .idea/**/workspace.xml
@@ -109,7 +110,7 @@ gradle-app.setting
 # Compiled class file
 *.class
 
-# org.example.Log file
+# Log file
 *.log
 
 # BlueJ files
