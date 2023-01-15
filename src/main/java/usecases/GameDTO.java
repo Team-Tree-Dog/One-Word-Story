@@ -1,10 +1,12 @@
 package usecases;
 
 import entities.Player;
-import entities.games.Game;
+import entities.games.GameReadOnly;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * A data transfer object for a Game entity. Contains data from a Game
@@ -57,17 +59,27 @@ public class GameDTO {
     /**
      * @return List of players who were in the game in this game state data
      */
-    public ArrayList<PlayerDTO> getPlayers() { return players; }
+    public List<PlayerDTO> getPlayers() { return players; }
 
     /**
      * Convenience method for building a GameDTO from a Game Object
+     * <br>
+     * BE SURE TO LOCK THE GAME if you are passing the game object directly
      * @param game Game entity object to build DTO from
      * @return GameDTO built from provided game
      */
-    public static GameDTO fromGame (Game game) {
+    @NotNull
+    public static GameDTO fromGame (@NotNull GameReadOnly game) {
         return new GameDTO(
                 game.getStoryString(),
-                game.getPlayers(), game.getCurrentTurnPlayer().getPlayerId(),
+                game.getPlayers(),
+                game.getCurrentTurnPlayer() == null ? "" : game.getCurrentTurnPlayer().getPlayerId(),
                 game.getSecondsLeftInCurrentTurn());
+    }
+
+    @Override
+    public String toString() {
+        return "GameDTO('" + story + "', " + currentTurnPlayerId + ", "
+                + secondsLeftCurrentTurn + ", " + players + ")";
     }
 }

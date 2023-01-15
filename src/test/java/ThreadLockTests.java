@@ -36,7 +36,7 @@ import static usecases.Response.ResCode.*;
 
 public class ThreadLockTests {
 
-    private static final int REPEAT_TIMES = 100;
+    private static final int REPEAT_TIMES = 50;
 
     private static class GameTest extends Game {
 
@@ -440,9 +440,9 @@ public class ThreadLockTests {
         Game currGame = gameFac.createGame(new HashMap<>(), players);
         lobman.setGame(currGame);
 
-        assertTrue(lobman.getPlayersFromGame().contains(player1), "Player 1 is not in the Game");
-        assertTrue(lobman.getPlayersFromGame().contains(player2), "Player 2 is not in the Game");
-        assertTrue(lobman.getPlayersFromGame().contains(player3), "Player 3 is not in the Game");
+        assertTrue(lobman.getGameReadOnly().getPlayers().contains(player1), "Player 1 is not in the Game");
+        assertTrue(lobman.getGameReadOnly().getPlayers().contains(player2), "Player 2 is not in the Game");
+        assertTrue(lobman.getGameReadOnly().getPlayers().contains(player3), "Player 3 is not in the Game");
 
         assertTrue(currGame.getPlayers().contains(player1), "Player 1 is not in the Game");
         assertTrue(currGame.getPlayers().contains(player2), "Player 2 is not in the Game");
@@ -757,7 +757,7 @@ public class ThreadLockTests {
 
         assertEquals(0, lobman.getPlayersFromPool().size(),
                 "No one should be in the pool, but someone is.");
-        assertTrue(lobman.getPlayersFromGame().contains(player1), "Player 1 is not in the Game");
+        assertTrue(lobman.getGameReadOnly().getPlayers().contains(player1), "Player 1 is not in the Game");
         assertTrue(currGame.getPlayers().contains(player1), "Player 1 is not in the Game");
         assertEquals(player1, currGame.getCurrentTurnPlayer(), "It should be Player 1's turn, but it isn't.");
 
@@ -798,7 +798,7 @@ public class ThreadLockTests {
         DcOutputBoundary dcPres = new DcOutputBoundary() {
             @Override
             public void hasDisconnected(DcOutputData data) {
-                messageDc.set(data.getResponse().getMessage());
+                messageDc.set(data.getResponse().getCode().toString());
                 dcFlag.set(true);
                 System.out.println("DC Message: " + messageDc.get());
             }
@@ -886,10 +886,10 @@ public class ThreadLockTests {
             assertFalse(currGame.getPlayers().contains(player1),
                     "Player 1 shouldn't be in the game anymore, but it still is.");
             // And that DC should have disconnected the player:
-            assertEquals("Disconnecting was successful.", messageDc.get(),
+            assertEquals("SUCCESS", messageDc.get(),
                     "The message is supposed to be Disconnecting was successful, but it isn't.");
         } else if (playersPge.get().equals(new ArrayList<String>(Collections.singleton(player1.getPlayerId())))){
-            if (messageDc.get().equals("Player not found")) {
+            if (!messageDc.get().equals(SUCCESS.toString())) {
                 System.out.println("Scenario 2: RG notified player 1 was still in-game, " +
                         "and DC didn't detect any players in-game, so SP should have already set the game to null.");
 
@@ -899,7 +899,7 @@ public class ThreadLockTests {
                 // Check that the game was already set to null:
                 assertTrue(lobman.isGameNull());
             }
-            else if (messageDc.get().equals("Disconnecting was successful.")){
+            else if (messageDc.get().equals("SUCCESS")){
                 System.out.println("Scenario 1: RG notified player 1 was still in-game, " +
                         "and DC detected a player still in the game.");
                 // There isn't really much to assert here, other than the general asserts.

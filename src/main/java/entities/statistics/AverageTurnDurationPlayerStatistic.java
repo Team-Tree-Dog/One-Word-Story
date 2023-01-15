@@ -64,10 +64,13 @@ public class AverageTurnDurationPlayerStatistic implements PerPlayerIntStatistic
             for (Integer i : turnTimes) sum += i;
             float avg = ((float) sum) / ((float) turnTimes.size());
 
-            // Map average to player using base case of recursive map
-            output.put(p, new RecursiveSymboledIntegerHashMap(
-                    new SymboledInteger(Math.round(avg), "s")
-            ));
+            RecursiveSymboledIntegerHashMap map = new RecursiveSymboledIntegerHashMap();
+            map.put("Average Turn Time", new RecursiveSymboledIntegerHashMap(new SymboledInteger(
+                    Math.round(avg), "s"
+            )));
+
+            // Map average to player
+            output.put(p, map);
         }
 
         return output;

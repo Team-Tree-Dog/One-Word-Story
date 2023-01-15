@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.0.0'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group 'org.example'
+version 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = '17'
+targetCompatibility = '17'
+
+dependencies {
+    implementation project(':')
+    implementation project(':springapp')
+    implementation project(':terminal_debug')
+    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'Main'
+    }
+}
+
+task fatJar(type: Jar) {
+    manifest.from jar.manifest
+    classifier = 'all'
+    duplicatesStrategy = 'exclude'
+
+    from {
+        configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*"
+    }
+
+    with jar
+}
+

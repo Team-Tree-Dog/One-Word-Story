@@ -1,54 +1,17 @@
 package adapters.view_models;
 
-import org.jetbrains.annotations.Nullable;
-import usecases.CommentRepoData;
-import usecases.Response;
-
+import adapters.display_data.comment_data.CommentDisplayData;
 import java.util.List;
 
-public class GscViewModel extends ViewModel {
-    private List<CommentRepoData> stories = null;
-    private Response res = null;
+public class GscViewModel extends ResponseViewModel {
+    private final Awaitable<List<CommentDisplayData>> comments = new Awaitable<>();
 
-    public void setStoryComments(List<CommentRepoData> data) {
-        lock.lock();
-        stories = data;
-        lock.unlock();
-    }
-
-    public void setResponse(Response response) {
-        lock.lock();
-        res = response;
-        condition.signal();
-        lock.unlock();
-    }
-
-    @Nullable
-    public List<CommentRepoData> getStoryComments() {
-        List<CommentRepoData> out;
-        lock.lock();
-        out = stories;
-        lock.unlock();
-        return out;
-    }
-
-    @Nullable
-    public Response.ResCode getResponseCode() {
-        Response.ResCode out;
-        lock.lock();
-        if (res == null) { out = null;}
-        else { out = res.getCode(); }
-        lock.unlock();
-        return out;
-    }
-
-    @Nullable
-    public String getResponseMessage() {
-        String out;
-        lock.lock();
-        if (res == null) { out = null; }
-        else { out = res.getMessage(); }
-        lock.unlock();
-        return out;
-    }
+    /**
+     * Get this object for both setting and getting purposes, from different threads.
+     * <br><br>
+     * <b>Thread Safety: </b> The CommentRepoData object is read only, but the list is mutable.
+     * It is not thread safe if multiple threads mutate the same returned list.
+     * @return The awaitable object wrapping the list of database rows for comments
+     */
+    public Awaitable<List<CommentDisplayData>> getCommentsAwaitable() { return comments; }
 }

@@ -2,6 +2,8 @@ package adapters.controllers;
 
 import adapters.presenters.JplPresenter;
 import adapters.view_models.JplViewModel;
+import org.example.ANSI;
+import org.example.Log;
 import usecases.join_public_lobby.JplInputBoundary;
 import usecases.join_public_lobby.JplInputData;
 
@@ -23,6 +25,8 @@ public class JplController {
      * @return View model for this use case
      */
     public JplViewModel joinPublicLobby (String playerId, String displayName) {
+        Log.sendMessage(ANSI.BLUE, "JPL", ANSI.LIGHT_BLUE,
+                "Controller called with ID " + playerId + " NAME " + displayName);
         JplViewModel viewM = new JplViewModel();
         JplPresenter pres = new JplPresenter(viewM);
         jpl.joinPublicLobby(new JplInputData(displayName, playerId), pres);

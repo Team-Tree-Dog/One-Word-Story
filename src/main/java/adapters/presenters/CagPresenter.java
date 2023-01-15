@@ -25,11 +25,11 @@ public class CagPresenter implements CagOutputBoundary {
      */
     @Override
     public void commentAsGuestOutput(CagOutputData data) {
-        viewM.setResponse(data.getRes());
+        viewM.getResponseAwaitable().set(data.getRes());
     }
 
     @Override
     public void outputShutdownServer() {
-        viewM.setResponse(new Response(SHUTTING_DOWN, "Server shutting down"));
+        viewM.getResponseAwaitable().set(new Response(SHUTTING_DOWN, "Server shutting down"));
     }
 }

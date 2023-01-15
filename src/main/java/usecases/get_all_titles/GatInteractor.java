@@ -4,7 +4,6 @@ import usecases.InterruptibleThread;
 import usecases.RepoRes;
 import usecases.ThreadRegister;
 import usecases.TitleRepoData;
-import usecases.shutdown_server.SsOutputBoundary;
 
 /**
  * The interactor for this use case. Carries out all the processes involved in getting all suggested titles for

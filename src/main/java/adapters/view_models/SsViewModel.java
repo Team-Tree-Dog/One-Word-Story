@@ -2,20 +2,16 @@ package adapters.view_models;
 
 public class SsViewModel extends ViewModel {
 
-    private boolean shutdown = false;
+    private final Awaitable<Boolean> shutdown = new Awaitable<>();
 
-    public void setShutdown() {
-        lock.lock();
-        shutdown = true;
-        condition.signal();
-        lock.unlock();
-    }
-
-    public boolean getShutdown() {
-        boolean out;
-        lock.lock();
-        out = shutdown;
-        lock.unlock();
-        return out;
+    /**
+     * Get this object for both setting and getting purposes, from different threads.
+     * <br><br>
+     * <b>Thread Safety: </b> A boolean is immutable, so its fully safe
+     * @return The awaitable object wrapping the boolean which indicates if the server was
+     * shutdown successfully or not
+     */
+    public Awaitable<Boolean> getIsShutdownAwaitable() {
+        return shutdown;
     }
 }

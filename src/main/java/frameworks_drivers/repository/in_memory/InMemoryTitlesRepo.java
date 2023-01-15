@@ -1,11 +1,13 @@
 package frameworks_drivers.repository.in_memory;
 
 import org.jetbrains.annotations.NotNull;
-import usecases.CommentRepoData;
 import usecases.RepoRes;
 import usecases.Response;
 import usecases.TitleRepoData;
 import usecases.get_all_titles.GatGatewayTitles;
+import usecases.get_latest_stories.GlsGatewayTitles;
+import usecases.get_most_liked_stories.GmlsGatewayTitles;
+import usecases.get_story_by_id.GsbiGatewayTitles;
 import usecases.suggest_title.StGatewayTitles;
 import usecases.upvote_title.UtGatewayTitles;
 
@@ -24,7 +26,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * engage a repo lock
  * <br><br>
  */
-public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles, UtGatewayTitles {
+public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles,
+        UtGatewayTitles, GlsGatewayTitles, GmlsGatewayTitles, GsbiGatewayTitles {
 
     /**
      * DB table row for storing a single suggested title entry
@@ -140,10 +143,12 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles, Ut
         lock.lock();
         // Convert to CommentRepoData objects
         for (TitlesTableRow row : titlesTable) {
-            res.addRow(new TitleRepoData(
-                    row.getSuggestionId(), row.getStoryId(),
-                    row.getTitleSuggestion(), row.getUpvotes()
-            ));
+            if (row.storyId == storyId) {
+                res.addRow(new TitleRepoData(
+                        row.getSuggestionId(), row.getStoryId(),
+                        row.getTitleSuggestion(), row.getUpvotes()
+                ));
+            }
         }
         lock.unlock();
 
@@ -166,6 +171,7 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles, Ut
         for (TitlesTableRow row: titlesTable) {
             // If story id and title suggestion string match, add upvote
             if (row.getStoryId() == storyId && row.getTitleSuggestion().equals(titleToUpvote)) {
+                row.addUpvote();
                 res = Response.getSuccessful("Successfully upvoted title");
                 break;
             }
@@ -180,4 +186,31 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles, Ut
         return res;
     }
 
+    @Override
+    public @NotNull RepoRes<String> getMostUpvotedStoryTitle(int storyId) {
+        lock.lock();
+
+        String suggestion = null;
+        int upvotes = -1;
+
+        for (TitlesTableRow row : titlesTable) {
+            if (row.getStoryId() == storyId) {
+                if (row.getUpvotes() > upvotes) {
+                    suggestion = row.getTitleSuggestion();
+                    upvotes = row.getUpvotes();
+                }
+            }
+        }
+
+        lock.unlock();
+
+        if (suggestion == null) {
+            return new RepoRes<>(Response.getFailure("Either story doesn't exist or has no titles"));
+        } else {
+            List<String> s = new ArrayList<>();
+            s.add(suggestion);
+
+            return new RepoRes<>(Response.getSuccessful("Found most upvoted title"), s);
+        }
+    }
 }

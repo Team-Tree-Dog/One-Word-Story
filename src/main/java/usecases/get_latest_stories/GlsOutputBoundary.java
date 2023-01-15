@@ -1,6 +1,12 @@
 package usecases.get_latest_stories;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import usecases.FullStoryDTO;
+import usecases.Response;
 import usecases.shutdown_server.SsOutputBoundary;
+
+import java.util.List;
 
 /**
  *  Output boundary Interface for Get Latest Stories use-case
@@ -9,9 +15,10 @@ import usecases.shutdown_server.SsOutputBoundary;
 
 public interface GlsOutputBoundary extends SsOutputBoundary {
     /**
-     * Updates ViewModel with the stories
-     * @param data PdOutputData
+     * Use Case output for a list of stories with a response
+     * @param storyDTOS list of full story DTOs, or null if res was fail
+     * @param res response
      */
-    void putStories (GlsOutputData data);
+    void putStories (@Nullable List<FullStoryDTO> storyDTOS, @NotNull Response res);
 
 }

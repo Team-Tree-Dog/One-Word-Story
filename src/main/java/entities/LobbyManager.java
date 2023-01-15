@@ -2,7 +2,9 @@ package entities;
 
 import entities.games.Game;
 import entities.games.GameFactory;
+import entities.games.GameReadOnly;
 import exceptions.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -252,7 +254,12 @@ public class LobbyManager {
     }
 
     /**
-     * Create a game based on the provided settings and players from the pool
+     * Create a game based on the provided settings and players from the pool. Note that this
+     * method does not remove players from the pool; Instead, it simply returns a new game
+     * instance populated with players who are currently in the pool.
+     * <br><br>
+     * This method is NOT thread safe all, that is, it engages no locks. Since this method
+     * reads the pool, it is recommended to lock the pool state during this call
      * @param settings Map<String, Integer> String to add to the story
      */
     public Game newGameFromPool (Map<String, Integer> settings) {
@@ -265,7 +272,10 @@ public class LobbyManager {
 
     /**
      * Removes a PlayerObserverLink from the pool via its player
-     * Notice that this method is not thread-safe AT ALL! It engages no locks
+     * <br><br>
+     * <h2>Thread Safety:</h2>
+     * <p> NOT Thread Safe, engages no locks </p>
+     * <p> Engage pool lock AND PlayerPoolListener lock for player p surrounding use as appropriate </p>
      * @param p the player in the POL to be removed
      * @throws PlayerNotFoundException if the player was not found in any POLs in playerPool
      */
@@ -324,6 +334,7 @@ public class LobbyManager {
      * @param p the player in the PlayerObserverLink
      * @return the PlayerObserverLink containing player p, null if there isn't one
      */
+    @Nullable
     public PlayerObserverLink getLinkFromPlayer(Player p){
         for (PlayerObserverLink pol : playerPool) {
             if (pol.getPlayer().equals(p)) {
@@ -369,14 +380,16 @@ public class LobbyManager {
     }
 
     /**
-     * Gets all the players from the game
-     * @return an arraylist of players
+     * Gets the game typed as readonly so only the immutable getters are
+     * accessible. DO NOT down cast to game.
+     * @return game object in its readonly state
+     * @throws GameDoesntExistException if game is null
      */
-    public List<Player> getPlayersFromGame () throws GameDoesntExistException {
+    public GameReadOnly getGameReadOnly () throws GameDoesntExistException {
         if (this.isGameNull()){
             throw new GameDoesntExistException("Game does not exist.");
         }
-        return new ArrayList<>(game.getPlayers());
+        return game;
     }
 
     /**
@@ -388,9 +401,4 @@ public class LobbyManager {
      * @return the lock associated with the player pool list
      */
     public Lock getPlayerPoolLock() { return playerPoolLock; }
-
-    /**
-     * @return the player whose turn it is
-     */
-    public Player getCurrentTurnPlayer() { return this.game.getCurrentTurnPlayer(); }
 }

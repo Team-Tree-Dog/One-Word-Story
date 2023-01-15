@@ -1,5 +1,6 @@
 package adapters.presenters;
 
+import adapters.display_data.not_ended_display_data.GameDisplayData;
 import adapters.display_data.not_ended_display_data.GameDisplayDataBuilder;
 import adapters.view_models.PdViewModel;
 import usecases.GameDTO;
@@ -22,13 +23,7 @@ public class PdPresenter implements PdOutputBoundary {
      */
     @Override
     public void updateGameInfo(PdOutputData d) {
-        GameDTO g = d.getGameInfo();
-        GameDisplayDataBuilder builder = new GameDisplayDataBuilder();
-        for (PlayerDTO p : g.getPlayers()) {
-            builder.addPlayer(p.getPlayerId(), p.getDisplayName(),
-                    p.getPlayerId().equals(g.getCurrentTurnPlayerId()));
-        }
-        builder.setSecondsLeftInTurn(g.getSecondsLeftCurrentTurn()).setStoryString(g.getStory());
-        viewM.setCurrentGameState(builder.build());
+        // Sets state in view model
+        viewM.setCurrentGameState(GameDisplayData.fromGameDTO(d.getGameInfo()));
     }
 }

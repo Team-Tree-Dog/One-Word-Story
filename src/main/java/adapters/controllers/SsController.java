@@ -2,6 +2,8 @@ package adapters.controllers;
 
 import adapters.presenters.SsPresenter;
 import adapters.view_models.SsViewModel;
+import org.example.ANSI;
+import org.example.Log;
 import usecases.shutdown_server.SsInputBoundary;
 
 /**
@@ -23,6 +25,8 @@ public class SsController {
      * @return View model for this use case
      */
     public SsViewModel shutdownServer() {
+        Log.sendMessage(ANSI.BLUE, "SS", ANSI.LIGHT_BLUE,
+                "Controller called");
         SsViewModel viewM = new SsViewModel();
         SsPresenter pres = new SsPresenter(viewM);
         inputBoundary.shutdownServer(pres);

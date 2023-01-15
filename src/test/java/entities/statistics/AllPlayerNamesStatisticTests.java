@@ -67,6 +67,9 @@ public class AllPlayerNamesStatisticTests {
         public boolean isTimerStopped() {
             return false;
         }
+
+        @Override
+        public int getSecondsLeftInCurrentTurn() { return 0; }
     }
 
     private AllPlayerNamesStatistic stat;

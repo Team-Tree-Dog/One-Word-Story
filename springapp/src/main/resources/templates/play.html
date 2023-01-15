@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <link rel="stylesheet" href="css/play.css">
+    <title>Play</title>
+</head>
+
+<body>
+
+<!------------------------------------------------ PLAY PAGE -->
+    <div id="play_page">
+        <!-- game logo -->
+        <div id="play-logo-container">
+            <img src="media/logo.png" alt="logo" onclick="location.href = '/'">
+        </div>
+
+        <!-- form where you need to enter your name and submit it -->
+        <!-- name input -->
+        <div id="play-form-container">
+            <label for="name">Enter your name:</label>
+            <input type="text" id="name" name="name" required><br><br>
+        </div>
+
+        <!-- button "Play" -->
+        <div class="play-button-container">
+            <div class="play-button-wrap">
+                <button id="play-button" class="button">Play</button>
+            </div>
+        </div>
+        <div style="display: none" id="load-icon-container">
+            <div class="loader"></div>
+            <span class="flashing-text"> Connecting to server... </span>
+        </div>
+
+    </div>
+
+
+<!------------------------------------------------ WAITING PAGE -->
+    <div id="waiting_page">
+        <div class="center">
+            <div class="ring">
+
+            </div>
+            <span class="flashing-text"> Looking for lobby... </span>
+        </div>
+        <div class="center2">
+            <button id="cancel-button" class="button button1"> Cancel </button>
+        </div>
+    </div>
+
+
+<!------------------------------------------------ GAME PAGE -->
+    <div id="game_page">
+        <div id="two_columns">
+            <div id="column-1" class="column">
+                <!-- list of players -->
+
+                <div id="players-list-container">
+                    <h3 id="players-list-title" class="game-fancy-title">Authors</h3>
+
+                    <div id="players-list">
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- story -->
+            <div id="story_column" class="column">
+                <h3 class="story-title game-fancy-title" >Your Story</h3>
+                <div id="story">
+                    Lorem ipsum dolor sit amet
+                </div>
+            </div>
+
+            <!-- exit icon -->
+            <div class="column" id="close_button">
+                <img id="exit-game-button" style="vertical-align:middle" src="media/exit.png" width="50" alt="Close">
+            </div>
+        </div>
+
+        <!-- submit a word -->
+        <div id="submit-word-container">
+            <input placeholder="Enter a word..." type="text" id="word" name="word">
+            <button id="submit-word-button" type="button"> Submit </button>
+            <span id="seconds-left" class="flashing-text">0s</span>
+        </div>
+
+        <div id="submit-word-error">
+            <i class="fas fa-exclamation-circle"></i> <span id="submit-word-error-text"> Error </span>
+        </div>
+    </div>
+
+</body>
+
+<script src="js/libs/jquery.js"> </script>
+<script src="js/libs/sweetalerts2.js"></script>
+<script src="js/play.js"> </script>
+
+</html>

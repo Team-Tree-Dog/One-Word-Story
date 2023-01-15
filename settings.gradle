@@ -1,0 +1,4 @@
+rootProject.name = 'One Word Story'
+include 'springapp'
+include 'runner'
+include 'terminal_debug'

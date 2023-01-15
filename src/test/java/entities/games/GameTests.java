@@ -27,8 +27,8 @@ public class GameTests {
         }
 
         @Override
-        public String isValid(String word) {
-            return word;
+        public String[] isValid(String word) {
+            return new String[]{word};
         }
     }
 

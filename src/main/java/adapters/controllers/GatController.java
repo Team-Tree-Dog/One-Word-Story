@@ -20,10 +20,11 @@ public class GatController {
      * Get all titles for the story with this storyID.
      * @param storyId the ID of the story for which we want to get all titles
      */
-    public void getAllTitles(int storyId){
+    public GatViewModel getAllTitles(int storyId){
         GatInputData inp = new GatInputData(storyId);
         GatViewModel viewM = new GatViewModel();
         GatPresenter pres = new GatPresenter(viewM);
         gat.getAllTitles(inp, pres);
+        return viewM;
     }
 }

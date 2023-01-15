@@ -1,6 +1,7 @@
 package usecases.run_game;
 
 import entities.games.Game;
+import org.example.Log;
 import usecases.pull_data.PdInputBoundary;
 import usecases.pull_data.PdInputData;
 import usecases.pull_game_ended.PgeInputBoundary;
@@ -43,8 +44,11 @@ public class RgInteractor {
          */
         @Override
         public void run () {
+            //Log.useCaseMsg("RG", "Wants GAME lock");
             gameLock.lock();
+            //Log.useCaseMsg("RG", "Got GAME lock");
             if (RgInteractor.this.g.isGameOver()) {
+                Log.useCaseMsg("RG", "Detected isGameOver() = true");
                 // Game ending procedure:
 
                 // Cancel the game timer
@@ -63,6 +67,7 @@ public class RgInteractor {
                 // last execution of the run method has finished, meaning,
                 // no more game timer code will run
                 RgInteractor.this.g.setTimerStopped();
+                Log.useCaseMsg("RG", "Timer has been stopped");
 
             } else {
                 // Regular game procedure:
@@ -79,6 +84,7 @@ public class RgInteractor {
 
             }
             gameLock.unlock();
+            //Log.useCaseMsg("RG", "Released GAME lock");
         }
     }
 

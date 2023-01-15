@@ -99,4 +99,9 @@ public class Response {
     public static Response getFailure (String m) {
         return new Response(Response.ResCode.FAIL, m);
     }
+
+    @Override
+    public String toString() {
+        return "Response(" + code.toString() + ", " + message + ")" ;
+    }
 }

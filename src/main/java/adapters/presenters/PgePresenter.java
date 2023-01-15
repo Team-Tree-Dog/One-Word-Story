@@ -6,6 +6,9 @@ import usecases.pull_game_ended.PgeOutputBoundary;
 import usecases.pull_game_ended.PgeOutputData;
 import usecases.pull_game_ended.PlayerStatisticDTO;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PgePresenter implements PgeOutputBoundary {
 
     private final PgeViewModel viewM;
@@ -23,14 +26,16 @@ public class PgePresenter implements PgeOutputBoundary {
      */
     @Override
     public void notifyGameEnded(PgeOutputData data) {
-        int playerCount = data.getPlayerStatDTOs().length;
-        GameEndPlayerDisplayData[] output = new GameEndPlayerDisplayData[playerCount];
-        for (int i = 0; i < playerCount; i++) {
-            PlayerStatisticDTO outputData = data.getPlayerStatDTOs()[i];
+        Map<String, GameEndPlayerDisplayData> output = new HashMap<>();
+
+        for (PlayerStatisticDTO outputData : data.getPlayerStatDTOs()) {
+
             GameEndPlayerDisplayData d = new GameEndPlayerDisplayData(outputData.getPlayerId(),
                     outputData.getDisplayName(), outputData.getStatData());
-            output[i] = d;
+
+            output.put(outputData.getPlayerId(), d);
         }
-        viewM.setCurrentGameState(output);
+
+        viewM.setEndGameData(output);
     }
 }

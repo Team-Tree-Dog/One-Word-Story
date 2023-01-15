@@ -1,5 +1,9 @@
 package entities.validity_checkers;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
+
 /**
  * Validity Checker of words
  */
@@ -20,10 +24,13 @@ public class ValidityCheckerFacade {
 
     /**
      * Checks whether the word is valid, making modifications if possible
-     * @param wordExpression the word we need to check
-     * @return the valid word if valid, null otherwise
+     * @param wordExpression the word we need to check along with punctuation
+     * @return null if the expression is invalid. Otherwise, an array containing first
+     * the word and then the punctuation. If the punctuation doesn't exist, return an array
+     * with just the word
      */
-    public String isValid(String wordExpression) {
+    @Nullable
+    public String[] isValid(String wordExpression) {
         String punc;
         String word;
 
@@ -38,7 +45,9 @@ public class ValidityCheckerFacade {
         }
 
         if (punc != null && word != null) {
-            return punc + word;
+            if (!punc.equals("")) {
+                return new String[]{word, punc};
+            } return new String[]{word};
         }
         return null;
     }

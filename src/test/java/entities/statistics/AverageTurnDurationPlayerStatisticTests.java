@@ -66,6 +66,9 @@ public class AverageTurnDurationPlayerStatisticTests {
         public boolean isTimerStopped() {
             return false;
         }
+
+        @Override
+        public int getSecondsLeftInCurrentTurn() { return 0; }
     }
 
     private AverageTurnDurationPlayerStatistic stat;

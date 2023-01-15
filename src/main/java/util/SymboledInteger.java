@@ -1,14 +1,18 @@
 package util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.Serializable;
 
 /**
  * An integer which optionally comes with a string suffix
  * <br>
  * e.g: 50s, 10%, 16px
  */
-public class SymboledInteger {
+public class SymboledInteger implements Serializable {
     private Integer value;
     private String suffix;
 
@@ -82,5 +86,14 @@ public class SymboledInteger {
     @Override
     public String toString() {
         return suffix == null ? value.toString() : value + suffix;
+    }
+
+    @NotNull
+    public ObjectNode getJsonNode() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode rootNode = mapper.createObjectNode();
+        rootNode.put("value", value);
+        rootNode.put("suffix", suffix);
+        return rootNode;
     }
 }

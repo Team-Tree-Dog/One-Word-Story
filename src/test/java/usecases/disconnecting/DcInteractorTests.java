@@ -39,8 +39,8 @@ public class DcInteractorTests {
         }
 
         @Override
-        public String isValid(String word) {
-            return word;
+        public String[] isValid(String word) {
+            return new String[]{word};
         }
     }
 
@@ -70,8 +70,8 @@ public class DcInteractorTests {
         TestGame testGame = new TestGame(players);
         TestLobbyManager lm = new TestLobbyManager(testGame);
 
-        assertTrue(lm.getPlayersFromGame().contains(player1));
-        assertTrue(lm.getPlayersFromGame().contains(player2));
+        assertTrue(lm.getGameReadOnly().getPlayers().contains(player1));
+        assertTrue(lm.getGameReadOnly().getPlayers().contains(player2));
 
         AtomicReference<Boolean> hasFinished = new AtomicReference<>(false);
 
@@ -95,8 +95,8 @@ public class DcInteractorTests {
             Thread.onSpinWait();
         }
 
-        assertFalse(lm.getPlayersFromGame().contains(player2));
-        assertTrue(lm.getPlayersFromGame().contains(player1));
+        assertFalse(lm.getGameReadOnly().getPlayers().contains(player2));
+        assertTrue(lm.getGameReadOnly().getPlayers().contains(player1));
     }
 
     /**

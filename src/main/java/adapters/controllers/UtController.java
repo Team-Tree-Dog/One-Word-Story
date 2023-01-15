@@ -20,10 +20,11 @@ public class UtController {
      * @param storyId       the ID of the story for which a particular title is to be upvoted
      * @param titleToUpvote the title for this story that is to be upvoted
      */
-    public void upvoteTitle(int storyId, String titleToUpvote){
+    public UtViewModel upvoteTitle(int storyId, String titleToUpvote){
         UtInputData inputData = new UtInputData(storyId, titleToUpvote);
         UtViewModel viewM = new UtViewModel();
         UtPresenter pres = new UtPresenter(viewM);
         ut.upvoteTitle(inputData, pres);
+        return viewM;
     }
 }

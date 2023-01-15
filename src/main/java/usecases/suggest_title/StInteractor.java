@@ -97,7 +97,7 @@ public class StInteractor implements StInputBoundary {
 
             else if (!titleChecker.checkValid(title)){
                 // check if the title is not valid and initialize output Data accordingly
-                String mess = String.format("'%1$s' is invalid", data.getTitle());
+                String mess = data.getTitle() + " is invalid";
                 Response res = new Response(Response.ResCode.INVALID_TITLE,mess);
                 outputData = new StOutputData(res);
             }
@@ -111,7 +111,7 @@ public class StInteractor implements StInputBoundary {
 
                 if (suggestedTitlesList.contains(title)) {
                     // check if the title was already suggested and initialize output data accordingly
-                    String mess = String.format("'%1$s' was already suggested", data.getTitle());
+                    String mess = data.getTitle() + " was already suggested";
                     Response res = new Response(Response.ResCode.TITLE_ALREADY_SUGGESTED,mess);
                     outputData = new StOutputData(res);
                 } else {
