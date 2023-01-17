@@ -1,11 +1,9 @@
-import adapters.controllers.*;
-import adapters.view_models.PdViewModel;
-import adapters.view_models.PgeViewModel;
+package com.ows.runner;
+
 import adapters.view_models.SsViewModel;
 import com.example.springapp.SpringApp;
 import frameworks_drivers.views.CoreAPI;
 import frameworks_drivers.views.View;
-import io.github.cdimascio.dotenv.Dotenv;
 import org.example.ANSI;
 import org.example.Log;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -15,6 +13,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class SpringBootView extends View {
+
+    private static class DatabaseNotConfiguredException extends RuntimeException {
+        public DatabaseNotConfiguredException(String message) {
+            super(message);
+        }
+    }
 
     private BufferedReader reader;
     private ConfigurableApplicationContext app;
@@ -28,15 +32,17 @@ public class SpringBootView extends View {
      */
     @Override
     public void start(CoreAPI coreAPI) {
+        // Checks for env vars. If not configured, the server will not boot
+        if (System.getenv("POSTGRES_PORT") == null ||
+            System.getenv("POSTGRES_USERNAME") == null ||
+            System.getenv("POSTGRES_PASSWORD") == null ||
+            System.getenv("POSTGRES_ADDRESS") == null) {
+            throw new DatabaseNotConfiguredException("Please ensure that the following environment " +
+                    "variables are set for Postgres configuration: POSTGRES_PORT, POSTGRES_USERNAME," +
+                    " POSTGRES_PASSWORD, POSTGRES_ADDRESS");
+        }
+
         reader = new BufferedReader(new InputStreamReader(System.in));
-
-        // Load env
-        Dotenv dotenv = Dotenv.load();
-        assert dotenv.get("POSTGRES_PORT") != null;
-        assert dotenv.get("POSTGRES_USERNAME") != null;
-        assert dotenv.get("POSTGRES_PASSWORD") != null;
-        assert dotenv.get("POSTGRES_ADDRESS") != null;
-
         app = SpringApp.startServer(coreAPI, new String[0]);
     }
 

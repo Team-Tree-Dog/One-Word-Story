@@ -30,7 +30,7 @@ public class StoryController {
     public String index(Model model,
                         @RequestParam(name="get", defaultValue="latest") String storiesToGet )
             throws InterruptedException {
-        storyRepo.getStoryById(5);
+        //storyRepo.getStoryById(5);
 
         CoreAPI v = SpringApp.coreAPI;
         System.out.println("Get /");

@@ -1,8 +1,12 @@
+package com.ows.runner;
+
 import adapters.controllers.*;
 import adapters.presenters.*;
 import adapters.view_models.PdViewModel;
 import adapters.view_models.PgeViewModel;
+import com.example.springapp.db.PostgresCommentsRepo;
 import com.example.springapp.db.PostgresStoryRepo;
+import com.example.springapp.db.PostgresTitlesRepo;
 import entities.LobbyManager;
 import entities.PlayerFactory;
 import entities.comment_checkers.CommentChecker;
@@ -21,8 +25,8 @@ import frameworks_drivers.repository.in_memory.InMemoryCommentsRepo;
 import frameworks_drivers.repository.in_memory.InMemoryStoryRepo;
 import frameworks_drivers.repository.in_memory.InMemoryTitlesRepo;
 import frameworks_drivers.views.CoreAPI;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import usecases.comment_as_guest.CagInteractor;
 import usecases.ThreadRegister;
 import usecases.disconnecting.DcInteractor;
@@ -165,7 +169,7 @@ public class Main {
         StController stController = new StController(st);
         UtController utController = new UtController(ut);
 
-        System.out.println("Main: Before Spring Init");
+        System.out.println("com.ows.runner.Main: Before Spring Init");
 
         // Setup and run the view
         new SpringBootView(new CoreAPI(

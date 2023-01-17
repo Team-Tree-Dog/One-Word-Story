@@ -17,35 +17,36 @@ import usecases.pull_game_ended.PgeGatewayStory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @Repository
 public class PostgresStoryRepo implements LsGatewayStory, GlsGatewayStory,
         GmlsGatewayStory, GsbiGatewayStories, PgeGatewayStory {
 
-    private static class StoryTableRow {
+    private record StoryTableRow(int storyId, String story,
+                                 double publishUnixTimestamp, String[] authors, int likes) {
 
-        private final int storyId;
-        private final String story;
-        private final double publishUnixTimestamp;
-        private final String[] authors;
-        private final int likes;
-
-        public StoryTableRow (int storyId, @NotNull String story,
-                              double publishUnixTimestamp, String[] authors, int likes) {
-            this.storyId = storyId;
-            this.story = story;
-            this.publishUnixTimestamp = publishUnixTimestamp;
-            this.authors = authors;
-            this.likes = likes;
+            private StoryTableRow(int storyId, @NotNull String story,
+                                  double publishUnixTimestamp, String[] authors, int likes) {
+                this.storyId = storyId;
+                this.story = story;
+                this.publishUnixTimestamp = publishUnixTimestamp;
+                this.authors = authors;
+                this.likes = likes;
+            }
         }
 
-        public int getStoryId() { return storyId; }
-        public String getStory() { return story; }
-        public double getPublishUnixTimestamp() { return publishUnixTimestamp; }
-        public int getLikes() { return likes; }
-        public String[] getAuthors() { return authors; }
+    private static class StoryTableRowMapper implements RowMapper<StoryTableRow> {
+        @Override
+        public StoryTableRow mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new StoryTableRow(
+                    rs.getInt("story_id"),
+                    rs.getString("story"),
+                    rs.getInt("publish_unix_timestamp_utc_seconds"),
+                    new String[0],
+                    rs.getInt("num_likes")
+            );
+        }
     }
 
     @Autowired
@@ -58,18 +59,7 @@ public class PostgresStoryRepo implements LsGatewayStory, GlsGatewayStory,
 
     @Override
     public @NotNull RepoRes<StoryRepoData> getStoryById(int storyId) {
-        StoryTableRow row = jdbcTemplate.query("SELECT * FROM stories", new RowMapper<StoryTableRow>() {
-            @Override
-            public StoryTableRow mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new StoryTableRow(
-                        rs.getInt("story_id"),
-                        rs.getString("story"),
-                        rs.getInt("publish_unix_timestamp_utc_seconds"),
-                        new String[0],
-                        rs.getInt("num_likes")
-                );
-            }
-        }).get(0);
+        StoryTableRow row = jdbcTemplate.query("SELECT * FROM stories", new StoryTableRowMapper()).get(0);
 
         System.out.println(row.storyId);
         System.out.println(row.story);

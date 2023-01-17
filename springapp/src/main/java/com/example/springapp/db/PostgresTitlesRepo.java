@@ -1,6 +1,9 @@
 package com.example.springapp.db;
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import usecases.RepoRes;
 import usecases.Response;
 import usecases.TitleRepoData;
@@ -11,8 +14,12 @@ import usecases.get_story_by_id.GsbiGatewayTitles;
 import usecases.suggest_title.StGatewayTitles;
 import usecases.upvote_title.UtGatewayTitles;
 
+@Repository
 public class PostgresTitlesRepo implements GatGatewayTitles, StGatewayTitles,
         UtGatewayTitles, GlsGatewayTitles, GmlsGatewayTitles, GsbiGatewayTitles {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public @NotNull Response suggestTitle(int storyId, @NotNull String titleSuggestion) {
