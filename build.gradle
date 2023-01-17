@@ -11,9 +11,15 @@ repositories {
 dependencies {
     implementation project(':terminal_debug')
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.jetbrains:annotations:23.0.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.jetbrains:annotations:23.1.0'
+    implementation 'com.fasterxml.jackson.module:jackson-module-jsonSchema:2.14.0'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 }
 
 sourceCompatibility = '17'
@@ -41,5 +47,11 @@ test {
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'Main'
     }
 }

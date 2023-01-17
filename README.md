@@ -46,7 +46,7 @@ In this project, we used the following design patterns. Many of them were implem
 
 Although, we aimed to satisfy Clean Architecture design as much as possible, in certain places we made a conscious decision not to adhere to certain rules.
 
-* In Pull Game Ended (PGE) use-case, we save RecursiveSymboledIntegerHashMap (RSIH) and pass it to output to the adapters layer despite it being an entity. Although RSIH is an entity, it does not have any ties to actual fundamental entities; in fact, it is a utility data structure which is effectively independent of entities. This being said, instead of pointlessly transferring it to a duplicate object by a different name, we will pass it directly. We do not believe that this crosses layers. In fact, we even store these classes in a separate "util" folder.
+* In Pull Game Ended (PGE) use-case, we save RecursiveSymboledIntegerHashMap (RSIH) and pass it to output to the net.onewordstory.core.adapters layer despite it being an entity. Although RSIH is an entity, it does not have any ties to actual fundamental net.onewordstory.core.entities; in fact, it is a utility data structure which is effectively independent of net.onewordstory.core.entities. This being said, instead of pointlessly transferring it to a duplicate object by a different name, we will pass it directly. We do not believe that this crosses layers. In fact, we even store these classes in a separate "net.onewordstory.core.util" folder.
 * In the new view model structure, we directly return use-case-layer objects - StoryRepoData, TitleRepoData, CommentRepoData, and the Response object - to the view. this means that the view crosses into the use case layer. This is not unfixable since alternatively, we could create a duplicate object with the same fields. Moreover, there is not much more manipulation needed for the view to display the situation.
 
 
@@ -62,7 +62,7 @@ Although, we aimed to satisfy Clean Architecture design as much as possible, in 
 - Clone the repository and open the project in IntelliJ
 - Run `git checkout 58-view-spring-view` in terminal to switch to the latest version of the project
 - Ensure that Gradle and SDK versions in Intellij are configured to Java 17
-- Setup a configuration to start the `Main` method in the `runner` submodule: 
+- Setup a configuration to start the `net.onewordstory.core.Main` method in the `runner` submodule: 
 <img width="712" alt="image" src="https://user-images.githubusercontent.com/47086586/206599530-cdaf6fc5-6740-4cf1-b54b-11f9deb25bf8.png">
 
 - Run the configuration
