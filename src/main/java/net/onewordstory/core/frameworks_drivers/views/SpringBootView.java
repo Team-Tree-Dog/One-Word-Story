@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Locale;
 
 @Component
 public class SpringBootView extends View {
@@ -33,11 +34,18 @@ public class SpringBootView extends View {
      */
     @Override
     public void start() {
+        if (System.getenv("PROD") == null) {
+            Log.sendMessage(ANSI.GREEN, "SpringBootView", ANSI.LIGHT_BLUE,
+                    "PROD environment variable not set, defaults to false. This means that" +
+                            "an in-memory DB will be used. set PROD=true to use postgres");
+        }
+
         // Checks for env vars. If not configured, the server will not boot
-        if (System.getenv("POSTGRES_PORT") == null ||
-            System.getenv("POSTGRES_USERNAME") == null ||
-            System.getenv("POSTGRES_PASSWORD") == null ||
-            System.getenv("POSTGRES_ADDRESS") == null) {
+        if (System.getenv("PROD").toLowerCase(Locale.ENGLISH).equals("true") && (
+                System.getenv("POSTGRES_PORT") == null ||
+                System.getenv("POSTGRES_USERNAME") == null ||
+                System.getenv("POSTGRES_PASSWORD") == null ||
+                System.getenv("POSTGRES_ADDRESS") == null)) {
             throw new DatabaseNotConfiguredException("Please ensure that the following environment " +
                     "variables are set for Postgres configuration: POSTGRES_PORT, POSTGRES_USERNAME," +
                     " POSTGRES_PASSWORD, POSTGRES_ADDRESS");

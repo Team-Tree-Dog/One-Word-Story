@@ -1,13 +1,11 @@
 package net.onewordstory.spring;
 
-import net.onewordstory.core.adapters.controllers.JplController;
 import net.onewordstory.core.adapters.display_data.not_ended_display_data.GameDisplayData;
 import net.onewordstory.core.adapters.view_models.JplViewModel;
 import net.onewordstory.core.adapters.view_models.SwViewModel;
 import org.example.Log;
 import org.jetbrains.annotations.NotNull;
 import net.onewordstory.core.usecases.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;

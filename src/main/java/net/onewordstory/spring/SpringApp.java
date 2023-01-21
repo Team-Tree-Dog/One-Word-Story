@@ -24,22 +24,38 @@ import net.onewordstory.core.frameworks_drivers.repository.in_memory.InMemorySto
 import net.onewordstory.core.frameworks_drivers.repository.in_memory.InMemoryTitlesRepo;
 import net.onewordstory.core.frameworks_drivers.views.SpringBootView;
 import net.onewordstory.core.usecases.ThreadRegister;
+import net.onewordstory.core.usecases.comment_as_guest.CagGatewayComments;
 import net.onewordstory.core.usecases.comment_as_guest.CagInteractor;
 import net.onewordstory.core.usecases.disconnecting.DcInteractor;
+import net.onewordstory.core.usecases.get_all_titles.GatGatewayTitles;
 import net.onewordstory.core.usecases.get_all_titles.GatInteractor;
+import net.onewordstory.core.usecases.get_latest_stories.GlsGatewayStory;
+import net.onewordstory.core.usecases.get_latest_stories.GlsGatewayTitles;
 import net.onewordstory.core.usecases.get_latest_stories.GlsInteractor;
+import net.onewordstory.core.usecases.get_most_liked_stories.GmlsGatewayStory;
+import net.onewordstory.core.usecases.get_most_liked_stories.GmlsGatewayTitles;
 import net.onewordstory.core.usecases.get_most_liked_stories.GmlsInteractor;
+import net.onewordstory.core.usecases.get_story_by_id.GsbiGatewayStories;
+import net.onewordstory.core.usecases.get_story_by_id.GsbiGatewayTitles;
 import net.onewordstory.core.usecases.get_story_by_id.GsbiInteractor;
+import net.onewordstory.core.usecases.get_story_comments.GscGatewayComments;
 import net.onewordstory.core.usecases.get_story_comments.GscInteractor;
 import net.onewordstory.core.usecases.join_public_lobby.JplInteractor;
+import net.onewordstory.core.usecases.like_story.LsGatewayStory;
 import net.onewordstory.core.usecases.like_story.LsInteractor;
 import net.onewordstory.core.usecases.pull_data.PdInteractor;
+import net.onewordstory.core.usecases.pull_game_ended.PgeGatewayStory;
 import net.onewordstory.core.usecases.pull_game_ended.PgeInteractor;
 import net.onewordstory.core.usecases.shutdown_server.SsInteractor;
 import net.onewordstory.core.usecases.sort_players.SpInteractor;
 import net.onewordstory.core.usecases.submit_word.SwInteractor;
+import net.onewordstory.core.usecases.suggest_title.StGatewayTitles;
 import net.onewordstory.core.usecases.suggest_title.StInteractor;
+import net.onewordstory.core.usecases.upvote_title.UtGatewayTitles;
 import net.onewordstory.core.usecases.upvote_title.UtInteractor;
+import net.onewordstory.spring.db.PostgresCommentsRepo;
+import net.onewordstory.spring.db.PostgresStoryRepo;
+import net.onewordstory.spring.db.PostgresTitlesRepo;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -51,6 +67,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+
+import java.util.Locale;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "net.onewordstory.core")
@@ -71,10 +89,9 @@ public class SpringApp {
 	}
 
 	/**
-	 * Configures BEANNNSSSS for the websocket.
-	 * That is, tells spring the necessary information
 	 * to plug websockets into the application. In this case, we configure the class that will
-	 * be handling our websocket logic
+	 * be handling our websocket logic. We do this by injecting use cases into a socket handler
+	 * which then gets injected into the websocket handler configuration
 	 */
 	@Configuration
 	@EnableWebSocket
@@ -89,6 +106,11 @@ public class SpringApp {
 		}
 	}
 
+	/**
+	 * Takes care of autowiring the parent view class. This is done in case
+	 * the parent view needs access to any use cases. In our case, the parent
+	 * view needs to shut down the server.
+	 */
 	@Component
 	public static class SpringBootViewInit implements InitializingBean {
 		@Autowired
@@ -100,8 +122,17 @@ public class SpringApp {
 		}
 	}
 
+	/**
+	 * Builds clean architecture and exposes controllers, and the PD/PGE view models
+	 * as beans which can be autowired across spring where necessary
+	 */
 	@Configuration
+	@ComponentScan(basePackages = "net.onewordstory.spring")
 	public static class UseCaseApiConfig {
+
+		@Autowired PostgresStoryRepo storyRepo;
+		@Autowired PostgresCommentsRepo commentsRepo;
+		@Autowired PostgresTitlesRepo titlesRepo;
 
 		private final CagInteractor cag;
 		private final DcInteractor dc;
@@ -133,10 +164,20 @@ public class SpringApp {
 			DisplayNameChecker displayChecker = new DisplayNameCheckerBasic();
 			SuggestedTitleChecker titleChecker = new SuggestedTitleCheckerBasic();
 
-			// Create desired Story, Titles, and Comments repos
-			InMemoryTitlesRepo titlesRepo = new InMemoryTitlesRepo();
-			InMemoryCommentsRepo commentsRepo = new InMemoryCommentsRepo();
-			InMemoryStoryRepo storyRepo = new InMemoryStoryRepo();
+			// Create desired Story, Titles, and Comments repos (currently uses in-memory
+			// if PROD!=true, otherwise postgres
+			Object storyRepo;
+			Object titlesRepo;
+			Object commentsRepo;
+			if (!System.getenv("PROD").toLowerCase(Locale.ENGLISH).equals("true")) {
+				titlesRepo = new InMemoryTitlesRepo();
+				commentsRepo = new InMemoryCommentsRepo();
+				storyRepo = new InMemoryStoryRepo();
+			} else {
+				storyRepo = this.storyRepo;
+				titlesRepo = this.titlesRepo;
+				commentsRepo = this.commentsRepo;
+			}
 
 			// Create desired per-player statistics for injection
 			PerPlayerIntStatistic[] statistics = {
@@ -153,24 +194,24 @@ public class SpringApp {
 
 			// Start up sort players
 			PdInteractor pd = new PdInteractor(pdPresenter);
-			PgeInteractor pge = new PgeInteractor(pgePresenter, storyRepo);
+			PgeInteractor pge = new PgeInteractor(pgePresenter, (PgeGatewayStory) storyRepo);
 			SpInteractor sp = new SpInteractor(manager, pge, pd);
 			sp.startTimer();
 
 			// Use cases called by users
-			this.cag = new CagInteractor(commentsRepo, commentChecker, displayChecker, register);
+			this.cag = new CagInteractor((CagGatewayComments) commentsRepo, commentChecker, displayChecker, register);
 			this.dc = new DcInteractor(manager, register);
-			this.gls = new GlsInteractor(storyRepo, titlesRepo, register);
-			this.gmls = new GmlsInteractor(storyRepo, titlesRepo, register);
-			this.gsbi = new GsbiInteractor(storyRepo, titlesRepo, register);
-			this.gsc = new GscInteractor(commentsRepo, register);
-			this.gat = new GatInteractor(titlesRepo, register);
+			this.gls = new GlsInteractor((GlsGatewayStory) storyRepo, (GlsGatewayTitles) titlesRepo, register);
+			this.gmls = new GmlsInteractor((GmlsGatewayStory) storyRepo, (GmlsGatewayTitles) titlesRepo, register);
+			this.gsbi = new GsbiInteractor((GsbiGatewayStories) storyRepo, (GsbiGatewayTitles) titlesRepo, register);
+			this.gsc = new GscInteractor((GscGatewayComments) commentsRepo, register);
+			this.gat = new GatInteractor((GatGatewayTitles) titlesRepo, register);
 			this.jpl = new JplInteractor(manager, register);
-			this.ls = new LsInteractor(storyRepo, register);
+			this.ls = new LsInteractor((LsGatewayStory) storyRepo, register);
 			this.ss = new SsInteractor(register);
 			this.sw = new SwInteractor(manager, register);
-			this.st = new StInteractor(titlesRepo, titleChecker, register);
-			this.ut = new UtInteractor(titlesRepo, register);
+			this.st = new StInteractor((StGatewayTitles) titlesRepo, titleChecker, register);
+			this.ut = new UtInteractor((UtGatewayTitles) titlesRepo, register);
 		}
 
 		@Bean PdViewModel pdViewModel() {return pdViewM;}

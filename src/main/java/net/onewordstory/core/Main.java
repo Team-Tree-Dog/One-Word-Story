@@ -8,7 +8,7 @@ import net.onewordstory.core.frameworks_drivers.views.SpringBootView;
 public class Main {
 
     /**
-     * Builds the clean arch structure and initializes it.
+     * Initializes view
      * @param args Command line arguments (currently none necessary)
      */
     public static void main (String[] args) {
