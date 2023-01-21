@@ -1,15 +1,19 @@
 package net.onewordstory.core.frameworks_drivers.views;
 
+import net.onewordstory.core.adapters.controllers.SsController;
 import net.onewordstory.core.adapters.view_models.SsViewModel;
 import net.onewordstory.spring.SpringApp;
 import org.example.ANSI;
 import org.example.Log;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+@Component
 public class SpringBootView extends View {
 
     private static class DatabaseNotConfiguredException extends RuntimeException {
@@ -21,15 +25,14 @@ public class SpringBootView extends View {
     private BufferedReader reader;
     private ConfigurableApplicationContext app;
 
-    public SpringBootView(CoreAPI api) {
-        super(api);
-    }
+    @Autowired
+    private SsController ssController;
 
     /**
      * Start spring application and console input reader
      */
     @Override
-    public void start(CoreAPI coreAPI) {
+    public void start() {
         // Checks for env vars. If not configured, the server will not boot
         if (System.getenv("POSTGRES_PORT") == null ||
             System.getenv("POSTGRES_USERNAME") == null ||
@@ -41,7 +44,7 @@ public class SpringBootView extends View {
         }
 
         reader = new BufferedReader(new InputStreamReader(System.in));
-        app = SpringApp.startServer(coreAPI, new String[0]);
+        app = SpringApp.startServer(this, new String[0]);
     }
 
     /**
@@ -49,7 +52,7 @@ public class SpringBootView extends View {
      * Terminate loop if "shutdown" command issues
      */
     @Override
-    public void run(CoreAPI coreAPI) {
+    public void run() {
         while (true) {
             try {
                 String inp = reader.readLine();
@@ -70,10 +73,10 @@ public class SpringBootView extends View {
      * the spring application and console reader.
      */
     @Override
-    public void end(CoreAPI coreAPI) {
+    public void end() {
         // Calls shutdown
         Log.sendMessage("SPRING VIEW", ANSI.PURPLE, "Initiating Shutdown Use Case...");
-        SsViewModel ssViewM = coreAPI.ssController.shutdownServer();
+        SsViewModel ssViewM = ssController.shutdownServer();
         Log.sendMessage("SPRING VIEW", ANSI.PURPLE, "Use Cases have been shut down!");
 
         app.close();

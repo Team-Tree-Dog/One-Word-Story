@@ -10,36 +10,27 @@ package net.onewordstory.core.frameworks_drivers.views;
  */
 public abstract class View {
 
-    private final CoreAPI api;
-
     /**
-     * @param api access to core API of the clean arch program
+     * Initialize your view. This is the method which should boot up all the clean architecture
      */
-    public View(CoreAPI api) {
-        this.api = api;
-    }
-
-    /**
-     * Initialize your view
-     */
-    public abstract void start (CoreAPI coreAPI);
+    public abstract void start ();
 
     /**
      * Run the core logic of your view
      */
-    public abstract void run (CoreAPI coreAPI);
+    public abstract void run ();
 
     /**
      * Teardown your view's resources
      */
-    public abstract void end (CoreAPI coreAPI);
+    public abstract void end ();
 
     /**
      * Start and run the application.
      */
     public void runApplicationLoop() {
-        start(api);
-        run(api);
-        end(api);
+        start();
+        run();
+        end();
     };
 }

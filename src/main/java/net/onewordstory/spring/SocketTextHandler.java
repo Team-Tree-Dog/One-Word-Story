@@ -1,10 +1,17 @@
 package net.onewordstory.spring;
+import net.onewordstory.core.adapters.controllers.DcController;
+import net.onewordstory.core.adapters.controllers.JplController;
+import net.onewordstory.core.adapters.controllers.SwController;
 import net.onewordstory.core.adapters.display_data.GameEndPlayerDisplayData;
 import net.onewordstory.core.adapters.display_data.not_ended_display_data.GameDisplayData;
 import net.onewordstory.core.adapters.view_models.DcViewModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import net.onewordstory.core.adapters.view_models.PdViewModel;
+import net.onewordstory.core.adapters.view_models.PgeViewModel;
 import org.example.Log;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -16,20 +23,31 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static net.onewordstory.spring.SpringApp.coreAPI;
-
 /**
  * Handler logic for game websocket!
  */
+@Component
 public class SocketTextHandler extends TextWebSocketHandler {
+
+    final DcController dcController;
+    final JplController jplController;
+    final SwController swController;
 
     /**
      * Injects into PD a lambda which will broadcast the new PD content to all
      * clients. Also injects PGE lambda for reacting to games ending
      */
-    public SocketTextHandler() {
+    @Autowired
+    public SocketTextHandler(PdViewModel pdViewM, PgeViewModel pgeViewM,
+                             DcController dcController,
+                             JplController jplController,
+                             SwController swController) {
+        this.dcController = dcController;
+        this.jplController = jplController;
+        this.swController = swController;
+
         // PD
-        coreAPI.pdViewM.injectCallback((GameDisplayData gameData) -> {
+        pdViewM.injectCallback((GameDisplayData gameData) -> {
             try {
                 Log.sendSocketGeneral("PD Callback", "Broadcasting new Game State");
                 // Broadcast only to those in a game
@@ -42,7 +60,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
         });
 
         // PGE
-        coreAPI.pgeViewM.injectCallback((playerStatData) -> {
+        pgeViewM.injectCallback((playerStatData) -> {
             Log.sendSocketGeneral("PGE Callback", "Sending player stats to each player");
 
             // Loop through ALL sessions
@@ -121,7 +139,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
         PlayerState p = sessionToPlyState.get(session.getId());
 
         // Calls disconnect on a thread. Response shouldn't matter, player has disconnected!
-        DcViewModel viewM = coreAPI.dcController.disconnect(p.playerId());
+        DcViewModel viewM = dcController.disconnect(p.playerId());
 
         // Waits for view model data. Response object is set last.
         Response res = viewM.getResponseAwaitable().await();
@@ -158,7 +176,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
 
             // Convert raw payload to command object. Throws error if the payload isn't
             // a known type
-            ClientCommand incomingCmd = ClientCommand.parseCommand(payload);
+            ClientCommand incomingCmd = ClientCommand.parseCommand(this, payload);
             Log.sendSocketGeneral("HANDLE CMD RECV", incomingCmd.toString());
 
             // Call command handler to get corresponding server response

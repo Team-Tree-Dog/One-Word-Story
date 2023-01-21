@@ -1,15 +1,16 @@
 package net.onewordstory.spring;
 
+import net.onewordstory.core.adapters.controllers.JplController;
 import net.onewordstory.core.adapters.display_data.not_ended_display_data.GameDisplayData;
 import net.onewordstory.core.adapters.view_models.JplViewModel;
 import net.onewordstory.core.adapters.view_models.SwViewModel;
 import org.example.Log;
 import org.jetbrains.annotations.NotNull;
 import net.onewordstory.core.usecases.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-
-import static net.onewordstory.spring.SpringApp.coreAPI;
 
 /**
  * Unifies a structure of all the possible INCOMING (RECEIVE) messages from clients.
@@ -23,6 +24,7 @@ import static net.onewordstory.spring.SpringApp.coreAPI;
  * The format of the messages are agreed upon
  * between client side JS code and this backend Java code
  */
+@Component
 public sealed interface ClientCommand {
     String CMD_TRY_JOIN = "JPL";
     String CMD_SEND_WORD = "SW";
@@ -40,9 +42,10 @@ public sealed interface ClientCommand {
 
     /**
      * JPL Command for initial joining
+     * @param handler reference to the parent handler which has access to use case controllers
      * @param playerName desired display name of player who is trying to join
      */
-    record JoinPublicLobby(String playerName) implements ClientCommand {
+    record JoinPublicLobby(SocketTextHandler handler, String playerName) implements ClientCommand {
         /**
          * <h2>Sub Handler: JPL</h2>
          * A newly connected client must first tryJoin in order to continue to the game. All
@@ -55,7 +58,7 @@ public sealed interface ClientCommand {
         @Override
         public ServerResponse[] handler(PlayerState playerState) throws InterruptedException {
             // Calls JPL
-            JplViewModel jplViewM = coreAPI.jplController.joinPublicLobby(
+            JplViewModel jplViewM = handler.jplController.joinPublicLobby(
                     playerState.playerId(), playerName);
 
             // Wait for properties to be set
@@ -96,8 +99,9 @@ public sealed interface ClientCommand {
     /**
      * A player's command to try to submit a word to the game
      * @param word Punctuation and word that player wants to submit
+     * @param handler reference to the parent handler which has access to use case controllers
      */
-    record SubmitWord(String word) implements ClientCommand {
+    record SubmitWord(SocketTextHandler handler, String word) implements ClientCommand {
         /**
          * <h2>Sub Handler: SW</h2>
          * Handler to submit a word to the game. Called when a player
@@ -107,7 +111,7 @@ public sealed interface ClientCommand {
          */
         @Override
         public ServerResponse[] handler(PlayerState playerState) throws InterruptedException {
-            SwViewModel viewM = coreAPI.swController.submitWord(playerState.playerId(), word);
+            SwViewModel viewM = handler.swController.submitWord(playerState.playerId(), word);
 
             // Res is always set last, and gameData isnt guaranteed to be set, hence we do this:
             Response res = viewM.getResponseAwaitable().await();
@@ -125,17 +129,18 @@ public sealed interface ClientCommand {
      * Parse raw payload into a client command object.
      * This is a factory
      * @param payload content received from a client over the websocket
+     * @param handler reference to the parent handler which has access to use case controllers
      * @return a parsed client command object
      */
-    static ClientCommand parseCommand(String payload) {
+    static ClientCommand parseCommand(SocketTextHandler handler, String payload) {
 
         // Splits the payload into COMMAND + BODY by the agreed separator
         String[] payloadBlocks = payload.split(Character.toString(SEPARATOR));
 
         // Switch on the command header
         return switch (payloadBlocks[0]) {
-            case CMD_TRY_JOIN -> new JoinPublicLobby(payloadBlocks.length > 1 ? payloadBlocks[1] : "");
-            case CMD_SEND_WORD -> new SubmitWord(payloadBlocks.length > 1 ? payloadBlocks[1] : "");
+            case CMD_TRY_JOIN -> new JoinPublicLobby(handler, payloadBlocks.length > 1 ? payloadBlocks[1] : "");
+            case CMD_SEND_WORD -> new SubmitWord(handler, payloadBlocks.length > 1 ? payloadBlocks[1] : "");
 
             // Crash if client sent a command which isn't recognized by the server
             default -> throw new UnsupportedOperationException("Invalid parameter: " + payloadBlocks[0]);

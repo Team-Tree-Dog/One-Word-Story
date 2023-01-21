@@ -161,7 +161,4 @@ public sealed interface ServerResponse {
         @Override
         public boolean isBroadcast() { return isBroadcast; }
     }
-
-    // Add new state for disconnected PlayerState, and add boradcast constraints to prevent game
-    // broadcast to non-joined players or disconnected ones
 }
