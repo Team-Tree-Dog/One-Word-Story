@@ -66,7 +66,7 @@ public class UtInteractorTests {
          * @return "success" and predetermined output when getAllTitlesSuccess is true,
          * and "failure" with null otherwise
          */
-        public @NotNull Response upvoteTitle(int storyId, String titleToUpvote) {
+        public @NotNull Response upvoteTitle(int storyId, @NotNull String titleToUpvote) {
             if (upvoteTitleSuccess) {
                 return Response.getSuccessful("Customizable UtGateway would accept anything");
             }

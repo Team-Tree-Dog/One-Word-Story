@@ -141,7 +141,7 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles,
         RepoRes<TitleRepoData> res = new RepoRes<>();
 
         lock.lock();
-        // Convert to CommentRepoData objects
+        // Convert to TitleRepoData objects
         for (TitlesTableRow row : titlesTable) {
             if (row.storyId == storyId) {
                 res.addRow(new TitleRepoData(
@@ -164,7 +164,7 @@ public class InMemoryTitlesRepo implements GatGatewayTitles, StGatewayTitles,
      */
     @Override
     @NotNull
-    public Response upvoteTitle(int storyId, String titleToUpvote) {
+    public Response upvoteTitle(int storyId, @NotNull String titleToUpvote) {
         Response res = null;
 
         lock.lock();

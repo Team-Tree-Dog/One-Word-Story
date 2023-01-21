@@ -15,5 +15,5 @@ public interface UtGatewayTitles {
      * @return              a Response object that records whether upvoting the title was successful
      */
     @NotNull
-    Response upvoteTitle(int storyId, String titleToUpvote);
+    Response upvoteTitle(int storyId, @NotNull String titleToUpvote);
 }
