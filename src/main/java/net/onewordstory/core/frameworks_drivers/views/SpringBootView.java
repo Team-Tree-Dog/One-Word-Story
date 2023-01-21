@@ -37,11 +37,12 @@ public class SpringBootView extends View {
         if (System.getenv("PROD") == null) {
             Log.sendMessage(ANSI.GREEN, "SpringBootView", ANSI.LIGHT_BLUE,
                     "PROD environment variable not set, defaults to false. This means that" +
-                            "an in-memory DB will be used. set PROD=true to use postgres");
+                            " an in-memory DB will be used. set PROD=true to use postgres");
         }
 
         // Checks for env vars. If not configured, the server will not boot
-        if (System.getenv("PROD").toLowerCase(Locale.ENGLISH).equals("true") && (
+        if (System.getenv("PROD") != null &&
+                System.getenv("PROD").toLowerCase(Locale.ENGLISH).equals("true") && (
                 System.getenv("POSTGRES_PORT") == null ||
                 System.getenv("POSTGRES_USERNAME") == null ||
                 System.getenv("POSTGRES_PASSWORD") == null ||

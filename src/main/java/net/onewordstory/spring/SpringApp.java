@@ -130,10 +130,6 @@ public class SpringApp {
 	@ComponentScan(basePackages = "net.onewordstory.spring")
 	public static class UseCaseApiConfig {
 
-		@Autowired PostgresStoryRepo storyRepo;
-		@Autowired PostgresCommentsRepo commentsRepo;
-		@Autowired PostgresTitlesRepo titlesRepo;
-
 		private final CagInteractor cag;
 		private final DcInteractor dc;
 		private final GlsInteractor gls;
@@ -150,7 +146,10 @@ public class SpringApp {
 		private final PdViewModel pdViewM;
 		private final PgeViewModel pgeViewM;
 
-		public UseCaseApiConfig() {
+		@Autowired
+		public UseCaseApiConfig(PostgresStoryRepo postgresStoryRepo,
+								PostgresTitlesRepo postgresTitlesRepo,
+								PostgresCommentsRepo postgresCommentsRepo) {
 			this.pdViewM = new PdViewModel();
 			this.pgeViewM = new PgeViewModel();
 
@@ -169,14 +168,15 @@ public class SpringApp {
 			Object storyRepo;
 			Object titlesRepo;
 			Object commentsRepo;
-			if (!System.getenv("PROD").toLowerCase(Locale.ENGLISH).equals("true")) {
+			if (System.getenv("PROD") == null ||
+					!System.getenv("PROD").toLowerCase(Locale.ENGLISH).equals("true")) {
 				titlesRepo = new InMemoryTitlesRepo();
 				commentsRepo = new InMemoryCommentsRepo();
 				storyRepo = new InMemoryStoryRepo();
 			} else {
-				storyRepo = this.storyRepo;
-				titlesRepo = this.titlesRepo;
-				commentsRepo = this.commentsRepo;
+				storyRepo = postgresStoryRepo;
+				titlesRepo = postgresTitlesRepo;
+				commentsRepo = postgresCommentsRepo;
 			}
 
 			// Create desired per-player statistics for injection
