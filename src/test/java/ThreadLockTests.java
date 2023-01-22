@@ -1,28 +1,27 @@
-import entities.*;
-import entities.display_name_checkers.DisplayNameChecker;
-import entities.games.Game;
-import entities.games.GameFactory;
+import net.onewordstory.core.entities.*;
+import net.onewordstory.core.entities.display_name_checkers.DisplayNameChecker;
+import net.onewordstory.core.entities.games.Game;
+import net.onewordstory.core.entities.games.GameFactory;
 
-import entities.games.GameReadOnly;
-import entities.statistics.PerPlayerIntStatistic;
-import entities.validity_checkers.*;
-import exceptions.*;
+import net.onewordstory.core.entities.games.GameReadOnly;
+import net.onewordstory.core.entities.statistics.PerPlayerIntStatistic;
+import net.onewordstory.core.entities.validity_checkers.*;
+import net.onewordstory.core.exceptions.*;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.*;
 
-import usecases.Response;
-import usecases.ThreadRegister;
-import usecases.disconnecting.*;
-import usecases.join_public_lobby.*;
-import usecases.pull_data.PdInputBoundary;
-import usecases.pull_game_ended.*;
-import usecases.run_game.RgInteractor;
-import usecases.sort_players.SpInteractor;
-import usecases.submit_word.*;
-import util.RecursiveSymboledIntegerHashMap;
-import util.SymboledInteger;
+import net.onewordstory.core.usecases.Response;
+import net.onewordstory.core.usecases.ThreadRegister;
+import net.onewordstory.core.usecases.disconnecting.*;
+import net.onewordstory.core.usecases.join_public_lobby.*;
+import net.onewordstory.core.usecases.pull_data.PdInputBoundary;
+import net.onewordstory.core.usecases.pull_game_ended.*;
+import net.onewordstory.core.usecases.run_game.RgInteractor;
+import net.onewordstory.core.usecases.sort_players.SpInteractor;
+import net.onewordstory.core.usecases.submit_word.*;
+import net.onewordstory.core.util.RecursiveSymboledIntegerHashMap;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -31,7 +30,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static usecases.Response.ResCode.*;
+import static net.onewordstory.core.usecases.Response.ResCode.*;
 
 
 public class ThreadLockTests {
