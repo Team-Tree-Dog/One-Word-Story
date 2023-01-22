@@ -1,6 +1,6 @@
-IS_SECURE = false
-DOMAIN = window.location.hostname + (!!window.location.port ? ":" + window.location.port : "")
-SOCKET_URL = "ws"+(IS_SECURE ? "s" : "")+"://"+DOMAIN+"/game"
+IS_SECURE = false;
+DOMAIN = window.location.hostname + (!!window.location.port ? ":" + window.location.port : "");
+SOCKET_URL = "ws"+(IS_SECURE ? "s" : "")+"://"+DOMAIN+"/game";
 
 $(document).ready(() => {
     let urlParams = new URLSearchParams(window.location.search);

@@ -102,7 +102,9 @@ public class SpringApp {
 
 		@Override
 		public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-			registry.addHandler(handler, "/game");
+			registry
+					.addHandler(handler, "/game")
+					.setAllowedOriginPatterns("*");
 		}
 	}
 
