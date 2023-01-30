@@ -129,14 +129,14 @@ p.comment {
     font-family: Lobster, serif;
 }
 
-.btn{
+#heartButton {
     background: transparent;
     border: none;
-    font-size: 21px;
+    font-size: 32px;
     outline: none;
-    color: grey;
+    color: var(--color1);
 }
 
-.btn i:hover{
+#heartButton i:hover{
     cursor: pointer;
 }

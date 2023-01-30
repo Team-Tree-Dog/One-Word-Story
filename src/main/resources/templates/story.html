@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org" lang="en">
-<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lobster" />
-<!-- TODO: change path -->
-<link rel="stylesheet" href="../static/css/story.css">
 
 <head>
     <meta charset="UTF-8">
-    <script src="https://kit.fontawesome.com/f6dcf461c1.js" crossorigin="anonymous"></script>
     <title th:text="${story.title()}"></title>
+    <!-- for heart symbol -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lobster" />
+    <!-- TODO: change path -->
+    <link rel="stylesheet" href="../static/css/story.css">
 </head>
 
 <body>
@@ -21,12 +22,14 @@
             <h3> Like the Story </h3>
             <div class="center">
                 <form method="POST" th:action="@{like/story/{id}(id = ${story.id()})}">
-                    <Button type="submit" onclick="changeHeartColor()" id="btn1" class="btn"><i class="fa fa-heart"></i></Button>
+                    <Button type="submit" onclick="changeHeartColor()" id="heartButton">
+                        <i class="fa fa-heart"></i>
+                    </Button>
                 </form>
             </div>
 
             <br><br>
-            <h3>< Vote for Title ></h3>
+            <h3>Vote for Title</h3>
             <div id="all_votes">
                 <form method="POST" th:action="@{upvote-suggestion/suggestion(id = ${suggestion.title()},
                 storyId = ${story.id()})}"

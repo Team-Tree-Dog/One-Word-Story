@@ -4,6 +4,6 @@ function addVote(e){
 }
 
 function changeHeartColor(){
-    const btn1 = document.getElementById('btn1');
-    btn1.style.color === "red" ? btn1.style.color = "grey" : btn1.style.color = "red";
+    const heartButton = document.getElementById('heartButton');
+    heartButton.style.color === "red" ? heartButton.style.color = "#985b26" : heartButton.style.color = "red";
 }
