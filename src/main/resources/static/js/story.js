@@ -3,13 +3,7 @@ function addVote(e){
     e.nextElementSibling.innerText = count;
 }
 
-function Toggle1(){
-    const btnvar1 = document.getElementById('btn1');
-
-    if (btnvar1.style.color ==="red") {
-        btnvar1.style.color = "grey"
-    }
-    else{
-        btnvar1.style.color = "red"
-    }
+function changeHeartColor(){
+    const btn1 = document.getElementById('btn1');
+    btn1.style.color === "red" ? btn1.style.color = "grey" : btn1.style.color = "red";
 }
