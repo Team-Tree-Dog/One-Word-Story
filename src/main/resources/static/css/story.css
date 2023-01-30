@@ -140,3 +140,15 @@ p.comment {
 #heartButton i:hover{
     cursor: pointer;
 }
+
+#thumbsUpButton {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    outline: none;
+    color: var(--color1);
+}
+
+#thumbsUpButton i:hover{
+    cursor: pointer;
+}

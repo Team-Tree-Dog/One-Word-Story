@@ -36,7 +36,9 @@
                         th:each="suggestion: ${suggestions}" class="titles" id="title1">
                     <p th:text="${suggestion.title()}"></p>
                     <br>
-                    <button type="submit" onclick="addVote(this)">Upvote</button>
+                    <Button type="submit" onclick="changeThumbsUpColor();addVote(this)"  id="thumbsUpButton">
+                        <i class="fa fa-thumbs-up"></i>
+                    </Button>
                     <span th:text="${suggestion.numUpvotes()}" class="count"></span>
                 </form>
                 <div th:if="${#lists.isEmpty(suggestions)}" class="all_votes">
