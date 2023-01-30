@@ -1,9 +1,9 @@
 :root {
-    --color1: #17252a;
-    --color2: #2b7a78;
-    --color3: #3aafa9;
-    --color4: #def2f1;
-    --color5: #feffff;
+    --color1: #985b26;
+    --color2: #4f3324;
+    --color3: #f3e3c5;
+    --color4: #cba588;
+    --color5: #9e724d;
 }
 
 body {
@@ -16,23 +16,31 @@ h1 {
     color: var(--color4);
     text-shadow: 5px 5px var(--color1);
 }
-#all_stories {
-    display: flex;
+
+a {
+    color: var(--color2);
+}
+
+#allStoriesByTwo {
     height: 600px;
     overflow-y: scroll;
     border-style: solid;
     margin-top: 100px;
 }
 
-.column {
-    flex: 50%;
-}
-
-.story {
+.twoStories {
+    display: flex;
     border-style: solid;
     margin: 10px;
     padding: 10px;
     background-color: var(--color4);
+}
+
+.story {
+    flex: 50%;
+    margin: 10px;
+    padding: 10px;
+    background-image: url("../media/parchment.png");
 }
 
 h2 {
@@ -52,8 +60,6 @@ h2 {
      position: relative;
 }
 
-
-
 .wrap {
     position: relative;
     height: 100%;
@@ -70,12 +76,12 @@ h2 {
     text-transform: uppercase;
     letter-spacing: 1.3px;
     font-weight: 700;
-    color: #313133;
+    color: var(--color3);
     background: #4FD1C5;
-    background: linear-gradient(90deg, rgba(129,230,217,1) 0%, rgba(79,209,197,1) 100%);
+    background: linear-gradient(90deg, var(--color1) 0%, var(--color4) 100%);
     border: none;
     border-radius: 1000px;
-    box-shadow: 12px 12px 24px rgba(79,209,197,.64);
+    box-shadow: 12px 12px 24px var(--color1);
     transition: all 0.3s ease-in-out 0s;
     cursor: pointer;
     outline: none;
@@ -88,8 +94,8 @@ h2 {
     border-radius: 1000px;
     min-width: calc(300px + 12px);
     min-height: calc(60px + 12px);
-    border: 6px solid #00FFCB;
-    box-shadow: 0 0 60px rgba(0,255,203,.64);
+    border: 6px solid var(--color1);
+    box-shadow: 0 0 60px var(--color1);
     position: absolute;
     top: 50%;
     left: 50%;
@@ -99,7 +105,7 @@ h2 {
 }
 
 .button:hover, .button:focus {
-    color: #313133;
+    color: var(--color1);
     transform: translateY(-6px);
 }
 
@@ -111,7 +117,7 @@ h2 {
     content: '';
     width: 30px; height: 30px;
     border-radius: 100%;
-    border: 6px solid #00FFCB;
+    border: 6px solid var(--color1);
     position: absolute;
     z-index: -1;
     top: 50%;
@@ -145,7 +151,7 @@ h2 {
     border: 0;
     border-radius: 0.5em;
     background-color: var(--color4);
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     cursor: pointer;
 }
 
@@ -226,7 +232,7 @@ input:checked+ .slider #latest
 input:checked + .slider #liked
 {display: none;}
 
-/* Rounded sliders */
+
 .slider.round {
     border-radius: 34px;
 }
