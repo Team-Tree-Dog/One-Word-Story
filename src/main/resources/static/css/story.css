@@ -1,3 +1,28 @@
+:root {
+    --color1: #985b26;
+    --color2: #4f3324;
+    --color3: #f3e3c5;
+    --color4: #cba588;
+    --color5: #9e724d;
+}
+
+body {
+    background: var(--color3);
+    color: var(--color1);
+}
+
+h1 {
+    text-align: center;
+    font-family: Bradley Hand, cursive;
+    font-size: 50px;
+    color: var(--color4);
+    text-shadow: 5px 5px var(--color1);
+}
+
+a {
+    color: var(--color2);
+}
+
 img {
     border-radius: 50%;
 }
@@ -11,19 +36,17 @@ img.user_profile{
     vertical-align: middle;
 }
 
-body {
-    background-color: #3aafa9;
-    color: #17252a;
+h3 {
+    text-align: center;
+    font-family: Bradley Hand, cursive;
 }
 
-h1 {text-align: center;
-    color: #def2f1;
-    background-color: #17252a;
-    font-family: Lobster, serif;
-}
 
-h3 {text-align: center;
-    font-family: Lobster, serif;}
+
+
+
+
+
 
 .center {
     margin: auto;
