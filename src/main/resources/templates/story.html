@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org" lang="en">
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lobster" />
-<link rel="stylesheet" href="css/story.css">
+<!-- TODO: change path -->
+<link rel="stylesheet" href="../static/css/story.css">
 
 <head>
     <meta charset="UTF-8">
@@ -10,7 +11,8 @@
 </head>
 
 <body>
-    <img src="media/logo.png" alt="One Word Story Logo" width="50px" height="50px" onclick="location.href = '/'"></a>
+    <!-- TODO: change path -->
+    <img src="../static/media/logo.png" alt="One Word Story Logo" width="50px" height="50px" onclick="location.href = '/'"></a>
 
     <div class="row">
 
@@ -66,7 +68,8 @@
             <div id="all_comments">
 
                 <div th:each="comment: ${comments}" class="comments" id="comment1">
-                    <img src="media/user.jpeg" class="user_profile" alt="not available">
+                    <!-- TODO: change path -->
+                    <img src="../static/media/user.jpeg" class="user_profile" alt="not available">
                     <p  class="comment">
                         <b th:text="${comment.displayName()}"></b> <br>
                     <p th:text="${comment.content()}"></p>
@@ -96,8 +99,8 @@
         </div>
 
     </div>
-
-    <script src="js/story.js"> </script>
+    <!-- TODO: change path -->
+    <script src="../static/js/story.js"> </script>
 
 </body>
 
