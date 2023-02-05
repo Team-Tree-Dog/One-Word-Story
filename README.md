@@ -92,5 +92,5 @@ This project must be run in `Java 17`
 5. *Lobby Restoration:* Constantly save lobby information to the repository so that if the server ever crashes, previously active lobbies could be restored. Obviously the players would all have been disconnected if the server crashed. We’d need to decide the exact protocol.
 6. *Comment Replies:* As the title implies, comments may be replied to!
 7. *Website Rework* A restructuring of the current website's design to make it more intuitive and appealing.
-
+   
 
