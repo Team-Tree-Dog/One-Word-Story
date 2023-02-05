@@ -396,7 +396,7 @@ function switchToWaiting() {
 
     document.getElementById("waiting_page").style.display = "block";
 
-    document.getElementsByTagName("body")[0].style.background = "#17252a";
+    document.getElementsByTagName("body")[0].style.backgroundImage = `url("../media/book.png")`;
 }
 
 /**
