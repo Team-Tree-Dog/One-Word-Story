@@ -1,6 +1,6 @@
 function addVote(e){
     let count = Number(e.nextElementSibling.innerText) + 1;
-    e.nextElementSibling.innerText = count;
+    e.nextElementSibling.textContent = count.text();
 }
 
 function changeHeartColor(){
