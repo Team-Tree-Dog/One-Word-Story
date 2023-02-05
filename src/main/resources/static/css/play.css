@@ -61,15 +61,15 @@ a {
 @keyframes ring {
     0%{
         transform: rotate(0deg);
-        box-shadow: 1px 5px 2px #2b7a78;
+        box-shadow: 1px 5px 2px var(--color2);
     }
     50%{
         transform: rotate(180deg);
-        box-shadow: 1px 5px 2px #3aafa9;
+        box-shadow: 1px 5px 2px var(--color5);
     }
     100%{
         transform: rotate(360deg);
-        box-shadow: 1px 5px 2px #def2f1;
+        box-shadow: 1px 5px 2px var(--color4);
     }
 }
 
@@ -191,24 +191,6 @@ ul {
     }
 }
 
-.button1 {
-    background-color: white;
-    color: #2b7a78;
-    border: 2px solid #17252a;
-    margin: auto;
-}
-
-.button1:hover {
-    background-color: #17252a;
-    color: #def2f1;
-}
-
-
-
-
-
-
-
 
 
 
@@ -227,14 +209,9 @@ ul {
     flex-direction: row;
 }
 
-#column-1 {
-    /*flex: 30%;*/
-}
-
 #story_column {
     flex: 60%;
 }
-
 
 /* story box design */
 #story {
