@@ -1,13 +1,28 @@
-body {
-    background-color: #3aafa9;
-    color: #17252a;
-
+:root {
+    --color1: #985b26;
+    --color2: #4f3324;
+    --color3: #f3e3c5;
+    --color4: #cba588;
+    --color5: #9e724d;
 }
 
-h1 {text-align: center;
-    color: #def2f1;
-    background-color: #17252a;
-    font-family: Lobster;}
+body {
+    background: var(--color3);
+    color: var(--color1);
+}
+
+h1 {
+    text-align: center;
+    font-family: Bradley Hand, cursive;
+    font-size: 50px;
+    color: var(--color4);
+    text-shadow: 5px 5px var(--color1);
+}
+
+a {
+    color: var(--color2);
+}
+
 
 .row {
     display: flex;
@@ -21,7 +36,7 @@ h1 {text-align: center;
 .container{
     float: inside;
     border-radius: 10px;
-    background-color: #def2f1;
+    background-image: url('../media/parchment.png');;
     padding: 20px;
     height: auto;
 }
@@ -35,21 +50,18 @@ h1 {text-align: center;
     text-align: center;
     display: inline-block;
     font-size: 16px;
-    font-family: Lobster;
     transition-duration: 0.4s;
     cursor: pointer;
-}
-
-.button1 {
-    background-color: white;
-    color: #2b7a78;
-    border: 2px solid #17252a;
+    background-color: var(--color3);
+    color: var(--color1);
+    border: 2px solid var(--color2);
     margin: auto;
 }
 
-.button1:hover {
-    background-color: #17252a;
-    color: #def2f1;
+
+.button:hover {
+    background-color: var(--color5);
+    color: var(--color4);
 }
 
 .center {
