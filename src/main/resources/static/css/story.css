@@ -41,13 +41,6 @@ h3 {
     font-family: Bradley Hand, cursive;
 }
 
-
-
-
-
-
-
-
 .center {
     margin: auto;
     display: flex;
@@ -74,7 +67,8 @@ h3 {
 
 p.story{
     border-radius: 10px;
-    background-color: #def2f1;
+    background-image: url('../media/parchment.png');
+    border-color: var(--color2);
     margin-left: auto;
     margin-right: auto;
     padding: 20px;
@@ -88,7 +82,7 @@ p.story{
     height: 200px;
     overflow-y: scroll;
     border-radius: 10px;
-    background-color: #def2f1;
+    background-image: url('../media/parchment.png');
     margin-left: 150px;
     margin-right: 150px;
     padding: 20px;
@@ -98,16 +92,14 @@ p.story{
     height: 100px;
     overflow-y: scroll;
     border-radius: 10px;
-    background-color: #def2f1;
+    background-image: url('../media/parchment.png');
     padding: 20px;
     margin-left: 40px;
     margin-right: 40px;
 }
 
 .comments {
-    border-style: solid;
     margin: 10px;
-    border-radius: 10px;
     font-family: Arial, serif;
     font-size: 12px;
 }
@@ -152,3 +144,8 @@ p.comment {
 #thumbsUpButton i:hover{
     cursor: pointer;
 }
+
+#userComment, #userName, #title_name {
+    background-image: url('../media/parchment.png');
+}
+
