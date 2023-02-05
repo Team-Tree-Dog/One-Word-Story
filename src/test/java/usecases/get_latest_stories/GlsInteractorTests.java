@@ -21,32 +21,26 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GlsInteractorTests {
 
     // TODO: Fix these tests, major changes caused these tests to break
-//    private static final ThreadRegister register = new ThreadRegister();
-//
-//    /**
-//     * Customizable class to imitate GlsPresenter during testing
-//     */
-//    static class CustomizableGlsOutputBoundary implements GlsOutputBoundary {
-//
-//        private GlsOutputData receivedData;
-//
-//        public CustomizableGlsOutputBoundary() {
-//            this.receivedData = null;
-//        }
-//
-//        public void putStories(GlsOutputData d) {
-//            this.receivedData = d;
-//        }
-//
-//        public GlsOutputData getReceivedData() {
-//            return this.receivedData;
-//        }
-//
-//        @Override
-//        public void outputShutdownServer() {
-//            throw new RuntimeException("This method is not implemented and should not be called");
-//        }
-//    }
+    private static final ThreadRegister register = new ThreadRegister();
+
+    /**
+    * Customizable class to imitate GlsPresenter during testing
+    */
+    static class CustomizableGlsOutputBoundary implements GlsOutputBoundary {
+        private GlsOutputData receivedData;
+
+        public CustomizableGlsOutputBoundary() {
+            this.receivedData = null;
+        }
+
+        public void putStories(GlsOutputData d) {
+            this.receivedData = d;
+        }
+
+        @Override
+        public void outputShutdownServer() {
+            throw new RuntimeException("This method is not implemented and should not be called");/        }
+    }
 //
 //    /**
 //     * Customizable class to imitate repository with stories during testing
