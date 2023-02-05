@@ -21,6 +21,10 @@ a {
     color: var(--color2);
 }
 
+img {
+    border-radius: 50%;
+}
+
 #allStoriesByTwo {
     height: 600px;
     overflow-y: scroll;

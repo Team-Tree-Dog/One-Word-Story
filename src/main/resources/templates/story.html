@@ -6,14 +6,11 @@
     <title th:text="${story.title()}"></title>
     <!-- for heart symbol -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lobster" />
-    <!-- TODO: change path -->
-    <link rel="stylesheet" href="../static/css/story.css">
+    <link rel="stylesheet" href="css/story.css">
 </head>
 
 <body>
-    <!-- TODO: change path -->
-    <img src="../static/media/logo.png" alt="One Word Story Logo" width="50px" height="50px" onclick="location.href = '/'">
+    <img src="media/logo.png" alt="One Word Story Logo" width="50px" height="50px" onclick="location.href = '/'">
 
     <div class="row">
 
@@ -73,8 +70,7 @@
             <div id="all_comments">
 
                 <div th:each="comment: ${comments}" class="comments" id="comment1">
-                    <!-- TODO: change path -->
-                    <img src="../static/media/user.jpeg" class="user_profile" alt="not available">
+                    <img src="media/user.jpeg" class="user_profile" alt="not available">
                     <p  class="comment">
                         <b th:text="${comment.displayName()}"></b> <br>
                     <p th:text="${comment.content()}"></p>
@@ -107,8 +103,7 @@
         </div>
 
     </div>
-    <!-- TODO: change path -->
-    <script src="../static/js/story.js"> </script>
+    <script src="js/story.js"> </script>
 
 </body>
 
