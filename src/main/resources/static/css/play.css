@@ -22,10 +22,9 @@ body {
     color: var(--color1);
 }
 
-h1 {
+h1, h3 {
     text-align: center;
     font-family: Bradley Hand, cursive;
-    font-size: 50px;
     color: var(--color4);
     text-shadow: 5px 5px var(--color1);
 }
@@ -95,7 +94,7 @@ a {
 }
 
 .flashing-text {
-    color: var(--color5);
+    color: var(--color2);
     font-size: 20px;
     animation: flashingText 3s ease-in-out infinite;
 }
@@ -126,7 +125,6 @@ ul {
     letter-spacing: 1.3px;
     font-weight: 700;
     color: var(--color3);
-    background: #4FD1C5;
     background: linear-gradient(90deg, var(--color1) 0%, var(--color4) 100%);
     border: none;
     border-radius: 1000px;
@@ -237,17 +235,6 @@ ul {
     flex: 60%;
 }
 
-/* story title design */
-.story-title {
-    font-size: 50px;
-    padding: -10px;
-}
-
-.game-fancy-title {
-    font-family: 'Brush Script MT', cursive;
-    text-align: center;
-    text-shadow: #2b7a78 2px 2px;
-}
 
 /* story box design */
 #story {
@@ -304,7 +291,7 @@ ul {
 }
 
 #word:focus {
-    background-image: url("../media/parchment.png");;
+    background-color: var(--color5);
     outline: none;
 }
 
@@ -312,7 +299,7 @@ ul {
     background-color: var(--color2);
     font-family: OCR A Std, monospace;
     border: none;
-    color: white;
+    color: var(--color3);
     padding: 4px 7px;
     text-align: center;
     text-decoration: none;
