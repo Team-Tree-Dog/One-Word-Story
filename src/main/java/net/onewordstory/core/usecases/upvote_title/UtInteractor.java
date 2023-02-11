@@ -8,24 +8,26 @@ import net.onewordstory.core.usecases.ThreadRegister;
  * The interactor for this use case: carries out all the processes involved in upvoting a title.
  */
 public class UtInteractor implements UtInputBoundary{
-    private UtGatewayTitles repo;
-    private ThreadRegister register;
+    private final UtGatewayTitles repo;
+    private final ThreadRegister register;
+    private final UtGatewayGuestAccounts accManager;
 
     /**
      * @param repo      the repository containing the stories and the titles. Implements UtGatewayTitles
      * @param register  the register for the interruptible threads
      */
-    public UtInteractor(UtGatewayTitles repo, ThreadRegister register) {
+    public UtInteractor(UtGatewayTitles repo, UtGatewayGuestAccounts accManager, ThreadRegister register) {
         this.repo = repo;
         this.register = register;
+        this.accManager = accManager;
     }
 
     /**
      * A nested class that defines the InterruptibleThread for this use case
      */
     public class UtThread extends InterruptibleThread{
-        private UtInputData data;
-        private UtOutputBoundary pres;
+        private final UtInputData data;
+        private final UtOutputBoundary pres;
 
         /**
          * @param data  the input data that this thread takes in to carry out the processes for this use case.
@@ -43,9 +45,23 @@ public class UtInteractor implements UtInputBoundary{
          * 3. passes the output data to the presenter, which then updates the view model
          */
         public void threadLogic() {
-            Response res = repo.upvoteTitle(data.getStoryId(), data.getTitleToUpvote());
-            UtOutputData outputData = new UtOutputData(res); //builds output data
-            pres.upvoteOutput(outputData);
+            // Prevents multiple upvotes from same account
+            if (accManager.hasUpvotedTitle(data.getGuestAccountId(), data.getStoryId(), data.getTitleToUpvote())) {
+                pres.upvoteOutput(new UtOutputData(new Response(Response.ResCode.ALREADY_DONE,
+                        "You already upvoted this title!")));
+            } else {
+                setBlockInterrupt(true);
+                Response res = repo.upvoteTitle(data.getStoryId(), data.getTitleToUpvote());
+                setBlockInterrupt(false);
+
+                // Records upvote to account
+                if (res.getCode() == Response.ResCode.SUCCESS) {
+                    accManager.setUpvotedTitle(data.getGuestAccountId(), data.getStoryId(), data.getTitleToUpvote());
+                }
+
+                UtOutputData outputData = new UtOutputData(res); //builds output data
+                pres.upvoteOutput(outputData);
+            }
         }
     }
 

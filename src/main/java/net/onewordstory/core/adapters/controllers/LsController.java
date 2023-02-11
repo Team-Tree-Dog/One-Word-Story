@@ -23,10 +23,11 @@ public class LsController {
     /**
      * This method takes in the information about the story and adds like to it
      * @param storyId The story's id
+     * @param guestAccId The ID of the guest account that is performing the like
      * @return View model for this use case
      * */
-    public LsViewModel likeStory(int storyId) {
-        LsInputData inputData = new LsInputData(storyId);
+    public LsViewModel likeStory(int storyId, String guestAccId) {
+        LsInputData inputData = new LsInputData(storyId, guestAccId);
         LsViewModel viewM = new LsViewModel();
         LsPresenter pres = new LsPresenter(viewM);
         inputBoundary.likeStory(inputData, pres);

@@ -96,10 +96,20 @@ public class UtInteractorTests {
         // Instantiating interactor
         repo = new CustomizableUtGatewayTitles(false);
         pres = new CustomizableUtOutputBoundary();
-        UtInteractor ut = new UtInteractor(repo, register);
+        UtInteractor ut = new UtInteractor(repo, new UtGatewayGuestAccounts() {
+            @Override
+            public boolean hasUpvotedTitle(String guestAccountId, int storyId, String title) {
+                return false;
+            }
+
+            @Override
+            public void setUpvotedTitle(String guestAccountId, int storyId, String title) {
+
+            }
+        }, register);
 
         // Running thread
-        UtInputData d = new UtInputData(1, "Lovely story");
+        UtInputData d = new UtInputData(1, "Lovely story", "");
         UtInteractor.UtThread innerThreadInstance = ut.new UtThread(d, pres);
         innerThreadInstance.run();
 
@@ -121,10 +131,20 @@ public class UtInteractorTests {
         // Instantiating interactor
         repo = new CustomizableUtGatewayTitles(true);
         pres = new CustomizableUtOutputBoundary();
-        UtInteractor ut = new UtInteractor(repo, register);
+        UtInteractor ut = new UtInteractor(repo, new UtGatewayGuestAccounts() {
+            @Override
+            public boolean hasUpvotedTitle(String guestAccountId, int storyId, String title) {
+                return false;
+            }
+
+            @Override
+            public void setUpvotedTitle(String guestAccountId, int storyId, String title) {
+
+            }
+        }, register);
 
         // Running thread
-        UtInputData d = new UtInputData(1, "Lovely story");
+        UtInputData d = new UtInputData(1, "Lovely story", "");
         UtInteractor.UtThread innerThreadInstance = ut.new UtThread(d, pres);
         innerThreadInstance.run();
 

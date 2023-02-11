@@ -10,6 +10,7 @@ public class LsInteractor implements LsInputBoundary {
     private static final String FAIL_RESPONSE = "An error occurred. Please, try again";
 
     private final LsGatewayStory repository;
+    private final LsGatewayGuestAccounts guestAccManager;
 
     /**
      * The ThreadRegister that keeps track of all the running use case threads
@@ -20,9 +21,10 @@ public class LsInteractor implements LsInputBoundary {
     /**
      * @param repository The repository that stores the data about all the stories
      * */
-    public LsInteractor(LsGatewayStory repository, ThreadRegister register) {
+    public LsInteractor(LsGatewayStory repository, LsGatewayGuestAccounts accManager, ThreadRegister register) {
         this.repository = repository;
         this.register = register;
+        this.guestAccManager = accManager;
     }
 
     public class LsRunnable extends InterruptibleThread {
@@ -42,13 +44,26 @@ public class LsInteractor implements LsInputBoundary {
 
         @Override
         public void threadLogic() {
-            // Don't interrupt during DB write
-            setBlockInterrupt(true);
-            Response response = repository.likeStory(data.getStoryId());
-            setBlockInterrupt(false);
+            // Prevents liking multiple times
+            if (guestAccManager.hasLikedStory(data.getGuestAccountId(), data.getStoryId())) {
+                presenter.likeOutput(new LsOutputData(new Response(Response.ResCode.ALREADY_DONE,
+                        "You have already liked this story!")));
+            }
 
-            LsOutputData outputData = new LsOutputData(response);
-            presenter.likeOutput(outputData);
+            else {
+                // Don't interrupt during DB write
+                setBlockInterrupt(true);
+                Response response = repository.likeStory(data.getStoryId());
+                setBlockInterrupt(false);
+
+                // Records like on account
+                if (response.getCode() == Response.ResCode.SUCCESS) {
+                    guestAccManager.setLikedStory(data.getGuestAccountId(), data.getStoryId());
+                }
+
+                LsOutputData outputData = new LsOutputData(response);
+                presenter.likeOutput(outputData);
+            }
         }
     }
 

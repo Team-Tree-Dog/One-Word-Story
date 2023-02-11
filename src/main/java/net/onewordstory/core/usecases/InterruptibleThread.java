@@ -35,7 +35,8 @@ public abstract class InterruptibleThread extends Thread {
     protected abstract void threadLogic() throws InterruptedException;
 
     /**
-     * Sets the <code>blockInterrupt</code> field to the given value
+     * Sets the <code>blockInterrupt</code> field to the given value. When true,
+     * prevents this thread from being interrupted by shutdown
      * @param value The value to be set
      */
     public void setBlockInterrupt(boolean value) {
@@ -48,7 +49,4 @@ public abstract class InterruptibleThread extends Thread {
     public boolean isBlockInterrupt() {
         return blockInterrupt.get();
     }
-
-
-
 }

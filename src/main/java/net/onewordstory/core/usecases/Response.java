@@ -44,7 +44,8 @@ public class Response {
         TITLE_ALREADY_SUGGESTED,
         STORY_NOT_FOUND,
         SHUTTING_DOWN,
-        TITLE_NOT_FOUND
+        TITLE_NOT_FOUND,
+        ALREADY_DONE
     }
 
     private final String message;

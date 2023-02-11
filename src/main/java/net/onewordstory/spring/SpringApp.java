@@ -56,6 +56,7 @@ import net.onewordstory.core.usecases.upvote_title.UtInteractor;
 import net.onewordstory.spring.db.PostgresCommentsRepo;
 import net.onewordstory.spring.db.PostgresStoryRepo;
 import net.onewordstory.spring.db.PostgresTitlesRepo;
+import net.onewordstory.spring.guest_management.GuestAccountManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -64,6 +65,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
@@ -233,17 +237,17 @@ public class SpringApp {
 		@Bean public UtController utController() {return new UtController(ut);}
 	}
 
-//	@Bean
-//	public static PostgresStoryRepo getStoryRepo() {
-//		return new PostgresStoryRepo();
-//	}
 
-//	@Configuration
-//	@EnableWebMvc
-//	public static class WebConfig implements WebMvcConfigurer {
-//		@Override
-//		public void addInterceptors(InterceptorRegistry registry) {
-//			registry.addInterceptor(new GuestAccountManager());
-//		}
-//	}
+	/**
+	 * Configures the guest account manager
+	 */
+	@Configuration
+	@EnableWebMvc
+	public static class WebConfig implements WebMvcConfigurer {
+		@Override
+		public void addInterceptors(InterceptorRegistry registry) {
+			registry.addInterceptor(new GuestAccountManager());
+		}
+	}
+
 }

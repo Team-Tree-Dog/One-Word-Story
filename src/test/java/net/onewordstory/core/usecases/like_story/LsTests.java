@@ -18,9 +18,23 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class LsTests {
 
+    public static class TestLsGatewayAccounts implements LsGatewayGuestAccounts {
+
+        @Override
+        public boolean hasLikedStory(String guestAccId, int storyId) {
+            return false;
+        }
+
+        @Override
+        public void setLikedStory(String guestAccId, int storyId) {
+
+        }
+    }
+
     private TestLsPresenter presenter;
     private TestLsGateway repository;
     private LsInputBoundary interactor;
+    private TestLsGatewayAccounts accs;
     private Random random;
 
     private ThreadRegister register;
@@ -31,7 +45,8 @@ public class LsTests {
         presenter = new TestLsPresenter();
         repository = new TestLsGateway();
         register = new ThreadRegister();
-        interactor = new LsInteractor(repository, register);
+        accs = new TestLsGatewayAccounts();
+        interactor = new LsInteractor(repository, accs, register);
         random = new Random();
     }
 
@@ -47,7 +62,7 @@ public class LsTests {
             int numberOfLikes = random.nextInt(9) + 1;
             int currentNumberOfResponses = presenter.responses.size();
             for (int j = 0; j < numberOfLikes; j++) {
-                LsInputData inputData = new LsInputData(i);
+                LsInputData inputData = new LsInputData(i, "");
                 interactor.likeStory(inputData, presenter);
             }
             while (repository.getNumberOfLikesForStory(i) < numberOfLikes) {
@@ -73,7 +88,7 @@ public class LsTests {
     public void testInteractorReturnsFailForIncorrectStories() {
         int numberOfStories = random.nextInt(100);
         for (int i = 0; i < numberOfStories; i++) {
-            LsInputData inputData = new LsInputData(i);
+            LsInputData inputData = new LsInputData(i, "");
             interactor.likeStory(inputData, presenter);
         }
         while (presenter.responses.size() < numberOfStories) {
