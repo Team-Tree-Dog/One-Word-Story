@@ -7,6 +7,7 @@ import net.onewordstory.core.adapters.display_data.story_data.StoryDisplayData;
 import net.onewordstory.core.adapters.display_data.title_data.SuggestedTitleDisplayData;
 import net.onewordstory.core.adapters.display_data.title_data.SuggestedTitleDisplayDataBuilder;
 import net.onewordstory.core.adapters.view_models.*;
+import net.onewordstory.core.usecases.Response;
 import org.example.ANSI;
 import org.example.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import net.onewordstory.core.usecases.Response;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class StoryController {
@@ -78,6 +79,13 @@ public class StoryController {
         model.addAttribute("stories", stories == null ? new ArrayList<>() : stories);
 
         return "index";
+    }
+
+    @GetMapping("/stories")
+    public String getStories(Model model) {
+        List<StoryDisplayData> stories = glsController.getLatestStories(100).getStoriesAwaitable().get();
+        model.addAttribute("stories", stories == null ? new ArrayList<>(): stories);
+        return "index :: stories";
     }
 
     @GetMapping("/story-{id}")

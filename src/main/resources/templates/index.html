@@ -34,7 +34,7 @@
     <div id="all_stories">
 
 
-        <div class="column">
+        <div id="stories_wrapper" class="column stories">
             <div th:each="story: ${stories}" class="story" id="story1">
                 <a th:href="@{/story-{id}(id = ${story.id()})}">
                     <h2 th:text="${story.title()}" ></h2>
