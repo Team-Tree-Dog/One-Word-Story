@@ -67,6 +67,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -155,9 +156,13 @@ public class SpringApp {
 		@Autowired
 		public UseCaseApiConfig(PostgresStoryRepo postgresStoryRepo,
 								PostgresTitlesRepo postgresTitlesRepo,
-								PostgresCommentsRepo postgresCommentsRepo) {
+								PostgresCommentsRepo postgresCommentsRepo
+								//GuestAccountManager accountManager
+		) {
 			this.pdViewM = new PdViewModel();
 			this.pgeViewM = new PgeViewModel();
+
+			GuestAccountManager accountManager = new GuestAccountManager();
 
 			ThreadRegister register = new ThreadRegister();
 
@@ -213,11 +218,11 @@ public class SpringApp {
 			this.gsc = new GscInteractor((GscGatewayComments) commentsRepo, register);
 			this.gat = new GatInteractor((GatGatewayTitles) titlesRepo, register);
 			this.jpl = new JplInteractor(manager, register);
-			this.ls = new LsInteractor((LsGatewayStory) storyRepo, register);
+			this.ls = new LsInteractor((LsGatewayStory) storyRepo, accountManager, register);
 			this.ss = new SsInteractor(register);
 			this.sw = new SwInteractor(manager, register);
 			this.st = new StInteractor((StGatewayTitles) titlesRepo, titleChecker, register);
-			this.ut = new UtInteractor((UtGatewayTitles) titlesRepo, register);
+			this.ut = new UtInteractor((UtGatewayTitles) titlesRepo, accountManager, register);
 		}
 
 		@Bean PdViewModel pdViewModel() {return pdViewM;}
@@ -237,16 +242,18 @@ public class SpringApp {
 		@Bean public UtController utController() {return new UtController(ut);}
 	}
 
-
 	/**
 	 * Configures the guest account manager
 	 */
 	@Configuration
-	@EnableWebMvc
 	public static class WebConfig implements WebMvcConfigurer {
+
+		@Autowired
+		GuestAccountManager accountManager;
+
 		@Override
 		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addInterceptor(new GuestAccountManager());
+			registry.addInterceptor(accountManager);
 		}
 	}
 

@@ -192,7 +192,7 @@ public class StoryController {
     ) throws InterruptedException {
         System.out.println("Post upvote-suggestion/suggestion/" + title);
 
-        UtViewModel utViewM = utController.upvoteTitle(Integer.parseInt(storyId), title);
+        UtViewModel utViewM = utController.upvoteTitle(Integer.parseInt(storyId), title, "");
 
         utViewM.getResponseAwaitable().await();
 
@@ -210,7 +210,7 @@ public class StoryController {
         System.out.println("Received like request for story " + id);
         System.out.println("Post like/story/" + id);
 
-        LsViewModel viewM = lsController.likeStory(id);
+        LsViewModel viewM = lsController.likeStory(id, "");
 
         viewM.getResponseAwaitable().await();
 

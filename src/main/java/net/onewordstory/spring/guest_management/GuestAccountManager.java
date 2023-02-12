@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
@@ -18,6 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class GuestAccountManager implements HandlerInterceptor, LsGatewayGuestAccounts, UtGatewayGuestAccounts {
 
     public static String COOKIE_NAME = "account_id";
+    public static int COOKIE_EXPIRE_TIME = 60 * 60 * 24 * 365 * 10;
 
     private final Map<String, GuestAccount> uuidToAcc = new HashMap<>();
     private final Lock lock = new ReentrantLock();
@@ -34,17 +36,35 @@ public class GuestAccountManager implements HandlerInterceptor, LsGatewayGuestAc
                              @NotNull HttpServletResponse response,
                              @NotNull Object handler) {
         System.out.println("Request INTERCEPTED");
+        System.out.println(request);
 
         lock.lock();
 
+        // Look for the account cookie
         Cookie cookie = null;
-        for (Cookie c : request.getCookies()) {
-            if (c.getName().equals(COOKIE_NAME)) {
-                cookie = c;
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if (c.getName().equals(COOKIE_NAME)) {
+                    cookie = c;
+                }
             }
         }
 
+        if (cookie == null) {
 
+        } else {
+            // Tries to get associated account
+            GuestAccount targetAcc = uuidToAcc.get(cookie.getValue());
+
+            // Account doesn't exist
+            if (targetAcc == null) {
+
+            } else {
+                
+            }
+        }
 
         lock.unlock();
 
