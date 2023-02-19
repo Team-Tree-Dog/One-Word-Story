@@ -12,6 +12,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -19,9 +20,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public class GuestAccountManager implements HandlerInterceptor, LsGatewayGuestAccounts, UtGatewayGuestAccounts {
 
     public static String COOKIE_NAME = "account_id";
-    public static int COOKIE_EXPIRE_TIME = 60 * 60 * 24 * 365 * 10;
+    public static int COOKIE_EXPIRE_TIME = 60 * 60 * 24 * 365 * 10; // 10 years
 
-    private final Map<String, GuestAccount> uuidToAcc = new HashMap<>();
+    private final Map<String, GuestAccount> uuidToAcc = new ConcurrentHashMap<>();
     private final Lock lock = new ReentrantLock();
 
     /**
@@ -38,7 +39,7 @@ public class GuestAccountManager implements HandlerInterceptor, LsGatewayGuestAc
         System.out.println("Request INTERCEPTED");
         System.out.println(request);
 
-        lock.lock();
+        //lock.lock();
 
         // Look for the account cookie
         Cookie cookie = null;
@@ -62,11 +63,11 @@ public class GuestAccountManager implements HandlerInterceptor, LsGatewayGuestAc
             if (targetAcc == null) {
 
             } else {
-                
+
             }
         }
 
-        lock.unlock();
+        //lock.unlock();
 
         return true;
     }
