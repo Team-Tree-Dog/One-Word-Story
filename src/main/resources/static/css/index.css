@@ -15,6 +15,11 @@ body {
     background-size: 1510px;
 }
 
+#logo {
+    float:left;
+    margin:2px;
+}
+
 h1 {
     font-family: Bradley Hand, cursive;
     text-shadow: 7px 7px var(--color3);
