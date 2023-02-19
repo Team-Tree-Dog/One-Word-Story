@@ -2,33 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="../static/css/index.css">
     <title>One Word Story</title>
 </head>
 
 <body>
-    <div id="name_logo">
-        <h1>One Word Story</h1>
-        <img src="media/logo.png" alt="One Word Story Logo" width="75px" height="75px">
-        <br><br>
-    </div>
-
-    <div class="container">
-        <div class="wrap">
-            <form action="/play">
-                <button class="button">Play</button>
-            </form>
+    <div id="header">
+        <div id="name_logo">
+            <img style="float:left; margin:2px" id="logo" src="../static/media/logo.png" alt="One Word Story Logo" width="75px" height="70px">
+            <h1>One Word Story</h1>
         </div>
-    </div>
 
-    <div class="wrap">
-        <label class="switch">
-            <input type="checkbox" id="togBtn">
-            <div class="slider round">
-                <span onclick="location.href = '/?get=latest'" id="latest">Latest</span>
-                <span onclick="location.href = '/?get=liked'" id="liked">Most Liked</span>
+        <div class="container">
+            <div class="wrap">
+                <form action="/play">
+                    <button class="button">Play</button>
+                </form>
             </div>
-        </label>
+        </div>
+        <br><br>
+        <div class="wrap">
+            <label class="switch">
+                <input type="checkbox" id="togBtn">
+                <div class="slider round">
+                    <span onclick="location.href = '/?get=latest'" id="latest">Latest</span>
+                    <span onclick="location.href = '/?get=liked'" id="liked">Most Liked</span>
+                </div>
+            </label>
+        </div>
+        <div><br><br></div>
     </div>
 
     <!-- temporary div for all stories before js script acts -->
