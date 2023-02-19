@@ -54,12 +54,11 @@ public class StoryController {
     }
 
     @GetMapping("/")
-    public String index(Model model,
-                        @RequestParam(name="get", defaultValue="latest") String storiesToGet )
+    public String index(@RequestParam(name="get", defaultValue="latest") String storiesToGet)
             throws InterruptedException {
 
         System.out.println("Get /");
-
+        /*
         StoryListViewModel viewM;
         Response res;
         List<StoryDisplayData> stories;
@@ -77,15 +76,8 @@ public class StoryController {
         // TODO: Add error handling and frontend message (e.g stories failed to load) if res is a fail code
 
         model.addAttribute("stories", stories == null ? new ArrayList<>() : stories);
-
+        */
         return "index";
-    }
-
-    @GetMapping("/stories")
-    public String getStories(Model model) {
-        List<StoryDisplayData> stories = glsController.getLatestStories(100).getStoriesAwaitable().get();
-        model.addAttribute("stories", stories == null ? new ArrayList<>(): stories);
-        return "index :: stories";
     }
 
     @GetMapping("/story-{id}")

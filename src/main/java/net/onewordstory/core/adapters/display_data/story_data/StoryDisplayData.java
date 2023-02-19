@@ -2,6 +2,7 @@ package net.onewordstory.core.adapters.display_data.story_data;
 
 import org.jetbrains.annotations.NotNull;
 import net.onewordstory.core.usecases.FullStoryDTO;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 /**
  * Data necessary to seamlessly display the object. For example, if we are using Spring,
@@ -16,6 +17,7 @@ import net.onewordstory.core.usecases.FullStoryDTO;
  * @param likes             number of likes this story has
  * @param publishDateString A string representing the publish date of this story
  */
+
 public record StoryDisplayData(int id,
                                @NotNull String title,
                                @NotNull String content,
