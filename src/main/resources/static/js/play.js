@@ -428,13 +428,6 @@ $("#word").focus(() => {
     hideSubmitWordError()
 })
 
-document.getElementById("myInput").addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        document.getElementById("myBtn").click();
-    }
-});
-
 /**
  * Submit word button callback
  */
