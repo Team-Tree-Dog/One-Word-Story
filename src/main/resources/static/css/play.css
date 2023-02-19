@@ -343,12 +343,18 @@ ul {
     margin: auto;
 }
 
+#logo {
+    width: 250px;
+}
+
 #play-form-container {
     position: center;
     text-align: center;
 }
 
-
+#play-form-container input {
+    border-color: var(--color2);
+}
 
 /* design of button */
 .play-button-container {
