@@ -22,7 +22,7 @@ public class GlsInteractorTests {
     private static final ThreadRegister register = new ThreadRegister();
 
     /**
-    * Customizable class to imitate GlsPresenter during testing SDJAKAJSDKDJSKKDJAJKSA
+    * Customizable class to imitate GlsPresenter during testing.
     */
     static class CustomizableGlsOutputBoundary implements GlsOutputBoundary {
 
