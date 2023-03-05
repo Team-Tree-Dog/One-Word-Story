@@ -1,8 +1,7 @@
 package net.onewordstory.core.adapters.display_data.story_data;
 
-import org.jetbrains.annotations.NotNull;
 import net.onewordstory.core.usecases.FullStoryDTO;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Data necessary to seamlessly display the object. For example, if we are using Spring,
