@@ -13,6 +13,13 @@ $(document).ready(() => {
             icon: "error"
         })
     }
+
+    $("#word").keypress(e => {
+        if (e.which === 13) {
+            e.preventDefault();
+            $("#submit-word-button").click();
+        }
+    });
 });
 
 // print pretty ;)
@@ -343,6 +350,7 @@ function createAPI (url) {
  * @param updatedGameState {Object<GameDisplayData>} a JSON-converted GameDisplayData object
  * @param playerID {String} the id of THIS player, who YOU are
  */
+let hasDoneFocus = false;
 function updateGameState(updatedGameState, playerID) {
     // Clear players list
     let ply_list = document.getElementById("players-list")
@@ -368,6 +376,17 @@ function updateGameState(updatedGameState, playerID) {
 
     // POPULATE TIME
     document.getElementById("seconds-left").innerHTML = updatedGameState.secondsLeftInTurn
+
+    // Focus textbox
+    if (
+        playerID === updatedGameState.players.filter(p => p.isCurrentTurnPlayer)[0].id &&
+        !hasDoneFocus
+    ) {
+        hasDoneFocus = true;
+        $("#word").focus();
+    } else {
+        hasDoneFocus = false;
+    }
 }
 
 /**
