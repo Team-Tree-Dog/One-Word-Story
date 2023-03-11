@@ -23,10 +23,10 @@
 
     <div class="wrap">
         <label class="switch">
-            <input type="checkbox" id="togBtn">
+            <input onclick=toggleSortingMethod() type="checkbox" id="togBtn">
             <div class="slider round">
-                <span onclick="location.href = '/?get=latest'" id="latest">Latest</span>
-                <span onclick="location.href = '/?get=liked'" id="liked">Most Liked</span>
+                <span id="latest">Latest</span>
+                <span id="liked">Most Liked</span>
             </div>
         </label>
     </div>

@@ -55,22 +55,24 @@ public class StoryRestController {
         return writer.toString();
     }
 
+    private StoryListViewModel getCorrespondingStories(String storiesToGet) {
+        if (storiesToGet.equals(LIKED.toString()))
+             return gmlsController.getMostLikedStories(0, 100);
+        // Defaults to "latest"
+        return glsController.getLatestStories(100);
+    }
+
     @GetMapping(path = "/stories")
     public String getStories(@RequestParam(name="get", defaultValue="latest") String storiesToGet) throws InterruptedException {
-        StoryListViewModel viewM;
-        if (storiesToGet.equals(LIKED.toString())) {
-            viewM = gmlsController.getMostLikedStories(0, 100);
-        }
-        else {  // Defaults to "latest"
-            viewM = glsController.getLatestStories(100);
-        }
+        StoryListViewModel viewM = getCorrespondingStories(storiesToGet);
         List<StoryDisplayData> result = viewM.getStoriesAwaitable().await();
         return mapToJson(result);
     }
 
     @GetMapping(path="/api/story/lastStoryId")
-    public String getLastStoryId() throws InterruptedException {
-        StoryListViewModel viewModel = glsController.getLatestStories(1);
+    public String getLastStoryId(@RequestParam(name="get", defaultValue="latest") String storiesToGet)
+            throws InterruptedException {
+        StoryListViewModel viewModel = getCorrespondingStories(storiesToGet);
         int result = viewModel.getStoriesAwaitable().await().get(0).id();
         return mapToJson(result);
     }
