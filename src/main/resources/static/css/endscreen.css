@@ -54,7 +54,7 @@ a {
     letter-spacing: 1.3px;
     font-weight: 700;
     color: var(--color3);
-    background: #4FD1C5;
+    background: var(--color4);
     background: linear-gradient(90deg, var(--color1) 0%, var(--color4) 100%);
     border: none;
     border-radius: 1000px;
