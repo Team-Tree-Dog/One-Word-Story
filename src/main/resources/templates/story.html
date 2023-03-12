@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <img src="media/logo.png" alt="One Word Story Logo" width="50px" height="50px" onclick="location.href = '/'">
+    <img src="media/logo.png" alt="One Word Story Logo" width="75px" height="65px" onclick="location.href = '/'">
 
     <div class="row">
 
@@ -51,7 +51,7 @@
                 <form method="POST" th:object="${titleBuilder}"
                       th:action="@{suggest-title/story/{id}(id = ${story.id()})}" id="add_title">
                     <input th:field="*{title}" id="title_name" type="text" name="suggestedTitle" placeholder="Suggest your own...">
-                    <input type="submit" value="Submit">
+                    <input type="submit" value="Submit" class="form-submit-button">
                 </form>
             </div>
             <p style="color:darkred" th:if="${isfailTitle}" th:text="${message}"> </p>
@@ -95,7 +95,7 @@
                     <input id="userName" th:field="*{displayName}" type="text" name="guest_name"
                            placeholder="Enter your name...">
 
-                    <input type="submit" value="Submit">
+                    <input type="submit" value="Submit" class="form-submit-button">
                 </form>
             </div>
             <p style="color:darkred" th:if="${isfail}" th:text="${message}"> </p>
