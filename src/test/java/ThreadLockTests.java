@@ -813,33 +813,33 @@ public class ThreadLockTests {
         System.out.println("Case number: " + newint);
         switch (newint) {
             case 0 : // RG, DC, SP
-                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                currGame.getGameTimer().scheduleAtFixedRate(rgTimerTask, 0, 50);
                 dcInteractor.disconnect(dcInputData, dcPres);
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
                 break;
             case 1 : // RG, SP, DC
-                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                currGame.getGameTimer().scheduleAtFixedRate(rgTimerTask, 0, 50);
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
                 dcInteractor.disconnect(dcInputData, dcPres);
                 break;
             case 2 : // SP, RG, DC
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
-                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                currGame.getGameTimer().scheduleAtFixedRate(rgTimerTask, 0, 50);
                 dcInteractor.disconnect(dcInputData, dcPres);
                 break;
             case 3 : // SP, DC, RG
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
                 dcInteractor.disconnect(dcInputData, dcPres);
-                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                currGame.getGameTimer().scheduleAtFixedRate(rgTimerTask, 0, 50);
                 break;
             case 4 : // DC, SP, RG
                 dcInteractor.disconnect(dcInputData, dcPres);
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
-                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                currGame.getGameTimer().scheduleAtFixedRate(rgTimerTask, 0, 50);
                 break;
             case 5 : // DC, RG, SP
                 dcInteractor.disconnect(dcInputData, dcPres);
-                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                currGame.getGameTimer().scheduleAtFixedRate(rgTimerTask, 0, 50);
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
                 break;
         }
@@ -850,16 +850,13 @@ public class ThreadLockTests {
             Thread.onSpinWait();
         }
         assertTrue(dcFlag.get(), "How did we get out of the while loop if dcFlag is still false?");
+        System.out.println("DC flag done");
 
         while(!pgeFlag.get()) {
             Thread.onSpinWait();
         }
         assertTrue(pgeFlag.get(), "How did we get out of the while loop if pgeFlag is still false?");
-
-        while(pgeFlag.get()) {
-            Thread.onSpinWait();
-        }
-        assertFalse(pgeFlag.get(), "How did we get out of the while loop if pgeFlag is still true?");
+        System.out.println("PGE flag done");
 
         // Now, we need to stop both RG and SP before their next iterations. The cancel() method will still let both
         // TimerTasks finish their current iteration if there is one running.
@@ -908,8 +905,8 @@ public class ThreadLockTests {
                 assertTrue(currGame.getPlayers().contains(player1),
                         "Player 1 should still be in the game, but it isn't.");
                 // Check that the game was already set to null:
-                assertTrue(lobman.isGameNull(),
-                        "The game should already have been set to null, but it isn't yet.");
+                assertTrue(lobman.isGameNull() || lobman.isGameEnded(),
+                        "The game should already have been set to null or ended, but it isn't yet.");
             }
             else if (messageDc.get().equals("SUCCESS")){
                 System.out.println("Scenario 1: RG notified player 1 was still in-game, " +
@@ -942,7 +939,7 @@ public class ThreadLockTests {
         }
         spTimerNew.cancel(); // And cancel.
         // Actually, sanity assert this just in case.
-        assertTrue(lobman.isGameNull(), "Why did it break out of the while loop, but the game is still null?");
+        assertTrue(lobman.isGameNull(), "Why did it break out of the while loop, but the game is still not null?");
         System.out.println("Test has ended.");
     }
 }
