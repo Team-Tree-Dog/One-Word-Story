@@ -273,3 +273,28 @@ input:checked + .slider #liked
 
 .slider.round:before {
     border-radius: 50%;}
+
+/* custom scrollbar */
+::-webkit-scrollbar {
+    width: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--color1);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--color1);
+    border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color2);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--color1);
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
+}
