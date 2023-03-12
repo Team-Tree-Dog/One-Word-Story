@@ -44,9 +44,9 @@ public class RgInteractor {
          */
         @Override
         public void run () {
-            //Log.useCaseMsg("RG", "Wants GAME lock");
+            Log.useCaseMsg("RG", "Wants GAME lock");
             gameLock.lock();
-            //Log.useCaseMsg("RG", "Got GAME lock");
+            Log.useCaseMsg("RG", "Got GAME lock");
             if (RgInteractor.this.g.isGameOver()) {
                 Log.useCaseMsg("RG", "Detected isGameOver() = true");
                 // Game ending procedure:
@@ -84,7 +84,7 @@ public class RgInteractor {
 
             }
             gameLock.unlock();
-            //Log.useCaseMsg("RG", "Released GAME lock");
+            Log.useCaseMsg("RG", "Released GAME lock");
         }
     }
 

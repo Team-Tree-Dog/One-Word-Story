@@ -776,7 +776,7 @@ public class ThreadLockTests {
                 ids.add(pstat.getPlayerId());
             }
             playersPge.set(ids);
-            pgeFlag.set(true);
+            pgeFlag.set(!pgeFlag.get()); // PGE is triggered twice.
             System.out.println("players PGE:" + playersPge.get());
         };
         PgeInteractor pgeInteractor = new PgeInteractor(pgePres, pgeGatewayStory);
@@ -856,10 +856,22 @@ public class ThreadLockTests {
         }
         assertTrue(pgeFlag.get(), "How did we get out of the while loop if pgeFlag is still false?");
 
+        while(pgeFlag.get()) {
+            Thread.onSpinWait();
+        }
+        assertFalse(pgeFlag.get(), "How did we get out of the while loop if pgeFlag is still true?");
+
         // Now, we need to stop both RG and SP before their next iterations. The cancel() method will still let both
         // TimerTasks finish their current iteration if there is one running.
         rgTimerTask.cancel();
+        System.out.println("RGTimerTask has been Canceled.");
         spTimerTask.cancel();
+        System.out.println("SPTimerTask has been Canceled.");
+        rgTimer.cancel();
+        System.out.println("RGTimer has been Canceled.");
+        spTimer.cancel();
+        System.out.println("SPTimer has been Canceled.");
+
         System.out.println("All Tasks Canceled.");
 
         System.out.println("Test right now locking PlayerPool...");
@@ -896,7 +908,8 @@ public class ThreadLockTests {
                 assertTrue(currGame.getPlayers().contains(player1),
                         "Player 1 should still be in the game, but it isn't.");
                 // Check that the game was already set to null:
-                assertTrue(lobman.isGameNull());
+                assertTrue(lobman.isGameNull(),
+                        "The game should already have been set to null, but it isn't yet.");
             }
             else if (messageDc.get().equals("SUCCESS")){
                 System.out.println("Scenario 1: RG notified player 1 was still in-game, " +
