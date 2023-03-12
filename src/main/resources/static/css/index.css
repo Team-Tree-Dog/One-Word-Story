@@ -13,11 +13,12 @@ body {
 #header {
     background-image: url("../media/books.jpg");
     background-size: 1510px;
+    border-radius: 25px;
 }
 
 #logo {
     float:left;
-    margin:2px;
+    margin:10px;
 }
 
 h1 {
@@ -57,16 +58,15 @@ a {
 }
 
 #allStoriesByTwo {
-    height: 600px;
-    overflow-y: scroll;
-    border-style: solid;
-    margin-top: 100px;
+    background-image: url("../media/parchment.png");
+    margin-top: 50px;
+    border-radius: 25px;
 }
 
 .twoStories {
     display: flex;
-    border-style: solid;
-    margin: 10px;
+    border-radius: 25px;
+    margin-top: -20px;
     padding: 10px;
     background-color: var(--color4);
 }
@@ -97,7 +97,7 @@ h2 {
 
 .wrap {
     position: relative;
-    height: 100%;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -213,7 +213,7 @@ h2 {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--color1);
+    background-color: var(--color4);
     -webkit-transition: .4s;
     transition: .4s;
 }

@@ -21,16 +21,6 @@
             </div>
         </div>
         <br><br>
-        <div class="wrap">
-            <label class="switch">
-                <input type="checkbox" id="togBtn">
-                <div class="slider round">
-                    <span onclick="location.href = '/?get=latest'" id="latest">Latest</span>
-                    <span onclick="location.href = '/?get=liked'" id="liked">Most Liked</span>
-                </div>
-            </label>
-        </div>
-        <div><br><br></div>
     </div>
 
     <!-- temporary div for all stories before js script acts -->
@@ -47,7 +37,19 @@
     </div>
 
     <!-- display two stories in a row-->
-    <div id="allStoriesByTwo"></div>
+    <div id="allStoriesByTwo">
+        <br>
+        <div class="wrap">
+            <label class="switch">
+                <input type="checkbox" id="togBtn">
+                <div class="slider round">
+                    <span onclick="location.href = '/?get=latest'" id="latest">Latest</span>
+                    <span onclick="location.href = '/?get=liked'" id="liked">Most Liked</span>
+                </div>
+            </label>
+        </div>
+        <br><br>
+    </div>
 
     <script src="js/index.js"> </script>
 </body>
