@@ -43,20 +43,20 @@ public class LettersUsedByPlayerStatisticTests {
         // Confirms p3 isn't on record
         assertNull(out.get(p3));
 
-        // TODO: Either fix these tests, or rework the stat.getStatData() method to give every player RSIHM a value
+        // TODO: Either fix these tests, or rework the stat.getStatData() method to give every player RSIHM a value (null right now)
 
         // Confirms p1 counts
-        assertEquals(out.get(p1).get("b").get(), new SymboledInteger(2));
-        assertEquals(out.get(p1).get("a").get(), new SymboledInteger(2));
-        assertEquals(out.get(p1).get("o").get(), new SymboledInteger(2));
-        assertEquals(out.get(p1).get("f").get(), new SymboledInteger(2));
-        assertEquals(out.get(p1).get("d").get(), new SymboledInteger(1));
-        assertEquals(out.get(p1).get("r").get(), new SymboledInteger(1));
+        assertEquals(new SymboledInteger(2), out.get(p1).get("b").get());
+        assertEquals(new SymboledInteger(2), out.get(p1).get("a").get());
+        assertEquals(new SymboledInteger(2), out.get(p1).get("o").get());
+        assertEquals(new SymboledInteger(2), out.get(p1).get("f").get());
+        assertEquals(new SymboledInteger(1), out.get(p1).get("d").get());
+        assertEquals(new SymboledInteger(1), out.get(p1).get("r").get());
 
         // Confirms p2 counts
-        assertEquals(out.get(p2).get("f").get(), new SymboledInteger(1));
-        assertEquals(out.get(p2).get("u").get(), new SymboledInteger(1));
-        assertEquals(out.get(p2).get("n").get(), new SymboledInteger(1));
+        assertEquals(new SymboledInteger(1), out.get(p2).get("f").get());
+        assertEquals(new SymboledInteger(1), out.get(p2).get("u").get());
+        assertEquals(new SymboledInteger(1), out.get(p2).get("n").get());
     }
 
 }
