@@ -529,7 +529,7 @@ public class ThreadLockTests {
 
         // We can distinguish between both cases if the word (bloop) is in the story or not.
         // This, however, is the only difference between the two cases.
-        assertTrue(" bloop".equals(currGame.getStoryString()) | "".equals(currGame.getStoryString()),
+        assertTrue("bloop".equals(currGame.getStoryString()) | "".equals(currGame.getStoryString()),
                 "The story should either be bloop or nothing, but it is somehow ->" + currGame.getStoryString() + "<-");
 
         // We can now test using the elements the two cases have in common (which is everything except the above assert).

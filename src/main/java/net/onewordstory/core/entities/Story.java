@@ -56,6 +56,7 @@ public class Story {
             builder.append(" ");
             builder.append(word.getWord());
         }
-        return builder.toString();
+
+        return builder.toString().trim();
     }
 }
