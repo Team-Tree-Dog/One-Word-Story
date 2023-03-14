@@ -43,6 +43,8 @@ public class LettersUsedByPlayerStatisticTests {
         // Confirms p3 isn't on record
         assertNull(out.get(p3));
 
+        // TODO: Either fix these tests, or rework the stat.getStatData() method to give every player RSIHM a value
+
         // Confirms p1 counts
         assertEquals(out.get(p1).get("b").get(), new SymboledInteger(2));
         assertEquals(out.get(p1).get("a").get(), new SymboledInteger(2));
