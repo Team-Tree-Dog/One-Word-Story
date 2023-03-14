@@ -588,7 +588,7 @@ public class LobbyManagerTests {
         // What we want to test:
         lobman.addWord("bloop", "1");
         // Assertions:
-        assertEquals("bloop ", testGame.getStoryString(), "testGame should just have bloop in the string.");
+        assertEquals(" bloop", testGame.getStoryString(), "testGame should just have bloop in the string.");
     }
 
     /**

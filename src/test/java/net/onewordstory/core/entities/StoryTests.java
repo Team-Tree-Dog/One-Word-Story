@@ -62,7 +62,7 @@ public class StoryTests {
         Story story = new Story(wordfac);
         story.addWord(newword, player1);
 
-        assertEquals("bloop ", story.toString(), "The word should be created, with string bloop");
+        assertEquals(" bloop", story.toString(), "The word should be created, with string bloop");
     }
 
     /**
