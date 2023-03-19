@@ -43,20 +43,18 @@ public class LettersUsedByPlayerStatisticTests {
         // Confirms p3 isn't on record
         assertNull(out.get(p3));
 
-        // TODO: Either fix these tests, or rework the stat.getStatData() method to give every player RSIHM a value (null right now)
-
         // Confirms p1 counts
-        assertEquals(new SymboledInteger(2), out.get(p1).get("b").get());
-        assertEquals(new SymboledInteger(2), out.get(p1).get("a").get());
-        assertEquals(new SymboledInteger(2), out.get(p1).get("o").get());
-        assertEquals(new SymboledInteger(2), out.get(p1).get("f").get());
-        assertEquals(new SymboledInteger(1), out.get(p1).get("d").get());
-        assertEquals(new SymboledInteger(1), out.get(p1).get("r").get());
+        assertEquals(new SymboledInteger(2), out.get(p1).get("Letters Used").get("B").get());
+        assertEquals(new SymboledInteger(2), out.get(p1).get("Letters Used").get("A").get());
+        assertEquals(new SymboledInteger(2), out.get(p1).get("Letters Used").get("O").get());
+        assertEquals(new SymboledInteger(2), out.get(p1).get("Letters Used").get("F").get());
+        assertEquals(new SymboledInteger(1), out.get(p1).get("Letters Used").get("D").get());
+        assertEquals(new SymboledInteger(1), out.get(p1).get("Letters Used").get("R").get());
 
         // Confirms p2 counts
-        assertEquals(new SymboledInteger(1), out.get(p2).get("f").get());
-        assertEquals(new SymboledInteger(1), out.get(p2).get("u").get());
-        assertEquals(new SymboledInteger(1), out.get(p2).get("n").get());
+        assertEquals(new SymboledInteger(1), out.get(p2).get("Letters Used").get("F").get());
+        assertEquals(new SymboledInteger(1), out.get(p2).get("Letters Used").get("U").get());
+        assertEquals(new SymboledInteger(1), out.get(p2).get("Letters Used").get("N").get());
     }
 
 }

@@ -111,10 +111,8 @@ public class AverageTurnDurationPlayerStatisticTests {
 
         Map<Player, RecursiveSymboledIntegerHashMap> out = stat.getStatData();
 
-        // TODO: Either fix these tests, or rework the stat.getStatData() method to give every player RSIHM a value (null right now)
-
-        assertEquals(new SymboledInteger(20), out.get(p1).get());
-        assertEquals(new SymboledInteger(60), out.get(p2).get());
-        assertEquals(new SymboledInteger(30), out.get(p3).get());
+        assertEquals(new SymboledInteger(20), out.get(p1).get("Average Turn Time").get());
+        assertEquals(new SymboledInteger(60), out.get(p2).get("Average Turn Time").get());
+        assertEquals(new SymboledInteger(30), out.get(p3).get("Average Turn Time").get());
     }
 }
