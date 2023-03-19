@@ -69,11 +69,11 @@ public class StoryRestController {
         return mapToJson(result);
     }
 
-    @GetMapping(path="/api/story/lastStoryId")
+    @GetMapping(path="/api/story/lastStory")
     public String getLastStoryId(@RequestParam(name="get", defaultValue="latest") String storiesToGet)
             throws InterruptedException {
         StoryListViewModel viewModel = getCorrespondingStories(storiesToGet);
-        int result = viewModel.getStoriesAwaitable().await().get(0).id();
+        StoryDisplayData result = viewModel.getStoriesAwaitable().await().get(0);
         return mapToJson(result);
     }
 
@@ -104,6 +104,28 @@ public class StoryRestController {
         }
         else {/* TODO: Add error handling and frontend message (e.g stories failed to load) */}
         return mapToJson(result);
+    }
+
+    @GetMapping("/api/story/{id}/comments")
+    public String getStoryComments(@PathVariable int id) throws InterruptedException {
+        GscViewModel gscViewM = gscController.getStoryComments(id);
+        Response response = gscViewM.getResponseAwaitable().await();
+        List<CommentDisplayData> comments = gscViewM.getCommentsAwaitable().get();
+        if (response.getCode() == Response.ResCode.SUCCESS) {
+            return mapToJson(comments);
+        }
+        return "";
+    }
+
+    @GetMapping("/api/story/{id}/titles")
+    public String getStorySuggestedTitles(@PathVariable int id) throws InterruptedException {
+        GatViewModel gatViewM = gatController.getAllTitles(id);
+        Response response = gatViewM.getResponseAwaitable().await();
+        List<SuggestedTitleDisplayData> titles = gatViewM.getSuggestedTitlesAwaitable().get();
+        if (response.getCode() == Response.ResCode.SUCCESS) {
+            return mapToJson(titles);
+        }
+        return "";
     }
 
 }

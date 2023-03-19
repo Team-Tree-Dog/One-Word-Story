@@ -9,32 +9,20 @@ const sortingMethodParameterName = "get";
 const currentSortingMethodPrefix = `?${sortingMethodParameterName}=`;
 let currentSortingMethodSuffix = SortingMethods.LIKED;
 
-let lastStoryId = null;
+let lastStory = {};
 
 // Call the function when this javascript file has been loaded
-ajaxCall();
+loadNewStories();
 
-let callId = setInterval(ajaxCall, 1000);
+let callId = setInterval(loadNewStories, 1000);
 function toggleSortingMethod() {
     clearInterval(callId);
-    lastStoryId = null;
+    lastStory = null;
     currentSortingMethodSuffix = currentSortingMethodSuffix === SortingMethods.LATEST ?
         SortingMethods.LIKED : SortingMethods.LATEST;
-    ajaxCall();
-    callId = setInterval(ajaxCall, 1000);
+    loadNewStories();
+    callId = setInterval(loadNewStories, 1000);
 }
-
-function ajaxCall() {
-    const lastStoryIdUrl = `/api/story/lastStoryId${currentSortingMethodPrefix}${currentSortingMethodSuffix}`;
-    fetch(lastStoryIdUrl, simpleGetOption).then(response => response.text()).then(response => {
-        if (response !== lastStoryId) {
-            console.log("New data");
-            lastStoryId = response;
-            loadNewStories();
-        }
-    });
-}
-
 function loadNewStories() {
     const restUrl = `/stories${currentSortingMethodPrefix}${currentSortingMethodSuffix}`;
     console.log(`Fetching from: ${restUrl}`);
@@ -42,7 +30,6 @@ function loadNewStories() {
     {
         // Building HTML
         const html = [];
-        // Convert using ``
         response.forEach(element => {
             html.push('<div class="story" id = "story1">');
             html.push(`<a href="/story-${element.id}"><h2>${element.title}</h2></a>`);
