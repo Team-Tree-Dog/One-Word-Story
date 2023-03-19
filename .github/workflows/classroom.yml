@@ -16,5 +16,5 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'amazon-coretto'
+          distribution: 'corretto'
       - uses: education/autograding@v1
