@@ -111,8 +111,8 @@ public class AverageTurnDurationPlayerStatisticTests {
 
         Map<Player, RecursiveSymboledIntegerHashMap> out = stat.getStatData();
 
-        assertEquals(out.get(p1).get(), new SymboledInteger(20));
-        assertEquals(out.get(p2).get(), new SymboledInteger(60));
-        assertEquals(out.get(p3).get(), new SymboledInteger(30));
+        assertEquals(new SymboledInteger(20), out.get(p1).get("Average Turn Time").get());
+        assertEquals(new SymboledInteger(60), out.get(p2).get("Average Turn Time").get());
+        assertEquals(new SymboledInteger(30), out.get(p3).get("Average Turn Time").get());
     }
 }

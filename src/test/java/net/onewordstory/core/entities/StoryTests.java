@@ -62,7 +62,7 @@ public class StoryTests {
         Story story = new Story(wordfac);
         story.addWord(newword, player1);
 
-        assertEquals("bloop ", story.toString(), "The word should be created, with string bloop");
+        assertEquals("bloop", story.toString(), "The word should be created, with string bloop");
     }
 
     /**
@@ -106,7 +106,8 @@ public class StoryTests {
         story.addWord("a", player1);
         story.addWord("time", player1);
 
-        assertEquals("Once upon a time ", story.toString(),
-                "The Story.toString() should just be Once upon a time, with a space at the end.");
+        assertEquals("Once upon a time", story.toString(),
+                "The Story.toString() should just be Once upon a time, with a space at the end, but it is ->"
+        + story + "<-");
     }
 }
