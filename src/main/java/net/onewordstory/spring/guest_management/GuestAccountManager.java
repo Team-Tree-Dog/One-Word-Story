@@ -8,10 +8,12 @@ import net.onewordstory.core.usecases.upvote_title.UtGatewayGuestAccounts;
 import org.example.ANSI;
 import org.example.Log;
 import org.jetbrains.annotations.NotNull;
+import org.openjdk.jol.vm.VM;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,7 +38,7 @@ public class GuestAccountManager implements HandlerInterceptor, LsGatewayGuestAc
 
     private final Map<String, GuestAccount> uuidToAcc = new ConcurrentHashMap<>();
     private final Lock lock = new ReentrantLock();
-    private AtomicBoolean isExpiryWorkerRunning = new AtomicBoolean(false);
+    private final AtomicBoolean isExpiryWorkerRunning = new AtomicBoolean(false);
 
     /**
      * Thread which loops the account map and deletes all expired accounts
@@ -75,7 +77,12 @@ public class GuestAccountManager implements HandlerInterceptor, LsGatewayGuestAc
     public boolean preHandle(@NotNull HttpServletRequest request,
                              @NotNull HttpServletResponse response,
                              @NotNull Object handler) {
-        Log.sendSocketGeneral("Interceptor", "Request Intercepted");
+        Log.sendMessage(ANSI.YELLOW, "Interceptor", ANSI.CYAN,
+                "Request Intercepted");
+        System.out.println("Path " + request.getRequestURI());
+
+        // uuid of found account or new one made
+        String uuid;
 
         // Puts out a thread to delete expired accounts
         if (!isExpiryWorkerRunning.get()) {
@@ -95,24 +102,42 @@ public class GuestAccountManager implements HandlerInterceptor, LsGatewayGuestAc
 
         // Make new account and add cookie
         if (cookie == null) {
-            response.addCookie(new Cookie("account_id", makeAccount()));
-            Log.sendSocketGeneral("Interceptor", "New account made");
+            uuid = makeAccount();
+            response.addCookie(new Cookie("account_id", uuid));
+            Log.sendMessage(ANSI.YELLOW, "Interceptor", ANSI.CYAN,
+                    "Cookie was null, new account made " + uuid);
         }
 
         else {
+            Log.sendMessage(ANSI.YELLOW, "Interceptor", ANSI.CYAN,
+                    "Cookie found with value " + cookie.getValue());
+
             // Tries to get associated account
             GuestAccount targetAcc = uuidToAcc.get(cookie.getValue());
 
             // Account doesn't exist or is expired
             if (targetAcc == null || targetAcc.isExpired()) {
-                response.addCookie(new Cookie("account_id", makeAccount()));
+                uuid = makeAccount();
+                response.addCookie(new Cookie("account_id", uuid));
+                Log.sendMessage(ANSI.YELLOW, "Interceptor", ANSI.CYAN,
+                        "Account DNE or expired, new account made " + uuid);
             }
             // Account was found
             else {
+                uuid = targetAcc.getId();
                 targetAcc.touch();
-                Log.sendSocketGeneral("Interceptor", "Account touched");
+                Log.sendMessage(ANSI.YELLOW, "Interceptor", ANSI.CYAN,
+                        "Account touched " + targetAcc.getId());
             }
         }
+
+        // Records account ID for the controller to use to pass to use case
+        request.setAttribute("account_id", uuid);
+
+        Log.sendMessage(ANSI.YELLOW, "Interceptor",
+                ANSI.CYAN, Arrays.toString(uuidToAcc.keySet().toArray()));
+        Log.sendMessage(ANSI.YELLOW, "Interceptor",
+                ANSI.CYAN, String.valueOf(VM.current().addressOf(uuidToAcc)));
 
         return true;
     }
@@ -128,17 +153,35 @@ public class GuestAccountManager implements HandlerInterceptor, LsGatewayGuestAc
 
     @Override
     public boolean hasLikedStory(String guestAccId, int storyId) {
+        Log.sendMessage(ANSI.YELLOW, "hasLikedStory",
+                ANSI.CYAN, Arrays.toString(uuidToAcc.keySet().toArray()));
+        Log.sendMessage(ANSI.YELLOW, "hasLikedStory",
+                ANSI.CYAN, guestAccId);
+        Log.sendMessage(ANSI.YELLOW, "hasLikedStory",
+                ANSI.CYAN, String.valueOf(VM.current().addressOf(uuidToAcc)));
+
         GuestAccount acc = uuidToAcc.get(guestAccId);
         if (acc != null) {
-            acc.hasLikedStory(storyId);
+            Log.sendMessage(ANSI.YELLOW, "hasLikedStory",
+                    ANSI.CYAN, "Account found with ID " + guestAccId);
+            return acc.hasLikedStory(storyId);
         }
         return false;
     }
 
     @Override
     public void setLikedStory(String guestAccId, int storyId) {
+        Log.sendMessage(ANSI.YELLOW, "setLikedStory",
+                ANSI.CYAN, Arrays.toString(uuidToAcc.keySet().toArray()));
+        Log.sendMessage(ANSI.YELLOW, "setLikedStory",
+                ANSI.CYAN, guestAccId);
+        Log.sendMessage(ANSI.YELLOW, "hasLikedStory",
+                ANSI.CYAN, String.valueOf(VM.current().addressOf(uuidToAcc)));
+
         GuestAccount acc = uuidToAcc.get(guestAccId);
         if (acc != null) {
+            Log.sendMessage(ANSI.YELLOW, "setLikedStory",
+                    ANSI.CYAN, "Account found with ID " + guestAccId);
             acc.setLikedStory(storyId);
         }
     }
@@ -147,7 +190,7 @@ public class GuestAccountManager implements HandlerInterceptor, LsGatewayGuestAc
     public boolean hasUpvotedTitle(String guestAccountId, int storyId, String title) {
         GuestAccount acc = uuidToAcc.get(guestAccountId);
         if (acc != null) {
-            acc.hasUpvotedTitle(storyId, title);
+            return acc.hasUpvotedTitle(storyId, title);
         }
         return false;
     }

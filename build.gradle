@@ -10,6 +10,7 @@ repositories {
 
 dependencies {
     implementation project(':terminal_debug')
+    implementation 'org.openjdk.jol:jol-core:0.17'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'

@@ -1,5 +1,6 @@
 package net.onewordstory.spring.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import net.onewordstory.core.adapters.controllers.*;
 import net.onewordstory.core.adapters.display_data.comment_data.CommentDisplayData;
 import net.onewordstory.core.adapters.display_data.comment_data.CommentDisplayDataBuilder;
@@ -188,11 +189,13 @@ public class StoryController {
 
     @PostMapping("upvote-suggestion/suggestion")
     public String upvoteSuggestedTitle(@RequestParam("id") String title,
-                                       @RequestParam("storyId") String storyId
+                                       @RequestParam("storyId") String storyId,
+                                       HttpServletRequest req
     ) throws InterruptedException {
         System.out.println("Post upvote-suggestion/suggestion/" + title);
 
-        UtViewModel utViewM = utController.upvoteTitle(Integer.parseInt(storyId), title, "");
+        UtViewModel utViewM = utController.upvoteTitle(Integer.parseInt(storyId), title,
+                (String) req.getAttribute("account_id"));
 
         Response res = utViewM.getResponseAwaitable().await();
 
@@ -207,12 +210,15 @@ public class StoryController {
 
     @PostMapping("like/story/{id}")
     public String like(
-            @PathVariable int id
+            @PathVariable int id,
+            HttpServletRequest req
     ) throws InterruptedException {
         System.out.println("Received like request for story " + id);
         System.out.println("Post like/story/" + id);
 
-        LsViewModel viewM = lsController.likeStory(id, "");
+        LsViewModel viewM = lsController.likeStory(id, (String) req.getAttribute("account_id"));
+        System.out.println(req.getAttribute("account_id"));
+        System.out.println(req);
 
         Response res = viewM.getResponseAwaitable().await();
 
