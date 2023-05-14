@@ -194,9 +194,11 @@ public class StoryController {
 
         UtViewModel utViewM = utController.upvoteTitle(Integer.parseInt(storyId), title, "");
 
-        utViewM.getResponseAwaitable().await();
+        Response res = utViewM.getResponseAwaitable().await();
 
-        // We will ignore the response. If upvoting fails, we won't display anything
+        // Currently only prints a debug message on error
+        Log.sendMessage(ANSI.YELLOW, "upvote-suggestion/suggestion", ANSI.CYAN,
+                "Upvote title response: " + res);
 
         System.out.println("Received upvote suggested title : " + title + '\n');
 
@@ -212,7 +214,11 @@ public class StoryController {
 
         LsViewModel viewM = lsController.likeStory(id, "");
 
-        viewM.getResponseAwaitable().await();
+        Response res = viewM.getResponseAwaitable().await();
+
+        // Currently only prints a debug message on error
+        Log.sendMessage(ANSI.YELLOW, "like/story/id", ANSI.CYAN,
+                "Like story response: " + res);
 
         return "redirect:/story-" + id;
     }
