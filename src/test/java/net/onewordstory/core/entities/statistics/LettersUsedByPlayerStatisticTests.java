@@ -44,17 +44,17 @@ public class LettersUsedByPlayerStatisticTests {
         assertNull(out.get(p3));
 
         // Confirms p1 counts
-        assertEquals(out.get(p1).get("b").get(), new SymboledInteger(2));
-        assertEquals(out.get(p1).get("a").get(), new SymboledInteger(2));
-        assertEquals(out.get(p1).get("o").get(), new SymboledInteger(2));
-        assertEquals(out.get(p1).get("f").get(), new SymboledInteger(2));
-        assertEquals(out.get(p1).get("d").get(), new SymboledInteger(1));
-        assertEquals(out.get(p1).get("r").get(), new SymboledInteger(1));
+        assertEquals(new SymboledInteger(2), out.get(p1).get("Letters Used").get("B").get());
+        assertEquals(new SymboledInteger(2), out.get(p1).get("Letters Used").get("A").get());
+        assertEquals(new SymboledInteger(2), out.get(p1).get("Letters Used").get("O").get());
+        assertEquals(new SymboledInteger(2), out.get(p1).get("Letters Used").get("F").get());
+        assertEquals(new SymboledInteger(1), out.get(p1).get("Letters Used").get("D").get());
+        assertEquals(new SymboledInteger(1), out.get(p1).get("Letters Used").get("R").get());
 
         // Confirms p2 counts
-        assertEquals(out.get(p2).get("f").get(), new SymboledInteger(1));
-        assertEquals(out.get(p2).get("u").get(), new SymboledInteger(1));
-        assertEquals(out.get(p2).get("n").get(), new SymboledInteger(1));
+        assertEquals(new SymboledInteger(1), out.get(p2).get("Letters Used").get("F").get());
+        assertEquals(new SymboledInteger(1), out.get(p2).get("Letters Used").get("U").get());
+        assertEquals(new SymboledInteger(1), out.get(p2).get("Letters Used").get("N").get());
     }
 
 }

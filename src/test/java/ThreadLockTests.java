@@ -61,12 +61,6 @@ public class ThreadLockTests {
             players = new LinkedList<>(initialPlayers);
         }
 
-        public GameTest(List<Player> initialPlayers, PerPlayerIntStatistic[] playerStats) {
-            super(REGULAR_GAME_SECONDS_PER_TURN, v, playerStats);
-            this.story = new Story(new WordFactory(v));
-            players = new LinkedList<>(initialPlayers);
-        }
-
         @Override
         public @NotNull Collection<Player> getPlayers() {
             return new ArrayList<>(players);
@@ -175,11 +169,6 @@ public class ThreadLockTests {
     private static class TestPerPlayerIntStatistic implements PerPlayerIntStatistic {
 
         private final ArrayList<Player> players;
-
-        public TestPerPlayerIntStatistic(List<Player> initialPlayers) {
-            players = new ArrayList<Player>();
-            players.addAll(initialPlayers);
-        }
 
         public TestPerPlayerIntStatistic(Queue<Player> initialPlayers) {
             players = new ArrayList<Player>();
@@ -312,28 +301,28 @@ public class ThreadLockTests {
         int randTime2 = new Random().nextInt(20);
         System.out.println("Case Number: " + newint);
         switch (newint) {
-            case 0 :
+            case 0 -> {
                 jplInteractor.joinPublicLobby(jplInputData, jplPres);
                 Thread.sleep(randTime1);
                 dcInteractor.disconnect(dcInputData, dcPres);
                 Thread.sleep(randTime2);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
-                break;
-            case 1 :
+            }
+            case 1 -> {
                 jplInteractor.joinPublicLobby(jplInputData, jplPres);
                 Thread.sleep(randTime1);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 Thread.sleep(randTime2);
                 dcInteractor.disconnect(dcInputData, dcPres);
-                break;
-            case 2 :
+            }
+            case 2 -> {
                 dcInteractor.disconnect(dcInputData, dcPres);
                 Thread.sleep(randTime1);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 Thread.sleep(randTime2);
                 jplInteractor.joinPublicLobby(jplInputData, jplPres);
-                break;
-            case 3 :
+            }
+            case 3 -> {
                 dcInteractor.disconnect(dcInputData, dcPres);
                 Thread.sleep(randTime1);
                 jplInteractor.joinPublicLobby(jplInputData, jplPres);
@@ -341,7 +330,7 @@ public class ThreadLockTests {
                 System.out.println("SpTimer should now start");
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 System.out.println("SpTimer should have just started.");
-                break;
+            }
         }
 
         System.out.println("Switch over.");
@@ -506,26 +495,26 @@ public class ThreadLockTests {
         int newint = new Random().nextInt(4);
         System.out.println("Case number: " + newint);
         switch (newint) {
-            case 0 : // SW1, RG, DC1: Word processed, player disconnects.
+            case 0 -> { // SW1, RG, DC1: Word processed, player disconnects.
                 swInteractor.submitWord(swInputData, swPres);
                 timer.scheduleAtFixedRate(rgTimerTask, 0, 50);
                 dcInteractor.disconnect(dcInputData, dcPres);
-                break;
-            case 1 : // SW1, DC1, RG: Word processed, player disconnects.
+            }
+            case 1 -> { // SW1, DC1, RG: Word processed, player disconnects.
                 swInteractor.submitWord(swInputData, swPres);
                 dcInteractor.disconnect(dcInputData, dcPres);
                 timer.scheduleAtFixedRate(rgTimerTask, 0, 50);
-                break;
-            case 2 : // DC1, RG, SW1: PlayerNotFound, word not processed.
+            }
+            case 2 -> { // DC1, RG, SW1: PlayerNotFound, word not processed.
                 dcInteractor.disconnect(dcInputData, dcPres);
                 timer.scheduleAtFixedRate(rgTimerTask, 0, 50);
                 swInteractor.submitWord(swInputData, swPres);
-                break;
-            case 3 : // DC1, SW1, RG: PlayerNotFound, word not processed.
+            }
+            case 3 -> { // DC1, SW1, RG: PlayerNotFound, word not processed.
                 dcInteractor.disconnect(dcInputData, dcPres);
                 swInteractor.submitWord(swInputData, swPres);
                 timer.scheduleAtFixedRate(rgTimerTask, 0, 50);
-                break;
+            }
         }
 
         // We first need to make sure DC and SW have finished their respective threads.
@@ -540,8 +529,8 @@ public class ThreadLockTests {
 
         // We can distinguish between both cases if the word (bloop) is in the story or not.
         // This, however, is the only difference between the two cases.
-        assertTrue("bloop ".equals(currGame.getStoryString()) | "".equals(currGame.getStoryString()),
-                "The story should either be bloop or nothing, but it is somehow neither");
+        assertTrue("bloop".equals(currGame.getStoryString()) | "".equals(currGame.getStoryString()),
+                "The story should either be bloop or nothing, but it is somehow ->" + currGame.getStoryString() + "<-");
 
         // We can now test using the elements the two cases have in common (which is everything except the above assert).
         // In both cases, Player 2's turn shouldn't have finished because we have set the turn time at 15 seconds,
@@ -641,34 +630,34 @@ public class ThreadLockTests {
         int randTime2 = new Random().nextInt(20);
         System.out.println("Case Number: " + newint);
         switch (newint) {
-            case 0 :
+            case 0 -> {
                 jplInteractor.joinPublicLobby(jplInputData, jplPres);
                 Thread.sleep(randTime1);
                 dcInteractor.disconnect(dcInputData, dcPres);
                 Thread.sleep(randTime2);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
-                break;
-            case 1 :
+            }
+            case 1 -> {
                 jplInteractor.joinPublicLobby(jplInputData, jplPres);
                 Thread.sleep(randTime1);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 Thread.sleep(randTime2);
                 dcInteractor.disconnect(dcInputData, dcPres);
-                break;
-            case 2 :
+            }
+            case 2 -> {
                 dcInteractor.disconnect(dcInputData, dcPres);
                 Thread.sleep(randTime1);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
                 Thread.sleep(randTime2);
                 jplInteractor.joinPublicLobby(jplInputData, jplPres);
-                break;
-            case 3 :
+            }
+            case 3 -> {
                 dcInteractor.disconnect(dcInputData, dcPres);
                 Thread.sleep(randTime1);
                 jplInteractor.joinPublicLobby(jplInputData, jplPres);
                 Thread.sleep(randTime2);
                 timer.scheduleAtFixedRate(spTimerTask, 0, 1000);
-                break;
+            }
         }
 
         System.out.println("Switch over.");
@@ -776,7 +765,7 @@ public class ThreadLockTests {
                 ids.add(pstat.getPlayerId());
             }
             playersPge.set(ids);
-            pgeFlag.set(true);
+            pgeFlag.set(!pgeFlag.get()); // PGE is triggered twice.
             System.out.println("players PGE:" + playersPge.get());
         };
         PgeInteractor pgeInteractor = new PgeInteractor(pgePres, pgeGatewayStory);
@@ -812,36 +801,36 @@ public class ThreadLockTests {
         int newint = new Random().nextInt(6);
         System.out.println("Case number: " + newint);
         switch (newint) {
-            case 0 : // RG, DC, SP
-                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+            case 0 -> { // RG, DC, SP
+                currGame.getGameTimer().scheduleAtFixedRate(rgTimerTask, 0, 50);
                 dcInteractor.disconnect(dcInputData, dcPres);
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
-                break;
-            case 1 : // RG, SP, DC
-                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+            }
+            case 1 -> { // RG, SP, DC
+                currGame.getGameTimer().scheduleAtFixedRate(rgTimerTask, 0, 50);
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
                 dcInteractor.disconnect(dcInputData, dcPres);
-                break;
-            case 2 : // SP, RG, DC
+            }
+            case 2 -> { // SP, RG, DC
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
-                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                currGame.getGameTimer().scheduleAtFixedRate(rgTimerTask, 0, 50);
                 dcInteractor.disconnect(dcInputData, dcPres);
-                break;
-            case 3 : // SP, DC, RG
+            }
+            case 3 -> { // SP, DC, RG
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
                 dcInteractor.disconnect(dcInputData, dcPres);
-                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
-                break;
-            case 4 : // DC, SP, RG
+                currGame.getGameTimer().scheduleAtFixedRate(rgTimerTask, 0, 50);
+            }
+            case 4 -> { // DC, SP, RG
                 dcInteractor.disconnect(dcInputData, dcPres);
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
-                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
-                break;
-            case 5 : // DC, RG, SP
+                currGame.getGameTimer().scheduleAtFixedRate(rgTimerTask, 0, 50);
+            }
+            case 5 -> { // DC, RG, SP
                 dcInteractor.disconnect(dcInputData, dcPres);
-                rgTimer.scheduleAtFixedRate(rgTimerTask, 0, 50);
+                currGame.getGameTimer().scheduleAtFixedRate(rgTimerTask, 0, 50);
                 spTimer.scheduleAtFixedRate(spTimerTask, 0, 50);
-                break;
+            }
         }
         System.out.println("Switch Over");
 
@@ -850,16 +839,25 @@ public class ThreadLockTests {
             Thread.onSpinWait();
         }
         assertTrue(dcFlag.get(), "How did we get out of the while loop if dcFlag is still false?");
+        System.out.println("DC flag done");
 
         while(!pgeFlag.get()) {
             Thread.onSpinWait();
         }
         assertTrue(pgeFlag.get(), "How did we get out of the while loop if pgeFlag is still false?");
+        System.out.println("PGE flag done");
 
         // Now, we need to stop both RG and SP before their next iterations. The cancel() method will still let both
         // TimerTasks finish their current iteration if there is one running.
         rgTimerTask.cancel();
+        System.out.println("RGTimerTask has been Canceled.");
         spTimerTask.cancel();
+        System.out.println("SPTimerTask has been Canceled.");
+        rgTimer.cancel();
+        System.out.println("RGTimer has been Canceled.");
+        spTimer.cancel();
+        System.out.println("SPTimer has been Canceled.");
+
         System.out.println("All Tasks Canceled.");
 
         System.out.println("Test right now locking PlayerPool...");
@@ -896,7 +894,8 @@ public class ThreadLockTests {
                 assertTrue(currGame.getPlayers().contains(player1),
                         "Player 1 should still be in the game, but it isn't.");
                 // Check that the game was already set to null:
-                assertTrue(lobman.isGameNull());
+                assertTrue(lobman.isGameNull() || lobman.isGameEnded(),
+                        "The game should already have been set to null or ended, but it isn't yet.");
             }
             else if (messageDc.get().equals("SUCCESS")){
                 System.out.println("Scenario 1: RG notified player 1 was still in-game, " +
@@ -929,7 +928,7 @@ public class ThreadLockTests {
         }
         spTimerNew.cancel(); // And cancel.
         // Actually, sanity assert this just in case.
-        assertTrue(lobman.isGameNull(), "Why did it break out of the while loop, but the game is still null?");
+        assertTrue(lobman.isGameNull(), "Why did it break out of the while loop, but the game is still not null?");
         System.out.println("Test has ended.");
     }
 }
