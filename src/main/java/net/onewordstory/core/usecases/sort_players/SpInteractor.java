@@ -52,12 +52,12 @@ public class SpInteractor {
         @Override
         public void run() {
             // We need to lock all the accesses to the pool and the game to avoid race conditions
-            Log.useCaseMsg("SP", "Wants POOL lock");
+            //Log.useCaseMsg("SP", "Wants POOL lock");
             playerPoolLock.lock();
-            Log.useCaseMsg("SP", "Got POOL lock");
-            Log.useCaseMsg("SP", "Wants GAME lock");
+            //Log.useCaseMsg("SP", "Got POOL lock");
+            //Log.useCaseMsg("SP", "Wants GAME lock");
             gameLock.lock();
-            Log.useCaseMsg("SP", "Got GAME lock");
+            //Log.useCaseMsg("SP", "Got GAME lock");
 
             // If game has ended, set it to null.
             if (!lobbyManager.isGameNull()) {
@@ -128,9 +128,9 @@ public class SpInteractor {
                 new RgInteractor(game, pge, pd, gameLock).startTimer();
             }
             gameLock.unlock();
-            Log.useCaseMsg("SP", "Released GAME lock");
+            //Log.useCaseMsg("SP", "Released GAME lock");
             playerPoolLock.unlock();
-            Log.useCaseMsg("SP", "Released POOL lock");
+            //Log.useCaseMsg("SP", "Released POOL lock");
         }
     }
 
