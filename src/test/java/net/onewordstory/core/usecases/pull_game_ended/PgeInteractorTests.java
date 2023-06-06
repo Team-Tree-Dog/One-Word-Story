@@ -1,30 +1,19 @@
 package net.onewordstory.core.usecases.pull_game_ended;
 
 import net.onewordstory.core.entities.Player;
-import net.onewordstory.core.entities.games.Game;
 import net.onewordstory.core.entities.statistics.AllPlayerNamesStatistic;
-import net.onewordstory.core.entities.validity_checkers.ValidityCheckerFacade;
-import net.onewordstory.core.exceptions.InvalidWordException;
 import net.onewordstory.core.usecases.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
-import net.onewordstory.core.usecases.GameDTO;
-import net.onewordstory.core.usecases.PlayerDTO;
+import org.junit.jupiter.api.*;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 
 public class PgeInteractorTests {
-
-    // TODO: Rewrite these tests, PGE changed drastically
     // PgeInputBoundary, PgeInputData, TestOutputBoundary used to test PgeInteractor
     private PgeInputBoundary pgeib;
     private PgeInputData pgeid;
