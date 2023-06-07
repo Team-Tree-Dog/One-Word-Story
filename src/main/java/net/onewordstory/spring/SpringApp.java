@@ -17,6 +17,7 @@ import net.onewordstory.core.entities.statistics.AverageTurnDurationPlayerStatis
 import net.onewordstory.core.entities.statistics.LettersUsedByPlayerStatistic;
 import net.onewordstory.core.entities.statistics.PerPlayerIntStatistic;
 import net.onewordstory.core.entities.statistics.WordCountPlayerStatistic;
+import net.onewordstory.core.entities.story_save_checkers.StorySaveCheckerByLength;
 import net.onewordstory.core.entities.suggested_title_checkers.SuggestedTitleChecker;
 import net.onewordstory.core.entities.suggested_title_checkers.SuggestedTitleCheckerBasic;
 import net.onewordstory.core.frameworks_drivers.repository.in_memory.InMemoryCommentsRepo;
@@ -195,8 +196,9 @@ public class SpringApp {
 			LobbyManager manager = new LobbyManager(playerFac, gameFac);
 
 			// Start up sort players
+			StorySaveCheckerByLength sscbl = new StorySaveCheckerByLength();
 			PdInteractor pd = new PdInteractor(pdPresenter);
-			PgeInteractor pge = new PgeInteractor(pgePresenter, (PgeGatewayStory) storyRepo);
+			PgeInteractor pge = new PgeInteractor(pgePresenter, (PgeGatewayStory) storyRepo, sscbl);
 			SpInteractor sp = new SpInteractor(manager, pge, pd);
 			sp.startTimer();
 

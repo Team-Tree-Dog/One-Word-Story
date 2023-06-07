@@ -3,6 +3,9 @@ package net.onewordstory.core.usecases.pull_game_ended;
 import net.onewordstory.core.entities.Player;
 import net.onewordstory.core.entities.statistics.AllPlayerNamesStatistic;
 import net.onewordstory.core.entities.statistics.PerPlayerIntStatistic;
+import net.onewordstory.core.entities.story_save_checkers.Action;
+import net.onewordstory.core.entities.story_save_checkers.FilterOutput;
+import net.onewordstory.core.entities.story_save_checkers.StorySaveChecker;
 import org.example.Log;
 import net.onewordstory.core.usecases.Response;
 import net.onewordstory.core.util.RecursiveSymboledIntegerHashMap;
@@ -20,14 +23,16 @@ public class PgeInteractor implements PgeInputBoundary {
 
     private final PgeOutputBoundary presenter;
     private final PgeGatewayStory repo;
+    private final StorySaveChecker storySaveChecker;
 
     /**
      * Constructor for PgeInteractor
      * @param presenter Object to call for output
      */
-    public PgeInteractor(PgeOutputBoundary presenter, PgeGatewayStory repo) {
+    public PgeInteractor(PgeOutputBoundary presenter, PgeGatewayStory repo, StorySaveChecker storychecker) {
         this.presenter = presenter;
         this.repo = repo;
+        this.storySaveChecker = storychecker;
     }
 
     /**
@@ -88,6 +93,20 @@ public class PgeInteractor implements PgeInputBoundary {
             );
         }
 
+        FilterOutput out = storySaveChecker.filterStory(data.getStoryString());
+        if (out.getAction() == Action.ACCEPTED) {
+            repo.saveStory(out.getFilteredStory(), Instant.now().getEpochSecond(),
+                    data.getAuthorNamesStat().getStatData());
+            Log.useCaseMsg("PGE", "Story passed through filter!");
+        }
+        if (out.getAction() == Action.MODIFIED) {
+            repo.saveStory(out.getFilteredStory(), Instant.now().getEpochSecond(),
+                    data.getAuthorNamesStat().getStatData());
+            Log.useCaseMsg("PGE", "Modified Story passed through filter.");
+        }
+        else {
+            Log.useCaseMsg("PGE", "Story rejected by filter.");
+        }
         presenter.notifyGameEnded(new PgeOutputData(playerStatDTOs));
     }
 }
