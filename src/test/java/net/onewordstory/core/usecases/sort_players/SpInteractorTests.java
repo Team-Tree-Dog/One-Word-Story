@@ -4,6 +4,7 @@ import net.onewordstory.core.entities.*;
 import net.onewordstory.core.entities.display_name_checkers.DisplayNameChecker;
 import net.onewordstory.core.entities.games.Game;
 import net.onewordstory.core.entities.games.GameFactory;
+import net.onewordstory.core.entities.story_save_checkers.StorySaveCheckerByLength;
 import net.onewordstory.core.entities.validity_checkers.ValidityCheckerFacade;
 import net.onewordstory.core.exceptions.GameRunningException;
 import org.jetbrains.annotations.NotNull;
@@ -113,7 +114,7 @@ public class SpInteractorTests {
     private static class BlankOutputPgeInteractor extends PgeInteractor {
         public BlankOutputPgeInteractor () {
             super(d -> {
-            }, (storyString, publishUnixTimeStamp, authorDisplayNames) -> null);
+            }, (storyString, publishUnixTimeStamp, authorDisplayNames) -> null, new StorySaveCheckerByLength());
         }
     }
 

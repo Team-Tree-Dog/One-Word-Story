@@ -5,6 +5,7 @@ import net.onewordstory.core.entities.games.GameFactory;
 
 import net.onewordstory.core.entities.games.GameReadOnly;
 import net.onewordstory.core.entities.statistics.PerPlayerIntStatistic;
+import net.onewordstory.core.entities.story_save_checkers.StorySaveCheckerByLength;
 import net.onewordstory.core.entities.validity_checkers.*;
 import net.onewordstory.core.exceptions.*;
 
@@ -768,7 +769,7 @@ public class ThreadLockTests {
             pgeFlag.set(!pgeFlag.get()); // PGE is triggered twice.
             System.out.println("players PGE:" + playersPge.get());
         };
-        PgeInteractor pgeInteractor = new PgeInteractor(pgePres, pgeGatewayStory);
+        PgeInteractor pgeInteractor = new PgeInteractor(pgePres, pgeGatewayStory, new StorySaveCheckerByLength());
         PdInputBoundary pdInputBoundary = d -> {};
         RgInteractor rgInteractor = new RgInteractor(currGame, pgeInteractor, pdInputBoundary, lobman.getGameLock());
         RgInteractor.RgTask rgTimerTask = rgInteractor.new RgTask();
