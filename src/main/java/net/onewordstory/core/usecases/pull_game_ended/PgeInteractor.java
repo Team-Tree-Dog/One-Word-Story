@@ -49,12 +49,25 @@ public class PgeInteractor implements PgeInputBoundary {
         AllPlayerNamesStatistic authorNames = data.getAuthorNamesStat();
         // We currently don't do anything on fail except print. If repo returns a fail code, then the
         // story has failed to save so "oh well"
-        Response res = repo.saveStory(data.getStoryString(), Instant.now().getEpochSecond(),
-                authorNames.getStatData());
 
-        // Show message
-        if (res.getCode() == Response.ResCode.SUCCESS) Log.useCaseMsg("PGE", "Saved Story to DB!");
-        else Log.useCaseMsg("PGE ERROR", "Failed to save story: " + res);
+        FilterOutput out = storySaveChecker.filterStory(data.getStoryString());
+        if (out.getAction() == Action.ACCEPTED) {
+            Log.useCaseMsg("PGE", "Story passed through filter!");
+            Response res = repo.saveStory(out.getFilteredStory(), Instant.now().getEpochSecond(),
+                    data.getAuthorNamesStat().getStatData());
+            if (res.getCode() == Response.ResCode.SUCCESS) Log.useCaseMsg("PGE", "Saved Story to DB!");
+            else Log.useCaseMsg("PGE ERROR", "Failed to save story: " + res);
+        }
+        else if (out.getAction() == Action.MODIFIED) {
+            Log.useCaseMsg("PGE", "Modified Story passed through filter.");
+            Response res = repo.saveStory(out.getFilteredStory(), Instant.now().getEpochSecond(),
+                    data.getAuthorNamesStat().getStatData());
+            if (res.getCode() == Response.ResCode.SUCCESS) Log.useCaseMsg("PGE", "Saved Story to DB!");
+            else Log.useCaseMsg("PGE ERROR", "Failed to save story: " + res);
+        }
+        else {
+            Log.useCaseMsg("PGE", "Story rejected by filter.");
+        }
 
         /*
         Below code takes care of output
@@ -93,20 +106,6 @@ public class PgeInteractor implements PgeInputBoundary {
             );
         }
 
-        FilterOutput out = storySaveChecker.filterStory(data.getStoryString());
-        if (out.getAction() == Action.ACCEPTED) {
-            repo.saveStory(out.getFilteredStory(), Instant.now().getEpochSecond(),
-                    data.getAuthorNamesStat().getStatData());
-            Log.useCaseMsg("PGE", "Story passed through filter!");
-        }
-        if (out.getAction() == Action.MODIFIED) {
-            repo.saveStory(out.getFilteredStory(), Instant.now().getEpochSecond(),
-                    data.getAuthorNamesStat().getStatData());
-            Log.useCaseMsg("PGE", "Modified Story passed through filter.");
-        }
-        else {
-            Log.useCaseMsg("PGE", "Story rejected by filter.");
-        }
         presenter.notifyGameEnded(new PgeOutputData(playerStatDTOs));
     }
 }
