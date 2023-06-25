@@ -2,12 +2,12 @@ package net.onewordstory.core.usecases.pull_game_ended;
 
 import net.onewordstory.core.entities.Player;
 import net.onewordstory.core.entities.statistics.AllPlayerNamesStatistic;
+import net.onewordstory.core.entities.story_save_checkers.StorySaveCheckerByLength;
 import net.onewordstory.core.usecases.Response;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.junit.jupiter.api.*;
-
-import java.util.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -38,12 +38,7 @@ public class PgeInteractorTests {
         Player p2 = new Player("p2", "2");
 
         // Instantiate pgeInputBoundary
-        pgeib = new PgeInteractor(testOutputBoundary, new PgeGatewayStory() {
-            @Override
-            public @NotNull Response saveStory(String storyString, double publishUnixTimeStamp, @Nullable Set<String> authorDisplayNames) {
-                return new Response(Response.ResCode.SUCCESS, "Response has been returned successfully");
-            }
-        });
+        pgeib = new PgeInteractor(testOutputBoundary, (storyString, publishUnixTimeStamp, authorDisplayNames) -> new Response(Response.ResCode.SUCCESS, "Response has been returned successfully"), new StorySaveCheckerByLength());
 
         // Instantiate pgeInputData with list of players
         pgeid = new PgeInputData(new ArrayList<>(2), "",
