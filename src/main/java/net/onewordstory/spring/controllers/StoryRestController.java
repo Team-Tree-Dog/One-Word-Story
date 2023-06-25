@@ -77,6 +77,8 @@ public class StoryRestController {
         return mapToJson(result);
     }
 
+
+    //TODO Simplify this code just to grab the number
     @GetMapping("/api/story/metadata/{id}")
     public String storyUpdateMetadata(@PathVariable int id) throws InterruptedException {
         StoryListViewModel gsbiViewM = gsbiController.getStoryById(id);
@@ -95,18 +97,21 @@ public class StoryRestController {
                 gatRes.getCode() == Response.ResCode.SUCCESS &&
                 gscRes.getCode() == Response.ResCode.SUCCESS) {
             assert titles != null && stories != null && comments != null;
+            int likesInTotal = titles.stream().
+                    map(SuggestedTitleDisplayData::numUpvotes).reduce(0, Integer::sum);
             StoryDisplayData storyDisplayData = stories.get(0);
             result = new StoryUpdateMetadata(
                     storyDisplayData.likes(),
                     comments.size(),
-                    titles.size()
+                    titles.size(),
+                    likesInTotal
                     );
         }
         else {/* TODO: Add error handling and frontend message (e.g stories failed to load) */}
         return mapToJson(result);
     }
 
-    @GetMapping("/api/story/{id}/comments")
+    @GetMapping("/api/story/comments/{id}")
     public String getStoryComments(@PathVariable int id) throws InterruptedException {
         GscViewModel gscViewM = gscController.getStoryComments(id);
         Response response = gscViewM.getResponseAwaitable().await();
@@ -117,7 +122,19 @@ public class StoryRestController {
         return "";
     }
 
-    @GetMapping("/api/story/{id}/titles")
+    @GetMapping("/api/story/title/{id}")
+    public String getStoryTitle(@PathVariable int id) throws InterruptedException {
+        StoryListViewModel gsbiViewM = gsbiController.getStoryById(id);
+        Response gsbiRes = gsbiViewM.getResponseAwaitable().await();
+        List<StoryDisplayData> stories = gsbiViewM.getStoriesAwaitable().get();
+        if (gsbiRes.getCode() == Response.ResCode.SUCCESS) {
+            assert stories != null;
+            return stories.get(0).title();
+        }  else {/* TODO: Add error handling and frontend message (e.g stories failed to load) */}
+        return "";
+    }
+
+    @GetMapping("/api/story/titles/{id}")
     public String getStorySuggestedTitles(@PathVariable int id) throws InterruptedException {
         GatViewModel gatViewM = gatController.getAllTitles(id);
         Response response = gatViewM.getResponseAwaitable().await();

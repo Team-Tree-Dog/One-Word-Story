@@ -12,5 +12,6 @@ package net.onewordstory.core.adapters.display_data.story_data;
  */
 public record StoryUpdateMetadata(int likes,
                                   int numberOfComments,
-                                  int numberOfSuggestedTitles) {
+                                  int numberOfSuggestedTitles,
+                                  int titlesLikesInTotal) {
 }
