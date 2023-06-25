@@ -51,23 +51,15 @@ public class PgeInteractor implements PgeInputBoundary {
         // story has failed to save so "oh well"
 
         FilterOutput out = storySaveChecker.filterStory(data.getStoryString());
-        if (out.getAction() == Action.ACCEPTED) {
-            Log.useCaseMsg("PGE", "Story passed through filter!");
+        if (out.getAction() != Action.REJECTED){
+            if (out.getAction() == Action.ACCEPTED) Log.useCaseMsg("PGE", "Story passed through filter!");
+            else Log.useCaseMsg("PGE", "Modified Story passed through filter.");
             Response res = repo.saveStory(out.getFilteredStory(), Instant.now().getEpochSecond(),
                     data.getAuthorNamesStat().getStatData());
             if (res.getCode() == Response.ResCode.SUCCESS) Log.useCaseMsg("PGE", "Saved Story to DB!");
             else Log.useCaseMsg("PGE ERROR", "Failed to save story: " + res);
         }
-        else if (out.getAction() == Action.MODIFIED) {
-            Log.useCaseMsg("PGE", "Modified Story passed through filter.");
-            Response res = repo.saveStory(out.getFilteredStory(), Instant.now().getEpochSecond(),
-                    data.getAuthorNamesStat().getStatData());
-            if (res.getCode() == Response.ResCode.SUCCESS) Log.useCaseMsg("PGE", "Saved Story to DB!");
-            else Log.useCaseMsg("PGE ERROR", "Failed to save story: " + res);
-        }
-        else {
-            Log.useCaseMsg("PGE", "Story rejected by filter.");
-        }
+        else Log.useCaseMsg("PGE", "Story rejected by filter.");
 
         /*
         Below code takes care of output
