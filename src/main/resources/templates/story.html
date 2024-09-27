@@ -67,7 +67,7 @@
 
             <div id="all_comments">
 
-                <div th:each="comment: ${comments}" class="comments" id="comment1">
+                <div th:each="comment: ${comments}" class="comments" id="comment">
                     <img src="media/user.jpeg" class="user_profile" alt="not available">
                     <p  class="comment">
                         <b th:text="${comment.displayName()}"></b> <br>

@@ -70,6 +70,7 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import java.util.Locale;
+import java.util.Set;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "net.onewordstory.core")
@@ -175,7 +176,10 @@ public class SpringApp {
 					!System.getenv("PROD").toLowerCase(Locale.ENGLISH).equals("true")) {
 				titlesRepo = new InMemoryTitlesRepo();
 				commentsRepo = new InMemoryCommentsRepo();
+
 				storyRepo = new InMemoryStoryRepo();
+				((InMemoryStoryRepo) storyRepo).saveStory("Hello! It is a test", 10000,
+						Set.of("Andrii", "Andrii II"));
 			} else {
 				storyRepo = postgresStoryRepo;
 				titlesRepo = postgresTitlesRepo;

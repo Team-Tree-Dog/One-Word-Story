@@ -7,6 +7,7 @@ import net.onewordstory.core.adapters.display_data.story_data.StoryDisplayData;
 import net.onewordstory.core.adapters.display_data.title_data.SuggestedTitleDisplayData;
 import net.onewordstory.core.adapters.display_data.title_data.SuggestedTitleDisplayDataBuilder;
 import net.onewordstory.core.adapters.view_models.*;
+import net.onewordstory.core.usecases.Response;
 import org.example.ANSI;
 import org.example.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import net.onewordstory.core.usecases.Response;
 
-import java.util.*;
+import java.util.List;
 
 @Controller
 public class StoryController {
@@ -53,30 +53,9 @@ public class StoryController {
     }
 
     @GetMapping("/")
-    public String index(Model model,
-                        @RequestParam(name="get", defaultValue="latest") String storiesToGet )
-            throws InterruptedException {
-
+    public String index(@RequestParam(name="get", defaultValue="latest") String storiesToGet) {
+        // It is better to use a logger
         System.out.println("Get /");
-
-        StoryListViewModel viewM;
-        Response res;
-        List<StoryDisplayData> stories;
-
-        if (storiesToGet.equals("liked")) {
-            viewM = gmlsController.getMostLikedStories(0, 100);
-        }
-        else {  // Defaults to "latest"
-            viewM = glsController.getLatestStories(100);
-        }
-
-        res = viewM.getResponseAwaitable().await();
-        stories = viewM.getStoriesAwaitable().get();
-
-        // TODO: Add error handling and frontend message (e.g stories failed to load) if res is a fail code
-
-        model.addAttribute("stories", stories == null ? new ArrayList<>() : stories);
-
         return "index";
     }
 
