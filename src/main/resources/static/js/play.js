@@ -1,4 +1,4 @@
-IS_SECURE = false;
+IS_SECURE = true;
 DOMAIN = window.location.hostname + (!!window.location.port ? ":" + window.location.port : "");
 SOCKET_URL = "ws"+(IS_SECURE ? "s" : "")+"://"+DOMAIN+"/game";
 
